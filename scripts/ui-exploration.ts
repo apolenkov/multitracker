@@ -34,8 +34,22 @@ export function content(browser: Browser, selector: string) {
 
 export function reveal(browser: Browser, summary: string) {
   const selector = JSON.stringify(summary);
-  if (evaluate(browser, `document.querySelector(${selector})?.closest('details')?.open === false`))
+  if (
+    evaluate(browser, `document.querySelector(${selector})?.closest('details')?.open === false`)
+  ) {
+    browser.run('scrollintoview', summary);
+    browser.run(
+      'wait',
+      '--fn',
+      `(() => { const element = document.querySelector(${selector}); const box = element?.getBoundingClientRect(); return element?.checkVisibility() === true && box?.width > 0 && box?.height > 0 && element.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)); })()`,
+    );
     browser.run('click', summary);
+    browser.run(
+      'wait',
+      '--fn',
+      `document.querySelector(${selector})?.closest('details')?.open === true`,
+    );
+  }
   truth(
     browser,
     `document.querySelector(${selector})?.checkVisibility() === true && document.querySelector(${selector})?.closest('details')?.open === true`,

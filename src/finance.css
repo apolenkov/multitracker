@@ -6,25 +6,17 @@
 }
 .finance-overview {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  grid-template-areas: 'balance side' 'assets assets' 'report report' 'history history';
-  gap: 20px;
-  --allocation-btc: #8c66ff;
-  --allocation-msft: #21c6e4;
-  --allocation-twt: #fb64a8;
-}
-.balance-panel,
-.holdings {
-  padding: 24px;
-  background: var(--paper);
-  border-radius: 16px;
-  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) 272px;
+  grid-template-areas: 'balance side' 'assets side' 'report report' 'history history';
+  gap: 24px 32px;
+  align-items: start;
+  --allocation-btc: #7656d6;
+  --allocation-msft: #117e99;
+  --allocation-twt: #b23873;
 }
 .balance-panel {
   grid-area: balance;
-}
-.summary {
-  padding: 0;
+  min-width: 0;
 }
 .summary .section-top,
 .valuation {
@@ -32,19 +24,21 @@
   font-size: 14px;
 }
 .main-amount {
-  font-size: clamp(34px, 3.4vw, 42px);
+  font-size: clamp(36px, 3.4vw, 44px);
   letter-spacing: -0.03em;
-  font-weight: 650;
-  margin: 4px 0;
-  line-height: 1.15;
+  font-weight: 600;
+  margin: 8px 0 0;
+  line-height: 1.12;
   overflow-wrap: anywhere;
 }
 .summary-result {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px 16px;
+  gap: 12px 24px;
   align-items: center;
-  margin-top: 12px;
+  margin-top: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
 }
 .summary-result dt {
   color: var(--muted);
@@ -53,7 +47,8 @@
 }
 .summary-result dd {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 550;
+  overflow-wrap: anywhere;
 }
 .summary-result small {
   display: inline-block;
@@ -78,8 +73,10 @@
   grid-area: side;
   min-width: 0;
   display: grid;
-  gap: 16px;
+  gap: 24px;
   align-content: start;
+  padding-left: 24px;
+  border-left: 1px solid var(--line);
 }
 .overview-report {
   grid-area: report;
@@ -104,9 +101,12 @@
 }
 .holdings {
   grid-area: assets;
+  min-width: 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 .holdings h2 {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 .holdings-sort {
   display: flex;
@@ -151,10 +151,10 @@
   padding: 0 0 12px;
 }
 .holding-row {
-  padding: 14px 0;
+  padding: 12px 0;
   border-top: 1px solid var(--line);
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
 }
 .holding-row > td:not(:first-child),
 .holding-head > th:not(:first-child) {
@@ -230,7 +230,17 @@
 .allocation-list {
   padding: 16px;
   background: var(--paper);
-  border-radius: 16px;
+  border-radius: 12px;
+}
+.overview-side .allocation-list,
+.overview-side .attribution {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.overview-side .attribution {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 .cash-balances,
 .asset-catalog {

@@ -7,13 +7,13 @@
 .operation-kind {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-bottom: 20px;
+  gap: 16px;
+  padding-block: 4px 20px;
   border-bottom: 1px solid var(--line);
 }
 .operation-kind label {
   flex: none;
-  color: var(--muted);
+  color: var(--ink);
 }
 .operation-kind select {
   flex: 1;
@@ -22,8 +22,8 @@
 .operation-groups,
 .entity-fields {
   display: grid;
-  gap: 24px;
-  margin-top: 20px;
+  gap: 28px;
+  margin-top: 24px;
 }
 .operation-group {
   border: 0;
@@ -33,14 +33,14 @@
 }
 .operation-group legend {
   padding: 0;
-  margin-bottom: 12px;
-  font-size: 14px;
+  margin-bottom: 14px;
+  font-size: 16px;
   font-weight: 600;
 }
 .operation-dialog .form-grid,
 .entity-dialog .form-grid {
   margin: 0;
-  gap: 12px;
+  gap: 16px;
 }
 .operation-dialog .form-grid .form-field:last-child,
 .entity-dialog .form-grid .form-field:last-child {
@@ -48,8 +48,14 @@
 }
 .operation-dialog .form-field,
 .entity-dialog .form-field {
-  gap: 6px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
   min-width: 0;
+}
+.operation-dialog :is(input, select),
+.entity-dialog :is(input, select) {
+  border-radius: 8px;
 }
 .operation-dialog select,
 .entity-dialog select {
@@ -58,12 +64,12 @@
 .operation-context {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: 12px;
   padding: 16px;
 }
 .operation-context legend {
-  color: var(--muted);
-  padding-inline: 4px;
+  color: var(--ink);
+  padding-inline: 6px;
   margin: 0;
 }
 .operation-context input,
@@ -80,7 +86,7 @@
 }
 .operation-additional {
   border-top: 1px solid var(--line);
-  padding-top: 4px;
+  padding-top: 8px;
 }
 .operation-additional summary {
   color: var(--muted);
@@ -103,7 +109,7 @@
   margin-block: 20px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: 12px;
   font-weight: 600;
 }
 .entity-members .confirmation {
@@ -120,7 +126,7 @@
 @media (max-width: 600px) {
   .operation-dialog .form-grid,
   .entity-dialog .form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
   }
   .form-field:only-child {
     grid-column: 1 / -1;
@@ -140,6 +146,6 @@
     gap: 24px;
   }
   .exchange-pair .form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
   }
 }

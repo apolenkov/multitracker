@@ -2,11 +2,11 @@
 
 @media (max-width: 1100px) {
   .sidebar {
-    width: 192px;
+    width: 216px;
     padding-inline: 12px;
   }
   .workspace {
-    margin-left: 192px;
+    margin-left: 216px;
     padding-inline: 24px;
   }
 }
@@ -29,7 +29,7 @@
     display: block;
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--line);
-    background: var(--canvas);
+    background: var(--paper);
     z-index: 20;
   }
   .mobile-links {
@@ -70,9 +70,9 @@
     margin: 0;
     padding: 8px;
     border: 0;
-    border-radius: 16px;
+    border-radius: 12px;
     background: var(--paper);
-    box-shadow: 0 12px 32px rgb(0 0 0 / 40%);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
   }
   .navigation .more-menu :is(button, a) {
     flex-direction: row;
@@ -100,6 +100,13 @@
 @media (max-width: 600px) {
   .workspace {
     padding-inline: 16px;
+  }
+  .utility-controls {
+    grid-template-columns: 56px 104px 70px;
+    gap: 4px;
+  }
+  .utility-controls select {
+    padding-inline: 6px;
   }
   .page-heading {
     gap: 12px;

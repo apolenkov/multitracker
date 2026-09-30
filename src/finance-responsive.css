@@ -1,7 +1,12 @@
+@media (max-width: 1279px) {
+  .finance-overview {
+    grid-template-areas: 'balance side' 'assets assets' 'report report' 'history history';
+  }
+}
 @media (max-width: 1100px) {
   .finance-overview {
-    grid-template-columns: minmax(0, 1fr) 260px;
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr) 248px;
+    gap: 20px 24px;
   }
   .holding-head,
   .holding-row {
@@ -12,11 +17,10 @@
   .finance-overview {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: 'balance' 'assets' 'side' 'report' 'history';
-    gap: 16px;
+    gap: 24px;
   }
-  .balance-panel,
   .holdings {
-    padding: 16px;
+    padding-top: 20px;
   }
   .holdings h2 {
     margin-bottom: 0;
@@ -26,18 +30,21 @@
   }
   .overview-side {
     grid-template-columns: minmax(0, 1fr);
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 20px 0 0;
   }
   .allocation-content {
     display: grid;
     grid-template-columns: 120px minmax(0, 1fr);
     column-gap: 12px;
   }
-  .allocation-ring {
+  .overview-side .allocation-ring {
     width: 116px;
     height: 116px;
     margin: 16px 0;
   }
-  .allocation-ring > div {
+  .overview-side .allocation-ring > div {
     width: 82px;
     height: 82px;
   }
@@ -48,10 +55,10 @@
     grid-template-columns: 1fr;
     font-size: 14px;
   }
-  .history-plot,
-  .history-plot-hidden {
-    height: 108px;
-    min-height: 108px;
+  .finance-overview .history-plot,
+  .finance-overview .history-plot-hidden {
+    height: 132px;
+    min-height: 132px;
   }
   .summary-result {
     grid-template-columns: minmax(0, 1fr);
@@ -60,7 +67,7 @@
     width: 100%;
   }
   .summary-result dd {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 @media (max-width: 600px) {
@@ -112,7 +119,7 @@
   .allocation-content {
     grid-template-columns: minmax(0, 1fr);
   }
-  .allocation-ring {
+  .overview-side .allocation-ring {
     margin-inline: auto;
   }
 }

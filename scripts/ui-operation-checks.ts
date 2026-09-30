@@ -13,16 +13,25 @@ function draftState(browser: Browser) {
 }
 
 function fillFocused(browser: Browser, field: 'fee' | 'note', value: string) {
-  if (value === '') {
-    browser.run('focus', `#buy-dialog-${field}`);
-    browser.run('press', process.platform === 'darwin' ? 'Meta+a' : 'Control+a');
-    browser.run('press', 'Backspace');
-  } else browser.run('fill', `#buy-dialog-${field}`, value);
+  if (value === '') clearFocused(browser, 'buy-dialog', field);
+  else browser.run('fill', `#buy-dialog-${field}`, value);
   truth(
     browser,
     `document.activeElement?.id === 'buy-dialog-${field}' && document.querySelector('${additional}')?.open === true`,
     'Ввод должен оставлять фокус на поле и дополнительные сведения открытыми',
   );
+}
+
+function clearFocused(browser: Browser, dialog: string, field: 'fee' | 'note') {
+  const selector = `#${dialog}-${field}`;
+  browser.run('focus', selector);
+  truth(
+    browser,
+    `(() => { const input = document.querySelector('${selector}'); if (!(input instanceof HTMLInputElement)) return false; input.select(); return document.activeElement === input && input.selectionStart === 0 && input.selectionEnd === input.value.length; })()`,
+    'Перед очисткой должно быть выделено всё содержимое поля',
+  );
+  browser.run('press', 'Backspace');
+  truth(browser, `document.querySelector('${selector}')?.value === ''`, 'Поле должно очиститься');
 }
 
 function retainedExtras(browser: Browser, reason: string) {
@@ -88,9 +97,7 @@ function editedExtras(browser: Browser) {
     'Редактирование должно открыть ранее сохранённое примечание',
   );
   browser.run('fill', '#record-edit-dialog-fee', '0');
-  browser.run('focus', '#record-edit-dialog-note');
-  browser.run('press', process.platform === 'darwin' ? 'Meta+a' : 'Control+a');
-  browser.run('press', 'Backspace');
+  clearFocused(browser, 'record-edit-dialog', 'note');
   truth(
     browser,
     'document.querySelector("#record-edit-dialog-note")?.value === "" && document.querySelector("#record-edit-dialog .operation-additional")?.open === true && document.activeElement?.id === "record-edit-dialog-note" && document.activeElement?.checkVisibility() === true',

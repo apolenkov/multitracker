@@ -76,7 +76,7 @@ function usePreferences() {
   const [language, setLanguage] = useState<Language>('ru');
   const [currency, setCurrency] = useState<Currency>('RUB');
   const [baseCurrency, setBaseCurrency] = useState<Currency>('RUB');
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
   const [hidden, setHidden] = useState(false);
   const [monochrome, setMonochrome] = useState(false);
   return {
@@ -110,7 +110,7 @@ function useDocumentMetadata(language: Language, screen: Screen) {
 }
 function useDocumentTheme(theme: Theme) {
   useEffect(() => {
-    const system = window.matchMedia('(prefers-color-scheme: light)');
+    const system = window.matchMedia('(prefers-color-scheme: dark)');
     const update = () => {
       document.documentElement.setAttribute('data-theme', theme);
       const canvas = getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim();

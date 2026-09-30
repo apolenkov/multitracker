@@ -1,21 +1,20 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-30T14:15:32Z",
+  "generatedAt": "2026-09-30T15:40:16Z",
   "title": "MultiTracker",
   "extensions": {
     "shadows": [
       {
         "name": "more-menu",
-        "value": "0 12px 32px rgb(0 0 0 / 40%)",
+        "value": "0 12px 32px rgb(0 0 0 / 18%)",
         "purpose": "Отделяет открытое мобильное меню «Ещё» от содержимого."
-      },
-      {
-        "name": "selected-navigation",
-        "value": "inset 0 0 0 1px var(--accent)",
-        "purpose": "Обозначает выбранный маршрут вместе с подложкой и текстом."
       }
     ],
     "breakpoints": [
+      {
+        "name": "full-width-holdings",
+        "value": "1279px"
+      },
       {
         "name": "compact-sidebar",
         "value": "1100px"
@@ -23,6 +22,10 @@
       {
         "name": "mobile-navigation",
         "value": "900px"
+      },
+      {
+        "name": "single-column-overview",
+        "value": "760px"
       },
       {
         "name": "single-column-forms",
@@ -66,7 +69,7 @@
       },
       "portfolio-value": {
         "displayName": "Стоимость портфеля",
-        "purpose": "Главная сумма обзора; отдельный размер 32 px на телефоне."
+        "purpose": "Главная сумма обзора: clamp(36px, 3.4vw, 44px), до 600 px — 32 px."
       },
       "analytical-answer": {
         "displayName": "Ответ аналитики",
@@ -80,52 +83,52 @@
       "kind": "button",
       "refersTo": "button-primary",
       "description": "Конкретное действие текущей сцены; финансовый знак использует отдельный цвет.",
-      "html": "<button class=\"ds-primary\">Добавить покупку</button>",
-      "css": ".ds-primary { min-height: 44px; border: 1px solid var(--accent); border-radius: 12px; padding: 9px 16px; background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 600; } .ds-primary:hover { opacity: .9; } .ds-primary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "html": "<button class=\"primary\">Добавить покупку</button>",
+      "css": "button.primary { min-height: 44px; border: 1px solid var(--primary); border-radius: 999px; padding: 9px 16px; background: var(--primary); color: var(--primary-ink); font: inherit; font-weight: 500; } button.primary:hover { opacity: .84; } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Вторичное действие",
       "kind": "button",
       "description": "Отмена или вспомогательное действие рядом с основной кнопкой.",
-      "html": "<button class=\"ds-secondary\">Отмена</button>",
-      "css": ".ds-secondary { min-height: 44px; border: 1px solid var(--control-border); border-radius: 12px; padding: 9px 16px; background: var(--paper); color: var(--ink); font: inherit; font-weight: 600; } .ds-secondary:hover { background: var(--surface); } .ds-secondary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "html": "<button>Отмена</button>",
+      "css": "button { min-height: 44px; border: 1px solid var(--control-border); border-radius: 12px; padding: 9px 16px; background: var(--paper); color: inherit; font: inherit; font-weight: 500; } button:hover { background: var(--surface); } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Подписанное поле",
       "kind": "input",
       "refersTo": "input",
       "description": "Сумма и её единица остаются рядом с вводом.",
-      "html": "<label class=\"ds-field\">Сумма, USD<input class=\"ds-input\" inputmode=\"decimal\" value=\"100\"></label>",
-      "css": ".ds-field { display: grid; gap: 8px; color: var(--ink); font-size: 14px; font-weight: 600; } .ds-input { min-height: 44px; max-width: 100%; border: 1px solid var(--control-border); border-radius: 10px; padding: 9px 12px; background: var(--surface); color: var(--ink); font: inherit; font-size: 16px; caret-color: var(--accent); } .ds-input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "html": "<div class=\"operation-dialog\"><div class=\"form-field\"><label for=\"ds-amount\">Сумма, USD</label><input id=\"ds-amount\" inputmode=\"decimal\" value=\"100\"></div></div>",
+      "css": ".operation-dialog .form-field { display: grid; align-content: start; gap: 8px; min-width: 0; } label { font-size: 14px; font-weight: 500; } input { min-height: 44px; max-width: 100%; width: 100%; border: 1px solid var(--control-border); border-radius: 8px; padding: 9px 12px; background: var(--surface); color: inherit; font: inherit; caret-color: var(--accent); } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Выбранный раздел",
       "kind": "nav",
-      "description": "Подписанная строка навигации с общим значком и состоянием выбора.",
-      "html": "<a class=\"ds-navigation\" href=\"#markets\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 20h18M5 16l4-5 4 3 6-9M16 5h3v3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span>Рынки</span></a>",
-      "css": ".ds-navigation { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 12px; border-radius: 12px; text-decoration: none; background: var(--selected-bg); color: var(--selected-ink); box-shadow: inset 0 0 0 1px var(--accent); font-weight: 700; } .ds-navigation svg { display: block; width: 22px; height: 22px; flex: none; } .ds-navigation:hover { background: var(--paper); color: var(--ink); } .ds-navigation:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "description": "Настольная подписанная строка навигации; на телефоне действуют отдельные правила layout.css.",
+      "html": "<nav class=\"navigation\"><a href=\"#markets\" aria-current=\"page\"><svg class=\"ui-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 20h18M5 16l4-5 4 3 6-9M16 5h3v3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span>Рынки</span></a></nav>",
+      "css": ".navigation a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 8px; text-decoration: none; background: transparent; color: var(--muted); text-align: left; font-weight: 500; } .navigation a:hover { background: var(--hover-bg); color: var(--ink); } .navigation [aria-current=\"page\"] { background: var(--selected-bg); color: var(--selected-ink); font-weight: 600; } .navigation svg { display: block; width: 22px; height: 22px; flex: none; margin: 1px; } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Смысловая группа формы",
       "kind": "custom",
       "description": "Контекст, сумма или связанные стороны операции образуют самостоятельную группу полей.",
-      "html": "<fieldset class=\"ds-group\"><legend>Откуда</legend><label>Счёт<select class=\"ds-select\"><option>Учебный счёт</option></select></label></fieldset>",
-      "css": ".ds-group { margin: 0; padding: 0; border: 0; color: var(--ink); } .ds-group legend { padding: 0; margin-bottom: 12px; font-size: 15px; font-weight: 600; } .ds-group label { display: grid; gap: 8px; font-size: 14px; font-weight: 600; } .ds-select { min-height: 44px; border: 1px solid var(--control-border); border-radius: 10px; padding: 9px 12px; background: var(--surface); color: var(--ink); font: inherit; } .ds-select:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "html": "<div class=\"operation-dialog\"><fieldset class=\"operation-group\"><legend>Откуда</legend><div class=\"form-field\"><label for=\"ds-account\">Счёт</label><select id=\"ds-account\"><option>Учебный счёт</option></select></div></fieldset></div>",
+      "css": ".operation-group { margin: 0; padding: 0; border: 0; min-width: 0; } .operation-group legend { padding: 0; margin-bottom: 14px; font-size: 16px; font-weight: 600; } .operation-dialog .form-field { display: grid; align-content: start; gap: 8px; min-width: 0; } label { font-size: 14px; font-weight: 500; } select { min-height: 44px; max-width: 100%; width: 100%; border: 1px solid var(--control-border); border-radius: 8px; padding: 9px 12px; background: var(--surface); color: inherit; font: inherit; } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Данные и расчёт",
       "kind": "custom",
       "description": "Единое раскрытие под графиком: стоимость приобретения в валюте расчёта, пояснение процента и таблица истории.",
-      "html": "<details class=\"ds-calculation\"><summary>Данные и расчёт</summary><div class=\"ds-basis\"><h3>Стоимость приобретения · RUB</h3><p>326 380 RUB</p><p class=\"ds-calculation-note\">Процент результата рассчитан от этой суммы, включая комиссии.</p></div></details>",
-      "css": ".ds-calculation > summary { color: var(--muted); font-size: 14px; min-height: 44px; padding-block: 10px; cursor: pointer; } .ds-calculation > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; } .ds-basis { margin-top: 12px; color: var(--muted); font-size: 14px; } .ds-basis h3 { margin: 0; font-size: 14px; font-weight: 500; } .ds-basis > p:first-of-type { font-size: 16px; color: var(--ink); } .ds-calculation-note { color: var(--muted); font-size: 14px; line-height: 1.6; }"
+      "html": "<details class=\"chart-disclosure\"><summary>Данные и расчёт</summary><div class=\"basis-details\"><h3>Стоимость приобретения · RUB</h3><p>326 380 RUB</p><p class=\"quiet\">Процент результата рассчитан от этой суммы, включая комиссии.</p></div></details>",
+      "css": ".chart-disclosure > summary { color: var(--muted); font-size: 14px; min-height: 44px; padding-block: 10px; cursor: pointer; } .chart-disclosure > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; } .basis-details { margin-top: 12px; color: var(--muted); font-size: 14px; } .basis-details h3 { margin: 0; font-size: 14px; font-weight: 500; } .basis-details > p:first-of-type { font-size: 16px; color: var(--ink); } .quiet { color: var(--muted); font-size: 14px; line-height: 1.6; }"
     }
   ],
   "narrative": {
-    "northStar": "Спокойный финансовый интерфейс с предметными группами",
-    "overview": "Текущее направление — спокойный финансовый интерфейс с цветом по назначению: синий для действия и выбора, зелёный/красный для результата, янтарный для внимания. Тёмная тема имеет синий оттенок и различимые слои, светлая — белые рабочие области на светлом фоне. Монохром включается только отдельной настройкой.",
+    "northStar": "Mintlify для спокойной работы с портфелем",
+    "overview": "Текущий кандидат адаптирует выбранный владельцем Mintlify: светлая тема по умолчанию, белые рабочие области, светло-серая боковая панель, локальный Inter 4.1, чёрные основные кнопки и mint для знака приложения и фокуса. Тёмная тема использует графитовые слои и светлое основное действие. Финансовые цвета имеют отдельный смысл. Визуальная приёмка текущего кандидата ожидается; исторические проверки арены его не подтверждают.",
     "dos": [
       "Сохранять подписи, единицы, знаки результата и доступные таблицы графиков.",
-      "Использовать синий для действия и выбора; финансовые цвета — для результата.",
+      "Использовать mint для знака приложения и фокуса; финансовые цвета — для результата.",
       "Оставлять обязательный курс и существенные ограничения видимыми."
     ],
     "donts": [

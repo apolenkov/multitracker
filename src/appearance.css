@@ -1,63 +1,95 @@
-:root {
-  --canvas: #202c3c;
-  --paper: #2a394d;
-  --surface: #33465d;
-  --ink: #f2f6ff;
-  --muted: #bccbdd;
-  --line: #485e79;
-  --control-border: #8a9ebc;
-  --accent: #86b1ff;
-  --accent-ink: #142845;
-  --selected-bg: #24466e;
-  --selected-ink: #b9d2ff;
-  --warning: #f3c36a;
-  --green: #79e0aa;
-  --red: #ffa1ac;
-  --focus: #b5a0ff;
+@font-face {
+  font-family: Inter;
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
 }
-:root[data-theme='light'],
-.app-shell[data-theme='light'] {
-  --canvas: #f2f6fc;
+
+:root {
+  --canvas: #ffffff;
   --paper: #ffffff;
-  --surface: #eaf0f8;
-  --ink: #182b46;
-  --muted: #52657f;
-  --line: #d2deed;
-  --control-border: #6c819e;
-  --accent: #285ee5;
+  --surface: #f7f7f7;
+  --sidebar: #f7f7f7;
+  --hover-bg: #efefef;
+  --ink: #0a0a0a;
+  --muted: #5a5a5c;
+  --line: #e5e5e5;
+  --control-border: #8b8b8b;
+  --accent: #007a5e;
   --accent-ink: #ffffff;
-  --selected-bg: #dae7ff;
-  --selected-ink: #204bac;
+  --brand: #00d4a4;
+  --brand-ink: #07352b;
+  --primary: #0a0a0a;
+  --primary-ink: #ffffff;
+  --selected-bg: #ebebeb;
+  --selected-ink: #0a0a0a;
   --warning: #865b0b;
   --green: #147340;
   --red: #b62945;
-  --focus: #6d4ad4;
+  --focus: #007a5e;
   color-scheme: light;
 }
-@media (prefers-color-scheme: light) {
+
+:root[data-theme='dark'],
+.app-shell[data-theme='dark'] {
+  --canvas: #292c2d;
+  --paper: #333739;
+  --surface: #3d4244;
+  --sidebar: #333739;
+  --hover-bg: #3d4244;
+  --ink: #f5f6f6;
+  --muted: #c2c8c7;
+  --line: #555b5d;
+  --control-border: #919b9b;
+  --accent: #00d4a4;
+  --accent-ink: #07352b;
+  --brand: #00d4a4;
+  --brand-ink: #07352b;
+  --primary: #f5f6f6;
+  --primary-ink: #202526;
+  --selected-bg: #454b4d;
+  --selected-ink: #f5f6f6;
+  --warning: #f3c36a;
+  --green: #79e0aa;
+  --red: #ffa1ac;
+  --focus: #00d4a4;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
   :root[data-theme='system'],
   .app-shell[data-theme='system'] {
-    --canvas: #f2f6fc;
-    --paper: #ffffff;
-    --surface: #eaf0f8;
-    --ink: #182b46;
-    --muted: #52657f;
-    --line: #d2deed;
-    --control-border: #6c819e;
-    --accent: #285ee5;
-    --accent-ink: #ffffff;
-    --selected-bg: #dae7ff;
-    --selected-ink: #204bac;
-    --warning: #865b0b;
-    --green: #147340;
-    --red: #b62945;
-    --focus: #6d4ad4;
-    color-scheme: light;
+    --canvas: #292c2d;
+    --paper: #333739;
+    --surface: #3d4244;
+    --sidebar: #333739;
+    --hover-bg: #3d4244;
+    --ink: #f5f6f6;
+    --muted: #c2c8c7;
+    --line: #555b5d;
+    --control-border: #919b9b;
+    --accent: #00d4a4;
+    --accent-ink: #07352b;
+    --brand: #00d4a4;
+    --brand-ink: #07352b;
+    --primary: #f5f6f6;
+    --primary-ink: #202526;
+    --selected-bg: #454b4d;
+    --selected-ink: #f5f6f6;
+    --warning: #f3c36a;
+    --green: #79e0aa;
+    --red: #ffa1ac;
+    --focus: #00d4a4;
+    color-scheme: dark;
   }
 }
+
 .app-shell[data-monochrome='true'] {
   --accent: var(--ink);
   --accent-ink: var(--canvas);
+  --brand: var(--ink);
+  --brand-ink: var(--canvas);
   --selected-bg: var(--surface);
   --selected-ink: var(--ink);
   --warning: var(--ink);

@@ -52,6 +52,28 @@ function surface(browser: Browser) {
   );
 }
 
+function assertAppearance(browser: Browser, paper: unknown, scheme: 'light' | 'dark') {
+  browser.run(
+    'wait',
+    '--fn',
+    `getComputedStyle(document.documentElement).colorScheme === '${scheme}' &&
+      document.querySelector('meta[name="theme-color"]')?.content ===
+        getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim()`,
+  );
+  assert.equal(surface(browser), paper);
+  assert.deepEqual(
+    evaluate(
+      browser,
+      `({root:getComputedStyle(document.documentElement).colorScheme,
+        app:getComputedStyle(document.querySelector('.app-shell')).colorScheme,
+        metadata:document.querySelector('meta[name="theme-color"]').content ===
+          getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim()})`,
+    ),
+    { root: scheme, app: scheme, metadata: true },
+    'Surfaces, native controls and browser theme color must agree',
+  );
+}
+
 export function appearanceThemes(browser: Browser) {
   browser.run('select', '#topbar-theme', 'dark');
   const dark = surface(browser);
@@ -59,17 +81,20 @@ export function appearanceThemes(browser: Browser) {
   const light = surface(browser);
   assert.ok(dark && light);
   assert.notEqual(dark, light, 'Light and dark must render different surfaces');
+  browser.run('set', 'media', 'dark');
+  assertAppearance(browser, light, 'light');
   browser.run('select', '#topbar-theme', 'system');
   const prefersDark = evaluate(browser, 'matchMedia("(prefers-color-scheme: dark)").matches');
-  assert.equal(surface(browser), prefersDark ? dark : light);
+  assertAppearance(browser, prefersDark ? dark : light, prefersDark ? 'dark' : 'light');
   browser.run('set', 'media', 'dark');
-  assert.equal(surface(browser), dark);
+  assertAppearance(browser, dark, 'dark');
   browser.run('set', 'media', 'light');
-  assert.equal(surface(browser), light);
+  assertAppearance(browser, light, 'light');
   navigate(browser, 'settings');
   assert.equal(evaluate(browser, 'document.querySelector("#settings-theme")?.value'), 'system');
   browser.run('select', '#settings-theme', 'dark');
   navigate(browser, 'overview');
   assert.equal(evaluate(browser, 'document.querySelector("#topbar-theme")?.value'), 'dark');
-  return 'Light/dark differ; system follows OS; theme synchronizes between header and settings';
+  assertAppearance(browser, dark, 'dark');
+  return 'Light/dark/system: surfaces, native controls and theme-color agree; explicit choice ignores OS';
 }

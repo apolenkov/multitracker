@@ -1,10 +1,10 @@
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
-  width: 224px;
+  width: 240px;
   padding: 24px 16px;
   border-right: 1px solid var(--line);
-  background: var(--canvas);
+  background: var(--sidebar);
   z-index: 10;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -17,7 +17,7 @@
   padding-inline: 8px;
   text-decoration: none;
   font-size: 20px;
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: -0.7px;
 }
 .brand-mark {
@@ -26,8 +26,8 @@
   width: 32px;
   height: 32px;
   border-radius: 9px;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--brand);
+  color: var(--brand-ink);
 }
 .brand-mark .ui-icon {
   width: 22px;
@@ -43,31 +43,30 @@
 .more-menu {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 .navigation :is(button, a) {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 48px;
-  padding: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
   border: 0;
-  border-radius: var(--radius);
+  border-radius: 8px;
   background: transparent;
   color: var(--muted);
   text-decoration: none;
   text-align: left;
-  font-weight: 600;
+  font-weight: 500;
 }
 .navigation :is(a, button):hover {
-  background: var(--paper);
+  background: var(--hover-bg);
   color: var(--ink);
 }
 .navigation [aria-current='page'] {
   background: var(--selected-bg);
   color: var(--selected-ink);
-  box-shadow: inset 0 0 0 1px var(--accent);
-  font-weight: 700;
+  font-weight: 600;
 }
 .desktop-links,
 .more-menu {
@@ -79,7 +78,7 @@
   display: none;
 }
 .workspace {
-  margin-left: 224px;
+  margin-left: 240px;
   padding: 0 32px;
   max-width: 1520px;
 }
@@ -88,7 +87,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 56px;
+  min-height: 64px;
   border-bottom: 1px solid var(--line);
 }
 .demo-badge {
@@ -101,8 +100,8 @@
 }
 .utility-controls {
   display: grid;
-  grid-template-columns: 56px 90px 70px;
-  gap: 4px;
+  grid-template-columns: 56px 108px 78px;
+  gap: 8px;
 }
 .utility-controls label {
   display: block;
@@ -116,17 +115,17 @@
   background: var(--paper);
   border-color: var(--control-border);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 main {
-  padding: 20px 0;
+  padding: 32px 0;
 }
 .page-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 .portfolio-filter select {
   min-width: 180px;

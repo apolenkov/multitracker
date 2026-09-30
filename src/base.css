@@ -1,19 +1,23 @@
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    system-ui,
+    sans-serif;
   font-synthesis: none;
   font-weight: 400;
-  line-height: 1.45;
+  line-height: 1.5;
   font-size: 16px;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
   background: var(--canvas);
-  color-scheme: dark;
   --radius: 12px;
 }
 .app-shell {
   color: var(--ink);
   background: var(--canvas);
-  color-scheme: dark;
   min-height: 100dvh;
 }
 * {
@@ -42,7 +46,7 @@ button {
   border-radius: var(--radius);
   background: var(--paper);
   padding: 9px 16px;
-  font-weight: 600;
+  font-weight: 500;
 }
 button:hover {
   background: var(--surface);
@@ -52,12 +56,13 @@ button:disabled {
   opacity: 0.65;
 }
 button.primary {
-  background: var(--accent);
-  color: var(--accent-ink);
-  border-color: var(--accent);
+  background: var(--primary);
+  color: var(--primary-ink);
+  border-color: var(--primary);
+  border-radius: 999px;
 }
 button.primary:hover {
-  opacity: 0.9;
+  opacity: 0.84;
 }
 :focus-visible {
   outline: 3px solid var(--focus);
@@ -69,7 +74,7 @@ textarea {
   min-height: 44px;
   background: var(--surface);
   border: 1px solid var(--control-border);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 9px 12px;
   max-width: 100%;
 }
@@ -93,7 +98,7 @@ summary {
 }
 label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 small {
   font-size: 14px;
@@ -111,12 +116,12 @@ h3 {
 }
 h1 {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.4px;
 }
 h2 {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.3px;
 }
 h3 {
@@ -182,7 +187,7 @@ a {
 }
 dialog {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 12px;
   background: var(--paper);
   color: var(--ink);
   padding: 24px;

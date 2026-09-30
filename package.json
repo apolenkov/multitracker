@@ -26,8 +26,13 @@
     "test:smoke": "node --experimental-strip-types scripts/ui-smoke.ts"
   },
   "dependencies": {
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "radix-ui": "1.6.7",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tailwind-merge": "3.7.0",
+    "tailwindcss": "4.3.3"
   },
   "overrides": {
     "eslint-plugin-functional": {
@@ -36,6 +41,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@tailwindcss/vite": "4.3.3",
     "@types/eslint-plugin-security": "3.0.1",
     "@types/node": "24.19.0",
     "@types/react": "19.3.0",

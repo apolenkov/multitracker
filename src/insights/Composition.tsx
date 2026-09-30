@@ -24,9 +24,10 @@ export function Composition({ buys, currency, language, hidden }: Props) {
   return (
     <section className="allocation-list" aria-labelledby="composition-title">
       <h2 id="composition-title">{words.composition}</h2>
-      <dl className="effects">
+      <AllocationRing rows={rows} total={total} language={language} hidden={hidden} />
+      <dl className="allocation-legend">
         {rows.map((row) => (
-          <div key={row.asset}>
+          <div key={row.asset} className={`allocation-${row.asset.toLowerCase()}`}>
             <dt>{row.asset}</dt>
             <dd>
               {hidden
@@ -40,5 +41,33 @@ export function Composition({ buys, currency, language, hidden }: Props) {
         <p>{language === 'ru' ? 'Нет активов в выборке' : 'No assets in selection'}</p>
       )}
     </section>
+  );
+}
+
+function AllocationRing({
+  rows,
+  total,
+  language,
+  hidden,
+}: Readonly<{
+  rows: readonly Readonly<{ asset: string; value: number }>[];
+  total: number;
+  language: Language;
+  hidden: boolean;
+}>) {
+  const gradient = rows
+    .map((row, index) => {
+      const start = (rows.slice(0, index).reduce((sum, item) => sum + item.value, 0) / total) * 100;
+      return `var(--allocation-${row.asset.toLowerCase()}) ${start}% ${start + (row.value / total) * 100}%`;
+    })
+    .join(', ');
+  const background = hidden || total === 0 ? 'var(--line)' : `conic-gradient(${gradient})`;
+  return (
+    <div className="allocation-ring" style={{ background }} aria-hidden="true">
+      <div>
+        <strong>{hidden ? '••••' : rows.length}</strong>
+        <span>{language === 'ru' ? 'актива' : 'assets'}</span>
+      </div>
+    </div>
   );
 }

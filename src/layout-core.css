@@ -1,46 +1,40 @@
-.app-shell {
-  max-width: 1800px;
-  margin: 0 auto;
-}
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
   width: 224px;
+  padding: 24px 16px;
   border-right: 1px solid var(--line);
-  padding: 32px 20px;
-  background: #f0f0e8;
+  background: var(--canvas);
   z-index: 10;
 }
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 19px;
-  letter-spacing: -0.7px;
   min-height: 44px;
+  padding-inline: 8px;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.7px;
 }
 .brand-mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--green);
-  border-radius: 6px;
-  width: 36px;
-  height: 36px;
-  color: var(--green);
-  font-size: 23px;
-  letter-spacing: -4px;
-  padding-right: 4px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--accent-ink);
 }
-.brand-mark span {
-  font-weight: 400;
+.brand-mark .navigation-icon {
+  width: 22px;
+  height: 22px;
 }
 .brand-note {
-  font-size: 14px;
   color: var(--muted);
-  margin: 16px 0 32px;
+  font-size: 14px;
+  margin: 12px 8px 24px;
 }
 .navigation,
 .desktop-links {
@@ -49,29 +43,35 @@
   gap: 6px;
 }
 .navigation :is(button, a) {
-  border: 0;
-  text-align: left;
-  background: transparent;
-  font-weight: 500;
-  padding-left: 16px;
   display: flex;
   align-items: center;
-  min-height: 44px;
+  gap: 12px;
+  min-height: 48px;
+  padding: 12px;
+  border: 0;
   border-radius: var(--radius);
-  padding: 9px 16px;
+  background: transparent;
+  color: var(--muted);
   text-decoration: none;
+  text-align: left;
+  font-weight: 600;
 }
-.navigation a:hover {
-  background: #eceee6;
+.navigation-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.navigation :is(a, button):hover {
+  background: var(--paper);
+  color: var(--ink);
 }
 .navigation [aria-current='page'] {
-  background: #dce6dc;
-  color: #194433;
-  font-weight: 650;
+  background: var(--surface);
+  color: var(--ink);
 }
 .desktop-links {
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
 }
 .navigation .more-button {
@@ -79,61 +79,62 @@
 }
 .workspace {
   margin-left: 224px;
-  padding: 0 48px;
-  max-width: 1376px;
+  padding: 0 32px;
+  max-width: 1520px;
 }
 .topbar {
-  min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--line);
   gap: 20px;
+  min-height: 88px;
+  border-bottom: 1px solid var(--line);
 }
 .demo-badge {
-  font-size: 14px;
-  color: var(--green);
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
 }
 .demo-badge > span {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   background: var(--green);
   border-radius: 50%;
 }
 .utility-controls {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 120px 124px 112px;
+  gap: 12px;
 }
 .utility-controls label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 400;
+  display: grid;
+  gap: 3px;
   color: var(--muted);
   font-size: 14px;
+  font-weight: 500;
 }
 .utility-controls select {
-  background: transparent;
-  min-height: 44px;
+  width: 100%;
+  min-width: 0;
   padding: 8px;
-  border-color: transparent;
+  color: var(--ink);
+  background: var(--paper);
+  border-color: var(--line);
   font-size: 14px;
   font-weight: 600;
-  color: var(--ink);
 }
 main {
-  padding: 32px 0 28px;
+  padding: 24px 0;
 }
 .page-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 .portfolio-filter select {
   min-width: 180px;
@@ -142,31 +143,31 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
-  color: var(--muted);
-  border-top: 1px solid var(--line);
-  padding: 12px 0 24px;
   gap: 12px;
+  padding: 12px 0 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
 }
 .footer button {
-  font-weight: 400;
-  font-size: 14px;
   border: 0;
-  background: transparent;
   padding-right: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 400;
   white-space: nowrap;
 }
 .status-message {
   padding: 12px 16px;
-  border-left: 3px solid var(--green);
-  background: #e7ede2;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--green);
   font-size: 14px;
 }
 .status-message:empty {
   padding: 0;
   margin: 0;
-  border: 0;
 }
 main:focus-visible {
   outline: none;
@@ -181,15 +182,14 @@ main:focus-visible > .page-heading h1 {
   margin-bottom: 16px;
 }
 .welcome-guide {
-  margin-bottom: 28px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
 }
 .welcome-guide summary {
-  min-height: 44px;
-  cursor: pointer;
+  color: var(--muted);
+  font-size: 14px;
   font-weight: 600;
-  color: var(--green);
 }
 .welcome-guide p {
   max-width: 70ch;
@@ -197,24 +197,49 @@ main:focus-visible > .page-heading h1 {
 }
 .welcome-steps {
   display: grid;
-  gap: 16px;
+  gap: 8px;
   padding-left: 24px;
   max-width: 70ch;
 }
-.welcome-steps li {
-  padding-left: 8px;
-}
 .welcome-glossary {
-  font-size: 14px;
   color: var(--muted);
+  font-size: 14px;
 }
 .welcome-glossary > div {
-  display: grid;
-  gap: 4px;
   padding-block: 12px;
-  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 .welcome-glossary dt {
+  margin-bottom: 4px;
   color: var(--ink);
   font-weight: 600;
+}
+[data-density='compact'] main {
+  padding-top: 20px;
+}
+[data-density='compact'] .page-heading {
+  margin-bottom: 20px;
+}
+[data-density='compact'] .summary {
+  padding-block: 18px;
+}
+[data-density='compact'] .holdings {
+  padding-top: 18px;
+}
+[data-density='compact'] .holding-row,
+[data-density='compact'] .portfolio-row,
+[data-density='compact'] .history-row {
+  padding-block: 12px;
+}
+[data-density='compact'] .holdings h2 {
+  margin-bottom: 16px;
+}
+[data-density='compact'] .demo-panel {
+  padding-block: 20px;
+}
+[data-density='compact'] .demo-panel label {
+  margin-bottom: 12px;
+}
+[data-density='compact'] .option-links {
+  margin-top: 12px;
 }

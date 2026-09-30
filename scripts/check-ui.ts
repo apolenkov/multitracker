@@ -1,6 +1,7 @@
 import assert, { AssertionError } from 'node:assert/strict';
 import { createBrowser, evaluate } from './ui-driver.ts';
 import type { Browser } from './ui-driver.ts';
+import { appearanceThemes, independentCurrencies } from './ui-preferences.ts';
 
 const screens = [
   ['overview', 'Обзор', 'Overview'],
@@ -55,7 +56,7 @@ function navigate(screen: string, width = 1440, language: Language = 'ru') {
   );
 }
 function language(value: Language) {
-  browser.run('select', '.topbar label:first-of-type select', value);
+  browser.run('select', '#topbar-language', value);
   browser.run('wait', '--fn', `document.documentElement.lang === '${value}'`);
 }
 function screenChecks(width: number, locale: Language): readonly Result[] {
@@ -214,8 +215,11 @@ function runChecks(driver: Browser): readonly Result[] {
   driver.run('open', baseUrl.href);
   driver.run('wait', '#main h1');
   const pages = allScreens();
+  language('ru');
   return [
     ...pages,
+    check('preferences:appearance-themes', () => appearanceThemes(browser)),
+    check('preferences:independent-currencies', () => independentCurrencies(browser)),
     check('navigation:back-main-focus', backFocus),
     check('feedback:repeat-save', repeatSave),
     check('import:mapping-locale-invalid', importMapping),

@@ -19,6 +19,7 @@ type Props = Readonly<{
   state: State;
   portfolioId: string;
   currency: Currency;
+  baseCurrency: Currency;
   language: Language;
   hidden: boolean;
 }>;
@@ -73,13 +74,14 @@ export function AssetDetails(props: Props) {
   );
 }
 
-function PositionValues({ buys, currency, language, hidden }: ValuesProps) {
+function PositionValues({ buys, currency, baseCurrency, language, hidden }: ValuesProps) {
   const words = insightWords(language);
   const result = totals(buys, currency);
+  const performance = totals(buys, baseCurrency);
   const rows = [
-    [words.current, result.value],
-    [words.cost, result.basis],
-    [words.unrealized, result.profit],
+    [words.current, result.value, currency],
+    [`${words.cost} · ${baseCurrency}`, performance.basis, baseCurrency],
+    [`${words.unrealized} · ${baseCurrency}`, performance.profit, baseCurrency],
   ] as const;
   return (
     <div>
@@ -94,10 +96,10 @@ function PositionValues({ buys, currency, language, hidden }: ValuesProps) {
             )}
       </p>
       <dl className="asset-detail-values">
-        {rows.map(([label, value]) => (
+        {rows.map(([label, value, unit]) => (
           <div key={label}>
             <dt>{label}</dt>
-            <dd>{hidden ? '••••' : money(value, currency, language)}</dd>
+            <dd>{hidden ? '••••' : money(value, unit, language)}</dd>
           </div>
         ))}
       </dl>

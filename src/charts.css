@@ -6,8 +6,9 @@
 }
 .chart-key {
   display: flex;
-  gap: 40px;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 16px 0;
 }
 .chart-key dt {
   font-size: 14px;
@@ -29,43 +30,50 @@
 }
 .key-line.dashed {
   background: transparent;
-  border-top: 2px dashed #7a827d;
+  border-top: 2px dashed var(--muted);
 }
 .value-history {
-  padding: 28px 0;
-  border-bottom: 1px solid var(--line);
-}
-.value-history .section-top {
-  margin-bottom: 12px;
-  flex-wrap: wrap;
+  margin-top: 16px;
 }
 .period-controls {
   display: flex;
+  justify-content: space-between;
   gap: 8px;
+  border-bottom: 1px solid var(--line);
 }
 .period-controls button {
   min-width: 44px;
-  padding: 9px 12px;
+  padding: 10px 16px;
   font-size: 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
 }
 .period-controls button[aria-pressed='true'] {
-  background: var(--green);
-  border-color: var(--green);
-  color: white;
+  border-bottom-color: var(--ink);
+  color: var(--ink);
 }
 .history-plot {
   display: block;
   width: 100%;
-  height: 190px;
+  height: 160px;
   margin-top: 16px;
 }
 .history-grid {
   stroke: var(--line);
+  opacity: 0.4;
+}
+.history-area {
+  fill: url('#portfolio-area');
 }
 .history-value,
 .history-basis {
   fill: none;
   stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 .history-value {
@@ -73,32 +81,45 @@
 }
 .history-basis {
   stroke: var(--muted);
-  stroke-dasharray: 7 5;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 6;
+  opacity: 0.5;
 }
 .history-axis {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
   color: var(--muted);
-  margin-bottom: 20px;
+  margin: 8px 3.333% 12px;
 }
 .history-plot-hidden {
-  min-height: 190px;
+  min-height: 160px;
   display: grid;
   place-content: center;
   color: var(--muted);
 }
 .history-dates {
-  margin-top: 16px;
+  margin-top: 12px;
 }
-.history-dates summary {
-  min-height: 44px;
+.chart-controls {
   display: flex;
-  align-items: center;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: start;
+  gap: 8px;
+  margin-top: 8px;
+}
+.chart-disclosure[open] {
+  flex-basis: 100%;
+}
+.chart-disclosure > summary {
+  text-align: right;
+}
+.chart-disclosure > summary,
+.history-dates > summary {
+  color: var(--muted);
   font-size: 14px;
+  min-height: 44px;
 }
 .history-date-scroll {
   overflow-x: auto;
@@ -116,4 +137,57 @@
 }
 .history-dates th:first-child {
   text-align: left;
+}
+.allocation-legend > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 0;
+  font-size: 14px;
+}
+.allocation-legend dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.allocation-legend dt::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--allocation-btc);
+}
+.allocation-msft dt::before {
+  background: var(--allocation-msft);
+}
+.allocation-twt dt::before {
+  background: var(--allocation-twt);
+}
+.allocation-legend dd {
+  text-align: right;
+}
+.asset-timeline {
+  margin-block: 20px;
+  font-size: 14px;
+}
+.asset-timeline table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.asset-timeline th,
+.asset-timeline td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.asset-price-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.chart-range {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 8px;
 }

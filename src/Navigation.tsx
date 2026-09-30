@@ -1,4 +1,5 @@
 import { text } from './i18n.ts';
+import { NavigationIcon } from './NavigationIcon.tsx';
 import { useState, type MouseEvent } from 'react';
 import type { Labels, Screen } from './i18n.ts';
 const mainScreens = ['overview', 'portfolios', 'history'] as const;
@@ -22,7 +23,7 @@ export function Navigation({ screen, onScreen, labels }: Props) {
         }}
       >
         <span className="brand-mark" aria-hidden="true">
-          m<span>t</span>
+          <NavigationIcon name="brand" />
         </span>
         MultiTracker
       </a>
@@ -35,9 +36,11 @@ export function Navigation({ screen, onScreen, labels }: Props) {
         <button
           className="more-button"
           aria-expanded={expanded}
+          aria-current={extraScreens.some((item) => item === screen) ? 'page' : undefined}
           onClick={() => setExpanded(!expanded)}
         >
-          {labels.more}
+          <NavigationIcon name="more" />
+          <span>{labels.more}</span>
         </button>
         {expanded && (
           <div className="more-menu">
@@ -68,7 +71,8 @@ function ScreenButtons({ items, labels, screen, onChoose }: ScreenButtonsProps) 
         onChoose(item);
       }}
     >
-      {text(labels, item)}
+      <NavigationIcon name={item} />
+      <span>{text(labels, item)}</span>
     </a>
   ));
 }

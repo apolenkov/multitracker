@@ -10,6 +10,7 @@ type TableProps = Readonly<{
   rows: readonly Holding[];
   value: number;
   currency: Currency;
+  baseCurrency: Currency;
   language: Language;
   hidden: boolean;
   onSelect: (asset: Asset) => void;
@@ -67,6 +68,7 @@ function AssetTable({
   rows,
   value,
   currency,
+  baseCurrency,
   language,
   hidden,
   onSelect,
@@ -85,7 +87,9 @@ function AssetTable({
           <th scope="col" aria-sort={sort.column === 'value' ? sort.direction : undefined}>
             {labels.value}
           </th>
-          <th scope="col">{labels.result}</th>
+          <th scope="col">
+            {labels.result} · {baseCurrency}
+          </th>
           <th scope="col">{labels.weight}</th>
         </tr>
       </thead>
@@ -96,6 +100,7 @@ function AssetTable({
             holding={row}
             value={value}
             currency={currency}
+            baseCurrency={baseCurrency}
             language={language}
             hidden={hidden}
             onSelect={onSelect}
@@ -110,21 +115,16 @@ function HoldingRow({
   holding,
   value,
   currency,
+  baseCurrency,
   language,
   hidden,
   onSelect,
-}: Readonly<{
-  holding: Holding;
-  value: number;
-  currency: Currency;
-  language: Language;
-  hidden: boolean;
-  onSelect: (asset: Asset) => void;
-}>) {
+}: Omit<TableProps, 'rows'> & Readonly<{ holding: Holding }>) {
   const labels = getLabels(language);
   const result = totals(holding.buys, currency);
-  const amount = (amountValue: number, signed = false) =>
-    hidden ? '••••' : money(amountValue, currency, language, signed);
+  const performance = totals(holding.buys, baseCurrency);
+  const amount = (amountValue: number, displayCurrency = currency, signed = false) =>
+    hidden ? '••••' : money(amountValue, displayCurrency, language, signed);
 
   return (
     <tr className="holding-row">
@@ -142,9 +142,11 @@ function HoldingRow({
         <span className="mobile-label">{labels.value}</span>
         {amount(result.value)}
       </td>
-      <td className={result.profit >= 0 ? 'positive' : 'negative'}>
-        <span className="mobile-label">{labels.result}</span>
-        {amount(result.profit, true)}
+      <td className={performance.profit >= 0 ? 'positive' : 'negative'}>
+        <span className="mobile-label">
+          {labels.result} · {baseCurrency}
+        </span>
+        {amount(performance.profit, baseCurrency, true)}
       </td>
       <td>
         <span className="mobile-label">{labels.weight}</span>
@@ -168,7 +170,7 @@ function HoldingAsset({
         }}
       >
         <span className={`asset-symbol ${asset.toLowerCase()}`} aria-hidden="true">
-          {asset.slice(0, 1)}
+          {asset === 'BTC' ? '₿' : asset.slice(0, 1)}
         </span>
         <strong>{asset}</strong>
       </button>

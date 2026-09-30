@@ -1,6 +1,3 @@
-.demo-page {
-  padding: 0;
-}
 .demo-content {
   max-width: 920px;
 }
@@ -10,8 +7,10 @@
   max-width: 70ch;
 }
 .demo-panel {
-  padding: 24px 0;
-  border-top: 1px solid var(--line);
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
 }
 .demo-panel h2 {
   margin: 22px 0 8px;
@@ -38,11 +37,11 @@
 }
 .demo-page input[readonly] {
   color: var(--muted);
-  background: #f1f2ec;
+  background: var(--surface);
 }
 .demo-page button.quiet {
   background: transparent;
-  color: var(--green);
+  color: var(--ink);
   border-color: var(--control-border);
 }
 .table-scroll {
@@ -89,7 +88,7 @@
   color: var(--muted);
 }
 .demo-note {
-  color: #674d2b;
+  color: var(--muted);
   font-size: 14px;
 }
 label.check-row {
@@ -120,6 +119,9 @@ label.check-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px 24px;
+}
+.settings-fields {
+  display: contents;
 }
 .settings-panel > button {
   align-self: start;
@@ -153,7 +155,7 @@ label.check-row {
   padding: 12px 16px;
   margin-top: 20px;
   border-left: 3px solid var(--green);
-  background: #e7ede2;
+  background: var(--surface);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -238,10 +240,6 @@ label.checkbox-row {
 .checkbox-row input {
   flex-shrink: 0;
 }
-.demo-page summary {
-  min-height: 44px;
-  cursor: pointer;
-}
 fieldset.mapping-list {
   padding: 0;
   border: 0;
@@ -271,11 +269,32 @@ fieldset.mapping-list {
   display: block;
   padding: 16px;
   margin-block: 20px;
-  background: #e7ede2;
+  background: var(--surface);
   overflow-wrap: anywhere;
 }
 @media (max-width: 600px) {
   .form-row {
     grid-template-columns: 1fr;
   }
+}
+
+.dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.close-button {
+  font-size: 25px;
+  width: 44px;
+  padding: 0;
+  flex-shrink: 0;
+}
+dialog label {
+  display: block;
+  margin: 16px 0 6px;
+}
+dialog select {
+  width: 100%;
 }

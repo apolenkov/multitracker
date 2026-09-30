@@ -6,7 +6,7 @@ import type { Currency } from './model/portfolio.ts';
 import { Navigation } from './Navigation.tsx';
 import { BuyForm, PortfolioForm, PrivacyDialog } from './Forms.tsx';
 import { Workspace } from './Workspace.tsx';
-import type { DemoState, Density } from './demo/words.ts';
+import type { DemoState, Density, Theme } from './demo/words.ts';
 import { focusMain, useNavigation } from './navigation.ts';
 import './base.css';
 import './layout.css';
@@ -19,7 +19,7 @@ export function App() {
   const view = useAppView();
   const labels = getLabels(view.language);
   return (
-    <div className="app-shell" data-density={view.density}>
+    <div className="app-shell" data-density={view.density} data-theme={view.theme}>
       <a
         className="skip-link"
         href="#main"
@@ -68,8 +68,21 @@ function useAppView() {
 function usePreferences() {
   const [language, setLanguage] = useState<Language>('ru');
   const [currency, setCurrency] = useState<Currency>('RUB');
+  const [baseCurrency, setBaseCurrency] = useState<Currency>('RUB');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [hidden, setHidden] = useState(false);
-  return { language, setLanguage, currency, setCurrency, hidden, setHidden };
+  return {
+    language,
+    setLanguage,
+    currency,
+    setCurrency,
+    baseCurrency,
+    setBaseCurrency,
+    theme,
+    setTheme,
+    hidden,
+    setHidden,
+  };
 }
 function useDemoView() {
   const [density, setDensity] = useState<Density>('comfortable');

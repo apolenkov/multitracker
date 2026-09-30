@@ -11,15 +11,15 @@
   border-radius: 0;
   border-bottom: 1px solid var(--line);
   background: transparent;
-  padding: 24px 0;
+  padding: 18px 0;
   text-align: left;
   font-weight: 400;
 }
 .portfolio-initial {
   width: 44px;
   height: 44px;
-  border-radius: 6px;
-  background: #e3e8df;
+  border-radius: var(--radius);
+  background: var(--surface);
   color: var(--green);
   display: flex;
   align-items: center;
@@ -55,10 +55,10 @@
   margin-top: 24px;
 }
 .history-row {
-  padding: 24px 0;
+  padding: 18px 0;
   border-top: 1px solid var(--line);
   display: flex;
-  gap: 28px;
+  gap: 20px;
   justify-content: space-between;
 }
 .history-row h2,
@@ -176,7 +176,7 @@ button.danger {
   border-color: var(--red);
 }
 button.danger:hover {
-  background: #f4e5e0;
+  background: var(--surface);
 }
 label.confirmation {
   display: flex;

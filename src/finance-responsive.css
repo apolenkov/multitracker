@@ -1,79 +1,105 @@
-@media (max-width: 1000px) {
-  .summary-bottom {
+@media (max-width: 1100px) {
+  .finance-overview {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    grid-template-areas: 'balance side' 'assets assets' 'report report' 'history history';
+    gap: 16px;
+  }
+  .summary-result {
     align-items: flex-start;
     flex-direction: column;
   }
   .holding-head,
   .holding-row {
-    grid-template-columns: 1fr 0.7fr 1fr 1fr 0.5fr;
     gap: 8px;
   }
 }
-@media (max-width: 600px) {
-  .value-history .section-top {
-    align-items: flex-start;
+@media (max-width: 760px) {
+  .finance-overview {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'balance' 'assets' 'side' 'report' 'history';
+  }
+  .balance-panel,
+  .holdings {
+    padding: 20px;
+    border-radius: 20px;
+  }
+  .overview-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .allocation-list {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    column-gap: 16px;
+  }
+  .allocation-list h2 {
+    grid-column: 1/-1;
+  }
+  .allocation-ring {
+    width: 130px;
+    height: 130px;
+    margin: 16px 0 0;
+  }
+  .allocation-ring > div {
+    width: 90px;
+    height: 90px;
+  }
+  .allocation-legend {
+    align-self: center;
+  }
+  .allocation-legend > div {
     flex-direction: column;
-    gap: 12px;
+    padding: 6px 0;
   }
-  .value-history h2 {
-    font-size: 18px;
-  }
-  .holdings-sort > span {
-    width: 100%;
-  }
-  .portfolio-row {
-    flex-wrap: wrap;
-  }
-  .portfolio-name {
-    flex: 1;
-  }
-  .portfolio-value {
-    width: 100%;
+  .allocation-legend dd {
     text-align: left;
-    padding-left: 46px;
+    font-size: 14px;
+  }
+  .history-plot,
+  .history-plot-hidden {
+    height: 140px;
+    min-height: 140px;
+    margin-top: 8px;
+  }
+}
+@media (max-width: 600px) {
+  .balance-panel {
+    padding: 16px;
+  }
+  .summary-result {
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .main-amount {
+    font-size: 34px;
+    letter-spacing: -1px;
+  }
+  .summary-result dl {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+    width: 100%;
+  }
+  .summary-result dl > div {
+    min-width: 0;
+  }
+  .summary-result dd {
+    font-size: 16px;
+  }
+  .summary-result > button {
+    width: 100%;
   }
   .valuation {
     font-size: 14px;
-    max-width: 135px;
-    text-align: right;
   }
-  .summary-bottom dl {
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .summary-bottom dd {
-    font-size: 17px;
-  }
-  .summary-bottom small {
-    margin-left: 0;
-    display: block;
-    margin-top: 4px;
-  }
-  .summary-bottom button {
+  .holdings-sort > span {
     width: 100%;
-  }
-  .main-amount {
-    margin-bottom: 24px;
-  }
-  .chart-key {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .chart-key div {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .chart-key dd {
-    margin: 0;
-    padding: 0;
   }
   .holding-head {
     display: none;
   }
   .holding-row {
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 8px 16px;
   }
   .holding-row > td:first-child {
     grid-column: 1/-1;
@@ -88,16 +114,21 @@
     margin-bottom: 3px;
   }
   .portfolio-row {
+    flex-wrap: wrap;
     gap: 10px;
   }
-  .portfolio-value {
+  .portfolio-name {
+    flex: 1;
     font-size: 14px;
+  }
+  .portfolio-value {
+    width: 100%;
+    text-align: left;
+    padding-left: 46px;
+    font-size: 16px;
   }
   .portfolio-row > span:last-child {
     display: none;
-  }
-  .portfolio-name {
-    font-size: 14px;
   }
   .portfolio-initial {
     width: 36px;
@@ -117,5 +148,8 @@
   .section-top > button {
     font-size: 14px;
     padding: 9px 10px;
+  }
+  .insight-controls > label {
+    width: 100%;
   }
 }

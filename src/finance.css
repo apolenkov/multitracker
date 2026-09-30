@@ -4,87 +4,122 @@
   align-items: center;
   gap: 16px;
 }
+.finance-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-areas: 'balance side' 'assets side' 'report report' 'history history';
+  gap: 24px;
+  --allocation-btc: #8c66ff;
+  --allocation-msft: #21c6e4;
+  --allocation-twt: #fb64a8;
+}
+.balance-panel {
+  grid-area: balance;
+  background: var(--paper);
+  border-radius: 24px;
+  padding: 24px;
+  min-width: 0;
+}
+.summary {
+  padding: 0;
+}
+.summary .section-top {
+  color: var(--muted);
+  font-size: 14px;
+}
 .valuation {
   color: var(--muted);
   font-size: 14px;
 }
-.summary {
-  padding: 0 0 28px;
-  border-bottom: 1px solid var(--line);
-}
 .main-amount {
-  font-size: clamp(35px, 4vw, 54px);
-  letter-spacing: -2px;
-  font-weight: 600;
-  margin: 8px 0 24px;
-  line-height: 1.2;
+  font-size: clamp(36px, 3.4vw, 46px);
+  letter-spacing: -1.5px;
+  font-weight: 750;
+  margin: 8px 0;
+  line-height: 1.15;
   overflow-wrap: anywhere;
 }
-.summary-bottom {
+.summary-result {
   display: flex;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-}
-.summary-bottom dl {
-  display: flex;
-  gap: 36px;
-}
-.summary-bottom dt {
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-.summary-bottom dd {
-  font-size: 19px;
-  font-weight: 600;
-}
-.summary-bottom small {
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 500;
-  margin-left: 8px;
-}
-.summary > .quiet {
-  font-size: 14px;
   margin-top: 16px;
 }
+.summary-result dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
+.summary-result dt {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.summary-result dd {
+  font-size: 18px;
+  font-weight: 700;
+}
+.summary-result small {
+  display: block;
+  font-size: 14px;
+  margin-top: 2px;
+}
+.overview-side {
+  grid-area: side;
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+.overview-report {
+  grid-area: report;
+}
+.overview-history {
+  grid-area: history;
+}
 .effects {
-  max-width: 520px;
-  margin: 20px 0;
+  margin: 16px 0;
 }
 .effects div {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   border-bottom: 1px solid var(--line);
-  padding: 9px 0;
+  padding: 10px 0;
   font-size: 14px;
 }
 .effects dd {
-  font-weight: 600;
+  font-weight: 650;
+  text-align: right;
 }
 .holdings {
-  padding: 28px 0 0;
+  grid-area: assets;
+  min-width: 0;
+  padding: 24px;
+  background: var(--paper);
+  border-radius: 24px;
 }
 .holdings h2 {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 .holdings-sort {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   font-size: 14px;
+  color: var(--muted);
 }
 .holdings-sort button {
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
+  background: var(--surface);
 }
 .holdings-sort button[aria-pressed='true'] {
-  border-color: var(--green);
-  color: var(--green);
-  background: #e3e8df;
+  border-color: var(--ink);
+  color: var(--ink);
 }
 .holding-head,
 .holding-row {
@@ -96,13 +131,12 @@
 .holding-head {
   font-size: 14px;
   color: var(--muted);
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 12px;
+  padding: 0 0 12px;
 }
 .holding-row {
-  padding: 20px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 14px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
 }
 .holding-row > td:not(:first-child),
 .holding-head > th:not(:first-child) {
@@ -112,47 +146,49 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 16px;
 }
 .asset-symbol {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
   flex-shrink: 0;
-  background: #e3e8e1;
-  color: var(--green);
+  background: #258d78;
+  color: white;
 }
 .asset-symbol.btc {
-  background: #ede3d2;
-  color: #745124;
+  background: #f7931a;
+  color: #151515;
+  font-size: 27px;
 }
 .asset-symbol.msft {
-  background: #e0e7ec;
-  color: #355567;
+  background: #1979cf;
 }
 .mobile-label {
   display: none;
 }
 .empty-state {
-  padding: 36px 0;
+  padding: 24px 0;
   color: var(--muted);
 }
 .empty-state h3 {
   color: var(--ink);
   margin-bottom: 8px;
 }
-.holdings-table {
-  width: 100%;
-  border-collapse: collapse;
-  display: block;
-}
+.holdings-table,
 .holdings-table thead,
 .holdings-table tbody {
+  width: 100%;
   display: block;
+  border-collapse: collapse;
 }
 .holding-head th {
   font-weight: 400;
@@ -162,14 +198,8 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.asset-name {
-  border: 0;
-  background: transparent;
-  padding: 0;
-  font-size: 14px;
-}
 .asset-detail-values {
-  margin: 20px 0;
+  margin: 16px 0;
 }
 .asset-detail-values div {
   display: flex;
@@ -182,19 +212,16 @@
 .asset-detail-values dd {
   text-align: right;
 }
-#asset-dialog > .primary {
-  margin-top: 20px;
-}
 .attribution,
-.cash-balances,
-.portfolio-report,
-.asset-catalog {
-  padding: 24px 0;
-  border-bottom: 1px solid var(--line);
+.portfolio-report {
+  padding: 18px 20px;
+  background: var(--paper);
+  border-radius: 20px;
 }
-.attribution h2,
-.portfolio-report h2 {
-  margin-bottom: 16px;
+.cash-balances,
+.asset-catalog {
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 .insight-controls {
   display: flex;
@@ -204,10 +231,11 @@
   margin-block: 16px;
 }
 .asset-catalog summary,
-.portfolio-report summary {
+.portfolio-report summary,
+.attribution summary {
   min-height: 44px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 650;
 }
 .asset-catalog ul {
   display: grid;
@@ -215,29 +243,34 @@
   padding-left: 20px;
 }
 .allocation-list {
+  padding: 24px 20px;
+  background: var(--paper);
+  border-radius: 24px;
+}
+.allocation-list h2 {
+  font-size: 18px;
+}
+.allocation-ring {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  margin: 22px auto;
   display: grid;
-  gap: 12px;
-  margin-block: 20px;
+  place-items: center;
 }
-.allocation-list > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
+.allocation-ring > div {
+  width: 116px;
+  height: 116px;
+  background: var(--paper);
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  text-align: center;
 }
-.asset-timeline {
-  width: 100%;
-  border-collapse: collapse;
-  margin-block: 20px;
+.allocation-ring strong {
+  font-size: 30px;
+}
+.allocation-ring span {
+  color: var(--muted);
   font-size: 14px;
-}
-.asset-timeline th,
-.asset-timeline td {
-  padding: 12px 8px;
-  text-align: left;
-  border-bottom: 1px solid var(--line);
-}
-.asset-price-form {
-  display: grid;
-  gap: 12px;
-  margin-top: 24px;
 }

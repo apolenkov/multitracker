@@ -20,8 +20,8 @@ export function Workspace({ view }: Readonly<{ view: AppView }>) {
         <div role="status" aria-atomic="true" className="status-message">
           {view.notice.message && <p key={view.notice.sequence}>{view.notice.message}</p>}
         </div>
-        <Welcome language={view.language} navigate={view.navigate} />
         <PageContent view={view} />
+        <Welcome language={view.language} navigate={view.navigate} />
       </main>
       <footer className="footer">
         <span>{labels.memory}</span>
@@ -40,8 +40,12 @@ function PageContent({ view }: Readonly<{ view: AppView }>) {
           screen={view.demoScreen}
           language={view.language}
           currency={view.currency}
+          baseCurrency={view.baseCurrency}
+          theme={view.theme}
           onLanguage={view.setLanguage}
           onCurrency={view.setCurrency}
+          onBaseCurrency={view.setBaseCurrency}
+          onTheme={view.setTheme}
           hidden={view.hidden}
           onHidden={view.setHidden}
           density={view.density}
@@ -69,6 +73,7 @@ function FinancePage({ view }: Readonly<{ view: AppView }>) {
     portfolioId: view.portfolioId,
     language: view.language,
     currency: view.currency,
+    baseCurrency: view.baseCurrency,
     hidden: view.hidden,
   };
   if (view.screen === 'overview') {

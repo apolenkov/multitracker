@@ -64,42 +64,43 @@ export function ValueHistory(props: Props) {
   const [period, setPeriod] = useState<Period>(periods[0]);
   return (
     <section className="value-history" aria-labelledby="value-history-title">
-      <div className="section-top">
-        <h2 id="value-history-title">
-          {labels.chartTitle} <span className="unit">{props.currency}</span>
-        </h2>
-        <div className="period-controls" role="group" aria-label={labels.chartPeriod}>
-          {periods.map((item) => (
-            <button
-              type="button"
-              key={item.id}
-              aria-pressed={item.id === period.id}
-              onClick={() => setPeriod(item)}
-            >
-              {props.language === 'ru' ? item.ru : item.en}
-            </button>
-          ))}
-        </div>
-      </div>
-      <p className="quiet">{labels.chartSampleNote}</p>
+      <h2 id="value-history-title" className="visually-hidden">
+        {labels.chartTitle}
+      </h2>
       <HistoryPlot {...props} period={period} />
-      <HistorySummary {...props} period={period} />
-      <HistoryDates {...props} period={period} />
+      <div className="chart-controls">
+        <PeriodControls period={period} language={props.language} onSelect={setPeriod} />
+        <details className="chart-disclosure">
+          <summary
+            aria-label={`${props.language === 'ru' ? 'Данные' : 'Data'}: ${labels.chartDates}`}
+          >
+            {props.language === 'ru' ? 'Данные' : 'Data'}
+          </summary>
+          <p className="quiet">
+            {labels.chartSampleNote} {labels.fixed}
+          </p>
+          <HistorySummary {...props} period={period} />
+          <HistoryDates {...props} period={period} />
+        </details>
+      </div>
     </section>
   );
 }
 
-function HistoryPlot({ basis, value, language, hidden, period }: Props & { period: Period }) {
+function HistoryPlot({ value, currency, language, hidden, period }: Props & { period: Period }) {
   const labels = getLabels(language);
-  const max = Math.max(basis, value, 1);
+  const amounts = period.points.map(([, factor]) => value * factor);
+  const minimum = Math.min(...amounts);
+  const maximum = Math.max(...amounts);
+  const range = Math.max(maximum - minimum, 1);
   const firstDate = Date.parse(period.points[0][0]);
   const duration = Date.parse('2026-09-30') - firstDate;
-  const coordinates = (series: 'value' | 'basis') =>
+  const coordinates = () =>
     period.points
-      .map(([day, valueFactor, basisFactor]) => {
-        const amount = series === 'value' ? value * valueFactor : basis * basisFactor;
+      .map(([day, valueFactor]) => {
+        const amount = value * valueFactor;
         const x = 20 + ((Date.parse(day) - firstDate) / duration) * 560;
-        return `${x},${170 - (amount / max) * 150}`;
+        return `${x},${170 - ((amount - minimum) / range) * 150}`;
       })
       .join(' ');
   return (
@@ -107,23 +108,14 @@ function HistoryPlot({ basis, value, language, hidden, period }: Props & { perio
       {hidden ? (
         <p className="history-plot-hidden">{labels.hidden}</p>
       ) : (
-        <svg
-          className="history-plot"
-          viewBox="0 0 600 190"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          {[20, 70, 120, 170].map((y) => (
-            <line key={y} x1="20" x2="580" y1={y} y2={y} className="history-grid" />
-          ))}
-          <polyline points={coordinates('basis')} className="history-basis" />
-          <polyline points={coordinates('value')} className="history-value" />
-        </svg>
+        <HistorySvg value={coordinates()} />
       )}
-      <div className="history-axis" aria-hidden="true">
-        <span>{date(period.points[0][0], language)}</span>
-        <span>{date('2026-09-30', language)}</span>
-      </div>
+      <p className="chart-range">
+        {language === 'ru' ? 'Диапазон примера' : 'Sample range'}:{' '}
+        {hidden
+          ? '••••'
+          : `${money(minimum, currency, language)} – ${money(maximum, currency, language)}`}
+      </p>
     </>
   );
 }
@@ -153,10 +145,7 @@ function HistorySummary({
           <dd>{amount(value)}</dd>
         </div>
         <div>
-          <dt>
-            <span className="key-line dashed" />
-            {labels.chartContributions}
-          </dt>
+          <dt>{labels.chartContributions}</dt>
           <dd>{amount(basis)}</dd>
         </div>
       </dl>
@@ -181,8 +170,7 @@ function HistoryDates({
   const labels = getLabels(language);
   const amount = (sum: number) => (hidden ? '••••' : money(sum, currency, language));
   return (
-    <details className="history-dates">
-      <summary>{labels.chartDates}</summary>
+    <div className="history-dates">
       <div className="history-date-scroll">
         <table>
           <caption className="visually-hidden">{labels.chartTitle}</caption>
@@ -204,6 +192,54 @@ function HistoryDates({
           </tbody>
         </table>
       </div>
-    </details>
+    </div>
+  );
+}
+
+function PeriodControls({
+  period,
+  language,
+  onSelect,
+}: Readonly<{
+  period: Period;
+  language: Language;
+  onSelect: (period: Period) => void;
+}>) {
+  return (
+    <div className="period-controls" role="group" aria-label={getLabels(language).chartPeriod}>
+      {periods.map((item) => (
+        <button
+          type="button"
+          key={item.id}
+          aria-pressed={item.id === period.id}
+          onClick={() => onSelect(item)}
+        >
+          {language === 'ru' ? item.ru : item.en}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function HistorySvg({ value }: Readonly<{ value: string }>) {
+  return (
+    <svg
+      className="history-plot"
+      viewBox="0 0 600 190"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="portfolio-area" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--green)" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="var(--green)" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {[20, 70, 120, 170].map((y) => (
+        <line key={y} x1="20" x2="580" y1={y} y2={y} className="history-grid" />
+      ))}
+      <polygon points={`${value} 580,180 20,180`} className="history-area" />
+      <polyline points={value} className="history-value" />
+    </svg>
   );
 }

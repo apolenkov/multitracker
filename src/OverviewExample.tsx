@@ -20,8 +20,10 @@ export function Example({ buys, currency, language, hidden }: Props) {
     [words.total, Object.values(effects).reduce((sum, value) => sum + value, 0)],
   ] as const;
   return (
-    <section className="attribution" aria-labelledby="attribution-title">
-      <h2 id="attribution-title">{words.reasons}</h2>
+    <details className="attribution">
+      <summary>
+        {words.reasons} <span className="unit">{currency}</span>
+      </summary>
       <dl className="effects">
         {rows.map(([label, value]) => (
           <div key={label}>
@@ -33,6 +35,6 @@ export function Example({ buys, currency, language, hidden }: Props) {
         ))}
       </dl>
       <p className="quiet">{words.reasonsNote}</p>
-    </section>
+    </details>
   );
 }

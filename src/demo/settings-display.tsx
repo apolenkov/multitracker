@@ -132,16 +132,8 @@ export function LocaleSettings(props: Props & Readonly<{ text: SettingText }>) {
           <option value="en">English</option>
         </select>
       </label>
-      <label>
-        {props.text('Валюта отображения', 'Display currency')}
-        <select
-          value={props.currency}
-          onChange={(event) => props.onCurrency(event.target.value === 'USD' ? 'USD' : 'RUB')}
-        >
-          <option value="RUB">RUB ₽</option>
-          <option value="USD">USD $</option>
-        </select>
-      </label>
+      <ThemeSettings {...props} />
+      <CurrencySettings {...props} />
       <label className="check-row">
         <input
           type="checkbox"
@@ -151,6 +143,67 @@ export function LocaleSettings(props: Props & Readonly<{ text: SettingText }>) {
         {props.text('Скрыть суммы', 'Hide balances')}
       </label>
     </div>
+  );
+}
+
+function ThemeSettings(props: Props & Readonly<{ text: SettingText }>) {
+  return (
+    <label>
+      {props.text('Тема оформления', 'Appearance theme')}
+      <select
+        id="settings-theme"
+        value={props.theme}
+        onChange={(event) => {
+          const value = event.target.value;
+          props.onTheme(value === 'light' || value === 'system' ? value : 'dark');
+        }}
+      >
+        <option value="dark">{props.text('Тёмная', 'Dark')}</option>
+        <option value="light">{props.text('Светлая', 'Light')}</option>
+        <option value="system">{props.text('Как в системе', 'System preference')}</option>
+      </select>
+    </label>
+  );
+}
+
+function CurrencySettings(props: Props & Readonly<{ text: SettingText }>) {
+  return (
+    <>
+      <label>
+        {props.text('Валюта расчёта', 'Calculation currency')}
+        <select
+          id="settings-base-currency"
+          value={props.baseCurrency}
+          onChange={(event) => props.onBaseCurrency(event.target.value === 'USD' ? 'USD' : 'RUB')}
+        >
+          <option value="RUB">RUB ₽</option>
+          <option value="USD">USD $</option>
+        </select>
+        <small>
+          {props.text(
+            'В этой валюте сравниваются вложения и финансовый результат.',
+            'Invested amounts and investment returns are compared in this currency.',
+          )}
+        </small>
+      </label>
+      <label>
+        {props.text('Валюта отображения', 'Display currency')}
+        <select
+          id="settings-display-currency"
+          value={props.currency}
+          onChange={(event) => props.onCurrency(event.target.value === 'USD' ? 'USD' : 'RUB')}
+        >
+          <option value="RUB">RUB ₽</option>
+          <option value="USD">USD $</option>
+        </select>
+        <small>
+          {props.text(
+            'Текущая стоимость активов показывается в этой валюте.',
+            'Current holdings value is shown in this currency.',
+          )}
+        </small>
+      </label>
+    </>
   );
 }
 

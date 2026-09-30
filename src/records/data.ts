@@ -7,6 +7,7 @@ export type RecordsProps = Readonly<{
   portfolioId: string;
   language: Language;
   currency: Currency;
+  baseCurrency: Currency;
   hidden: boolean;
   onSaved?: (message: string) => void;
 }>;

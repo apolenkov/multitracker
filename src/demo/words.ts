@@ -2,6 +2,7 @@ export type Screen = 'import' | 'connections' | 'sync' | 'settings';
 export type Language = 'ru' | 'en';
 export type Currency = 'RUB' | 'USD';
 export type Density = 'comfortable' | 'compact';
+export type Theme = 'dark' | 'light' | 'system';
 export type DemoState = 'ready' | 'loading' | 'empty' | 'missing' | 'error';
 
 export const words = {
@@ -10,7 +11,7 @@ export const words = {
       import: 'Предпросмотр на учебном наборе данных. Файлы не загружаются.',
       connections: 'Только макет: реальные биржи не подключаются.',
       sync: 'Настройте поведение макетной синхронизации.',
-      settings: 'Выберите язык, валюту и видимость сумм.',
+      settings: 'Выберите язык, тему, валюту расчёта и отображения.',
     },
     example: 'Пример',
     demoStates: {
@@ -36,7 +37,7 @@ export const words = {
       import: 'Preview a sample dataset. No files are uploaded.',
       connections: 'Mockup only: no real exchanges are connected.',
       sync: 'Set the mock sync behavior.',
-      settings: 'Choose language, currency, and balance visibility.',
+      settings: 'Choose language, theme, calculation currency and display currency.',
     },
     example: 'Example',
     demoStates: {
@@ -63,8 +64,12 @@ export type Props = Readonly<{
   screen: Screen;
   language: Language;
   currency: Currency;
+  baseCurrency: Currency;
+  theme: Theme;
   onLanguage: (v: Language) => void;
   onCurrency: (v: Currency) => void;
+  onBaseCurrency: (v: Currency) => void;
+  onTheme: (v: Theme) => void;
   hidden: boolean;
   onHidden: (v: boolean) => void;
   demoState: DemoState;

@@ -145,11 +145,13 @@ function PortfolioValue({
   name,
   language,
   currency,
+  baseCurrency,
   hidden,
   onSelect,
 }: Props & Readonly<{ id: string; name: string }>) {
   const labels = getLabels(language);
   const result = summarize(state, id, currency);
+  const performance = summarize(state, id, baseCurrency);
   return (
     <button className="portfolio-row" onClick={() => onSelect(id)}>
       <span className="portfolio-initial" aria-hidden="true">
@@ -167,8 +169,9 @@ function PortfolioValue({
       <span className="portfolio-value">
         <small className="quiet">{labels.total}</small>
         {hidden ? '••••' : money(result.value, currency, language)}
-        <small className={result.profit >= 0 ? 'positive' : 'negative'}>
-          {labels.result}: {hidden ? '••••' : money(result.profit, currency, language, true)}
+        <small className={performance.profit >= 0 ? 'positive' : 'negative'}>
+          {labels.result} · {baseCurrency}:{' '}
+          {hidden ? '••••' : money(performance.profit, baseCurrency, language, true)}
         </small>
       </span>
       <span aria-hidden="true">↗</span>

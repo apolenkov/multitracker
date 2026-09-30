@@ -11,11 +11,13 @@ type Props = Readonly<{
   state: State;
   portfolioId: string;
   currency: Currency;
+  baseCurrency: Currency;
   language: Language;
   hidden: boolean;
 }>;
 
-export function Holdings({ state, portfolioId, currency, language, hidden }: Props) {
+export function Holdings(props: Props) {
+  const { state, portfolioId, currency, language, hidden } = props;
   const labels = getLabels(language);
   const [selected, setSelected] = useState<Asset>('BTC');
   const buys = selectedBuys(state, portfolioId);
@@ -29,22 +31,8 @@ export function Holdings({ state, portfolioId, currency, language, hidden }: Pro
       <h2 id="holdings-title">
         {labels.holdings} <span className="count">{rows.length}</span>
       </h2>
-      <HoldingsTable
-        rows={rows}
-        value={value}
-        currency={currency}
-        language={language}
-        hidden={hidden}
-        onSelect={setSelected}
-      />
-      <AssetDetails
-        asset={selected}
-        state={state}
-        portfolioId={portfolioId}
-        language={language}
-        currency={currency}
-        hidden={hidden}
-      />
+      <HoldingsTable rows={rows} value={value} {...props} onSelect={setSelected} />
+      <AssetDetails asset={selected} {...props} />
       <CashAndCatalog language={language} hidden={hidden} />
       {rows.length === 0 && (
         <div className="empty-state">

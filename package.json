@@ -31,8 +31,7 @@
     "radix-ui": "1.6.7",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "tailwind-merge": "3.7.0",
-    "tailwindcss": "4.3.3"
+    "tailwind-merge": "3.7.0"
   },
   "overrides": {
     "eslint-plugin-functional": {
@@ -57,6 +56,7 @@
     "jiti": "2.7.0",
     "oxlint": "1.86.0",
     "prettier": "3.9.9",
+    "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "typescript-eslint": "8.71.0",
     "vite": "8.3.1"

@@ -1,8 +1,8 @@
 /* Tailwind без preflight: сброс стилей остаётся за base.css. */
 @import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tailwindcss/utilities.css';
 
-@theme {
+@theme inline {
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-paper: var(--paper);

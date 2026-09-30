@@ -28,6 +28,12 @@ RU/EN, независимые валюты расчёта и отображен�
 - `npm run test:ui` — код 0, 63/63 PASS на macOS с agent-browser 0.38.1,
   15:57:04–15:57:21 UTC. Итоговый журнал: `docs/audits/2026-09-30-mintlify/ui-final.log`.
   Команда: `AGENT_BROWSER_HEADED=1 npm run test:ui`.
+- Изолированный Linux: 63/63 PASS, 16:15:21–16:15:47 UTC, Node 24.21.0,
+  agent-browser 0.38.1 и Chromium 145. До и после совпали 158/158 хешей.
+  Команда, результаты и подтверждение удаления контейнера —
+  `docs/audits/2026-09-30-mintlify/linux-ui-command.json`, `linux-ui-results.json`
+  и `linux-cleanup-receipt.json`. Образ предоставляет только браузер;
+  управление выполняет agent-browser.
 - `openspec validate mintlify-redesign --strict` — код 0;
   журнал `docs/audits/2026-09-30-mintlify/openspec-final.log`.
 - `final-inputs.json` фиксирует SHA-256 158 входных файлов; исходники приложения
@@ -89,6 +95,14 @@ Mobbin подключён к официальному серверу, автор
 до неё не начинаются. Дополнительные языки
 пока не перечислены. Экранный диктор, физическая мобильная клавиатура и
 испытания с людьми разных возрастов в этом проходе не проверялись.
+
+GitHub Actions для `f6549db` прошли `npm run check`, но остановились по лимиту
+10 минут при скачивании системных пакетов установщиком браузера; действия
+интерфейса в этих двух запусках не выполнялись. Журналы — `ci-push-full.log`
+и `ci-pr-full.log` в каталоге доказательств. В workflow устранена лишняя установка:
+используется Chrome из [образа GitHub](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md)
+через [поддерживаемый путь исполняемого файла](https://github.com/vercel-labs/agent-browser#custom-browser-executable).
+Отсутствие Chrome останавливает шаг; версия CLI, проверки и лимит времени сохранены.
 
 Удалённый запуск относится к конкретному коммиту; его текущий статус —
 [Checks PR3](https://github.com/apolenkov/multitracker/pull/3/checks).

@@ -30,10 +30,13 @@ jobs:
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - run: npm ci
       - run: npm run check
-      - name: Установить проверку интерфейса
+      - name: Установить agent-browser и выбрать системный Chrome
+        shell: bash
         run: |
           npm install --global agent-browser@0.38.1
-          agent-browser install --with-deps
+          multitracker_chrome_path="$(command -v google-chrome)"
+          "$multitracker_chrome_path" --version
+          printf 'AGENT_BROWSER_EXECUTABLE_PATH=%s\n' "$multitracker_chrome_path" >> "$GITHUB_ENV"
       - name: Проверить действия интерфейса
         shell: bash
         env:

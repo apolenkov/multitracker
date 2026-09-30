@@ -23,8 +23,7 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
     notify(t.resolved);
   };
   return (
-    <div className="demo-panel">
-      <p className="demo-note">{t.onlyDemo}</p>
+    <div className="demo-panel sync-panel">
       <SyncStatus
         t={t}
         automatic={automatic}
@@ -68,18 +67,7 @@ function SyncActions({
 }>) {
   return (
     <div className="sync-actions">
-      <details>
-        <summary>{t.more}</summary>
-        <label className="check-row">
-          <input
-            type="checkbox"
-            checked={error}
-            onChange={(event) => setError(event.target.checked)}
-          />
-          {t.simulate}
-        </label>
-      </details>
-      <button id="sync-run" onClick={() => run(error)}>
+      <button className="primary" id="sync-run" onClick={() => run(error)}>
         {t.manual}
       </button>
       {status === 'error' && (
@@ -94,6 +82,18 @@ function SyncActions({
           {t.retry}
         </button>
       )}
+      <details>
+        <summary>{t.more}</summary>
+        <label className="check-row">
+          <input
+            type="checkbox"
+            checked={error}
+            onChange={(event) => setError(event.target.checked)}
+          />
+          {t.simulate}
+        </label>
+      </details>
+      <p className="demo-note">{t.onlyDemo}</p>
     </div>
   );
 }
@@ -160,7 +160,13 @@ function SyncStatus({
 }>) {
   const text = status === 'idle' ? t.idle : status === 'error' ? t.error : t.success;
   return (
-    <>
+    <div className="sync-status">
+      <p role="status" className={`sync-state sync-state-${status}`}>
+        {text}
+      </p>
+      <p className="demo-note">
+        {t.last}: {lastSync ?? t.never}
+      </p>
       <label className="check-row">
         <input
           type="checkbox"
@@ -169,11 +175,7 @@ function SyncStatus({
         />
         {t.automatic}
       </label>
-      <p>
-        {t.last}: {lastSync ?? t.never}
-      </p>
-      <p role="status">{text}</p>
-    </>
+    </div>
   );
 }
 function ConflictSummary({
@@ -217,7 +219,9 @@ function RevokeDevice({
         <button className="quiet" onClick={close}>
           {t.cancel}
         </button>
-        <button onClick={revoke}>{t.revoke}</button>
+        <button className="danger" onClick={revoke}>
+          {t.revoke}
+        </button>
       </div>
     </DemoModal>
   );

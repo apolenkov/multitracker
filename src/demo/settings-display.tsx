@@ -14,14 +14,15 @@ export function SettingsActions({
   text,
   onClose,
   disabled = false,
-}: SettingFormProps & Readonly<{ disabled?: boolean }>) {
+  action,
+}: SettingFormProps & Readonly<{ disabled?: boolean; action?: string }>) {
   return (
     <div className="form-actions">
       <button type="button" onClick={onClose}>
         {text('Отмена', 'Cancel')}
       </button>
       <button className="primary" type="submit" disabled={disabled}>
-        {text('Сохранить пример', 'Save sample')}
+        {action ?? text('Применить', 'Apply')}
       </button>
     </div>
   );
@@ -55,12 +56,11 @@ export function DisplaySettings(
           <option value="compact">{props.text('Компактно', 'Compact')}</option>
         </select>
       </label>
-      <p>
-        {props.text(
-          'Вид действует до закрытия вкладки.',
-          'Appearance lasts until this tab closes.',
-        )}
-      </p>
+      <div className={`density-preview density-preview-${draft}`} aria-hidden="true">
+        <span>BTC</span>
+        <span>Microsoft</span>
+      </div>
+      <p className="demo-note">{props.text('До закрытия вкладки.', 'Until this tab closes.')}</p>
       <SettingsActions {...props} />
     </form>
   );
@@ -133,14 +133,14 @@ export function LocaleSettings(props: Props & Readonly<{ text: SettingText }>) {
         </select>
       </label>
       <ThemeSettings {...props} />
-      <CurrencySettings {...props} />
       <label className="check-row">
         <input
+          id="settings-monochrome"
           type="checkbox"
-          checked={props.hidden}
-          onChange={(event) => props.onHidden(event.target.checked)}
+          checked={props.monochrome}
+          onChange={(event) => props.onMonochrome(event.target.checked)}
         />
-        {props.text('Скрыть суммы', 'Hide balances')}
+        {props.text('Монохромное представление', 'Monochrome appearance')}
       </label>
     </div>
   );
@@ -166,7 +166,7 @@ function ThemeSettings(props: Props & Readonly<{ text: SettingText }>) {
   );
 }
 
-function CurrencySettings(props: Props & Readonly<{ text: SettingText }>) {
+export function CurrencySettings(props: Props & Readonly<{ text: SettingText }>) {
   return (
     <>
       <label>

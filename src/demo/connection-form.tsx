@@ -31,12 +31,8 @@ export function ConnectionForm({ provider, language, initial, t, onSave, onCance
   };
   return (
     <form onSubmit={save}>
-      <p>{t.rights}</p>
       <ConnectionFields draft={draft} update={update} t={t} language={language} />
-      <label>
-        {t.token}
-        <input readOnly value="demo-token-••••••••" />
-      </label>
+      <ConnectionAccess t={t} />
       <ConnectionTest t={t} result={result} setResult={setResult} />
       <p className="demo-note">{t.onlyDemo}</p>
       <div className="dialog-actions">
@@ -62,7 +58,8 @@ function ConnectionFields({
   language: 'ru' | 'en';
 }>) {
   return (
-    <>
+    <fieldset className="demo-field-group">
+      <legend>{t.destination}</legend>
       <label>
         {t.destination}
         <select
@@ -84,7 +81,7 @@ function ConnectionFields({
       </label>
       <ConnectionAccount draft={draft} update={update} t={t} language={language} />
       <ConnectionDate draft={draft} update={update} t={t} />
-    </>
+    </fieldset>
   );
 }
 function ConnectionResult({
@@ -180,22 +177,26 @@ function ConnectionTest({
   const [testError, setTestError] = useState(false);
   return (
     <>
-      <label>
-        {t.result}
-        <select
-          value={testError ? 'error' : 'success'}
-          onChange={(event) => {
-            setTestError(event.target.value === 'error');
-            setResult('idle');
-          }}
-        >
-          <option value="success">{t.success}</option>
-          <option value="error">{t.error}</option>
-        </select>
-      </label>
+      <details className="demo-scenarios">
+        <summary>{t.result}</summary>
+        <label>
+          {t.result}
+          <select
+            value={testError ? 'error' : 'success'}
+            onChange={(event) => {
+              setTestError(event.target.value === 'error');
+              setResult('idle');
+            }}
+          >
+            <option value="success">{t.success}</option>
+            <option value="error">{t.error}</option>
+          </select>
+        </label>
+      </details>
       <button
         id="connection-test"
         type="button"
+        className={result === 'passed' ? 'quiet' : 'primary'}
         onClick={() => setResult(testError ? 'failed' : 'passed')}
       >
         {t.test}
@@ -210,5 +211,18 @@ function ConnectionTest({
         }}
       />
     </>
+  );
+}
+
+function ConnectionAccess({ t }: Readonly<{ t: ConnectionWords }>) {
+  return (
+    <fieldset className="demo-field-group">
+      <legend>{t.token}</legend>
+      <p className="demo-note">{t.rights}</p>
+      <label>
+        DEMO
+        <input readOnly value="demo-token-••••••••" aria-label={t.token} />
+      </label>
+    </fieldset>
   );
 }

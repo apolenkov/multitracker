@@ -2,11 +2,15 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { parseScreen, routeFor, type Route } from '../src/navigation.ts';
 
-await test('only seven known fragments resolve, invalid input falls back to overview', () => {
+await test('only eleven known fragments resolve, invalid input falls back to overview', () => {
   const screens = [
     'overview',
     'portfolios',
     'history',
+    'markets',
+    'following',
+    'analytics',
+    'events',
     'import',
     'connections',
     'sync',
@@ -25,4 +29,14 @@ await test('financial navigation preserves the last auxiliary page without mutat
   assert.deepEqual(settings, { screen: 'settings', demoScreen: 'settings' });
   assert.deepEqual(finance, { screen: 'history', demoScreen: 'settings' });
   assert.deepEqual(initial, { screen: 'import', demoScreen: 'import' });
+});
+
+await test('every exploration route is retained when returning to financial screens', () => {
+  const initial: Route = Object.freeze({ screen: 'overview', demoScreen: 'settings' });
+  (['markets', 'following', 'analytics', 'events'] as const).forEach((screen) => {
+    const exploration = routeFor(initial, screen);
+    assert.deepEqual(exploration, { screen, demoScreen: screen });
+    assert.deepEqual(routeFor(exploration, 'overview'), { screen: 'overview', demoScreen: screen });
+  });
+  assert.deepEqual(initial, { screen: 'overview', demoScreen: 'settings' });
 });

@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { WidgetPreview } from '../events/WidgetPreview.tsx';
 import { DemoModal } from './modal';
-import { DemoStateSettings, LocaleSettings } from './settings-display';
+import { DemoStateSettings } from './settings-display';
+import { SettingsGroups, settingName } from './settings-layout';
 import type { Notifications, SettingText } from './settings-display';
 import { SettingsModalBody } from './settings-dialogs';
 import type { Density, Props } from './words';
@@ -35,77 +37,52 @@ export function SettingsPanel(props: SettingsProps) {
   const update = (patch: Partial<Preferences>) => setValue((current) => ({ ...current, ...patch }));
   return (
     <div className="demo-panel settings-panel">
-      <LocaleSettings {...props} text={text} />
-      <p>
-        {text(
-          'Настройки действуют в этой вкладке. Данные никуда не отправляются.',
-          'Preferences last in this tab. No data is sent anywhere.',
-        )}
-      </p>
-      <SettingLinks text={text} open={setKind} />
-      <PrivacyStatus
-        value={value}
-        text={text}
-        unlock={() => {
-          document.getElementById('settings-open-privacy')?.focus();
-          update({ locked: false });
-          props.notify(
-            text(
-              'Учебный экран разблокирован без проверки личности.',
-              'Sample screen unlocked without an identity check.',
-            ),
-          );
-        }}
-      />
-      <DemoStateSettings {...props} text={text} />
+      <SettingsGroups {...props} text={text} open={setKind}>
+        <PrivacyStatus
+          value={value}
+          text={text}
+          unlock={() => {
+            document.getElementById('settings-open-privacy')?.focus();
+            update({ locked: false });
+            props.notify(
+              text(
+                'Учебный экран разблокирован без проверки личности.',
+                'Sample screen unlocked without an identity check.',
+              ),
+            );
+          }}
+        />
+      </SettingsGroups>
+      <details className="demo-scenarios">
+        <summary>{text('Сценарии макета', 'Mockup scenarios')}</summary>
+        <DemoStateSettings {...props} text={text} />
+      </details>
+      <WidgetPreview language={props.language} hidden={props.hidden} />
       {kind && (
-        <DemoModal
-          id="settings-dialog"
-          title={settingName(text, kind)}
-          language={props.language}
+        <SettingsDialog
+          {...props}
+          kind={kind}
+          text={text}
+          value={value}
+          update={update}
           onClose={() => setKind(null)}
-        >
-          <SettingsModalBody
-            {...props}
-            kind={kind}
-            text={text}
-            value={value}
-            update={update}
-            onClose={() => setKind(null)}
-          />
-        </DemoModal>
+        />
       )}
     </div>
   );
 }
 
-function SettingLinks({ text, open }: Readonly<{ text: SettingText; open: (kind: Kind) => void }>) {
+function SettingsDialog(props: ModalProps) {
   return (
-    <div className="option-links">
-      {(
-        ['display', 'notifications', 'privacy', 'recovery', 'backup', 'export', 'delete'] as const
-      ).map((kind) => (
-        <button
-          id={`settings-open-${kind}`}
-          className="quiet"
-          key={kind}
-          onClick={() => open(kind)}
-        >
-          {settingName(text, kind)}
-        </button>
-      ))}
-    </div>
+    <DemoModal
+      id="settings-dialog"
+      title={settingName(props.text, props.kind)}
+      language={props.language}
+      onClose={props.onClose}
+    >
+      <SettingsModalBody {...props} />
+    </DemoModal>
   );
-}
-
-function settingName(text: SettingText, kind: Kind) {
-  if (kind === 'display') return text('Отображение', 'Display');
-  if (kind === 'notifications') return text('Уведомления', 'Notifications');
-  if (kind === 'privacy') return text('Блокировка примера', 'Sample lock');
-  if (kind === 'recovery') return text('Ключ восстановления', 'Recovery key');
-  if (kind === 'backup') return text('Резервная копия и восстановление', 'Backup and restore');
-  if (kind === 'export') return text('Экспорт данных', 'Export data');
-  return text('Удаление данных', 'Delete data');
 }
 
 function PrivacyStatus({
@@ -118,7 +95,9 @@ function PrivacyStatus({
       {value.locked ? (
         <LockExample text={text} unlock={unlock} />
       ) : (
-        <p>{text('Учебный экран открыт.', 'Sample screen unlocked.')}</p>
+        <p className="demo-note">
+          {text('Пример открыт · защиты нет.', 'Sample unlocked · no protection.')}
+        </p>
       )}
       <p>
         {value.recorded

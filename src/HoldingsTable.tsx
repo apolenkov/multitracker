@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Icon } from './Icon.tsx';
 import { openDialog } from './Forms.tsx';
 import { totals, type Asset, type Buy, type Currency } from './model/portfolio.ts';
 import { getLabels, money, number, percentage, type Language } from './i18n.ts';
@@ -54,10 +55,15 @@ function SortControls({
           type="button"
           key={column}
           aria-pressed={sort.column === column}
+          aria-label={`${column === 'asset' ? labels.asset : labels.value}${sort.column === column ? ` · ${direction}` : ''}`}
           onClick={() => toggle(column)}
         >
           {column === 'asset' ? labels.asset : labels.value}
-          {sort.column === column && ` · ${direction}`}
+          {sort.column === column && (
+            <span className={`sort-marker ${sort.direction}`}>
+              <Icon name="chevron" />
+            </span>
+          )}
         </button>
       ))}
     </div>
@@ -129,7 +135,7 @@ function HoldingRow({
   return (
     <tr className="holding-row">
       <HoldingAsset asset={holding.asset} onSelect={onSelect} />
-      <td>
+      <td className="holding-quantity">
         <span className="mobile-label">{labels.quantity}</span>
         {hidden
           ? '••••'
@@ -148,7 +154,7 @@ function HoldingRow({
         </span>
         {amount(performance.profit, baseCurrency, true)}
       </td>
-      <td>
+      <td className="holding-weight">
         <span className="mobile-label">{labels.weight}</span>
         {hidden ? '••••' : percentage((result.value / value) * 100, language)}
       </td>
@@ -170,7 +176,7 @@ function HoldingAsset({
         }}
       >
         <span className={`asset-symbol ${asset.toLowerCase()}`} aria-hidden="true">
-          {asset === 'BTC' ? '₿' : asset.slice(0, 1)}
+          {asset.slice(0, 1)}
         </span>
         <strong>{asset}</strong>
       </button>

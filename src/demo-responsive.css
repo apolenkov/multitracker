@@ -1,0 +1,217 @@
+.import-file-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 20px 0;
+}
+.import-file-summary span {
+  color: var(--muted);
+  font-size: 14px;
+}
+.import-history {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.import-history-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.import-current-step {
+  font-weight: 600;
+}
+.import-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.import-steps li {
+  padding-top: 10px;
+  border-top: 3px solid var(--line);
+  flex: 1;
+}
+.import-steps [aria-current='step'] {
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.import-result {
+  font-weight: 600;
+  color: var(--ink);
+}
+.import-rows {
+  display: none;
+  padding: 0;
+  list-style: none;
+}
+.import-rows li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.import-row-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.import-row-heading span {
+  color: var(--muted);
+  font-size: 14px;
+}
+.import-row-status {
+  font-weight: 600;
+}
+.import-rows [data-status='unknown'] .import-row-status,
+.import-rows [data-status='duplicate'] .import-row-status {
+  color: var(--warning);
+}
+.conflict-times,
+.conflict-field dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.conflict-times p,
+.conflict-field dl {
+  margin: 0;
+}
+.conflict-times span {
+  display: block;
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 14px;
+}
+.conflict-field {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.conflict-field h3 {
+  margin: 0 0 14px;
+  font-size: 16px;
+}
+.conflict-field dt {
+  color: var(--muted);
+  font-size: 14px;
+}
+.conflict-field dd {
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+.conflict-choices {
+  border: 0;
+  padding: 0;
+  margin: 24px 0;
+  min-width: 0;
+}
+.conflict-choices legend {
+  padding-bottom: 12px;
+}
+.conflict-choices .check-row {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.conflict-choices .check-row:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.detail-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px 20px;
+  margin-block: 20px;
+}
+.detail-list dd {
+  text-align: right;
+}
+.demo-token {
+  display: block;
+  padding: 16px;
+  margin-block: 20px;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.density-preview {
+  display: grid;
+  background: var(--surface);
+}
+.density-preview span {
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.density-preview-compact span {
+  padding: 8px 16px;
+}
+.lost-key-choices button {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+}
+@media (max-width: 600px) {
+  .settings-groups,
+  .mapping-list,
+  .form-row,
+  .conflict-field dl {
+    grid-template-columns: 1fr;
+  }
+  .settings-groups {
+    gap: 28px;
+  }
+  .connection-row {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .connection-actions {
+    grid-column: 2;
+    justify-items: start;
+  }
+  .import-steps li span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .import-steps {
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .import-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .import-actions .primary {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .import-history-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .import-rows {
+    display: block;
+  }
+  .import-source-table {
+    display: none;
+  }
+  .conflict-times {
+    font-size: 14px;
+  }
+  .dialog-actions {
+    flex-wrap: wrap;
+  }
+}

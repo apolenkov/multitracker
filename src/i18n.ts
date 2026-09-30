@@ -1,12 +1,26 @@
 import type { Currency } from './model/portfolio.ts';
 export type Language = 'ru' | 'en';
 export type Screen =
-  'overview' | 'portfolios' | 'history' | 'import' | 'connections' | 'sync' | 'settings';
+  | 'overview'
+  | 'portfolios'
+  | 'history'
+  | 'markets'
+  | 'following'
+  | 'analytics'
+  | 'events'
+  | 'import'
+  | 'connections'
+  | 'sync'
+  | 'settings';
 export const copy = {
   ru: {
     overview: 'Обзор',
     portfolios: 'Портфели',
     history: 'Операции',
+    markets: 'Рынки',
+    following: 'Избранное',
+    analytics: 'Аналитика',
+    events: 'События',
     recentHistory: 'Последние операции',
     venue: 'Площадка',
     demoBrokerAccount: 'Учебный брокерский счёт',
@@ -106,6 +120,10 @@ export const copy = {
     overview: 'Overview',
     portfolios: 'Portfolios',
     history: 'Transactions',
+    markets: 'Markets',
+    following: 'Favorites',
+    analytics: 'Analytics',
+    events: 'Events',
     recentHistory: 'Recent transactions',
     venue: 'Venue',
     demoBrokerAccount: 'Sample brokerage account',

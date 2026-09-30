@@ -7,49 +7,44 @@
 .finance-overview {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
-  grid-template-areas: 'balance side' 'assets side' 'report report' 'history history';
-  gap: 24px;
+  grid-template-areas: 'balance side' 'assets assets' 'report report' 'history history';
+  gap: 20px;
   --allocation-btc: #8c66ff;
   --allocation-msft: #21c6e4;
   --allocation-twt: #fb64a8;
 }
+.balance-panel,
+.holdings {
+  padding: 24px;
+  background: var(--paper);
+  border-radius: 16px;
+  min-width: 0;
+}
 .balance-panel {
   grid-area: balance;
-  background: var(--paper);
-  border-radius: 24px;
-  padding: 24px;
-  min-width: 0;
 }
 .summary {
   padding: 0;
 }
-.summary .section-top {
-  color: var(--muted);
-  font-size: 14px;
-}
+.summary .section-top,
 .valuation {
   color: var(--muted);
   font-size: 14px;
 }
 .main-amount {
-  font-size: clamp(36px, 3.4vw, 46px);
-  letter-spacing: -1.5px;
-  font-weight: 750;
-  margin: 8px 0;
+  font-size: clamp(34px, 3.4vw, 42px);
+  letter-spacing: -0.03em;
+  font-weight: 650;
+  margin: 4px 0;
   line-height: 1.15;
   overflow-wrap: anywhere;
 }
 .summary-result {
-  display: flex;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 16px;
-}
-.summary-result dl {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 28px;
+  margin-top: 12px;
 }
 .summary-result dt {
   color: var(--muted);
@@ -58,12 +53,26 @@
 }
 .summary-result dd {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .summary-result small {
-  display: block;
+  display: inline-block;
+  margin-left: 8px;
   font-size: 14px;
-  margin-top: 2px;
+  font-weight: 500;
+}
+.basis-details {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.basis-details h3 {
+  font-size: 14px;
+  font-weight: 500;
+}
+.basis-details > p:first-of-type {
+  font-size: 16px;
+  color: var(--ink);
 }
 .overview-side {
   grid-area: side;
@@ -90,36 +99,44 @@
   font-size: 14px;
 }
 .effects dd {
-  font-weight: 650;
+  font-weight: 600;
   text-align: right;
 }
 .holdings {
   grid-area: assets;
-  min-width: 0;
-  padding: 24px;
-  background: var(--paper);
-  border-radius: 24px;
 }
 .holdings h2 {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 .holdings-sort {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   font-size: 14px;
   color: var(--muted);
 }
 .holdings-sort button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   font-weight: 500;
-  background: var(--surface);
+  background: transparent;
 }
 .holdings-sort button[aria-pressed='true'] {
-  border-color: var(--ink);
-  color: var(--ink);
+  background: var(--selected-bg);
+  color: var(--selected-ink);
+}
+.sort-marker {
+  display: inline-flex;
+}
+.sort-marker.ascending {
+  transform: rotate(-90deg);
+}
+.sort-marker.descending {
+  transform: rotate(90deg);
 }
 .holding-head,
 .holding-row {
@@ -134,9 +151,10 @@
   padding: 0 0 12px;
 }
 .holding-row {
-  padding: 16px 0;
+  padding: 14px 0;
   border-top: 1px solid var(--line);
-  font-size: 15px;
+  font-size: 16px;
+  font-weight: 500;
 }
 .holding-row > td:not(:first-child),
 .holding-head > th:not(:first-child) {
@@ -145,32 +163,30 @@
 .asset-name {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   border: 0;
   background: transparent;
   padding: 0;
   font-size: 16px;
 }
 .asset-symbol {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 19px;
-  font-weight: 700;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
   flex-shrink: 0;
-  background: #258d78;
+  background: #207c69;
   color: white;
 }
 .asset-symbol.btc {
   background: #f7931a;
   color: #151515;
-  font-size: 27px;
 }
 .asset-symbol.msft {
-  background: #1979cf;
+  background: #1673c5;
 }
 .mobile-label {
   display: none;
@@ -178,10 +194,6 @@
 .empty-state {
   padding: 24px 0;
   color: var(--muted);
-}
-.empty-state h3 {
-  color: var(--ink);
-  margin-bottom: 8px;
 }
 .holdings-table,
 .holdings-table thead,
@@ -211,66 +223,67 @@
 }
 .asset-detail-values dd {
   text-align: right;
+  font-size: 16px;
 }
 .attribution,
-.portfolio-report {
-  padding: 18px 20px;
+.portfolio-report,
+.allocation-list {
+  padding: 16px;
   background: var(--paper);
-  border-radius: 20px;
+  border-radius: 16px;
 }
 .cash-balances,
 .asset-catalog {
-  padding-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
 }
-.insight-controls {
+.insight-controls,
+.report-toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: end;
   gap: 12px;
   margin-block: 16px;
 }
-.asset-catalog summary,
-.portfolio-report summary,
-.attribution summary {
-  min-height: 44px;
-  cursor: pointer;
-  font-weight: 650;
+.report-toolbar {
+  justify-content: space-between;
+}
+.report-transactions {
+  margin-top: 28px;
 }
 .asset-catalog ul {
   display: grid;
-  gap: 12px;
-  padding-left: 20px;
+  gap: 0;
+  list-style: none;
+  padding: 0;
 }
-.allocation-list {
-  padding: 24px 20px;
-  background: var(--paper);
-  border-radius: 24px;
+.asset-catalog li button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+}
+.asset-catalog li span {
+  color: var(--muted);
+  font-size: 14px;
 }
 .allocation-list h2 {
   font-size: 18px;
 }
-.allocation-ring {
-  width: 170px;
-  height: 170px;
-  border-radius: 50%;
-  margin: 22px auto;
+
+.insight-controls label,
+.report-toolbar label {
   display: grid;
-  place-items: center;
-}
-.allocation-ring > div {
-  width: 116px;
-  height: 116px;
-  background: var(--paper);
-  border-radius: 50%;
-  display: grid;
-  place-content: center;
-  text-align: center;
-}
-.allocation-ring strong {
-  font-size: 30px;
-}
-.allocation-ring span {
-  color: var(--muted);
+  gap: 6px;
   font-size: 14px;
+}
+.report-toolbar > div {
+  min-width: 0;
+  max-width: 100%;
 }

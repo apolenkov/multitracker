@@ -6,9 +6,11 @@ type Props = Readonly<{ view: AppView }>;
 export function Topbar({ view }: Props) {
   return (
     <header className="topbar">
-      <span className="demo-badge">
-        <span aria-hidden="true" />
-        {view.language === 'ru' ? 'Макет · учебные данные' : 'Demo · sample data'}
+      <span
+        className="demo-badge"
+        title={view.language === 'ru' ? 'Демо · вымышленные данные' : 'Demo · fictional data'}
+      >
+        {view.language === 'ru' ? 'Демо' : 'Demo'}
       </span>
       <div className="utility-controls">
         <LanguageControl view={view} />
@@ -22,7 +24,7 @@ export function Topbar({ view }: Props) {
 function LanguageControl({ view }: Props) {
   return (
     <label htmlFor="topbar-language">
-      {getLabels(view.language).language}
+      <span className="visually-hidden">{getLabels(view.language).language}</span>
       <select
         id="topbar-language"
         value={view.language}
@@ -31,8 +33,8 @@ function LanguageControl({ view }: Props) {
           if (next === 'ru' || next === 'en') view.setLanguage(next);
         }}
       >
-        <option value="ru">Русский</option>
-        <option value="en">English</option>
+        <option value="ru">RU</option>
+        <option value="en">EN</option>
       </select>
     </label>
   );
@@ -41,7 +43,7 @@ function LanguageControl({ view }: Props) {
 function ThemeControl({ view }: Props) {
   return (
     <label htmlFor="topbar-theme">
-      {view.language === 'ru' ? 'Оформление' : 'Theme'}
+      <span className="visually-hidden">{view.language === 'ru' ? 'Оформление' : 'Theme'}</span>
       <select
         id="topbar-theme"
         value={view.theme}
@@ -52,7 +54,7 @@ function ThemeControl({ view }: Props) {
       >
         <option value="dark">{view.language === 'ru' ? 'Тёмная' : 'Dark'}</option>
         <option value="light">{view.language === 'ru' ? 'Светлая' : 'Light'}</option>
-        <option value="system">{view.language === 'ru' ? 'Системная' : 'System'}</option>
+        <option value="system">{view.language === 'ru' ? 'Авто' : 'Auto'}</option>
       </select>
     </label>
   );
@@ -61,10 +63,11 @@ function ThemeControl({ view }: Props) {
 function DisplayCurrencyControl({ view }: Props) {
   return (
     <label htmlFor="topbar-currency">
-      {view.language === 'ru' ? 'Валюта' : 'Currency'}
+      <span className="visually-hidden">
+        {view.language === 'ru' ? 'Валюта отображения' : 'Display currency'}
+      </span>
       <select
         id="topbar-currency"
-        aria-label={view.language === 'ru' ? 'Валюта отображения' : 'Display currency'}
         value={view.currency}
         onChange={(event) => {
           const next = event.target.value;

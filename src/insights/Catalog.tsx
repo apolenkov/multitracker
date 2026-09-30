@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { openOperation } from '../Forms.tsx';
 import { money, type Language } from '../i18n.ts';
 import { insightWords } from './words.ts';
@@ -42,6 +42,7 @@ export function CashAndCatalog({
 function Catalog({ language }: Readonly<{ language: Language }>) {
   const words = insightWords(language);
   const [search, setSearch] = useState('');
+  const searchInput = useRef<HTMLInputElement>(null);
   const rows = instruments.filter((item) =>
     `${item.id} ${words[item.kind]}`
       .toLocaleLowerCase()
@@ -53,27 +54,59 @@ function Catalog({ language }: Readonly<{ language: Language }>) {
       <p className="quiet">{words.catalogNote}</p>
       <label>
         {words.catalogSearch}
-        <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
+        <input
+          ref={searchInput}
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
       </label>
-      <ul>
-        {rows.map((item) => (
-          <li key={item.id}>
-            <button
-              type="button"
-              aria-label={`${language === 'ru' ? 'Добавить операцию для' : 'Add a transaction for'} ${item.id}`}
-              onClick={() =>
-                openOperation(item.kind === 'money' ? 'opening' : 'buy', {
-                  asset: item.id,
-                  currency: item.id === 'RUB' ? 'RUB' : 'USD',
-                })
-              }
-            >
-              {item.id} · {words[item.kind]} +
-            </button>
-          </li>
-        ))}
-      </ul>
-      {rows.length === 0 && <p role="status">{words.noMatch}</p>}
+      <CatalogRows rows={rows} language={language} />
+      {rows.length === 0 && (
+        <div>
+          <p role="status">{words.noMatch}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearch('');
+              searchInput.current?.focus();
+            }}
+          >
+            {words.resetSearch}
+          </button>
+        </div>
+      )}
     </div>
+  );
+}
+
+function CatalogRows({
+  rows,
+  language,
+}: Readonly<{
+  rows: readonly (typeof instruments)[number][];
+  language: Language;
+}>) {
+  const words = insightWords(language);
+  return (
+    <ul>
+      {rows.map((item) => (
+        <li key={item.id}>
+          <button
+            type="button"
+            aria-label={`${language === 'ru' ? 'Добавить операцию для' : 'Add a transaction for'} ${item.id}`}
+            onClick={() =>
+              openOperation(item.kind === 'money' ? 'opening' : 'buy', {
+                asset: item.id,
+                currency: item.id === 'RUB' ? 'RUB' : 'USD',
+              })
+            }
+          >
+            <strong>{item.id}</strong>
+            <span>{words[item.kind]}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }

@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react';
-import { demoAccount, getLabels, money } from '../i18n.ts';
-import { summarize, selectedBuys } from '../model/portfolio.ts';
+import { getLabels, money } from '../i18n.ts';
+import { summarize } from '../model/portfolio.ts';
 import { EntityDialog, openDialog } from '../Forms.tsx';
 import { recordsCopy } from './copy.ts';
 import type { RecordsProps } from './data.ts';
-import { accountSamples, accountLabel } from '../forms/accounts.ts';
+import { accountSamples } from '../forms/accounts.ts';
+import { Icon } from '../Icon.tsx';
 
-type EntityRequest = Readonly<{
-  entity: 'portfolio' | 'account' | 'group';
-  action: 'create' | 'edit' | 'archive' | 'delete';
-  name: string;
-  portfolioId?: string;
-  members?: readonly string[];
-}>;
+import { AccountList, EntityActions } from './PortfolioAccounts.tsx';
+import type { EntityRequest } from './PortfolioAccounts.tsx';
 type Props = RecordsProps & Readonly<{ onSelect: (id: string) => void; onCreate: () => void }>;
 export function PortfolioList(props: Props) {
   const labels = getLabels(props.language);
@@ -74,24 +70,18 @@ function PortfolioSelection({
     );
   return (
     <details className="portfolio-selection">
-      <summary>{copy.selectMany}</summary>
+      <summary>
+        {copy.selectMany}
+        <span className="selection-count">{selected.length}</span>
+      </summary>
       <SelectionFields state={state} selected={selected} language={language} onToggle={toggle} />
       <p className="quiet">{copy.selectionHelp}</p>
-      <div className="record-actions">
-        <button
-          className="primary"
-          disabled={selected.length === 0}
-          onClick={() => onSelect(selected.join(','))}
-        >
-          {copy.showSelection}
-        </button>
-        <button onClick={() => onSelect('binance,bybit')}>
-          {copy.group}: {copy.crypto}
-        </button>
-        <button onClick={() => onManage({ entity: 'group', action: 'create', name: '' })}>
-          {copy.addGroup}
-        </button>
-      </div>
+      <SelectionActions
+        selected={selected}
+        language={language}
+        onSelect={onSelect}
+        onManage={onManage}
+      />
       <EntityActions
         entity="group"
         members={['binance', 'bybit']}
@@ -100,6 +90,38 @@ function PortfolioSelection({
         language={language}
       />
     </details>
+  );
+}
+function SelectionActions({
+  selected,
+  language,
+  onSelect,
+  onManage,
+}: Readonly<{
+  selected: readonly string[];
+  language: RecordsProps['language'];
+  onSelect: Props['onSelect'];
+  onManage: (request: EntityRequest) => void;
+}>) {
+  const copy = recordsCopy(language);
+  return (
+    <div className="record-actions">
+      <button
+        className="primary"
+        disabled={selected.length === 0}
+        onClick={() => onSelect(selected.join(','))}
+      >
+        {copy.showSelection}
+      </button>
+      <button onClick={() => onSelect('binance,bybit')}>
+        {copy.group}: {copy.crypto}
+      </button>
+      <button
+        onClick={() => onManage({ entity: 'group', action: 'create', name: '', members: selected })}
+      >
+        {copy.addGroup}
+      </button>
+    </div>
   );
 }
 function PortfolioRow(
@@ -122,7 +144,6 @@ function PortfolioRow(
           language={props.language}
           onManage={props.onManage}
         />
-        <AccountList {...props} />
         <button
           onClick={() =>
             props.onManage({
@@ -136,6 +157,7 @@ function PortfolioRow(
           {copy.addAccount}
         </button>
       </details>
+      <AccountList {...props} />
     </article>
   );
 }
@@ -155,15 +177,13 @@ function PortfolioValue({
   return (
     <button className="portfolio-row" onClick={() => onSelect(id)}>
       <span className="portfolio-initial" aria-hidden="true">
-        {name.slice(0, 1)}
+        <Icon name="portfolios" />
       </span>
       <span className="portfolio-name">
         <strong>{name}</strong>
         <small>
-          {labels.venue}: {name} · {demoAccount(id, language)}
-        </small>
-        <small>
-          {labels.buy}: {selectedBuys(state, id).length}
+          {language === 'ru' ? 'Счетов' : 'Accounts'}:{' '}
+          {accountSamples.filter((account) => account.portfolioId === id).length}
         </small>
       </span>
       <span className="portfolio-value">
@@ -174,75 +194,10 @@ function PortfolioValue({
           {hidden ? '••••' : money(performance.profit, baseCurrency, language, true)}
         </small>
       </span>
-      <span aria-hidden="true">↗</span>
+      <span className="portfolio-chevron" aria-hidden="true">
+        <Icon name="chevron" />
+      </span>
     </button>
-  );
-}
-function AccountList({
-  id,
-  language,
-  onManage,
-}: Readonly<{
-  id: string;
-  language: RecordsProps['language'];
-  onManage: (request: EntityRequest) => void;
-}>) {
-  const copy = recordsCopy(language);
-  return (
-    <ul className="account-list">
-      {accountSamples
-        .filter((account) => account.portfolioId === id)
-        .map((account) => (
-          <li key={account.id}>
-            <strong>
-              {copy.account}: {accountLabel(account.id, language)}
-            </strong>
-
-            <EntityActions
-              entity="account"
-              name={accountLabel(account.id, language)}
-              portfolioId={id}
-              language={language}
-              onManage={onManage}
-            />
-          </li>
-        ))}
-    </ul>
-  );
-}
-function EntityActions({
-  entity,
-  name,
-  portfolioId,
-  members,
-  language,
-  onManage,
-}: Readonly<
-  Omit<EntityRequest, 'action'> & {
-    language: RecordsProps['language'];
-    onManage: (request: EntityRequest) => void;
-  }
->) {
-  const copy = recordsCopy(language);
-  return (
-    <div className="record-actions">
-      {(['edit', 'archive', 'delete'] as const).map((action) => (
-        <button
-          key={action}
-          onClick={() =>
-            onManage({
-              entity,
-              action,
-              name,
-              ...(portfolioId ? { portfolioId } : {}),
-              ...(members ? { members } : {}),
-            })
-          }
-        >
-          {new Map(Object.entries(copy)).get(action)}
-        </button>
-      ))}
-    </div>
   );
 }
 

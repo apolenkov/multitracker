@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import './demo.css';
+import './demo-responsive.css';
 import { ConnectionsPanel, SyncPanel } from './demo/connection-sync.tsx';
 import { ImportPanel } from './demo/import-panel.tsx';
 import { SettingsPanel } from './demo/settings-panel.tsx';
-import { words, type Density, type Props as RouteProps } from './demo/words.ts';
+import { ExplorationScreens } from './ExplorationScreens.tsx';
+import { Icon } from './Icon.tsx';
+import { type Density, type Props as RouteProps } from './demo/words.ts';
 
 type Props = RouteProps & Readonly<{ density: Density; onDensity: (v: Density) => void }>;
 
@@ -17,23 +20,11 @@ export function DemoScreens(props: Props) {
   const [notice, setNotice] = useState({ text: '', count: 0, screen: props.screen });
   const notify = (text: string) =>
     setNotice((previous) => ({ text, count: previous.count + 1, screen: props.screen }));
-  const t = words[props.language];
   return (
     <section ref={page} className="demo-page">
       <div className="demo-content">
-        <p className="demo-intro">{t.intro[props.screen]}</p>
-        <div hidden={props.screen !== 'import'}>
-          <ImportPanel language={props.language} hidden={props.hidden} notify={notify} />
-        </div>
-        <div hidden={props.screen !== 'connections'}>
-          <ConnectionsPanel language={props.language} notify={notify} />
-        </div>
-        <div hidden={props.screen !== 'sync'}>
-          <SyncPanel language={props.language} notify={notify} />
-        </div>
-        <div hidden={props.screen !== 'settings'}>
-          <SettingsPanel {...props} notify={notify} />
-        </div>
+        <StandardScreens {...props} notify={notify} />
+        <ExplorationScreens {...props} />
       </div>
       <DemoNotice
         text={notice.screen === props.screen ? notice.text : ''}
@@ -42,6 +33,26 @@ export function DemoScreens(props: Props) {
         dismiss={() => setNotice((previous) => ({ ...previous, text: '' }))}
       />
     </section>
+  );
+}
+
+function StandardScreens(props: Props & Readonly<{ notify: (text: string) => void }>) {
+  const notify = props.notify;
+  return (
+    <>
+      <div hidden={props.screen !== 'import'}>
+        <ImportPanel language={props.language} hidden={props.hidden} notify={notify} />
+      </div>
+      <div hidden={props.screen !== 'connections'}>
+        <ConnectionsPanel language={props.language} notify={notify} />
+      </div>
+      <div hidden={props.screen !== 'sync'}>
+        <SyncPanel language={props.language} notify={notify} />
+      </div>
+      <div hidden={props.screen !== 'settings'}>
+        <SettingsPanel {...props} notify={notify} />
+      </div>
+    </>
   );
 }
 
@@ -67,7 +78,7 @@ function DemoNotice({
           aria-label={language === 'ru' ? 'Закрыть сообщение' : 'Dismiss message'}
           onClick={dismiss}
         >
-          ×
+          <Icon name="close" />
         </button>
       )}
     </div>

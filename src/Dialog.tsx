@@ -1,3 +1,4 @@
+import { Icon } from './Icon.tsx';
 import { getLabels } from './i18n.ts';
 import type { Language, Labels } from './i18n.ts';
 import type { KeyboardEvent } from 'react';
@@ -56,19 +57,29 @@ export function DialogHeading({
         aria-label={labels.close}
         onClick={() => closeDialog(dialog)}
       >
-        ×
+        <Icon name="close" />
       </button>
     </div>
   );
 }
-export function FormActions({ dialog, labels }: Readonly<{ dialog: string; labels: Labels }>) {
+export function FormActions({
+  dialog,
+  labels,
+  submitLabel,
+  destructive = false,
+}: Readonly<{
+  dialog: string;
+  labels: Labels;
+  submitLabel?: string;
+  destructive?: boolean;
+}>) {
   return (
     <div className="form-actions">
       <button type="button" onClick={() => closeDialog(dialog)}>
         {labels.cancel}
       </button>
-      <button type="submit" className="primary">
-        {labels.save}
+      <button type="submit" className={destructive ? 'destructive' : 'primary'}>
+        {submitLabel ?? labels.save}
       </button>
     </div>
   );
@@ -83,7 +94,22 @@ export function PrivacyDialog({ language }: Readonly<{ language: Language }>) {
         dialog="privacy-dialog"
         labels={labels}
       />
-      <p>{labels.privacyText}</p>
+      <div className="privacy-summary">
+        <p>
+          {language === 'ru'
+            ? 'Это учебный макет на вымышленных данных. Записи действуют только в этой вкладке.'
+            : 'This is a teaching prototype with fictional data. Records last only in this tab.'}
+        </p>
+        <p>
+          {language === 'ru'
+            ? 'Файлы не читаются, данные не передаются. Не вводите настоящие сведения или ключи.'
+            : 'Files are not read and data is not transmitted. Do not enter real information or keys.'}
+        </p>
+        <details>
+          <summary>{language === 'ru' ? 'Границы макета' : 'Prototype limits'}</summary>
+          <p>{labels.privacyText}</p>
+        </details>
+      </div>
       <button className="primary" onClick={() => closeDialog('privacy-dialog')}>
         {labels.close}
       </button>

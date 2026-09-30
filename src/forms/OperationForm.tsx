@@ -21,6 +21,7 @@ import {
 } from './operations.ts';
 import type { Field, OperationInput, OperationType, OperationErrors } from './operations.ts';
 import { OperationFields } from './OperationFields.tsx';
+import { presentationCopy, operationSubmit } from './presentation.ts';
 export type OperationProps = Readonly<{
   id: string;
   language: Language;
@@ -41,20 +42,19 @@ export function OperationForm(props: OperationProps) {
   return (
     <dialog
       id={props.id}
+      className="operation-dialog"
       aria-labelledby={`${props.id}-title`}
       onClose={form.reset}
       onKeyDown={keepDialogFocus}
     >
       <form noValidate autoComplete="off" onSubmit={form.submit}>
         <DialogHeading
-          title={props.title ?? getFormCopy(props.language).title}
+          title={`${props.title ? `${props.title} · ` : ''}${operationLabel(form.input.type, props.language)}`}
           id={`${props.id}-title`}
           dialog={props.id}
           labels={labels}
         />
-        <p className="quiet">
-          {labels.demoOnly} {getFormCopy(props.language).noteSample}
-        </p>
+        <p className="form-sample">{presentationCopy(props.language).sample}</p>
         <TypeSelector
           type={form.input.type}
           language={props.language}
@@ -69,8 +69,15 @@ export function OperationForm(props: OperationProps) {
           prefix={props.id}
           update={form.update}
         />
-        <p className="quiet">{getFormCopy(props.language).limits}</p>
-        <FormActions dialog={props.id} labels={labels} />
+        <FormActions
+          dialog={props.id}
+          labels={labels}
+          submitLabel={
+            props.initial
+              ? presentationCopy(props.language).edit
+              : operationSubmit(form.input.type, props.language)
+          }
+        />
       </form>
     </dialog>
   );
@@ -87,7 +94,7 @@ function TypeSelector({
   change: (type: OperationType) => void;
 }>) {
   return (
-    <>
+    <div className="operation-kind">
       <label htmlFor={`${id}-type`}>{getFormCopy(language).type}</label>
       <select
         id={`${id}-type`}
@@ -102,7 +109,7 @@ function TypeSelector({
           </option>
         ))}
       </select>
-    </>
+    </div>
   );
 }
 function useOperation(props: OperationProps) {

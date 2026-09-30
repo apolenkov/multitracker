@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { date, money, type Language } from '../i18n.ts';
-import { totals, type Buy, type Currency } from '../model/portfolio.ts';
+import { assessmentDate, totals, type Buy, type Currency } from '../model/portfolio.ts';
 import { cancelOnEscape } from './ManualValuation.tsx';
 import { insightWords } from './words.ts';
 
@@ -22,15 +22,7 @@ export function Report(props: Props) {
   return (
     <details className="portfolio-report">
       <summary>{words.report}</summary>
-      <div className="insight-controls">
-        <label>
-          {words.period}
-          <select value={period} onChange={(event) => setPeriod(event.target.value)}>
-            <option value="all">{words.all}</option>
-            <option value="year">{words.year}</option>
-            <option value="quarter">{words.quarter}</option>
-          </select>
-        </label>
+      <div className="report-toolbar">
         <label>
           {props.language === 'ru' ? 'Валюта отчёта' : 'Report currency'}
           <select
@@ -41,18 +33,24 @@ export function Report(props: Props) {
             <option>USD</option>
           </select>
         </label>
+        <Export language={props.language} />
       </div>
       <p className="quiet">{words.reportNote}</p>
-      <p>
-        {words.periodRows}: {props.hidden ? '••••' : count}
-      </p>
+      <h3>
+        {words.positions} {date(assessmentDate, props.language)} · {displayCurrency}
+      </h3>
       <ReportValues result={result} {...props} currency={displayCurrency} />
-      <ReportHistory
-        {...props}
-        currency={displayCurrency}
-        start={period === 'all' ? '2000-01-01' : start}
-      />
-      <Export language={props.language} />
+      <section className="report-transactions">
+        <ReportPeriod language={props.language} period={period} onChange={setPeriod} />
+        <p>
+          {words.periodRows}: {props.hidden ? '••••' : count}
+        </p>
+        <ReportHistory
+          {...props}
+          currency={displayCurrency}
+          start={period === 'all' ? '2000-01-01' : start}
+        />
+      </section>
     </details>
   );
 }
@@ -87,16 +85,18 @@ function Export({ language }: Readonly<{ language: Language }>) {
   const words = insightWords(language);
   const [editing, setEditing] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
-  const finish = () => {
-    setEditing(false);
-    trigger.current?.focus();
-  };
+  const finish = () => setEditing(false);
+  useEffect(() => {
+    if (!editing) trigger.current?.focus();
+  }, [editing]);
   const [event, setEvent] = useState(0);
   return (
     <div>
-      <button type="button" ref={trigger} onClick={() => setEditing(true)}>
-        {words.export}
-      </button>
+      {!editing && (
+        <button type="button" ref={trigger} onClick={() => setEditing(true)}>
+          {words.export}
+        </button>
+      )}
       {editing && (
         <ExportForm
           language={language}
@@ -126,6 +126,8 @@ function ExportForm({
   onSave: () => void;
 }>) {
   const words = insightWords(language);
+  const formatInput = useRef<HTMLSelectElement>(null);
+  useEffect(() => formatInput.current?.focus(), []);
   return (
     <form
       className="asset-price-form"
@@ -137,7 +139,7 @@ function ExportForm({
       <p className="quiet">{words.exportNote}</p>
       <label>
         {words.format}
-        <select defaultValue="CSV" onKeyDown={cancelOnEscape(onCancel)}>
+        <select ref={formatInput} defaultValue="CSV" onKeyDown={cancelOnEscape(onCancel)}>
           <option>CSV</option>
           <option>PDF</option>
         </select>
@@ -147,7 +149,7 @@ function ExportForm({
           {words.cancel}
         </button>
         <button type="submit" className="primary" onKeyDown={cancelOnEscape(onCancel)}>
-          {words.save}
+          {words.showExport}
         </button>
       </div>
     </form>
@@ -163,7 +165,12 @@ function ReportHistory({
 }: Props & Readonly<{ start: string }>) {
   const words = insightWords(language);
   return (
-    <div className="asset-timeline">
+    <div
+      className="asset-timeline table-scroll"
+      tabIndex={0}
+      role="region"
+      aria-label={words.transactions}
+    >
       <table>
         <caption>{words.periodRows}</caption>
         <thead>
@@ -187,6 +194,31 @@ function ReportHistory({
             ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function ReportPeriod({
+  language,
+  period,
+  onChange,
+}: Readonly<{
+  language: Language;
+  period: string;
+  onChange: (period: string) => void;
+}>) {
+  const words = insightWords(language);
+  return (
+    <div className="insight-controls">
+      <h3>{words.transactions}</h3>
+      <label>
+        {words.period}
+        <select value={period} onChange={(event) => onChange(event.target.value)}>
+          <option value="all">{words.all}</option>
+          <option value="year">{words.year}</option>
+          <option value="quarter">{words.quarter}</option>
+        </select>
+      </label>
     </div>
   );
 }

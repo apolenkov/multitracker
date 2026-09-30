@@ -1,15 +1,25 @@
 import assert from 'node:assert/strict';
 import { evaluate, type Browser } from './ui-driver.ts';
+import { reveal } from './ui-exploration.ts';
 
 function navigate(browser: Browser, screen: 'settings' | 'overview') {
-  browser.run('click', `.navigation a[href="#${screen}"]`);
-  browser.run('wait', '--fn', `location.hash === '#${screen}'`);
+  browser.run('click', `.desktop-links a[href="#${screen}"]`);
+  const ready =
+    screen === 'overview'
+      ? 'Boolean(document.querySelector(".summary, .summary-result"))'
+      : 'document.querySelector("#settings-display-currency")?.checkVisibility() === true';
+  browser.run(
+    'wait',
+    '--fn',
+    `location.hash === '#${screen}' && document.activeElement?.id === 'main' && ${ready}`,
+  );
+  if (screen === 'overview') reveal(browser, '.chart-disclosure > summary');
 }
 
 function summary(browser: Browser) {
   return evaluate(
     browser,
-    'Array.from(document.querySelectorAll(".summary, .summary-result"), element => element.textContent).join(" ")',
+    'Array.from(document.querySelectorAll(".summary, .summary-result, .basis-details")).filter(element => element.checkVisibility()).map(element => element.innerText).join(" ")',
   );
 }
 

@@ -9,6 +9,7 @@ import { Workspace } from './Workspace.tsx';
 import type { DemoState, Density, Theme } from './demo/words.ts';
 import { focusMain, useNavigation } from './navigation.ts';
 import './base.css';
+import './appearance.css';
 import './layout.css';
 import './finance.css';
 import './records.css';
@@ -19,7 +20,12 @@ export function App() {
   const view = useAppView();
   const labels = getLabels(view.language);
   return (
-    <div className="app-shell" data-density={view.density} data-theme={view.theme}>
+    <div
+      className="app-shell"
+      data-density={view.density}
+      data-theme={view.theme}
+      data-monochrome={view.monochrome}
+    >
       <a
         className="skip-link"
         href="#main"
@@ -43,6 +49,7 @@ function useAppView() {
   const [notice, setNotice] = useState({ sequence: 0, message: '' });
   const demo = useDemoView();
   useDocumentMetadata(preferences.language, navigation.screen);
+  useDocumentTheme(preferences.theme);
   const navigate = (next: Screen) => {
     navigation.navigate(next);
     setNotice((current) => ({ ...current, message: '' }));
@@ -71,6 +78,7 @@ function usePreferences() {
   const [baseCurrency, setBaseCurrency] = useState<Currency>('RUB');
   const [theme, setTheme] = useState<Theme>('dark');
   const [hidden, setHidden] = useState(false);
+  const [monochrome, setMonochrome] = useState(false);
   return {
     language,
     setLanguage,
@@ -82,6 +90,8 @@ function usePreferences() {
     setTheme,
     hidden,
     setHidden,
+    monochrome,
+    setMonochrome,
   };
 }
 function useDemoView() {
@@ -97,6 +107,20 @@ function useDocumentMetadata(language: Language, screen: Screen) {
       .querySelector('title')
       ?.replaceChildren(document.createTextNode(`MultiTracker — ${title}`));
   }, [language, title]);
+}
+function useDocumentTheme(theme: Theme) {
+  useEffect(() => {
+    const system = window.matchMedia('(prefers-color-scheme: light)');
+    const update = () => {
+      document.documentElement.setAttribute('data-theme', theme);
+      const canvas = getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim();
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', canvas);
+    };
+    update();
+    if (theme !== 'system') return;
+    system.addEventListener('change', update);
+    return () => system.removeEventListener('change', update);
+  }, [theme]);
 }
 function AppDialogs({ view }: Readonly<{ view: AppView }>) {
   return (

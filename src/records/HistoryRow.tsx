@@ -3,6 +3,7 @@ import { operationLabel } from '../forms/operations.ts';
 import { accountLabel } from '../forms/accounts.ts';
 import type { RecordsProps, Transaction } from './data.ts';
 import { recordsCopy } from './copy.ts';
+import { Icon } from '../Icon.tsx';
 
 type Props = RecordsProps &
   Readonly<{
@@ -13,45 +14,97 @@ type Props = RecordsProps &
     onDelete: () => void;
   }>;
 export function HistoryRow(props: Props) {
-  const copy = recordsCopy(props.language);
   const portfolio = props.state.portfolios.find(
     (item) => item.id === props.record.portfolioId,
   )?.name;
   const Heading = props.brief ? 'h3' : 'h2';
   return (
     <article className="history-row">
-      <div>
-        <p className="eyebrow">{date(props.record.date, props.language)}</p>
+      <div className="record-heading">
+        <time dateTime={props.record.date}>{date(props.record.date, props.language)}</time>
         <Heading>
           {operationLabel(props.record.type, props.language)} · {props.record.asset}
         </Heading>
-        <p>{portfolio}</p>
-        <p className="quiet">{props.record.sample ? copy.sample : copy.actual}</p>
+        <p className="quiet">
+          {portfolio} · {accountLabel(props.record.account, props.language).split(' · ').at(-1)}
+        </p>
+        <span className="record-badge">
+          {props.record.sample
+            ? props.language === 'ru'
+              ? 'Пример формы'
+              : 'Form sample'
+            : props.language === 'ru'
+              ? 'В расчёте'
+              : 'Included'}
+        </span>
       </div>
-      <RecordValues {...props} />
-      {!props.brief && (
-        <div className="record-actions">
-          <button
-            aria-label={`${copy.details}: ${operationLabel(props.record.type, props.language)} ${props.record.asset}`}
-            onClick={props.onDetails}
-          >
-            {copy.details}
-          </button>
-          <button
-            aria-label={`${copy.edit}: ${operationLabel(props.record.type, props.language)} ${props.record.asset}`}
-            onClick={props.onEdit}
-          >
+      <RecordSummary {...props} />
+      {!props.brief && <RecordActions {...props} />}
+    </article>
+  );
+}
+function RecordActions(props: Props) {
+  const copy = recordsCopy(props.language);
+  const title = `${operationLabel(props.record.type, props.language)} ${props.record.asset}`;
+  return (
+    <div className="record-actions">
+      <button
+        className="record-detail-button"
+        aria-label={`${copy.details}: ${title}`}
+        onClick={props.onDetails}
+      >
+        {copy.details}
+      </button>
+      <details className="record-menu">
+        <summary>
+          <Icon name="more" />
+          {props.language === 'ru' ? 'Действия' : 'Actions'}
+        </summary>
+        <div className="record-menu-options">
+          <button aria-label={`${copy.edit}: ${title}`} onClick={props.onEdit}>
             {copy.edit}
           </button>
           <button
-            aria-label={`${copy.delete}: ${operationLabel(props.record.type, props.language)} ${props.record.asset}`}
+            className="danger"
+            aria-label={`${copy.delete}: ${title}`}
             onClick={props.onDelete}
           >
             {copy.delete}
           </button>
         </div>
-      )}
-    </article>
+      </details>
+    </div>
+  );
+}
+export function RecordSummary({
+  record,
+  currency,
+  language,
+  hidden,
+}: RecordsProps & Readonly<{ record: Transaction }>) {
+  const copy = recordsCopy(language);
+  if (record.type === 'exchange')
+    return (
+      <dl className="record-summary">
+        <ExchangeValues record={record} language={language} hidden={hidden} />
+      </dl>
+    );
+  const units = record.type === 'corporate' || isAssetTransfer(record);
+  const value = units
+    ? `${number(record.quantity, language)} ${record.type === 'corporate' ? ': 1' : record.asset}`
+    : money(
+        record.amount * (currency === 'RUB' && record.currency === 'USD' ? record.fx : 1),
+        currency,
+        language,
+      );
+  return (
+    <dl className="record-summary">
+      <RecordValue
+        label={units ? quantityName(record, language) : copy.amount}
+        value={value}
+        hidden={hidden}
+      />
+    </dl>
   );
 }
 export function RecordValues({

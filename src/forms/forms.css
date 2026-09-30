@@ -1,0 +1,145 @@
+.form-sample {
+  width: fit-content;
+  margin: 12px 0 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.operation-kind {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.operation-kind label {
+  flex: none;
+  color: var(--muted);
+}
+.operation-kind select {
+  flex: 1;
+  min-width: 0;
+}
+.operation-groups,
+.entity-fields {
+  display: grid;
+  gap: 24px;
+  margin-top: 20px;
+}
+.operation-group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.operation-group legend {
+  padding: 0;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.operation-dialog .form-grid,
+.entity-dialog .form-grid {
+  margin: 0;
+  gap: 12px;
+}
+.operation-dialog .form-grid .form-field:last-child,
+.entity-dialog .form-grid .form-field:last-child {
+  grid-column: auto;
+}
+.operation-dialog .form-field,
+.entity-dialog .form-field {
+  gap: 6px;
+  min-width: 0;
+}
+.operation-dialog select,
+.entity-dialog select {
+  width: 100%;
+}
+.operation-context {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.operation-context legend {
+  color: var(--muted);
+  padding-inline: 4px;
+  margin: 0;
+}
+.operation-context input,
+.operation-context select {
+  background: var(--paper);
+}
+.exchange-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.exchange-pair .form-grid {
+  grid-template-columns: 1fr;
+}
+.operation-additional {
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
+}
+.operation-additional summary {
+  color: var(--muted);
+  font-size: 14px;
+}
+.operation-additional[open] summary {
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.form-hint {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 6px;
+}
+.operation-additional .form-hint {
+  margin-top: 16px;
+}
+.entity-subject {
+  padding: 16px;
+  margin-block: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-weight: 600;
+}
+.entity-members .confirmation {
+  border-bottom: 1px solid var(--line);
+  padding-block: 8px;
+}
+.entity-dialog .field-error {
+  margin: 0;
+}
+.operation-dialog .form-grid .form-field:only-child,
+.entity-dialog .form-grid .form-field:only-child {
+  grid-column: 1 / -1;
+}
+@media (max-width: 600px) {
+  .operation-dialog .form-grid,
+  .entity-dialog .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .form-field:only-child {
+    grid-column: 1 / -1;
+  }
+  .operation-context {
+    padding: 12px;
+  }
+  .operation-kind {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .operation-kind select {
+    flex-basis: 100%;
+  }
+  .exchange-pair {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .exchange-pair .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

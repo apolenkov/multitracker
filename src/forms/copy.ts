@@ -47,10 +47,8 @@ export const formCopy = {
     wallet: 'Кошелёк',
     confirmation: 'Подтверждаю действие с демонстрационным примером',
     confirmError: 'Подтвердите действие перед продолжением.',
-    archiveNote:
-      'В продукте архив скрывает портфель, сохраняя историю. Здесь показано только подтверждение.',
-    deleteNote:
-      'В продукте удаление затронет записи этого примера. В макете данные остаются прежними.',
+    archiveNote: 'Архив скрывает объект и сохраняет историю. Здесь показано только подтверждение.',
+    deleteNote: 'Удаление затронет записи. В макете данные остаются прежними.',
   },
   en: {
     account: 'Source / receiving account',
@@ -98,10 +96,8 @@ export const formCopy = {
     wallet: 'Wallet',
     confirmation: 'I confirm this action on the demonstration sample',
     confirmError: 'Confirm the action before continuing.',
-    archiveNote:
-      'In the product, archiving hides a portfolio while retaining history. This is a confirmation preview.',
-    deleteNote:
-      'In the product, deletion affects the records of this sample. Prototype data stays unchanged.',
+    archiveNote: 'Archiving hides the item and retains history. This is a confirmation preview.',
+    deleteNote: 'Deletion affects the records. Prototype data stays unchanged.',
   },
 } as const;
 export const getFormCopy = (language: Language) => (language === 'ru' ? formCopy.ru : formCopy.en);

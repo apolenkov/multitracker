@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ImportLanguage } from './import-model';
 import { importText } from './import-model';
-import { ImportSample, ImportIssues } from './import-fields';
+import { ImportSample } from './import-fields';
 import { DemoModal } from './modal';
 import { closeDialog } from '../Dialog';
 
@@ -25,7 +25,7 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
           'To add: 2 · To skip: 2 (1 unknown asset, 1 duplicate)',
         )}
       </p>
-      <div className="sync-actions">
+      <div className="import-history-actions">
         <button type="button" onClick={() => setDialog('details')}>
           {importText(language, 'Подробности импорта', 'Import details')}
         </button>
@@ -39,7 +39,11 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
       {dialog && (
         <DemoModal
           id="import-history"
-          title={title}
+          title={
+            dialog === 'undo'
+              ? importText(language, 'Отменить этот импорт?', 'Undo this import?')
+              : title
+          }
           language={language}
           onClose={() => setDialog(null)}
         >
@@ -59,14 +63,12 @@ function HistoryDetails({
     return (
       <div>
         <p>
-          {importText(
-            language,
-            'Набор не меняется после подтверждения или отмены. Ни одна реальная операция не сохранена.',
-            'This dataset stays fixed after confirmation or undo. No real activity was saved.',
-          )}
+          <strong>sample-transactions.csv</strong> · 2026-09-04
+        </p>
+        <p className="import-result">
+          {importText(language, '2 готовы · 2 исключены', '2 ready · 2 excluded')}
         </p>
         <ImportSample language={language} hidden={hidden} />
-        <ImportIssues language={language} />
         <button type="button" onClick={() => closeDialog('import-history')}>
           {importText(language, 'Закрыть', 'Close')}
         </button>
@@ -100,8 +102,8 @@ function UndoImport({ language, notify }: HistoryProps) {
         <button type="button" onClick={() => closeDialog('import-history')}>
           {importText(language, 'Отмена', 'Cancel')}
         </button>
-        <button type="button" className="primary" onClick={confirm}>
-          {importText(language, 'Подтвердить отмену примера', 'Confirm sample undo')}
+        <button type="button" className="danger" onClick={confirm}>
+          {importText(language, 'Отменить импорт', 'Undo import')}
         </button>
       </div>
     </div>

@@ -34,7 +34,12 @@ export function Example({ buys, currency, language, hidden }: Props) {
           </div>
         ))}
       </dl>
-      <p className="quiet">{words.reasonsNote}</p>
+      <details className="calculation-note">
+        <summary>
+          {language === 'ru' ? 'Как считается результат' : 'How the result is calculated'}
+        </summary>
+        <p className="quiet">{words.reasonsNote}</p>
+      </details>
     </details>
   );
 }

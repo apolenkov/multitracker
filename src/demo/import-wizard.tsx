@@ -89,7 +89,7 @@ function WizardActions({
   advance: () => void;
 }>) {
   return (
-    <div className="form-actions">
+    <div className="form-actions import-actions">
       <button type="button" onClick={() => closeDialog('import-wizard')}>
         {importText(language, 'Отмена', 'Cancel')}
       </button>
@@ -100,7 +100,7 @@ function WizardActions({
       )}
       <button type="button" id="import-next" className="primary" onClick={advance}>
         {step === 4
-          ? importText(language, 'Завершить пример', 'Finish sample')
+          ? importText(language, 'Подтвердить импорт', 'Confirm import')
           : importText(language, 'Далее', 'Next')}
       </button>
     </div>
@@ -110,7 +110,7 @@ function WizardProgress({ step, language }: Readonly<{ step: number; language: I
   const current = steps.at(step);
   return (
     <>
-      <p role="status" aria-live="polite">
+      <p className="import-current-step" role="status" aria-live="polite">
         {importText(language, 'Шаг', 'Step')} {step + 1} / 5 ·{' '}
         {current && importText(language, current[0], current[1])}
       </p>
@@ -120,7 +120,7 @@ function WizardProgress({ step, language }: Readonly<{ step: number; language: I
       >
         {steps.map(([ru, en], index) => (
           <li key={en} aria-current={index === step ? 'step' : undefined}>
-            {importText(language, ru, en)}
+            <span>{importText(language, ru, en)}</span>
           </li>
         ))}
       </ol>
@@ -145,7 +145,7 @@ function WizardStep({
   const props = { language, draft, update, error, scope: 'wizard' as const };
   if (step === 0) return <ImportSource {...props} />;
   if (step === 1) return <ImportFile {...props} />;
-  if (step === 2) return <ImportMapping {...props} />;
+  if (step === 2) return <ImportMapping {...props} hidden={hidden} />;
   if (step === 3) return <ImportReview {...props} hidden={hidden} />;
   return <ImportConfirmation language={language} draft={draft} />;
 }

@@ -1,0 +1,87 @@
+:root {
+  --canvas: #202c3c;
+  --paper: #2a394d;
+  --surface: #33465d;
+  --ink: #f2f6ff;
+  --muted: #bccbdd;
+  --line: #485e79;
+  --control-border: #8a9ebc;
+  --accent: #86b1ff;
+  --accent-ink: #142845;
+  --selected-bg: #24466e;
+  --selected-ink: #b9d2ff;
+  --warning: #f3c36a;
+  --green: #79e0aa;
+  --red: #ffa1ac;
+  --focus: #b5a0ff;
+}
+:root[data-theme='light'],
+.app-shell[data-theme='light'] {
+  --canvas: #f2f6fc;
+  --paper: #ffffff;
+  --surface: #eaf0f8;
+  --ink: #182b46;
+  --muted: #52657f;
+  --line: #d2deed;
+  --control-border: #6c819e;
+  --accent: #285ee5;
+  --accent-ink: #ffffff;
+  --selected-bg: #dae7ff;
+  --selected-ink: #204bac;
+  --warning: #865b0b;
+  --green: #147340;
+  --red: #b62945;
+  --focus: #6d4ad4;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme='system'],
+  .app-shell[data-theme='system'] {
+    --canvas: #f2f6fc;
+    --paper: #ffffff;
+    --surface: #eaf0f8;
+    --ink: #182b46;
+    --muted: #52657f;
+    --line: #d2deed;
+    --control-border: #6c819e;
+    --accent: #285ee5;
+    --accent-ink: #ffffff;
+    --selected-bg: #dae7ff;
+    --selected-ink: #204bac;
+    --warning: #865b0b;
+    --green: #147340;
+    --red: #b62945;
+    --focus: #6d4ad4;
+    color-scheme: light;
+  }
+}
+.app-shell[data-monochrome='true'] {
+  --accent: var(--ink);
+  --accent-ink: var(--canvas);
+  --selected-bg: var(--surface);
+  --selected-ink: var(--ink);
+  --warning: var(--ink);
+  --green: var(--ink);
+  --red: var(--ink);
+  --focus: var(--ink);
+}
+[data-monochrome='true'] .finance-overview {
+  --allocation-btc: var(--ink);
+  --allocation-msft: color-mix(in srgb, var(--ink) 65%, var(--paper));
+  --allocation-twt: color-mix(in srgb, var(--ink) 35%, var(--paper));
+}
+[data-monochrome='true'] .asset-symbol,
+[data-monochrome='true'] img,
+[data-monochrome='true'] .history-plot {
+  filter: grayscale(1);
+}
+[data-monochrome='true'] .negative {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-underline-offset: 4px;
+}
+.widget-settings {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}

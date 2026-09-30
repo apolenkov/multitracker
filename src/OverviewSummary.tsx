@@ -31,32 +31,39 @@ export function OverviewResult({
   onBuy,
 }: Props & Readonly<{ onBuy: () => void }>) {
   const labels = getLabels(language);
-  const amount = (value: number, signed = false) =>
-    hidden ? '••••' : money(value, currency, language, signed);
   return (
     <section className="summary-result" aria-label={`${labels.result} ${currency}`}>
       <dl>
-        <div>
-          <dt>
-            {labels.basis} · {currency}
-          </dt>
-          <dd>{amount(result.basis)}</dd>
-        </div>
-        <div>
-          <dt>
-            {language === 'ru' ? 'Результат за всё время' : 'All-time result'} · {currency}
-          </dt>
-          <dd className={result.profit >= 0 ? 'positive' : 'negative'}>
-            {amount(result.profit, true)}
-            <small>
-              {hidden || result.percentage === null ? '—' : percentage(result.percentage, language)}
-            </small>
-          </dd>
-        </div>
+        <dt>
+          {language === 'ru' ? 'Результат за всё время' : 'All-time result'} · {currency}
+        </dt>
+        <dd className={result.profit >= 0 ? 'positive' : 'negative'}>
+          {hidden ? '••••' : money(result.profit, currency, language, true)}
+          <small>
+            {hidden || result.percentage === null ? '—' : percentage(result.percentage, language)}
+          </small>
+        </dd>
       </dl>
       <button className="primary" onClick={onBuy}>
-        + {labels.add}
+        {labels.add}
       </button>
     </section>
+  );
+}
+
+export function OverviewAcquisition({ result, currency, language, hidden }: Props) {
+  const labels = getLabels(language);
+  return (
+    <div className="basis-details">
+      <h3>
+        {labels.basis} · {currency}
+      </h3>
+      <p>{hidden ? '••••' : money(result.basis, currency, language)}</p>
+      <p className="quiet">
+        {language === 'ru'
+          ? 'Процент результата рассчитан от этой суммы, включая комиссии.'
+          : 'The result percentage uses this amount, including fees, as its basis.'}
+      </p>
+    </div>
   );
 }

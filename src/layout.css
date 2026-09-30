@@ -9,13 +9,6 @@
     margin-left: 192px;
     padding-inline: 24px;
   }
-  .topbar {
-    gap: 12px;
-  }
-  .utility-controls {
-    grid-template-columns: 108px 116px 100px;
-    gap: 8px;
-  }
 }
 @media (max-width: 900px) {
   .sidebar {
@@ -23,6 +16,7 @@
     width: auto;
     padding: 0;
     border: 0;
+    overflow: visible;
   }
   .brand,
   .brand-note,
@@ -32,32 +26,36 @@
   .navigation {
     position: fixed;
     inset: auto 0 0;
-    flex-direction: row;
-    justify-content: space-around;
-    gap: 4px;
-    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    display: block;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--line);
     background: var(--canvas);
     z-index: 20;
   }
+  .mobile-links {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
   .navigation :is(button, a) {
-    flex: 1;
     flex-direction: column;
     justify-content: center;
     gap: 3px;
-    min-width: 0;
+    min-width: 44px;
     min-height: 56px;
-    padding: 4px;
+    padding: 4px 0;
     font-size: 14px;
     text-align: center;
+    white-space: nowrap;
   }
   .navigation [aria-current='page'] {
-    background: transparent;
+    background: var(--selected-bg);
+    color: var(--selected-ink);
   }
   .navigation .more-button {
     display: flex;
   }
-  .more-menu {
+  .navigation .more-menu {
     position: absolute;
     right: 12px;
     bottom: calc(80px + env(safe-area-inset-bottom));
@@ -65,8 +63,13 @@
     flex-direction: column;
     gap: 4px;
     min-width: 220px;
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 112px - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0;
     padding: 8px;
-    border: 1px solid var(--line);
+    border: 0;
     border-radius: 16px;
     background: var(--paper);
     box-shadow: 0 12px 32px rgb(0 0 0 / 40%);
@@ -75,7 +78,9 @@
     flex-direction: row;
     justify-content: flex-start;
     min-height: 48px;
+    flex-shrink: 0;
     padding: 10px 12px;
+    font-size: 14px;
   }
   .workspace {
     margin: 0;
@@ -88,9 +93,6 @@
   :focus-visible {
     scroll-margin-block: 20px 96px;
   }
-  .topbar {
-    min-height: 84px;
-  }
   .footer {
     flex-wrap: wrap;
   }
@@ -98,15 +100,6 @@
 @media (max-width: 600px) {
   .workspace {
     padding-inline: 16px;
-  }
-  .topbar {
-    display: grid;
-    gap: 8px;
-    padding-block: 10px;
-  }
-  .utility-controls {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
   }
   .page-heading {
     gap: 12px;
@@ -118,6 +111,6 @@
     font-size: 14px;
   }
   main {
-    padding-top: 20px;
+    padding-top: 16px;
   }
 }

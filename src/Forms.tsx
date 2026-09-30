@@ -1,3 +1,4 @@
+import './forms/forms.css';
 import type { Language } from './i18n.ts';
 import type { State } from './model/portfolio.ts';
 import { EntityDialog } from './forms/EntityDialog.tsx';

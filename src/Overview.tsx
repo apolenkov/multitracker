@@ -1,8 +1,9 @@
 import { summarize, selectedBuys } from './model/portfolio.ts';
 import type { Currency, State } from './model/portfolio.ts';
-import type { Language } from './i18n.ts';
+import { getLabels, text, type Language } from './i18n.ts';
+import { Icon } from './Icon.tsx';
 import { Holdings } from './Holdings.tsx';
-import { OverviewSummary, OverviewResult } from './OverviewSummary.tsx';
+import { OverviewSummary, OverviewResult, OverviewAcquisition } from './OverviewSummary.tsx';
 import { Example } from './OverviewExample.tsx';
 import { Report } from './insights/Report.tsx';
 import { Composition } from './insights/Composition.tsx';
@@ -35,7 +36,14 @@ export function Overview(props: Props) {
           hidden={hidden}
           onBuy={onBuy}
         />
-        <ValueHistory {...result} currency={currency} language={language} hidden={hidden} />
+        <ValueHistory {...result} currency={currency} language={language} hidden={hidden}>
+          <OverviewAcquisition
+            result={performance}
+            currency={baseCurrency}
+            language={language}
+            hidden={hidden}
+          />
+        </ValueHistory>
       </div>
       <Holdings {...props} />
       <aside
@@ -46,11 +54,28 @@ export function Overview(props: Props) {
         <Example {...display} currency={baseCurrency} />
       </aside>
       <div className="overview-report">
+        <OverviewLinks language={language} />
         <Report {...display} />
       </div>
       <div className="overview-history">
         <History {...props} brief />
       </div>
     </div>
+  );
+}
+
+function OverviewLinks({ language }: Readonly<{ language: Language }>) {
+  const labels = getLabels(language);
+  return (
+    <nav
+      className="overview-links"
+      aria-label={language === 'ru' ? 'Другие учебные разделы' : 'Other sample sections'}
+    >
+      {(['analytics', 'markets', 'events'] as const).map((screen) => (
+        <a key={screen} href={`#${screen}`}>
+          {text(labels, screen)} <Icon name="chevron" />
+        </a>
+      ))}
+    </nav>
   );
 }

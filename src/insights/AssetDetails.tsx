@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { RefObject } from 'react';
 import { closeDialog, DialogHeading, keepDialogFocus } from '../Dialog.tsx';
-import { date, demoAccount, getLabels, money, number, type Language } from '../i18n.ts';
+import { date, demoAccount, getLabels, money, number, percentage, type Language } from '../i18n.ts';
 import {
   assessmentDate,
   prices,
@@ -26,36 +27,33 @@ type Props = Readonly<{
 type ValuesProps = Props & Readonly<{ buys: readonly Buy[] }>;
 
 export function AssetDetails(props: Props) {
-  const labels = getLabels(props.language);
-  const words = insightWords(props.language);
   const [editing, setEditing] = useState(false);
-  const valuationButton = useRef<HTMLButtonElement>(null);
-  const finish = () => {
-    setEditing(false);
-    valuationButton.current?.focus();
-  };
   const [saved, setSaved] = useState(0);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const finish = () => setEditing(false);
   const buys = selectedBuys(props.state, props.portfolioId).filter(
     (buy) => buy.asset === props.asset,
   );
+  useEffect(() => {
+    if (!editing) trigger.current?.focus();
+  }, [editing]);
   return (
     <dialog
       id="asset-dialog"
       aria-labelledby="asset-title"
       onKeyDown={keepDialogFocus}
-      onClose={() => setEditing(false)}
+      onClose={finish}
+      onCancel={(event) => {
+        if (editing) {
+          event.preventDefault();
+          finish();
+        }
+      }}
     >
-      <AssetHeading asset={props.asset} language={props.language} />
-      <p className="quiet">{labels.demo}</p>
-      <PositionValues {...props} buys={buys} />
-      <Quote {...props} buys={buys} />
-      <PositionHistory {...props} buys={buys} />
-      <PriceGraph {...props} />
-      <button type="button" ref={valuationButton} onClick={() => setEditing(true)}>
-        {words.valuation}
-      </button>
-      {editing && (
+      <AssetHeading asset={props.asset} language={props.language} editing={editing} />
+      {editing ? (
         <ManualValuation
+          asset={props.asset}
           language={props.language}
           onCancel={finish}
           onSave={() => {
@@ -63,25 +61,71 @@ export function AssetDetails(props: Props) {
             setSaved((previous) => previous + 1);
           }}
         />
+      ) : (
+        <AssetContent
+          {...props}
+          buys={buys}
+          trigger={trigger}
+          onEdit={() => setEditing(true)}
+          saved={saved}
+        />
       )}
-      {saved > 0 && (
-        <p key={saved} role="status">
-          {words.saved}
-        </p>
-      )}
-      <CloseAsset language={props.language} />
     </dialog>
   );
 }
 
-function PositionValues({ buys, currency, baseCurrency, language, hidden }: ValuesProps) {
+function AssetContent(
+  props: ValuesProps &
+    Readonly<{
+      trigger: RefObject<HTMLButtonElement | null>;
+      onEdit: () => void;
+      saved: number;
+    }>,
+) {
+  const words = insightWords(props.language);
+  return (
+    <>
+      <PositionValues {...props} />
+      <details className="asset-quote">
+        <summary>{words.quote}</summary>
+        <Quote {...props} />
+      </details>
+      <PositionHistory {...props} />
+      <PriceGraph {...props} />
+      {props.saved > 0 && (
+        <p key={props.saved} role="status">
+          {words.saved}
+        </p>
+      )}
+      <div className="form-actions">
+        <button type="button" onClick={() => closeDialog('asset-dialog')}>
+          {getLabels(props.language).close}
+        </button>
+        <button type="button" className="primary" ref={props.trigger} onClick={props.onEdit}>
+          {words.valuation}
+        </button>
+      </div>
+    </>
+  );
+}
+
+function PositionValues({
+  buys,
+  state,
+  portfolioId,
+  currency,
+  baseCurrency,
+  language,
+  hidden,
+}: ValuesProps) {
   const words = insightWords(language);
   const result = totals(buys, currency);
   const performance = totals(buys, baseCurrency);
+  const total = totals(selectedBuys(state, portfolioId), currency).value;
   const rows = [
     [words.current, result.value, currency],
-    [`${words.cost} · ${baseCurrency}`, performance.basis, baseCurrency],
     [`${words.unrealized} · ${baseCurrency}`, performance.profit, baseCurrency],
+    [`${words.cost} · ${baseCurrency}`, performance.basis, baseCurrency],
   ] as const;
   return (
     <div>
@@ -94,6 +138,10 @@ function PositionValues({ buys, currency, baseCurrency, language, hidden }: Valu
               buys.reduce((sum, buy) => sum + buy.quantity, 0),
               language,
             )}
+      </p>
+      <p>
+        {getLabels(language).weight}:{' '}
+        {hidden ? '••••' : percentage(total > 0 ? (result.value / total) * 100 : 0, language)}
       </p>
       <dl className="asset-detail-values">
         {rows.map(([label, value, unit]) => (
@@ -115,7 +163,6 @@ function Quote({ asset, state, buys, language, hidden }: ValuesProps) {
   });
   return (
     <div>
-      <h3>{words.quote}</h3>
       <dl className="asset-detail-values">
         <div>
           <dt>{words.amount}</dt>
@@ -213,21 +260,19 @@ function PriceGraph({ asset, language, hidden }: Props) {
   );
 }
 
-function CloseAsset({ language }: Readonly<{ language: Language }>) {
-  return (
-    <div className="form-actions">
-      <button className="primary" onClick={() => closeDialog('asset-dialog')}>
-        {getLabels(language).close}
-      </button>
-    </div>
-  );
-}
-
-function AssetHeading({ asset, language }: Readonly<{ asset: Asset; language: Language }>) {
+function AssetHeading({
+  asset,
+  language,
+  editing,
+}: Readonly<{ asset: Asset; language: Language; editing: boolean }>) {
   const labels = getLabels(language);
   return (
     <DialogHeading
-      title={`${labels.assetDetails} · ${asset}`}
+      title={
+        editing
+          ? `${language === 'ru' ? 'Оценить' : 'Value'} ${asset}`
+          : `${labels.assetDetails} · ${asset}`
+      }
       id="asset-title"
       dialog="asset-dialog"
       labels={labels}

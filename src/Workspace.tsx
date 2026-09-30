@@ -46,6 +46,8 @@ function PageContent({ view }: Readonly<{ view: AppView }>) {
           onCurrency={view.setCurrency}
           onBaseCurrency={view.setBaseCurrency}
           onTheme={view.setTheme}
+          monochrome={view.monochrome}
+          onMonochrome={view.setMonochrome}
           hidden={view.hidden}
           onHidden={view.setHidden}
           density={view.density}

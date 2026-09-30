@@ -9,3 +9,5 @@ coverage/
 # Raw local audit artifacts are retained on disk; publish the review summary.
 docs/audits/
 docs/evidence/
+# Local visual review captures; the design contract is tracked separately.
+.impeccable/review/

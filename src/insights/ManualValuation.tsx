@@ -1,11 +1,17 @@
+import { useEffect, useRef } from 'react';
 import type { KeyboardEvent } from 'react';
-import { assessmentDate } from '../model/portfolio.ts';
+import { assessmentDate, type Asset } from '../model/portfolio.ts';
 import type { Language } from '../i18n.ts';
 import { insightWords } from './words.ts';
 
-type Props = Readonly<{ language: Language; onCancel: () => void; onSave: () => void }>;
+type Props = Readonly<{
+  asset: Asset;
+  language: Language;
+  onCancel: () => void;
+  onSave: () => void;
+}>;
 
-export function ManualValuation({ language, onCancel, onSave }: Props) {
+export function ManualValuation({ asset, language, onCancel, onSave }: Props) {
   const words = insightWords(language);
   return (
     <form
@@ -15,15 +21,14 @@ export function ManualValuation({ language, onCancel, onSave }: Props) {
         onSave();
       }}
     >
-      <h3>{words.valuation}</h3>
       <p className="quiet">{words.valuationNote}</p>
-      <ValuationFields language={language} onCancel={onCancel} />
+      <ValuationFields asset={asset} language={language} onCancel={onCancel} />
       <div className="form-actions">
         <button type="button" onClick={onCancel} onKeyDown={cancelOnEscape(onCancel)}>
           {words.cancel}
         </button>
         <button type="submit" className="primary" onKeyDown={cancelOnEscape(onCancel)}>
-          {words.save}
+          {words.saveValuation}
         </button>
       </div>
     </form>
@@ -31,15 +36,19 @@ export function ManualValuation({ language, onCancel, onSave }: Props) {
 }
 
 function ValuationFields({
+  asset,
   language,
   onCancel,
-}: Readonly<{ language: Language; onCancel: () => void }>) {
+}: Readonly<{ asset: Asset; language: Language; onCancel: () => void }>) {
   const words = insightWords(language);
+  const priceInput = useRef<HTMLInputElement>(null);
+  useEffect(() => priceInput.current?.focus(), []);
   return (
     <>
       <label>
-        {words.amount}
+        {asset} · {words.amount}
         <input
+          ref={priceInput}
           onKeyDown={cancelOnEscape(onCancel)}
           type="number"
           name="unit-price"

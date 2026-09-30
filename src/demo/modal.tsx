@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { closeDialog, keepDialogFocus } from '../Dialog.tsx';
 import type { Language } from './words.ts';
+import { Icon } from '../Icon.tsx';
 
 type Props = Readonly<{
   id: string;
@@ -45,10 +46,10 @@ export function DemoModal({ id, title, language, onClose, children }: Props) {
           aria-label={language === 'ru' ? 'Закрыть' : 'Close'}
           onClick={() => closeDialog(id)}
         >
-          ×
+          <Icon name="close" />
         </button>
       </div>
-      {children}
+      <div className="demo-dialog-body">{children}</div>
     </dialog>
   );
 }

@@ -24,7 +24,7 @@ export function History(props: Props) {
   return (
     <section aria-labelledby={props.brief ? 'recent-history-title' : undefined}>
       {props.brief && <h2 id="recent-history-title">{labels.recentHistory}</h2>}
-      <p className="quiet">{props.brief ? labels.historyNote : copy.note}</p>
+      <HistoryNote language={props.language} brief={props.brief ?? false} />
       {!props.brief && (
         <HistoryFilters
           filter={filter}
@@ -34,7 +34,7 @@ export function History(props: Props) {
         />
       )}
       {!props.brief && (
-        <p>
+        <p className="history-count">
           {copy.count}: {filtered.length}
         </p>
       )}
@@ -96,4 +96,15 @@ function HistoryRows(
       ))}
     </div>
   );
+}
+
+function HistoryNote({
+  language,
+  brief,
+}: Readonly<{ language: Props['language']; brief: boolean }>) {
+  const message =
+    language === 'ru'
+      ? 'Покупки в расчёте. Остальные типы — примеры.'
+      : 'Purchases count toward results. Other types are samples.';
+  return <p className="quiet history-note">{brief ? getLabels(language).historyNote : message}</p>;
 }

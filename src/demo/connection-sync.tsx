@@ -3,6 +3,7 @@ import { DemoModal } from './modal';
 import { ConnectionForm } from './connection-form';
 import { demoState } from '../model/portfolio';
 import { accountLabel } from '../forms/accounts';
+import { Icon } from '../Icon.tsx';
 import {
   connectionText,
   providerLabel,
@@ -31,7 +32,6 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
   };
   return (
     <div className="demo-panel connection-list">
-      <p className="demo-note">{t.onlyDemo}</p>
       {providers.map((provider) => (
         <ConnectionCard
           key={provider}
@@ -42,7 +42,7 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
           remove={() => setRemoving(provider)}
         />
       ))}
-      <p className="demo-note">{t.privacy}</p>
+      <ConnectionPrivacy language={language} t={t} />
       {editing !== null && (
         <EditConnection
           {...localeProps}
@@ -63,6 +63,20 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
     </div>
   );
 }
+function ConnectionPrivacy({
+  language,
+  t,
+}: Readonly<{ language: 'ru' | 'en'; t: ConnectionWords }>) {
+  return (
+    <>
+      <p className="demo-note">{t.onlyDemo}</p>
+      <details className="connection-privacy">
+        <summary>{language === 'ru' ? 'Приватность подключений' : 'Connection privacy'}</summary>
+        <p>{t.privacy}</p>
+      </details>
+    </>
+  );
+}
 function ConnectionCard({
   provider,
   language,
@@ -80,7 +94,8 @@ function ConnectionCard({
 }>) {
   const portfolio = demoState.portfolios.find((item) => item.id === value?.portfolio);
   return (
-    <article>
+    <article className="connection-row">
+      <ProviderLogo provider={provider} />
       <div className="connection-summary">
         <h2>{providerLabel(provider, t)}</h2>
         <p>{value ? t.configured : t.disconnected}</p>
@@ -90,9 +105,8 @@ function ConnectionCard({
             {t.history}: {value.start}
           </p>
         )}
-        <p>{t.rights}</p>
       </div>
-      <div className="sync-actions">
+      <div className="connection-actions">
         <button onClick={edit}>{value ? t.edit : t.configure}</button>
         {value && (
           <details>
@@ -154,7 +168,12 @@ function RemoveConnection({
     disconnect: () => void;
   }>) {
   return (
-    <DemoModal id="connection-remove" language={language} title={t.disconnectTitle} onClose={close}>
+    <DemoModal
+      id="connection-remove"
+      language={language}
+      title={`${t.disconnectTitle} ${providerLabel(provider, t)}`}
+      onClose={close}
+    >
       <p>
         {providerLabel(provider, t)} — {t.disconnectInfo}
       </p>
@@ -162,8 +181,23 @@ function RemoveConnection({
         <button className="quiet" onClick={close}>
           {t.cancel}
         </button>
-        <button onClick={disconnect}>{t.disconnect}</button>
+        <button className="danger" onClick={disconnect}>
+          {t.disconnect}
+        </button>
       </div>
     </DemoModal>
+  );
+}
+
+function ProviderLogo({ provider }: Readonly<{ provider: string }>) {
+  const mark = new Map([
+    ['Tradernet', 'T'],
+    ['Binance', 'BN'],
+    ['Bybit', 'BY'],
+  ]).get(provider);
+  return (
+    <span className="provider-logo" data-provider={provider} aria-hidden="true">
+      {mark ?? <Icon name={provider === 'wallet' ? 'portfolios' : 'connections'} />}
+    </span>
   );
 }

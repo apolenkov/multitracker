@@ -1,40 +1,42 @@
-import assert, { AssertionError } from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import { createBrowser, evaluate } from './ui-driver.ts';
 import type { Browser } from './ui-driver.ts';
 import { appearanceThemes, independentCurrencies } from './ui-preferences.ts';
+import { analyticsChanges, analyticsPrivacy, widgetAppearance } from './ui-exploration.ts';
+import { alertDraft, marketFollowing, marketRouteClosure } from './ui-market-checks.ts';
+import { eventReminder, eventUpdates } from './ui-events-checks.ts';
+import { createCheck, type Result } from './ui-results.ts';
+import { conflictRadioChoices } from './ui-sync-checks.ts';
+import { reveal } from './ui-exploration.ts';
+import { operationExtras } from './ui-operation-checks.ts';
+import { mappingSamples } from './ui-import-checks.ts';
+import { narrowAllocation } from './ui-overview-checks.ts';
 
 const screens = [
   ['overview', 'Обзор', 'Overview'],
   ['portfolios', 'Портфели', 'Portfolios'],
+  ['markets', 'Рынки', 'Markets'],
+  ['following', 'Избранное', 'Favorites'],
   ['history', 'Операции', 'Transactions'],
+  ['analytics', 'Аналитика', 'Analytics'],
+  ['events', 'События', 'Events'],
   ['import', 'Импорт', 'Import'],
   ['connections', 'Подключения', 'Connections'],
   ['sync', 'Синхронизация', 'Sync'],
   ['settings', 'Настройки', 'Settings'],
 ] as const;
 type Language = 'ru' | 'en';
-type Result = Readonly<{ id: string; status: string; observed: unknown }>;
 const baseUrl = new URL(process.env.MULTITRACKER_UI_URL ?? 'http://127.0.0.1:5173');
 assert.ok(['http:', 'https:'].includes(baseUrl.protocol), 'URL должен быть HTTP(S)');
 assert.equal(baseUrl.username + baseUrl.password, '', 'URL не должен содержать credentials');
 const browser = createBrowser();
+const check = createCheck(browser);
 
 function truth(source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
 }
-function check(id: string, action: () => unknown): Result {
-  try {
-    return { id, status: 'PASS', observed: action() };
-  } catch (error: unknown) {
-    return {
-      id,
-      status: error instanceof AssertionError ? 'FAIL' : 'NOT VERIFIED',
-      observed: error instanceof Error ? error.message : String(error),
-    };
-  }
-}
 function navigate(screen: string, width = 1440, language: Language = 'ru') {
-  const extra = ['import', 'connections', 'sync', 'settings'].includes(screen);
+  const extra = !['overview', 'markets', 'following'].includes(screen);
   if (width === 375 && extra) {
     browser.run(
       'find',
@@ -46,13 +48,14 @@ function navigate(screen: string, width = 1440, language: Language = 'ru') {
       '--exact',
     );
   }
-  const scope = width === 375 && extra ? '.more-menu' : '.navigation';
+  const scope = width === 375 ? (extra ? '.more-menu' : '.mobile-links') : '.desktop-links';
   const selector = `${scope} a[href="#${screen}"]`;
   browser.run('click', selector);
+  const heading = screens.find(([route]) => route === screen)?.[language === 'ru' ? 1 : 2];
   browser.run(
     'wait',
     '--fn',
-    `location.hash === '#${screen}' && document.activeElement?.id === 'main'`,
+    `location.hash === '#${screen}' && document.activeElement?.id === 'main' && document.querySelector('#main h1')?.textContent === ${JSON.stringify(heading)}`,
   );
 }
 function language(value: Language) {
@@ -133,8 +136,10 @@ function startImport() {
 }
 function importMapping() {
   navigate('import');
+  reveal(browser, '#import-source-options > summary');
   browser.run('select', '#import-page-source', 'Binance');
-  browser.run('click', '.demo-panel details summary');
+  reveal(browser, 'details:has(#import-page-map-date) > summary');
+  mappingSamples(browser, 'page');
   browser.run('select', '#import-page-map-date', 'skip');
   language('en');
   assert.equal(evaluate(browser, 'document.querySelector("#import-page-map-date")?.value'), 'skip');
@@ -143,6 +148,7 @@ function importMapping() {
   browser.run('click', '#import-next');
   browser.run('click', '#import-sample-file');
   browser.run('click', '#import-next');
+  mappingSamples(browser, 'wizard');
   assert.equal(
     evaluate(browser, 'document.querySelector("#import-wizard-map-date")?.value'),
     'skip',
@@ -194,6 +200,15 @@ function hiddenReconciliation() {
   navigate('settings');
   browser.run('find', 'label', 'Скрыть суммы', 'check', '--exact');
   navigate('import');
+  reveal(browser, 'details:has(#import-page-map-date) > summary');
+  mappingSamples(browser, 'page', true);
+  startImport();
+  browser.run('click', '#import-next');
+  browser.run('click', '#import-sample-file');
+  browser.run('click', '#import-next');
+  mappingSamples(browser, 'wizard', true);
+  browser.run('press', 'Escape');
+  browser.run('wait', '--fn', '!document.querySelector("#import-wizard[open]")');
   browser.run('find', 'role', 'button', 'click', '--name', 'Сверить остаток', '--exact');
   browser.run('wait', '#import-history[open]');
   assert.deepEqual(
@@ -216,17 +231,38 @@ function runChecks(driver: Browser): readonly Result[] {
   driver.run('wait', '#main h1');
   const pages = allScreens();
   language('ru');
-  return [
-    ...pages,
-    check('preferences:appearance-themes', () => appearanceThemes(browser)),
-    check('preferences:independent-currencies', () => independentCurrencies(browser)),
-    check('navigation:back-main-focus', backFocus),
-    check('feedback:repeat-save', repeatSave),
-    check('import:mapping-locale-invalid', importMapping),
-    check('import:cancel-source', cancelImport),
-    check('settings:finance-roundtrip', settingsPersist),
-    check('privacy:hidden-import-reconciliation', hiddenReconciliation),
+  const actions: readonly Readonly<[string, () => unknown]>[] = [
+    ['preferences:appearance-themes', () => appearanceThemes(browser)],
+    ['preferences:independent-currencies', () => independentCurrencies(browser)],
+    ['navigation:back-main-focus', backFocus],
+    ['feedback:repeat-save', repeatSave],
+    ['import:mapping-locale-invalid', importMapping],
+    ['import:cancel-source', cancelImport],
+    ['settings:finance-roundtrip', settingsPersist],
+    ['markets:search-follow-roundtrip', () => marketFollowing(browser)],
+    ['alerts:invalid-save-edit-cancel', () => alertDraft(browser)],
+    ['markets:dialog-route-closure', () => marketRouteClosure(browser)],
+    ['analytics:sections-periods', () => analyticsChanges(browser)],
+    ['analytics:masked-samples', () => analyticsPrivacy(browser)],
+    ['events:reminder-invalid-save-cancel', () => eventReminder(browser)],
+    ['events:updates-transcripts', () => eventUpdates(browser)],
+    ['preferences:widget-monochrome', () => widgetAppearance(browser)],
+    ['sync:radio-labels-width-selection', () => conflictRadioChoices(browser)],
+    ['operations:meaningful-extras-visible', () => operationExtras(browser)],
+    ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
+    ['privacy:hidden-import-reconciliation', hiddenReconciliation],
   ];
+  return actions.reduce<readonly Result[]>(
+    (results, [id, action]) => [
+      ...results,
+      check(
+        id,
+        action,
+        results.every((result) => result.status === 'PASS'),
+      ),
+    ],
+    pages,
+  );
 }
 function main() {
   const start = new Date().toISOString();

@@ -4,62 +4,42 @@
   margin-left: 8px;
   font-weight: 400;
 }
-.chart-key {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin: 16px 0;
+.value-history {
+  margin-top: 12px;
 }
-.chart-key dt {
-  font-size: 14px;
+.chart-heading {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
 }
-.chart-key dd {
-  font-size: 14px;
-  font-weight: 600;
-  padding-left: 26px;
-  margin-top: 4px;
-}
-.key-line {
-  display: inline-block;
-  width: 18px;
-  height: 3px;
-  background: var(--green);
-}
-.key-line.dashed {
-  background: transparent;
-  border-top: 2px dashed var(--muted);
-}
-.value-history {
-  margin-top: 16px;
+.chart-heading h2 {
+  font-size: 16px;
+  font-weight: 500;
 }
 .period-controls {
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  border-bottom: 1px solid var(--line);
+  gap: 4px;
 }
 .period-controls button {
   min-width: 44px;
-  padding: 10px 16px;
+  padding: 8px 10px;
   font-size: 14px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
+  font-weight: 500;
+  border-color: transparent;
   background: transparent;
   color: var(--muted);
 }
 .period-controls button[aria-pressed='true'] {
-  border-bottom-color: var(--ink);
-  color: var(--ink);
+  background: var(--selected-bg);
+  color: var(--selected-ink);
 }
 .history-plot {
   display: block;
   width: 100%;
-  height: 160px;
-  margin-top: 16px;
+  height: 144px;
+  margin-top: 12px;
 }
 .history-grid {
   stroke: var(--line);
@@ -68,66 +48,46 @@
 .history-area {
   fill: url('#portfolio-area');
 }
-.history-value,
-.history-basis {
+.history-value {
   fill: none;
+  stroke: var(--green);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
-}
-.history-value {
-  stroke: var(--green);
-}
-.history-basis {
-  stroke: var(--muted);
-  stroke-width: 1.5;
-  stroke-dasharray: 5 6;
-  opacity: 0.5;
 }
 .history-axis {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
   color: var(--muted);
-  margin: 8px 3.333% 12px;
+  margin: 4px 3.333% 0;
 }
 .history-plot-hidden {
-  min-height: 160px;
+  min-height: 144px;
   display: grid;
   place-content: center;
   color: var(--muted);
 }
-.history-dates {
-  margin-top: 12px;
-}
-.chart-controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: start;
-  gap: 8px;
-  margin-top: 8px;
-}
-.chart-disclosure[open] {
-  flex-basis: 100%;
-}
 .chart-disclosure > summary {
-  text-align: right;
-}
-.chart-disclosure > summary,
-.history-dates > summary {
   color: var(--muted);
   font-size: 14px;
   min-height: 44px;
 }
-.history-date-scroll {
+.history-date-scroll,
+.table-scroll {
   overflow-x: auto;
+  max-width: 100%;
 }
 .history-dates table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+}
+.history-dates caption {
+  padding-block: 12px;
+  text-align: left;
+  color: var(--muted);
 }
 .history-dates th,
 .history-dates td {
@@ -138,11 +98,60 @@
 .history-dates th:first-child {
   text-align: left;
 }
+.chart-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 16px 0;
+}
+.chart-key dt,
+.chart-range {
+  font-size: 14px;
+  color: var(--muted);
+}
+.chart-key dd {
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.key-line {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  margin-right: 8px;
+  background: var(--green);
+}
+.allocation-ring {
+  width: 152px;
+  height: 152px;
+  border-radius: 50%;
+  margin: 20px auto;
+  display: grid;
+  place-items: center;
+}
+.allocation-ring > div {
+  width: 110px;
+  height: 110px;
+  background: var(--paper);
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+.allocation-ring strong {
+  font-size: 18px;
+  font-weight: 600;
+}
+.allocation-ring span {
+  color: var(--muted);
+  font-size: 14px;
+}
 .allocation-legend > div {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  padding: 9px 0;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
   font-size: 14px;
 }
 .allocation-legend dt {
@@ -164,10 +173,17 @@
   background: var(--allocation-twt);
 }
 .allocation-legend dd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
   text-align: right;
 }
-.asset-timeline {
-  margin-block: 20px;
+.allocation-share {
+  color: var(--muted);
+}
+.asset-timeline,
+.asset-quote {
+  margin-block: 12px;
   font-size: 14px;
 }
 .asset-timeline table {
@@ -183,11 +199,15 @@
 .asset-price-form {
   display: grid;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 16px;
 }
-
-.chart-range {
-  color: var(--muted);
-  font-size: 14px;
+.asset-price-form label {
+  display: grid;
+  gap: 6px;
+}
+#asset-dialog h3 {
   margin-top: 8px;
+}
+#asset-dialog .form-actions {
+  margin-top: 20px;
 }

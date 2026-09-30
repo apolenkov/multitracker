@@ -5,20 +5,9 @@
   line-height: 1.45;
   font-size: 16px;
   font-variant-numeric: tabular-nums;
-  color: #f5f5f7;
-  background: #101010;
-  --canvas: #101010;
-  --paper: #1c1c1e;
-  --surface: #242426;
-  --ink: #f5f5f7;
-  --muted: #a7a7ad;
-  --line: #353538;
-  --control-border: #77777f;
-  --accent: #f5f5f7;
-  --accent-ink: #101010;
-  --green: #34d872;
-  --red: #ff6b7a;
-  --focus: #a997ff;
+  color: var(--ink);
+  background: var(--canvas);
+  color-scheme: dark;
   --radius: 12px;
 }
 .app-shell {
@@ -27,42 +16,11 @@
   color-scheme: dark;
   min-height: 100dvh;
 }
-.app-shell[data-theme='light'] {
-  --canvas: #f4f4f6;
-  --paper: #ffffff;
-  --surface: #ebebef;
-  --ink: #17171b;
-  --muted: #606069;
-  --line: #d5d5dc;
-  --control-border: #777780;
-  --accent: #17171b;
-  --accent-ink: #ffffff;
-  --green: #117337;
-  --red: #bb2440;
-  --focus: #6540ce;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: light) {
-  .app-shell[data-theme='system'] {
-    --canvas: #f4f4f6;
-    --paper: #ffffff;
-    --surface: #ebebef;
-    --ink: #17171b;
-    --muted: #606069;
-    --line: #d5d5dc;
-    --control-border: #777780;
-    --accent: #17171b;
-    --accent-ink: #ffffff;
-    --green: #117337;
-    --red: #bb2440;
-    --focus: #6540ce;
-    color-scheme: light;
-  }
-}
 * {
   box-sizing: border-box;
 }
 body {
+  background: var(--canvas);
   margin: 0;
   min-width: 320px;
 }
@@ -80,7 +38,7 @@ select {
 }
 button {
   min-height: 44px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-border);
   border-radius: var(--radius);
   background: var(--paper);
   padding: 9px 16px;
@@ -109,19 +67,24 @@ input,
 select,
 textarea {
   min-height: 44px;
-  background: var(--paper);
+  background: var(--surface);
   border: 1px solid var(--control-border);
-  border-radius: var(--radius);
+  border-radius: 10px;
   padding: 9px 12px;
   max-width: 100%;
 }
-input {
+input:not([type='checkbox'], [type='radio']) {
   width: 100%;
 }
-input[type='checkbox'] {
+input[type='checkbox'],
+input[type='radio'] {
   width: 22px;
+  height: 22px;
   min-height: 22px;
-  accent-color: var(--green);
+  flex: none;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--accent);
 }
 summary {
   min-height: 44px;
@@ -147,9 +110,9 @@ h3 {
   text-wrap: balance;
 }
 h1 {
-  font-size: 30px;
-  font-weight: 750;
-  letter-spacing: -0.8px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
 }
 h2 {
   font-size: 20px;
@@ -219,15 +182,15 @@ a {
 }
 dialog {
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 16px;
   background: var(--paper);
   color: var(--ink);
-  padding: 28px;
+  padding: 24px;
   width: min(640px, calc(100% - 32px));
-  max-height: 85dvh;
+  max-height: min(85dvh, calc(100dvh - 32px));
   overflow: auto;
   overscroll-behavior: contain;
-  scroll-padding-block: 20px 100px;
+  scroll-padding-block: 24px;
 }
 dialog::backdrop {
   background: rgb(0 0 0 / 70%);
@@ -246,10 +209,8 @@ dialog::backdrop {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 24px;
-  position: sticky;
-  bottom: -28px;
-  z-index: 2;
-  padding-block: 16px 28px;
+  flex-wrap: wrap;
+  padding-top: 16px;
   background: var(--paper);
   border-top: 1px solid var(--line);
 }
@@ -267,11 +228,6 @@ dialog::backdrop {
   dialog {
     padding: 20px;
   }
-  .form-actions,
-  .dialog-actions {
-    bottom: -20px;
-    padding-bottom: 20px;
-  }
   h1 {
     font-size: 27px;
   }
@@ -288,4 +244,51 @@ dialog::backdrop {
     animation: none !important;
     transition: none !important;
   }
+}
+
+.ui-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+button.destructive {
+  background: var(--red);
+  color: var(--canvas);
+  border-color: var(--red);
+}
+.close-button,
+.icon-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+  flex: none;
+}
+::selection {
+  background: var(--selected-bg);
+  color: var(--selected-ink);
+}
+input,
+textarea {
+  caret-color: var(--accent);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+* {
+  scrollbar-color: var(--control-border) var(--canvas);
+  scrollbar-width: thin;
+}
+a {
+  text-underline-offset: 3px;
+}
+.privacy-summary {
+  display: grid;
+  gap: 12px;
+  margin-block: 16px;
+  max-width: 70ch;
 }

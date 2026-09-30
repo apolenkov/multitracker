@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { date, getLabels, money, type Language } from './i18n.ts';
 import type { Currency } from './model/portfolio.ts';
 import './charts.css';
@@ -8,6 +8,8 @@ const periods = [
     id: 'month',
     ru: '1М',
     en: '1M',
+    ruName: 'Один месяц',
+    enName: 'One month',
     points: [
       ['2026-09-01', 0.91, 0.92],
       ['2026-09-10', 0.96, 0.92],
@@ -19,6 +21,8 @@ const periods = [
     id: 'quarter',
     ru: '3М',
     en: '3M',
+    ruName: 'Три месяца',
+    enName: 'Three months',
     points: [
       ['2026-07-01', 0.82, 0.8],
       ['2026-08-01', 0.88, 0.92],
@@ -30,6 +34,8 @@ const periods = [
     id: 'year',
     ru: '1Г',
     en: '1Y',
+    ruName: 'Один год',
+    enName: 'One year',
     points: [
       ['2025-09-30', 0.48, 0.5],
       ['2026-01-30', 0.65, 0.7],
@@ -41,6 +47,8 @@ const periods = [
     id: 'all',
     ru: 'Всё',
     en: 'All',
+    ruName: 'Вся история примера',
+    enName: 'Full sample history',
     points: [
       ['2025-01-01', 0.3, 0.35],
       ['2025-09-30', 0.48, 0.5],
@@ -57,37 +65,31 @@ type Props = Readonly<{
   currency: Currency;
   language: Language;
   hidden: boolean;
+  children?: ReactNode;
 }>;
 
 export function ValueHistory(props: Props) {
-  const labels = getLabels(props.language);
   const [period, setPeriod] = useState<Period>(periods[0]);
   return (
     <section className="value-history" aria-labelledby="value-history-title">
-      <h2 id="value-history-title" className="visually-hidden">
-        {labels.chartTitle}
-      </h2>
-      <HistoryPlot {...props} period={period} />
-      <div className="chart-controls">
+      <div className="chart-heading">
+        <h2 id="value-history-title">
+          {props.language === 'ru' ? 'История стоимости' : 'Value history'}{' '}
+          <span className="unit">{props.currency}</span>
+        </h2>
         <PeriodControls period={period} language={props.language} onSelect={setPeriod} />
-        <details className="chart-disclosure">
-          <summary
-            aria-label={`${props.language === 'ru' ? 'Данные' : 'Data'}: ${labels.chartDates}`}
-          >
-            {props.language === 'ru' ? 'Данные' : 'Data'}
-          </summary>
-          <p className="quiet">
-            {labels.chartSampleNote} {labels.fixed}
-          </p>
-          <HistorySummary {...props} period={period} />
-          <HistoryDates {...props} period={period} />
-        </details>
       </div>
+      <HistoryPlot {...props} period={period} />
+      <div className="history-axis" aria-hidden="true">
+        <span>{date(period.points[0][0], props.language)}</span>
+        <span>{date('2026-09-30', props.language)}</span>
+      </div>
+      <HistoryData {...props} period={period} />
     </section>
   );
 }
 
-function HistoryPlot({ value, currency, language, hidden, period }: Props & { period: Period }) {
+function HistoryPlot({ value, language, hidden, period }: Props & { period: Period }) {
   const labels = getLabels(language);
   const amounts = period.points.map(([, factor]) => value * factor);
   const minimum = Math.min(...amounts);
@@ -110,12 +112,6 @@ function HistoryPlot({ value, currency, language, hidden, period }: Props & { pe
       ) : (
         <HistorySvg value={coordinates()} />
       )}
-      <p className="chart-range">
-        {language === 'ru' ? 'Диапазон примера' : 'Sample range'}:{' '}
-        {hidden
-          ? '••••'
-          : `${money(minimum, currency, language)} – ${money(maximum, currency, language)}`}
-      </p>
     </>
   );
 }
@@ -171,9 +167,16 @@ function HistoryDates({
   const amount = (sum: number) => (hidden ? '••••' : money(sum, currency, language));
   return (
     <div className="history-dates">
-      <div className="history-date-scroll">
+      <div
+        className="history-date-scroll"
+        tabIndex={0}
+        role="region"
+        aria-label={labels.chartDates}
+      >
         <table>
-          <caption className="visually-hidden">{labels.chartTitle}</caption>
+          <caption>
+            {language === 'ru' ? period.ruName : period.enName} · {currency}
+          </caption>
           <thead>
             <tr>
               <th scope="col">{labels.chartDate}</th>
@@ -212,12 +215,36 @@ function PeriodControls({
           type="button"
           key={item.id}
           aria-pressed={item.id === period.id}
+          aria-label={`${language === 'ru' ? item.ru : item.en}: ${language === 'ru' ? item.ruName : item.enName}`}
           onClick={() => onSelect(item)}
         >
           {language === 'ru' ? item.ru : item.en}
         </button>
       ))}
     </div>
+  );
+}
+
+function HistoryData(props: Props & Readonly<{ period: Period }>) {
+  const { currency, language, hidden, period, value } = props;
+  const labels = getLabels(language);
+  const values = period.points.map(([, factor]) => value * factor);
+  return (
+    <details className="chart-disclosure">
+      <summary>{language === 'ru' ? 'Данные и расчёт' : 'Data and calculation'}</summary>
+      {props.children}
+      <p className="quiet">
+        {labels.chartSampleNote} {labels.fixed}
+      </p>
+      <p className="chart-range">
+        {language === 'ru' ? 'Диапазон примера' : 'Sample range'}:{' '}
+        {hidden
+          ? '••••'
+          : `${money(Math.min(...values), currency, language)} – ${money(Math.max(...values), currency, language)}`}
+      </p>
+      <HistorySummary {...props} />
+      <HistoryDates {...props} />
+    </details>
   );
 }
 

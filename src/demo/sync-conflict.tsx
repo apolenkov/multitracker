@@ -12,9 +12,9 @@ export function SyncConflict({ language, t, close, confirm }: Props) {
   const [chosen, setChosen] = useState<Version>('local');
   return (
     <DemoModal id="sync-conflict" title={t.conflict} language={language} onClose={close}>
-      <p>{t.warning}</p>
+      <p className="demo-note">{t.warning}</p>
       <ConflictPreview t={t} />
-      <fieldset>
+      <fieldset className="conflict-choices">
         <legend>{t.choose}</legend>
         <label className="check-row">
           <input
@@ -51,42 +51,46 @@ export function SyncConflict({ language, t, close, confirm }: Props) {
 }
 function ConflictPreview({ t }: Readonly<{ t: SyncWords }>) {
   return (
-    <div
-      className="conflict-preview table-scroll"
-      tabIndex={0}
-      role="region"
-      aria-label={t.conflict}
-    >
-      <table>
-        <caption>{t.conflict}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{t.field}</th>
-            <th scope="col">
-              {t.local}
-              <br />
-              {t.localTime}
-            </th>
-            <th scope="col">
-              {t.remote}
-              <br />
-              {t.remoteTime}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">{t.name}</th>
-            <td>{t.localName}</td>
-            <td>{t.remoteName}</td>
-          </tr>
-          <tr>
-            <th scope="row">{t.label}</th>
-            <td>{t.localLabel}</td>
-            <td>{t.remoteLabel}</td>
-          </tr>
-        </tbody>
-      </table>
+    <section className="conflict-preview" aria-label={t.conflict}>
+      <div className="conflict-times">
+        <p>
+          <strong>{t.local}</strong>
+          <span>{t.localTime}</span>
+        </p>
+        <p>
+          <strong>{t.remote}</strong>
+          <span>{t.remoteTime}</span>
+        </p>
+      </div>
+      <ConflictField name={t.name} local={t.localName} remote={t.remoteName} t={t} />
+      <ConflictField name={t.label} local={t.localLabel} remote={t.remoteLabel} t={t} />
+    </section>
+  );
+}
+function ConflictField({
+  name,
+  local,
+  remote,
+  t,
+}: Readonly<{
+  name: string;
+  local: string;
+  remote: string;
+  t: SyncWords;
+}>) {
+  return (
+    <div className="conflict-field">
+      <h3>{name}</h3>
+      <dl>
+        <div>
+          <dt>{t.local}</dt>
+          <dd>{local}</dd>
+        </div>
+        <div>
+          <dt>{t.remote}</dt>
+          <dd>{remote}</dd>
+        </div>
+      </dl>
     </div>
   );
 }

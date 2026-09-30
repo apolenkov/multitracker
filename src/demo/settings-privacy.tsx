@@ -68,7 +68,13 @@ export function RecoverySettings(
         />
         {props.text('Я записал пример в безопасном месте', 'I recorded the sample in a safe place')}
       </label>
-      <button type="button" className="quiet" onClick={() => setLost(!lost)}>
+      <button
+        type="button"
+        className="quiet"
+        aria-expanded={lost}
+        aria-controls="settings-lost-key"
+        onClick={() => setLost(!lost)}
+      >
         {props.text('Что делать, если ключ потерян?', 'What if the key is lost?')}
       </button>
       {lost && <LostKeyChoices {...props} />}
@@ -83,7 +89,7 @@ function LostKeyChoices(props: SettingFormProps & Readonly<{ notify: (message: s
     props.notify(lostKeyResult(props.text, available));
   };
   return (
-    <section className="demo-note">
+    <section id="settings-lost-key" className="demo-note lost-key-choices">
       <h3>{props.text('Утрата ключа', 'Lost key')}</h3>
       <p>
         {props.text(

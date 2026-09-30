@@ -1,49 +1,43 @@
 import { text } from './i18n.ts';
-import { NavigationIcon } from './NavigationIcon.tsx';
-import { useState, type MouseEvent } from 'react';
+import { Icon } from './Icon.tsx';
+import { useEffect, useState, type MouseEvent } from 'react';
 import type { Labels, Screen } from './i18n.ts';
-const mainScreens = ['overview', 'portfolios', 'history'] as const;
-const extraScreens = ['import', 'connections', 'sync', 'settings'] as const;
+const mainScreens = ['overview', 'markets', 'following'] as const;
+const extraScreens = [
+  'portfolios',
+  'history',
+  'analytics',
+  'events',
+  'import',
+  'connections',
+  'sync',
+  'settings',
+] as const;
 type Props = Readonly<{ screen: Screen; onScreen: (screen: Screen) => void; labels: Labels }>;
 export function Navigation({ screen, onScreen, labels }: Props) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useMoreMenu();
   const choose = (next: Screen) => {
     onScreen(next);
     setExpanded(false);
   };
   return (
     <aside className="sidebar">
-      <a
-        className="brand"
-        href="#overview"
-        onClick={(event) => {
-          if (!isPlainClick(event)) return;
-          event.preventDefault();
-          choose('overview');
-        }}
-      >
-        <span className="brand-mark" aria-hidden="true">
-          <NavigationIcon name="brand" />
-        </span>
-        MultiTracker
-      </a>
-      <p className="brand-note">{labels.demo}</p>
+      <Brand labels={labels} onChoose={choose} />
       <nav aria-label={labels.overview} className="navigation">
-        <ScreenButtons items={mainScreens} labels={labels} screen={screen} onChoose={choose} />
         <div className="desktop-links">
-          <ScreenButtons items={extraScreens} labels={labels} screen={screen} onChoose={choose} />
+          <NavigationGroups labels={labels} screen={screen} onChoose={choose} />
         </div>
-        <button
-          className="more-button"
-          aria-expanded={expanded}
-          aria-current={extraScreens.some((item) => item === screen) ? 'page' : undefined}
-          onClick={() => setExpanded(!expanded)}
-        >
-          <NavigationIcon name="more" />
-          <span>{labels.more}</span>
-        </button>
+        <div className="mobile-links">
+          <ScreenButtons items={mainScreens} labels={labels} screen={screen} onChoose={choose} />
+          <MoreButton
+            screen={screen}
+            labels={labels}
+            expanded={expanded}
+            toggle={() => setExpanded(!expanded)}
+          />
+        </div>
         {expanded && (
-          <div className="more-menu">
+          <div className="more-menu" id="navigation-more">
             <ScreenButtons items={extraScreens} labels={labels} screen={screen} onChoose={choose} />
           </div>
         )}
@@ -52,12 +46,90 @@ export function Navigation({ screen, onScreen, labels }: Props) {
   );
 }
 
+function MoreButton({
+  screen,
+  labels,
+  expanded,
+  toggle,
+}: Pick<Props, 'screen' | 'labels'> & Readonly<{ expanded: boolean; toggle: () => void }>) {
+  return (
+    <button
+      id="navigation-more-button"
+      className="more-button"
+      aria-expanded={expanded}
+      aria-controls="navigation-more"
+      aria-current={extraScreens.some((item) => item === screen) ? 'page' : undefined}
+      onClick={toggle}
+    >
+      <Icon name="more" />
+      <span>{labels.more}</span>
+    </button>
+  );
+}
+
+function NavigationGroups(props: Omit<ScreenButtonsProps, 'items'>) {
+  const ru = props.labels.overview === 'Обзор';
+  const groups = [
+    {
+      title: ru ? 'Мой портфель' : 'My portfolio',
+      items: ['overview', 'portfolios', 'history', 'analytics'],
+    },
+    { title: ru ? 'Исследование' : 'Explore', items: ['markets', 'following', 'events'] },
+    {
+      title: ru ? 'Данные и настройки' : 'Data and settings',
+      items: ['import', 'connections', 'sync', 'settings'],
+    },
+  ] as const;
+  return groups.map((group) => (
+    <section className="navigation-group" key={group.title} aria-label={group.title}>
+      <p>{group.title}</p>
+      <ScreenButtons {...props} items={group.items} />
+    </section>
+  ));
+}
+
+function useMoreMenu() {
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !expanded) return;
+      setExpanded(false);
+      document.getElementById('navigation-more-button')?.focus();
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [expanded]);
+  return [expanded, setExpanded] as const;
+}
+
 type ScreenButtonsProps = Readonly<{
   items: readonly Screen[];
   labels: Labels;
   screen: Screen;
   onChoose: (screen: Screen) => void;
 }>;
+
+function Brand({ labels, onChoose }: Pick<ScreenButtonsProps, 'labels' | 'onChoose'>) {
+  return (
+    <>
+      <a
+        className="brand"
+        href="#overview"
+        onClick={(event) => {
+          if (!isPlainClick(event)) return;
+          event.preventDefault();
+          onChoose('overview');
+        }}
+      >
+        <span className="brand-mark" aria-hidden="true">
+          <Icon name="brand" />
+        </span>
+        MultiTracker
+      </a>
+      <p className="brand-note">{labels.demo}</p>
+    </>
+  );
+}
 
 function ScreenButtons({ items, labels, screen, onChoose }: ScreenButtonsProps) {
   return items.map((item) => (
@@ -71,7 +143,7 @@ function ScreenButtons({ items, labels, screen, onChoose }: ScreenButtonsProps) 
         onChoose(item);
       }}
     >
-      <NavigationIcon name={item} />
+      <Icon name={item} />
       <span>{text(labels, item)}</span>
     </a>
   ));

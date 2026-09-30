@@ -98,3 +98,28 @@ export function appearanceThemes(browser: Browser) {
   assertAppearance(browser, dark, 'dark');
   return 'Light/dark/system: surfaces, native controls and theme-color agree; explicit choice ignores OS';
 }
+
+export function settingsPersist(browser: Browser) {
+  browser.run('select', '#topbar-language', 'ru');
+  navigate(browser, 'settings');
+  browser.run('click', '#settings-open-notifications');
+  browser.run('wait', '#settings-dialog[open]');
+  browser.run('check', '#settings-notification-price');
+  browser.run('click', '#settings-dialog button[type="submit"]');
+  browser.run('wait', '--fn', '!document.querySelector("#settings-dialog[open]")');
+  navigate(browser, 'overview');
+  navigate(browser, 'settings');
+  browser.run('click', '#settings-open-notifications');
+  browser.run('wait', '#settings-dialog[open]');
+  assert.equal(
+    evaluate(browser, 'document.querySelector("#settings-notification-price")?.checked === true'),
+    true,
+    'Настройка должна пережить переход в финансовый раздел',
+  );
+  browser.run('press', 'Escape');
+  const closed =
+    '!document.querySelector("#settings-dialog") && document.activeElement?.id === "settings-open-notifications"';
+  browser.run('wait', '--fn', closed);
+  assert.equal(evaluate(browser, closed), true, 'Escape должен вернуть фокус исходной кнопке');
+  return 'Price notification сохранена settings→overview→settings; Escape закрывает и возвращает фокус';
+}

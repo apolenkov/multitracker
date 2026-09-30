@@ -36,21 +36,22 @@ export function useNavigation() {
     return routeFor({ screen: 'overview', demoScreen: 'import' }, screen);
   });
   useEffect(() => {
-    const readAddress = () => {
+    const readAddress = (focus = true) => {
       const screen = parseScreen(window.location.hash);
       if (window.location.hash !== `#${screen}`) {
         window.history.replaceState(null, '', `#${screen}`);
       }
       closeOpenDialogs();
-      focusPage();
+      if (focus) focusPage();
       setRoute((current) => routeFor(current, screen));
     };
-    readAddress();
+    readAddress(false);
+    const onHashChange = () => readAddress();
     const dialogClosed = () => requestAnimationFrame(restoreVisibleFocus);
-    window.addEventListener('hashchange', readAddress);
+    window.addEventListener('hashchange', onHashChange);
     document.addEventListener('close', dialogClosed, true);
     return () => {
-      window.removeEventListener('hashchange', readAddress);
+      window.removeEventListener('hashchange', onHashChange);
       document.removeEventListener('close', dialogClosed, true);
     };
   }, []);

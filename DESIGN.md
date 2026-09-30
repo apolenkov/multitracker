@@ -1,131 +1,289 @@
 ---
 name: MultiTracker
-description: Финансовый макет по Mintlify с локальным Inter и цветом по назначению.
+description: 'Цветной финансовый интерфейс: адаптация палитры Bentley с локальным Inter.'
 colors:
-  dark-canvas: '#292c2d'
-  dark-paper: '#333739'
-  dark-surface: '#3d4244'
-  dark-sidebar: '#333739'
-  dark-hover-bg: '#3d4244'
-  dark-brand: '#00d4a4'
-  dark-brand-ink: '#07352b'
-  dark-primary: '#f5f6f6'
-  dark-primary-ink: '#202526'
-  dark-ink: '#f5f6f6'
-  dark-muted: '#c2c8c7'
-  dark-line: '#555b5d'
-  dark-control-border: '#919b9b'
-  dark-accent: '#00d4a4'
-  dark-accent-ink: '#07352b'
-  dark-selected-bg: '#454b4d'
-  dark-selected-ink: '#f5f6f6'
-  dark-warning: '#f3c36a'
-  dark-green: '#79e0aa'
-  dark-red: '#ffa1ac'
-  dark-focus: '#00d4a4'
-  light-canvas: '#ffffff'
-  light-paper: '#ffffff'
-  light-surface: '#f7f7f7'
-  light-sidebar: '#f7f7f7'
-  light-hover-bg: '#efefef'
-  light-brand: '#00d4a4'
-  light-brand-ink: '#07352b'
-  light-primary: '#0a0a0a'
-  light-primary-ink: '#ffffff'
-  light-ink: '#0a0a0a'
-  light-muted: '#5a5a5c'
-  light-line: '#e5e5e5'
-  light-control-border: '#8b8b8b'
-  light-accent: '#007a5e'
+  primary: '#394d45'
+  light-canvas: '#f3f1e8'
+  light-paper: '#fffdf8'
+  light-surface: '#dce8e2'
+  light-sidebar: '#dfe8e0'
+  light-hover-bg: '#cadbd0'
+  light-ink: '#23342d'
+  light-muted: '#4c615b'
+  light-line: '#b4c5bc'
+  light-control-border: '#6a8379'
+  light-accent: '#394d45'
   light-accent-ink: '#ffffff'
-  light-selected-bg: '#ebebeb'
-  light-selected-ink: '#0a0a0a'
-  light-warning: '#865b0b'
-  light-green: '#147340'
-  light-red: '#b62945'
-  light-focus: '#007a5e'
-  asset-twt: '#207c69'
-  asset-msft: '#1673c5'
-  asset-btc: '#f7931a'
-  asset-btc-ink: '#151515'
-  asset-symbol-ink: '#ffffff'
-  allocation-btc: '#7656d6'
-  allocation-msft: '#117e99'
-  allocation-twt: '#b23873'
-  dialog-backdrop: 'rgb(0 0 0 / 70%)'
+  light-brand: '#394d45'
+  light-brand-ink: '#ffffff'
+  light-primary: '#394d45'
+  light-primary-ink: '#ffffff'
+  light-primary-border: '#394d45'
+  light-primary-hover: '#2c4038'
+  light-primary-hover-ink: '#ffffff'
+  light-selected-bg: '#e7cfb9'
+  light-selected-ink: '#3b2c25'
+  light-hero-bg: '#394d45'
+  light-hero-ink: '#fcfaf3'
+  light-hero-muted: '#d8e5df'
+  light-hero-green: '#a7f0bd'
+  light-hero-red: '#ffc5be'
+  light-hero-line: '#9bafa5'
+  light-hero-border: '#a5b9ae'
+  light-hero-focus: '#e7cfb9'
+  light-hero-primary: '#e7cfb9'
+  light-hero-primary-ink: '#3b2c25'
+  light-hero-primary-border: '#e7cfb9'
+  light-hero-primary-hover: '#f2dbc5'
+  light-hero-primary-hover-ink: '#3b2c25'
+  light-hero-chart: '#b9e9d9'
+  light-section-tint: '#d6e2da'
+  light-warning: '#6a4d12'
+  light-green: '#1d693b'
+  light-red: '#a3293a'
+  light-focus: '#394d45'
+  light-chart: '#394d45'
+  light-allocation-btc: '#b95f00'
+  light-allocation-msft: '#1673c5'
+  light-allocation-twt: '#207c69'
+  light-asset-btc: '#f7931a'
+  light-asset-msft: '#1673c5'
+  light-asset-twt: '#207c69'
+  light-asset-btc-ink: '#151515'
+  light-asset-symbol-ink: '#ffffff'
+  dark-canvas: '#14241e'
+  dark-paper: '#20362e'
+  dark-surface: '#2b473e'
+  dark-sidebar: '#1b3129'
+  dark-hover-bg: '#35534a'
+  dark-ink: '#f5f7f0'
+  dark-muted: '#c5d6cc'
+  dark-line: '#607a6e'
+  dark-control-border: '#92ab9b'
+  dark-accent: '#c0d8cb'
+  dark-accent-ink: '#193026'
+  dark-brand: '#a8d5bf'
+  dark-brand-ink: '#193026'
+  dark-primary: '#a8d5bf'
+  dark-primary-ink: '#193026'
+  dark-primary-border: '#a8d5bf'
+  dark-primary-hover: '#c4e5d2'
+  dark-primary-hover-ink: '#193026'
+  dark-selected-bg: '#b99b85'
+  dark-selected-ink: '#23342d'
+  dark-hero-bg: '#315047'
+  dark-hero-ink: '#f5f7f0'
+  dark-hero-muted: '#d7e8dd'
+  dark-hero-green: '#a7f0bd'
+  dark-hero-red: '#ffc5be'
+  dark-hero-line: '#9bb9a9'
+  dark-hero-border: '#a6c4b1'
+  dark-hero-focus: '#e7cfb9'
+  dark-hero-primary: '#a8d5bf'
+  dark-hero-primary-ink: '#193026'
+  dark-hero-primary-border: '#a8d5bf'
+  dark-hero-primary-hover: '#c4e5d2'
+  dark-hero-primary-hover-ink: '#193026'
+  dark-hero-chart: '#a9e5d0'
+  dark-section-tint: '#29473f'
+  dark-warning: '#f2d18c'
+  dark-green: '#a7f0bd'
+  dark-red: '#ffc5be'
+  dark-focus: '#c0d8cb'
+  dark-chart: '#a9e5d0'
+  dark-allocation-btc: '#f7931a'
+  dark-allocation-msft: '#57adf5'
+  dark-allocation-twt: '#56c9ac'
+  dark-asset-btc: '#f7931a'
+  dark-asset-msft: '#1673c5'
+  dark-asset-twt: '#207c69'
+  dark-asset-btc-ink: '#151515'
+  dark-asset-symbol-ink: '#ffffff'
+  dialog-backdrop: rgb(0 0 0 / 70%)
 typography:
   body:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
-    fontSize: '16px'
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
+    fontSize: 16px
     fontWeight: 400
     lineHeight: 1.5
   headline:
-    fontSize: '28px'
+    fontSize: 28px
     fontWeight: 600
-    letterSpacing: '-0.4px'
+    letterSpacing: -0.4px
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
   title:
-    fontSize: '20px'
-    fontWeight: 600
-    letterSpacing: '-0.3px'
+    fontSize: 20px
+    fontWeight: 500
+    letterSpacing: -0.3px
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
   small-title:
-    fontSize: '18px'
-    fontWeight: 600
+    fontSize: 18px
+    fontWeight: 500
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
   mobile-headline:
-    fontSize: '27px'
+    fontSize: 27px
     fontWeight: 600
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
   leading-price:
-    fontSize: '32px'
+    fontSize: 32px
     fontWeight: 700
-  portfolio-value:
-    fontSize: 'clamp(36px, 3.4vw, 44px)'
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
+  portfolio-value-max:
+    fontSize: 44px
     fontWeight: 600
     lineHeight: 1.12
-    letterSpacing: '-0.03em'
-  analytical-answer:
-    fontSize: 'clamp(32px, 4vw, 44px)'
+    letterSpacing: -0.03em
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
+  portfolio-value-min:
+    fontSize: 32px
+    fontWeight: 600
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
+  portfolio-value-mobile:
+    fontSize: 32px
+    fontWeight: 600
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
+  analytical-answer-max:
+    fontSize: 44px
     fontWeight: 700
-    letterSpacing: '-1px'
+    letterSpacing: -1px
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
+  analytical-answer-min:
+    fontSize: 32px
+    fontWeight: 700
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
   label:
-    fontSize: '14px'
+    fontSize: 14px
     fontWeight: 500
+    fontFamily: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif
 rounded:
-  count: '4px'
-  analytical-bar: '8px'
-  brand-mark: '9px'
-  button: '12px'
-  button-primary: '999px'
-  field: '8px'
-  dialog: '12px'
-  ring: '50%'
+  count: 8px
+  analytical-bar: 6px
+  brand-mark: 6px
+  asset-symbol: 6px
+  button: 8px
+  button-primary: 8px
+  field: 8px
+  nav: 8px
+  context: 8px
+  panel: 12px
+  dialog: 12px
 spacing:
-  compact: '8px'
-  control-gap: '12px'
-  content: '16px'
-  group: '20px'
-  dialog: '24px'
-  form-group: '28px'
-  workspace: '32px'
+  compact: 8px
+  control-gap: 12px
+  content: 16px
+  group: 20px
+  dialog: 24px
+  form-group: 28px
+  workspace: 32px
 components:
   button-primary:
-    backgroundColor: '{colors.light-primary}'
+    backgroundColor: '{colors.primary}'
     textColor: '{colors.light-primary-ink}'
     rounded: '{rounded.button-primary}'
-    padding: '9px 16px'
+    padding: 9px 16px
   button-primary-dark:
     backgroundColor: '{colors.dark-primary}'
     textColor: '{colors.dark-primary-ink}'
     rounded: '{rounded.button-primary}'
-    padding: '9px 16px'
+    padding: 9px 16px
   input:
     backgroundColor: '{colors.light-surface}'
     textColor: '{colors.light-ink}'
     rounded: '{rounded.field}'
-    padding: '9px 12px'
+    padding: 9px 12px
   input-dark:
     backgroundColor: '{colors.dark-surface}'
     textColor: '{colors.dark-ink}'
     rounded: '{rounded.field}'
-    padding: '9px 12px'
+    padding: 9px 12px
+  button-primary-hover:
+    backgroundColor: '{colors.light-primary-hover}'
+    textColor: '{colors.light-primary-hover-ink}'
+    rounded: '{rounded.button-primary}'
+    padding: 9px 16px
+  page:
+    backgroundColor: '{colors.light-canvas}'
+    textColor: '{colors.light-ink}'
+    typography: '{typography.body}'
+  sidebar:
+    backgroundColor: '{colors.light-sidebar}'
+    textColor: '{colors.light-ink}'
+    padding: 24px 16px
+  balance-panel:
+    backgroundColor: '{colors.light-hero-bg}'
+    textColor: '{colors.light-hero-ink}'
+    rounded: '{rounded.panel}'
+    padding: 32px
+  history-chart:
+    textColor: '{colors.light-hero-chart}'
+  selected-navigation:
+    backgroundColor: '{colors.light-selected-bg}'
+    textColor: '{colors.light-selected-ink}'
+    rounded: '{rounded.nav}'
+    padding: 10px 12px
+  positive-result:
+    textColor: '{colors.light-green}'
+  negative-result:
+    textColor: '{colors.light-red}'
+  button-primary-hover-dark:
+    backgroundColor: '{colors.dark-primary-hover}'
+    textColor: '{colors.dark-primary-hover-ink}'
+    rounded: '{rounded.button-primary}'
+    padding: 9px 16px
+  page-dark:
+    backgroundColor: '{colors.dark-canvas}'
+    textColor: '{colors.dark-ink}'
+    typography: '{typography.body}'
+  sidebar-dark:
+    backgroundColor: '{colors.dark-sidebar}'
+    textColor: '{colors.dark-ink}'
+    padding: 24px 16px
+  balance-panel-dark:
+    backgroundColor: '{colors.dark-hero-bg}'
+    textColor: '{colors.dark-hero-ink}'
+    rounded: '{rounded.panel}'
+    padding: 32px
+  history-chart-dark:
+    textColor: '{colors.dark-hero-chart}'
+  selected-navigation-dark:
+    backgroundColor: '{colors.dark-selected-bg}'
+    textColor: '{colors.dark-selected-ink}'
+    rounded: '{rounded.nav}'
+    padding: 10px 12px
+  positive-result-dark:
+    textColor: '{colors.dark-green}'
+  negative-result-dark:
+    textColor: '{colors.dark-red}'
+  hero-primary:
+    backgroundColor: '{colors.light-hero-primary}'
+    textColor: '{colors.light-hero-primary-ink}'
+    rounded: '{rounded.button-primary}'
+    padding: 9px 16px
+  composition-zone:
+    backgroundColor: '{colors.light-section-tint}'
+    textColor: '{colors.light-ink}'
+    rounded: '{rounded.panel}'
+    padding: 16px
+  report-zone:
+    backgroundColor: '{colors.light-section-tint}'
+    textColor: '{colors.light-ink}'
+    rounded: '{rounded.panel}'
+    padding: 16px
+  hero-primary-dark:
+    backgroundColor: '{colors.dark-hero-primary}'
+    textColor: '{colors.dark-hero-primary-ink}'
+    rounded: '{rounded.button-primary}'
+    padding: 9px 16px
+  composition-zone-dark:
+    backgroundColor: '{colors.dark-section-tint}'
+    textColor: '{colors.dark-ink}'
+    rounded: '{rounded.panel}'
+    padding: 16px
+  report-zone-dark:
+    backgroundColor: '{colors.dark-section-tint}'
+    textColor: '{colors.dark-ink}'
+    rounded: '{rounded.panel}'
+    padding: 16px
 ---
 
 # MultiTracker: карта полного статического интерфейса
@@ -135,8 +293,8 @@ components:
 [брифе](docs/design/brief.md), [R01–R21](openspec/changes/complete-prototype/specs/readiness/spec.md)
 и [D01–D07](openspec/changes/delta-capabilities/specs/exploration/spec.md).
 [Карта каталога Delta](docs/design/delta-capabilities.md) уточняет новые сценарии;
-[Текущая приёмка Mintlify](docs/design/mintlify-acceptance.md) фиксирует результаты
-и ограничения нового кандидата; [приёмка прежней арены](docs/design/arena/acceptance.md)
+[Текущее оформление](docs/design/current-style.md) фиксирует текущее основание
+и границы проверки; [приёмка прежней арены](docs/design/arena/acceptance.md)
 сохраняет исторические проверки. [Прежний аудит](docs/reviews/prototype-readiness.md)
 описывает исторический кандидат семи разделов.
 Исторический первый этап сохранён в [OpenSpec](openspec/changes/clickable-prototype/design.md).
@@ -223,6 +381,9 @@ components:
 покупок, вымышленный график и форма ручной оценки. Оценка не меняет котировку.
 Каталог охватывает акции, фонды, облигации, криптоактивы и деньги; денежный
 остаток равен 0 RUB/0 USD и ведёт в форму начального остатка.
+«Деньги и классы активов» открывает отдельный диалог `cash-catalog-dialog`,
+сохраняя размеры обзора. Диалог содержит поиск каталога и переходы к формам
+покупки/начального остатка; при закрытии фокус возвращается на его кнопку.
 
 В отчёте период меняет строки и их количество, а не текущую оценку позиции
 или себестоимость всей выборки. Валюта отчёта выбирается отдельно. CSV/PDF —
@@ -256,65 +417,73 @@ components:
 
 ## Overview
 
-**Creative North Star: «Mintlify для спокойной работы с портфелем».**
+**Creative North Star: «Понятный цветной рабочий стол: стоимость, история и состав».**
 
-Владелец выбрал Mintlify основным оформлением; Mastercard и Titan сняты.
-Текущие исходники применяют белый холст, светло-серую боковую панель, локальный
-Inter, тонкие разделители и округлое главное действие. Светлая тема задана
-по умолчанию в `App.tsx`; тёмная использует различимые графитовые слои.
-Мятный цвет обозначает знак приложения, акцент и фокус, основные кнопки —
-чёрные в светлой теме и светлые в тёмной. Рост, снижение и внимание имеют
-отдельные цвета. Монохром включается настройкой.
+Текущее направление — адаптация предоставленной владельцем палитры Bentley
+после обратной связи владельца
+о монохроме, вложенных коробках, элементах выбора и значках. Светлая тема
+включена по умолчанию; цельная Race Green-панель связывает стоимость и историю,
+teal обозначает вторичные зоны и линию графика, blush — выбор и действие
+в главной панели. Тёмная тема имеет самостоятельные зелёные поверхности, а монохром остаётся отдельной настройкой.
 
-Это собственная адаптация рабочей структуры Mintlify, без его бренда,
-рекламного первого экрана или оглавления документации. Имя приложения —
-MultiTracker. [План переделки](docs/plans/2026-09-30-mintlify.md) и
-[исследование](docs/research/design-md-mintlify.md) описывают основание выбора.
-Прежние тёплое, тёмное, серое и синее оформления отклонены владельцем.
-[Экраны Delta](docs/design/references.md) остаются историческим образцом
-финансовых сценариев; закрытый настольный портфель Delta не осматривался.
-Результаты проверок кандидата собраны в приёмке; визуальное одобрение владельцем ожидается.
+Единый бриф — [текущее оформление](docs/design/current-style.md).
+Токены синхронизированы с замороженным CSS. Все одиннадцать разделов, RU/EN
+и финансовые сценарии сохранены. Mintlify, Swiss Style, FinTech и буквальное
+оформление Alfa больше не задают текущую оболочку. Предоставленный текст Alfa
+не доказывает свойства реального сайта; его автомобильные тексты, логотип
+и поисковое продвижение не переносятся. Локальный Inter сохранён, Sequel отсутствует.
+Новые проверки и визуальное одобрение владельцем ожидаются.
 
 Четыре разбора прежней арены использовали общий
 [перечень 135 ID](docs/design/form-inventory.md): 540 оценок дизайна,
-а не функциональных проверок. Их материалы сохраняют историю решений;
-они не подтверждают оформление Mintlify. Применимые правила:
-
-| Навык и отчёт                                                | Использование                                                                                                         |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| [frontend-design](docs/design/arena/frontend.md)             | Стоимость → результат → позиции; строки для сравнения, смысловые группы для ввода, единый размер значков.             |
-| [ui-ux-pro-max](docs/design/arena/ui-ux.md)                  | Предметные подписи и единицы; раскрытие вторичных полей; короткий путь к нужной задаче. Язык и тема остаются в шапке. |
-| [web-design-guidelines](docs/design/arena/web-guidelines.md) | Нативная семантика, связанные подписи и ошибки, клавиатура, возврат фокуса, безопасные области и размеры управления.  |
-| [impeccable](docs/design/arena/impeccable.md)                | Одно ведущее действие, цвет по назначению, сокращение повторных оговорок и конкуренции одинаковых панелей.            |
+а не функциональных проверок. Материалы сохраняют историю решений:
+[frontend-design](docs/design/arena/frontend.md),
+[ui-ux-pro-max](docs/design/arena/ui-ux.md),
+[web-design-guidelines](docs/design/arena/web-guidelines.md),
+[impeccable](docs/design/arena/impeccable.md). Они не заверяют новый кандидат.
+Применимые правила: стоимость и результат перед деталями, предметные подписи,
+смысловые группы полей, нативная семантика, клавиатура и возврат фокуса.
 
 ## Colors
 
-Токены в начале документа соответствуют [src/appearance.css](src/appearance.css).
-Основная кнопка использует `--primary`, знак приложения — `--brand`,
-фокус, флажки и каретка — `--accent`/`--focus`. Выбранный маршрут получает
-нейтральную подложку и более плотный текст; отдельной тени у него нет.
-Базовое управление задано в [src/base.css](src/base.css).
+Нормативные токены в YAML соответствуют [src/appearance.css](src/appearance.css).
+`colors.primary` — фактическая светлая основная кнопка `#394d45`, а не отдельный
+придуманный цвет. Тема переключает `--primary`, подпись, границу и наведение;
+другие семантические токены описывают поверхности, фокус и финансовый результат.
 
-| Роль                         | Светлая тема                      | Тёмная тема                       |
-| ---------------------------- | --------------------------------- | --------------------------------- |
-| Холст / панель / поле        | `#ffffff` / `#ffffff` / `#f7f7f7` | `#292c2d` / `#333739` / `#3d4244` |
-| Боковая панель / наведение   | `#f7f7f7` / `#efefef`             | `#333739` / `#3d4244`             |
-| Текст / второстепенный текст | `#0a0a0a` / `#5a5a5c`             | `#f5f6f6` / `#c2c8c7`             |
-| Основная кнопка / её текст   | `#0a0a0a` / `#ffffff`             | `#f5f6f6` / `#202526`             |
-| Акцент / текст на акценте    | `#007a5e` / `#ffffff`             | `#00d4a4` / `#07352b`             |
-| Знак приложения / его текст  | `#00d4a4` / `#07352b`             | `#00d4a4` / `#07352b`             |
-| Выбор / текст выбора         | `#ebebeb` / `#0a0a0a`             | `#454b4d` / `#f5f6f6`             |
-| Рост / падение               | `#147340` / `#b62945`             | `#79e0aa` / `#ffa1ac`             |
-| Внимание                     | `#865b0b`                         | `#f3c36a`                         |
-| Разделитель / граница поля   | `#e5e5e5` / `#8b8b8b`             | `#555b5d` / `#919b9b`             |
-| Фокус                        | `#007a5e`                         | `#00d4a4`                         |
+| Роль                            | Светлая тема                      | Тёмная тема                       |
+| ------------------------------- | --------------------------------- | --------------------------------- |
+| Холст / панель / поле           | `#f3f1e8` / `#fffdf8` / `#dce8e2` | `#14241e` / `#20362e` / `#2b473e` |
+| Боковая панель                  | `#dfe8e0`                         | `#1b3129`                         |
+| Текст / второстепенный          | `#23342d` / `#4c615b`             | `#f5f7f0` / `#c5d6cc`             |
+| Основная кнопка / её текст      | `#394d45` / `#ffffff`             | `#a8d5bf` / `#193026`             |
+| Наведение / текст               | `#2c4038` / `#ffffff`             | `#c4e5d2` / `#193026`             |
+| Выбор / текст выбора            | `#e7cfb9` / `#3b2c25`             | `#b99b85` / `#23342d`             |
+| Панель стоимости / её текст     | `#394d45` / `#fcfaf3`             | `#315047` / `#f5f7f0`             |
+| Кнопка в главной панели / текст | `#e7cfb9` / `#3b2c25`             | `#a8d5bf` / `#193026`             |
+| Линия истории в главной панели  | `#b9e9d9`                         | `#a9e5d0`                         |
+| Состав и отчёт                  | `#d6e2da`                         | `#29473f`                         |
+| Рост / падение                  | `#1d693b` / `#a3293a`             | `#a7f0bd` / `#ffc5be`             |
+| Рост / падение в главной панели | `#a7f0bd` / `#ffc5be`             | `#a7f0bd` / `#ffc5be`             |
+| Разделитель / граница поля      | `#b4c5bc` / `#6a8379`             | `#607a6e` / `#92ab9b`             |
+| Фокус                           | `#394d45`                         | `#c0d8cb`                         |
+| Состав BTC / MSFT / TWT         | `#b95f00` / `#1673c5` / `#207c69` | `#f7931a` / `#57adf5` / `#56c9ac` |
 
-Значки активов сохраняют самостоятельные цвета: TWT — `#207c69`, MSFT —
-`#1673c5` с белой буквой; BTC — `#f7931a` с тёмным знаком `#151515`.
-Для белого текста TWT и MSFT расчёт контраста даёт 5,062:1 и 4,892:1;
-это проверка пар цветов, не всей доступности. Текущие серии состава:
-BTC `#7656d6`, MSFT `#117e99`, TWT `#b23873`; легенда сохраняет подписи,
-а доля и денежная стоимость размещены на двух строках.
+`.balance-panel` имеет единый фон `--hero-bg`. Локальные `--hero-*` задают
+контрастные текст, подписи, финансовые значения, границы и фокус. Локальные `--primary*` и `--chart` ссылаются на `--hero-primary*` и
+`--hero-chart`; основная кнопка в панели использует контрастный blush,
+а линия истории — светлый teal. Вложенный
+`.value-history` не создаёт отдельной заливки, рамки или внутренних отступов.
+Верхней декоративной полосы и градиента поверхности нет. SVG-заливка под
+линией истории использует `--chart` с непрозрачностью от 0,25 до 0;
+это область данных, а не отдельная карточка.
+
+Значки активов: BTC `#f7931a` с тёмным знаком `#151515`, MSFT `#1673c5`
+и TWT `#207c69` с белым знаком. Состав и легенда сохраняют те же цветовые
+семейства, с оттенками для контраста обеих тем. Подписи, доли и суммы дублируют
+цвет. Монохром заменяет акценты и серии нейтральными цветами; выбранное состояние
+использует фон `--ink` и подпись `--canvas`; отрицательный
+результат получает пунктирное подчёркивание. Монохром не включён по умолчанию.
 
 ## Typography
 
@@ -322,86 +491,124 @@ Inter Variable 4.1 загружается с `/fonts/InterVariable.woff2`; ли�
 SIL Open Font License 1.1 приведена в
 [уведомлениях](public/THIRD_PARTY_NOTICES.txt). Внешней загрузки нет;
 резерв — системные шрифты. Основной текст 16 px / 1,5, подписи 14 px.
-Заголовки: 28 px (27 px до 600 px), 20 px и 18 px, насыщенность 600.
-Ведущая цена рынка и сумма виджета — 32 px; стоимость портфеля —
-`clamp(36px, 3.4vw, 44px)` с насыщенностью 600 и интервалом 1,12,
-до 600 px — 32 px. Ведущий ответ аналитики — `clamp(32px, 4vw, 44px)`.
-Финансовые величины используют табличные цифры.
+Заголовок h1 — 28 px / 600 (27 px до 600 px), h2 — 20 px / 500,
+h3 — 18 px / 500. Группы навигации — 14 px / 500.
+Ведущая цена рынка и сумма виджета — 32 px. Стоимость портфеля —
+`clamp(32px, 3.1vw, 44px)`, насыщенность 600, интервал 1,12;
+до 600 px — 32 px. Ведущий ответ аналитики — `clamp(32px, 4vw, 44px)` / 700.
+YAML хранит допустимые размеры в px: минимум, максимум и мобильный размер;
+точные плавные формулы сохраняются здесь и в sidecar. Финансовые величины
+используют табличные цифры.
 
 ## Layout
 
-Стоимость, подписанный результат и график идут перед активами. На широком
-экране вспомогательная колонка состава и объяснения имеет ширину 272 px,
-отделена линией и отступом 24 px; до 1100 px — 248 px. Сетка обзора имеет
-промежутки 24×32 px, до 1100 px — 20×24 px. До 1279 px активы занимают обе
-колонки, чтобы названия и финансовые значения не разрывались. До 760 px сетка
-становится одной колонкой: стоимость → активы → состав и объяснение → отчёт → история.
+Панель стоимости и истории занимает полную ширину обзора. При ширине больше
+1100 px стоимость и результат слева, график справа; колонки 38:62,
+промежуток 32 px. Строки `min-content 1fr` удерживают результат и кнопку
+на месте при раскрытии истории справа. До 1100 px строки сбрасываются в `auto`,
+содержимое идёт вертикально, график отделён
+от результата отступом 24 px. Панель имеет отступ 32 px, до 600 px — 16 px.
 
-Боковая панель — 240 px, её отступы 24×16 px; до 1100 px ширина 216 px.
-Рабочая область ограничена 1520 px и имеет боковые отступы 32 px;
-до 1100 px — 24 px, до 600 px — 16 px. Верхняя панель от 64 px,
-основное содержимое имеет отступы 32 px по вертикали; до 600 px верхний — 16 px.
-До 900 px навигация становится нижней: четыре равные ячейки от 56 px,
-остальные маршруты доступны через «Ещё». Перед ней оставлен запас прокрутки
-с учётом безопасной области устройства. Боковая панель и «Ещё» прокручиваются
-при малой высоте.
+Под панелью — активы и вспомогательная колонка состава/объяснения 272 px.
+Состав имеет teal-фон `--section-tint`, радиус 12 px и отступ 16 px;
+отчёт использует тот же фон. Дополнительной внешней рамки у состава нет. Сетка обзора имеет промежутки 24×32 px,
+до 1100 px — 20×24 px. До 1279 px таблица активов занимает полную ширину,
+а состав и объяснение располагаются ниже в двух колонках. До 760 px они
+становятся одной колонкой; до 600 px строки активов получают мобильные подписи.
+Кольцо состава — 152 px (внутри 110 px), до 760 px — 116/82 px;
+до 360 px легенда переносится под кольцо.
 
-Тема, язык и валюта показа доступны в верхней панели, валюта расчёта —
+Боковая панель — 240 px, отступы 24×16 px; до 1100 px ширина 216 px.
+Рабочая область ограничена 1520 px, боковые отступы 32 px;
+до 1100 px — 24 px, до 600 px — 16 px. Верхняя панель с видимыми подписями занимает 85 px.
+Основное содержимое имеет отступы 32 px по вертикали; до 600 px верхний — 16 px.
+До 900 px навигация становится нижней: четыре ячейки от 56 px,
+остальные маршруты доступны через «Ещё». Запас прокрутки учитывает безопасную
+область устройства; боковая панель и «Ещё» прокручиваются при малой высоте.
+
+Тема, язык и валюта показа доступны в верхней панели с видимыми подписями
+«Язык / Тема / Показ в» и «Language / Theme / Display in». Подписи 14 px,
+интервал 20 px, отступ до поля 4 px. Верхняя панель с полями 44 px
+и вертикальными отступами 8 px занимает 85 px. Валюта расчёта —
 в настройках. Системная тема следует устройству; корневой `data-theme`
-и `theme-color` обновляются при выборе темы и изменении системной настройки.
-Поиск рынка виден сразу; вторичные фильтры раскрываются с числом условий,
-карточки индексов имеют отдельную горизонтальную прокрутку.
-Верхние переключатели имеют колонки 56/108/78 px и промежуток 8 px;
-до 600 px — 56/104/70 px, промежуток 4 px и боковой отступ поля 6 px.
+и `theme-color` обновляются при её изменении. Начальный `data-theme` — light,
+`theme-color` — `#f3f1e8`. Верхние переключатели имеют колонки 72/128/88 px,
+промежуток 8 px; до 600 px — 72/120/88 px и промежуток 4 px.
 Основные отступы — 8/12/16/20/24/28/32 px; группы форм разделены 28 px.
 
 ## Elevation & Depth
 
-Глубину создают тон поверхности и границы. Только мобильное меню «Ещё»
+Глубину создают цветные поверхности и границы. Мобильное меню «Ещё»
 имеет тень `0 12px 32px rgb(0 0 0 / 18%)`; диалог отделяет затемнение
-`rgb(0 0 0 / 70%)`. Значения и границы ширин сохранены
-в [.impeccable/design.json](.impeccable/design.json).
+`rgb(0 0 0 / 70%)`. У выбранного маршрута отдельной тени нет.
+Точные дополнения сохранены в [.impeccable/design.json](.impeccable/design.json).
 
 ## Shapes
 
-Обычные кнопки скруглены на 12 px, основные — на 999 px, поля — на 8 px,
-диалоги — на 12 px. Навигация скруглена на 8 px. Счётчик — 4 px,
-полоса аналитики — 8 px, знак приложения — 9 px, знак актива — 10 px.
-Кольцо и точки легенды круглые; аналитические панели и предпросмотр виджета
-сохраняют 16 px. Общие значки SVG — 22 px; флажки и переключатели — 22 px.
+Кнопки, поля, навигация и контекст формы имеют радиус 8 px;
+панели и диалоги — 12 px. Знак приложения, символ актива и аналитические
+полосы — 6 px. Кольцевая диаграмма и точки легенды имеют `border-radius: 50%`;
+процент описан здесь и в sidecar, а не в размерных YAML-токенах.
+Общие SVG-значки — 22 px, шеврон кнопки каталога — 18 px,
+единые шевроны выбора — 16 px;
+флажки и переключатели — 22 px.
 
 ## Components
 
 Формы используют смысловые группы: счёт, актив, сумма и валюта, курс и дата;
 перевод — «Откуда / Куда», обмен — «Отдаю / Получаю». Заголовок группы —
 16 px / 600, отступ до полей — 14 px; поля внутри сетки разделены 16 px.
-Контекст операции имеет фон поверхности, границу, радиус 12 px и отступ 16 px
-(12 px до 600 px); его поля — белые в светлой теме, цвета панели в тёмной.
-Дополнительные сведения раскрываются при ненулевом значении или ошибке;
-обязательный курс остаётся видимым.
+Контекст операции имеет фон поверхности, границу, радиус 8 px и отступ 16 px
+(12 px до 600 px); его поля используют `--paper`. Дополнительные сведения
+раскрываются при ненулевом значении или ошибке; обязательный курс остаётся видимым.
+
+Нативный одиночный select сохраняет браузерную семантику и клавиатуру;
+стрелка — общий SVG 16×16 px справа, отступ 12 px, резерв справа 36 px.
+Высота 44 px; в режиме forced-colors возвращается системная стрелка.
+Кнопки используют единые SVG, без текстовых заменителей значков.
 
 Диалог шириной `min(640px, calc(100% - 32px))` имеет отступ 24 px
 (20 px до 600 px), ограничение высоты и прокрутку. Один заголовок и один
 набор «Отмена / Конкретное действие». Сообщение результата остаётся
 в потоке страницы и имеет кнопку закрытия. Обычное управление от 44 px,
 закрытие — цель 44×44 px со значком 22 px. Основная кнопка использует
-`--primary`, вторичная — `--paper`; фокус — обводка 3 px с отступом 3 px.
+`--primary`, `--primary-ink`, `--primary-border` и пару наведения
+`--primary-hover`/`--primary-hover-ink`; вторичная — `--paper`.
+Фокус — обводка 3 px с отступом 3 px. Для основного содержимого фокус
+обозначается вокруг заголовка страницы, без большой рамки всей рабочей области.
+
+Панели аналитики используют колонку `minmax(0, 1fr)` и не расширяют
+рабочую область длинной таблицей: горизонтальная прокрутка находится в
+`.analytics-table-scroll`. Строки последних операций выровнены по верхнему
+краю (`align-items: start`), чтобы раскрытие подробностей не сдвигало суммы.
+
+Пустой обзор выбирается существующим состоянием «Пусто» в настройках.
+Он использует набор без покупок: нулевую стоимость, реальные пустые позиции
+и состав. В этом режиме вымышленная история стоимости, отчёт и последние покупки
+не показываются; возврат к обычному примеру восстанавливает демонстрационный набор.
 
 ## Do's and Don'ts
 
 - Сохранять подписи, единицы, знаки результата и доступные таблицы графиков.
-- Использовать mint для знака приложения и фокуса; финансовые цвета — для результата.
+- Сохранять связь цветов актива в таблице, кольце и легенде.
 - Оставлять обязательный курс и существенные ограничения видимыми.
 - Не превращать монохром в оформление по умолчанию.
+- Не возвращать вложенную карточку вокруг истории внутри общей панели.
 - Не объявлять конструкцию формы или старый снимок доказательством её поведения.
 
-Фактические размеры, контраст и отсутствие перекрытия требуют браузерного наблюдения.
+Кнопки, переключатели и навигация используют переходы
+`color 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out`;
+системное уменьшение движения отключает переходы. Фактический контраст
+и отсутствие перекрытия требуют браузерного наблюдения. Неиспользованные
+в YAML-компонентах семантические токены могут давать предупреждения валидатора:
+это не основание добавлять вымышленные компоненты или менять CSS.
 
 ## Границы проверки
 
-Результаты текущего кандидата — в
-[приёмке Mintlify](docs/design/mintlify-acceptance.md), область — в
-[плане](docs/plans/2026-09-30-mintlify.md). Визуальная приёмка владельцем ожидается.
+Текущее основание и результаты — в [Текущее оформление](docs/design/current-style.md).
+Новые проверки ожидаются; прежние результаты `f6549db`/`2ddca9d` их не заменяют.
+Контраст и полная строгая проверка 135 состояний DOM (структуры документа)
+пока не подтверждены для нового кандидата; результаты будут записаны отдельно. Визуальная приёмка владельцем ожидается.
 [План доступности](docs/design/accessibility-plan.md) требует RU/EN,
 375/1440 px, клавиатуру, фокус, ошибки, отмену и повторные действия;
 дополнительно — 320 CSS px, 375×500 и настоящее увеличение браузера 200%.
@@ -413,7 +620,7 @@ SIL Open Font License 1.1 приведена в
 обзора/покупки 320 RU/EN в обеих темах без переполнения и обрезки сумм.
 Настоящие 200% наблюдались только на обзоре и рынках. Одно независимое
 ревью закрыло F1–F3 и дало **ship** для того кандидата; его внешний вид
-владелец отклонил. Эти результаты не подтверждают текущий Mintlify,
+владелец отклонил. Эти результаты не подтверждают текущий цветной кандидат,
 полный перебор форм и размеров или пользовательское одобрение.
 
 Нет настоящих данных, файлов, ключей, API, сервера, базы, шифрования,

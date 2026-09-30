@@ -1,0 +1,24 @@
+.cash-catalog-trigger {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.cash-catalog-open {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  font-weight: 500;
+}
+.cash-catalog-open .ui-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+.cash-catalog-dialog .cash-balances {
+  margin-top: 20px;
+}

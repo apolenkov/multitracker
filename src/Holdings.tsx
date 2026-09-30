@@ -32,7 +32,7 @@ export function Holdings(props: Props) {
         {labels.holdings} <span className="count">{rows.length}</span>
       </h2>
       <HoldingsTable rows={rows} value={value} {...props} onSelect={setSelected} />
-      <AssetDetails asset={selected} {...props} />
+      {rows.length > 0 && <AssetDetails asset={selected} {...props} />}
       <CashAndCatalog language={language} hidden={hidden} />
       {rows.length === 0 && (
         <div className="empty-state">

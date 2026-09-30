@@ -18,14 +18,14 @@
   text-decoration: none;
   font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.7px;
+  letter-spacing: -0.3px;
 }
 .brand-mark {
   display: grid;
   place-items: center;
   width: 32px;
   height: 32px;
-  border-radius: 9px;
+  border-radius: 6px;
   background: var(--brand);
   color: var(--brand-ink);
 }
@@ -58,6 +58,10 @@
   text-decoration: none;
   text-align: left;
   font-weight: 500;
+  transition:
+    color 200ms ease-out,
+    background-color 200ms ease-out,
+    border-color 200ms ease-out;
 }
 .navigation :is(a, button):hover {
   background: var(--hover-bg);
@@ -88,6 +92,7 @@
   justify-content: space-between;
   gap: 8px;
   min-height: 64px;
+  padding-block: 8px;
   border-bottom: 1px solid var(--line);
 }
 .demo-badge {
@@ -100,19 +105,25 @@
 }
 .utility-controls {
   display: grid;
-  grid-template-columns: 56px 108px 78px;
+  grid-template-columns: 72px 128px 88px;
   gap: 8px;
 }
 .utility-controls label {
-  display: block;
+  display: grid;
+  gap: 4px;
   min-width: 0;
+}
+.utility-caption {
+  color: var(--muted);
+  line-height: 20px;
+  white-space: nowrap;
 }
 .utility-controls select {
   width: 100%;
   min-width: 0;
-  padding: 8px;
+  padding-block: 8px;
   color: var(--ink);
-  background: var(--paper);
+  background-color: var(--paper);
   border-color: var(--control-border);
   font-size: 14px;
   font-weight: 500;
@@ -125,7 +136,8 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 .portfolio-filter select {
   min-width: 180px;
@@ -260,8 +272,23 @@ main:focus-visible > .page-heading h1 {
   padding: 0 12px 4px;
   color: var(--muted);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
-.navigation :is(a, button) > .ui-icon {
-  margin: 1px;
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+}
+.form-grid .form-field:last-child {
+  grid-column: 1/-1;
+}
+.form-grid + p {
+  margin-top: 20px;
+}
+.privacy-summary {
+  display: grid;
+  gap: 12px;
+  margin-block: 16px;
+  max-width: 70ch;
 }

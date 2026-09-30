@@ -111,7 +111,7 @@
   border-top: 1px solid var(--line);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
-  align-items: center;
+  align-items: start;
   gap: 24px;
 }
 .history-row h2,

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-30T15:40:16Z",
+  "generatedAt": "2026-09-30T19:15:51.996Z",
   "title": "MultiTracker",
   "extensions": {
     "shadows": [
@@ -24,34 +24,46 @@
         "value": "900px"
       },
       {
-        "name": "single-column-overview",
+        "name": "stacked-composition",
         "value": "760px"
       },
       {
         "name": "single-column-forms",
         "value": "600px"
+      },
+      {
+        "name": "stacked-summary-and-chart",
+        "value": "1100px"
+      },
+      {
+        "name": "stacked-allocation-legend",
+        "value": "360px"
       }
     ],
     "colorMeta": {
-      "asset-twt": {
+      "light-allocation-btc": {
         "role": "secondary",
-        "displayName": "Знак учебного TWT"
+        "displayName": "Серия состава BTC: light"
       },
-      "asset-msft": {
+      "light-allocation-msft": {
         "role": "secondary",
-        "displayName": "Знак учебного MSFT"
+        "displayName": "Серия состава MSFT: light"
       },
-      "allocation-btc": {
+      "light-allocation-twt": {
         "role": "secondary",
-        "displayName": "Серия состава BTC"
+        "displayName": "Серия состава TWT: light"
       },
-      "allocation-msft": {
+      "dark-allocation-btc": {
         "role": "secondary",
-        "displayName": "Серия состава MSFT"
+        "displayName": "Серия состава BTC: dark"
       },
-      "allocation-twt": {
+      "dark-allocation-msft": {
         "role": "secondary",
-        "displayName": "Серия состава TWT"
+        "displayName": "Серия состава MSFT: dark"
+      },
+      "dark-allocation-twt": {
+        "role": "secondary",
+        "displayName": "Серия состава TWT: dark"
       }
     },
     "typographyMeta": {
@@ -67,31 +79,84 @@
         "displayName": "Ведущая цена",
         "purpose": "Цена рынка, сумма виджета и мобильная стоимость."
       },
-      "portfolio-value": {
+      "portfolio-value-max": {
         "displayName": "Стоимость портфеля",
-        "purpose": "Главная сумма обзора: clamp(36px, 3.4vw, 44px), до 600 px — 32 px."
+        "purpose": "Главная сумма обзора: clamp(32px, 3.1vw, 44px), до 600 px — 32 px."
       },
-      "analytical-answer": {
+      "analytical-answer-max": {
         "displayName": "Ответ аналитики",
         "purpose": "Ведущее значение выбранной учебной сцены."
       }
-    }
+    },
+    "fluidTypography": [
+      {
+        "name": "portfolio-value",
+        "minimum": "32px",
+        "maximum": "44px",
+        "mobile": "32px",
+        "formula": "clamp(32px, 3.1vw, 44px)",
+        "purpose": "Главная сумма обзора; мобильный размер применяется до 600 px."
+      },
+      {
+        "name": "analytical-answer",
+        "minimum": "32px",
+        "maximum": "44px",
+        "formula": "clamp(32px, 4vw, 44px)",
+        "purpose": "Ведущий ответ самостоятельной аналитической сцены."
+      }
+    ],
+    "shapes": [
+      {
+        "name": "allocation-ring-and-legend",
+        "value": "50%",
+        "purpose": "Круглая геометрия диаграммы и точек легенды; процент не включён в размерные YAML-токены."
+      }
+    ],
+    "heroAliases": {
+      "--primary": "--hero-primary",
+      "--primary-ink": "--hero-primary-ink",
+      "--primary-border": "--hero-primary-border",
+      "--primary-hover": "--hero-primary-hover",
+      "--primary-hover-ink": "--hero-primary-hover-ink",
+      "--chart": "--hero-chart"
+    },
+    "layoutBehavior": [
+      {
+        "name": "balance-panel-disclosure",
+        "desktopRows": "min-content 1fr",
+        "stackedRows": "auto",
+        "stackedAt": "1100px",
+        "purpose": "Результат и кнопка сохраняют положение при раскрытии истории справа."
+      },
+      {
+        "name": "analytics-table",
+        "gridColumns": "minmax(0, 1fr)",
+        "scrollSelector": ".analytics-table-scroll",
+        "overflowX": "auto",
+        "purpose": "Длинная таблица прокручивается локально."
+      },
+      {
+        "name": "history-row",
+        "alignItems": "start",
+        "purpose": "Суммы выровнены по верхнему краю при раскрытии записи."
+      }
+    ]
   },
   "components": [
     {
       "name": "Основное действие",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Конкретное действие текущей сцены; финансовый знак использует отдельный цвет.",
+      "description": "Основное действие с контрастной подписью, радиусом 8 px и отдельной границей; финансовый знак использует отдельный цвет.",
       "html": "<button class=\"primary\">Добавить покупку</button>",
-      "css": "button.primary { min-height: 44px; border: 1px solid var(--primary); border-radius: 999px; padding: 9px 16px; background: var(--primary); color: var(--primary-ink); font: inherit; font-weight: 500; } button.primary:hover { opacity: .84; } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "css": "button.primary { min-height: 44px; border: 1px solid var(--primary-border); border-radius: var(--radius); padding: 9px 16px; background: var(--primary); color: var(--primary-ink); font: inherit; font-weight: 500; transition: color 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out; } button.primary:hover { background: var(--primary-hover); color: var(--primary-hover-ink); } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Вторичное действие",
       "kind": "button",
       "description": "Отмена или вспомогательное действие рядом с основной кнопкой.",
       "html": "<button>Отмена</button>",
-      "css": "button { min-height: 44px; border: 1px solid var(--control-border); border-radius: 12px; padding: 9px 16px; background: var(--paper); color: inherit; font: inherit; font-weight: 500; } button:hover { background: var(--surface); } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "css": "button { min-height: 44px; border: 1px solid var(--control-border); border-radius: var(--radius); padding: 9px 16px; background: var(--paper); color: inherit; font: inherit; font-weight: 500; transition: color 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out; } button:hover { background: var(--surface); } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Подписанное поле",
@@ -99,21 +164,21 @@
       "refersTo": "input",
       "description": "Сумма и её единица остаются рядом с вводом.",
       "html": "<div class=\"operation-dialog\"><div class=\"form-field\"><label for=\"ds-amount\">Сумма, USD</label><input id=\"ds-amount\" inputmode=\"decimal\" value=\"100\"></div></div>",
-      "css": ".operation-dialog .form-field { display: grid; align-content: start; gap: 8px; min-width: 0; } label { font-size: 14px; font-weight: 500; } input { min-height: 44px; max-width: 100%; width: 100%; border: 1px solid var(--control-border); border-radius: 8px; padding: 9px 12px; background: var(--surface); color: inherit; font: inherit; caret-color: var(--accent); } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "css": ".operation-dialog .form-field { display: grid; align-content: start; gap: 8px; min-width: 0; } label { font-size: 14px; font-weight: 500; } input { min-height: 44px; max-width: 100%; width: 100%; border: 1px solid var(--control-border); border-radius: var(--radius); padding: 9px 12px; background: var(--surface); color: inherit; font: inherit; caret-color: var(--accent); } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Выбранный раздел",
       "kind": "nav",
       "description": "Настольная подписанная строка навигации; на телефоне действуют отдельные правила layout.css.",
       "html": "<nav class=\"navigation\"><a href=\"#markets\" aria-current=\"page\"><svg class=\"ui-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 20h18M5 16l4-5 4 3 6-9M16 5h3v3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span>Рынки</span></a></nav>",
-      "css": ".navigation a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 8px; text-decoration: none; background: transparent; color: var(--muted); text-align: left; font-weight: 500; } .navigation a:hover { background: var(--hover-bg); color: var(--ink); } .navigation [aria-current=\"page\"] { background: var(--selected-bg); color: var(--selected-ink); font-weight: 600; } .navigation svg { display: block; width: 22px; height: 22px; flex: none; margin: 1px; } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "css": ".navigation a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 8px; text-decoration: none; background: transparent; color: var(--muted); text-align: left; font-weight: 500; transition: color 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out; } .navigation a:hover { background: var(--hover-bg); color: var(--ink); } .navigation [aria-current=\"page\"] { background: var(--selected-bg); color: var(--selected-ink); font-weight: 600; } .navigation svg { display: block; width: 22px; height: 22px; flex: none; margin: 1px; } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
     },
     {
       "name": "Смысловая группа формы",
       "kind": "custom",
       "description": "Контекст, сумма или связанные стороны операции образуют самостоятельную группу полей.",
       "html": "<div class=\"operation-dialog\"><fieldset class=\"operation-group\"><legend>Откуда</legend><div class=\"form-field\"><label for=\"ds-account\">Счёт</label><select id=\"ds-account\"><option>Учебный счёт</option></select></div></fieldset></div>",
-      "css": ".operation-group { margin: 0; padding: 0; border: 0; min-width: 0; } .operation-group legend { padding: 0; margin-bottom: 14px; font-size: 16px; font-weight: 600; } .operation-dialog .form-field { display: grid; align-content: start; gap: 8px; min-width: 0; } label { font-size: 14px; font-weight: 500; } select { min-height: 44px; max-width: 100%; width: 100%; border: 1px solid var(--control-border); border-radius: 8px; padding: 9px 12px; background: var(--surface); color: inherit; font: inherit; } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }"
+      "css": ".operation-group { margin: 0; padding: 0; border: 0; min-width: 0; } .operation-group legend { padding: 0; margin-bottom: 14px; font-size: 16px; font-weight: 600; } .operation-dialog .form-field { display: grid; align-content: start; gap: 8px; min-width: 0; } label { font-size: 14px; font-weight: 500; } select { min-height: 44px; max-width: 100%; width: 100%; border: 1px solid var(--control-border); border-radius: var(--radius); padding: 9px 12px; background: var(--surface); color: inherit; font: inherit; transition: color 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out; } :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; } select:not([multiple]):is(:not([size]), [size=\"1\"]) { appearance: none; height: 44px; padding-right: 36px; background-image: var(--select-chevron); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px 16px; text-align: start; } @media (forced-colors: active) { select:not([multiple]):is(:not([size]), [size=\"1\"]) { appearance: auto; background-image: none; } }"
     },
     {
       "name": "Данные и расчёт",
@@ -124,11 +189,11 @@
     }
   ],
   "narrative": {
-    "northStar": "Mintlify для спокойной работы с портфелем",
-    "overview": "Текущий кандидат адаптирует выбранный владельцем Mintlify: светлая тема по умолчанию, белые рабочие области, светло-серая боковая панель, локальный Inter 4.1, чёрные основные кнопки и mint для знака приложения и фокуса. Тёмная тема использует графитовые слои и светлое основное действие. Финансовые цвета имеют отдельный смысл. Визуальная приёмка текущего кандидата ожидается; исторические проверки арены его не подтверждают.",
+    "northStar": "Строгая композиция, тёмные поверхности и красное действие",
+    "overview": "Адаптация палитры Bentley: светлый moss-холст, цельная Race Green-панель стоимости и истории, teal-зоны состава и отчёта, blush-выбор. Цветные активы и смысловые финансовые знаки сохранены; монохром доступен только по выбору. Inter и радиусы 8/12 сохранены. Проверки нового кандидата и визуальная приёмка ожидаются; прежние результаты их не подтверждают.",
     "dos": [
       "Сохранять подписи, единицы, знаки результата и доступные таблицы графиков.",
-      "Использовать mint для знака приложения и фокуса; финансовые цвета — для результата.",
+      "Сохранять цветовую связь актива в таблице и составе, финансовые знаки и подписи; монохром включать только по выбору.",
       "Оставлять обязательный курс и существенные ограничения видимыми."
     ],
     "donts": [

@@ -7,38 +7,36 @@
 .finance-overview {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 272px;
-  grid-template-areas: 'balance side' 'assets side' 'report report' 'history history';
+  grid-template-areas: 'balance balance' 'assets side' 'report report' 'history history';
   gap: 24px 32px;
   align-items: start;
-  --allocation-btc: #7656d6;
-  --allocation-msft: #117e99;
-  --allocation-twt: #b23873;
 }
 .balance-panel {
   grid-area: balance;
   min-width: 0;
 }
-.summary .section-top,
+.summary-label,
 .valuation {
   color: var(--muted);
   font-size: 14px;
 }
 .main-amount {
-  font-size: clamp(36px, 3.4vw, 44px);
+  font-size: clamp(32px, 3.1vw, 44px);
   letter-spacing: -0.03em;
   font-weight: 600;
   margin: 8px 0 0;
   line-height: 1.12;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+}
+.valuation {
+  margin-top: 8px;
 }
 .summary-result {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px 24px;
-  align-items: center;
-  margin-top: 16px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  margin-top: 24px;
 }
 .summary-result dt {
   color: var(--muted);
@@ -174,19 +172,22 @@
   height: 36px;
   display: grid;
   place-items: center;
-  border-radius: 10px;
+  border-radius: 6px;
   font-size: 16px;
   font-weight: 600;
   flex-shrink: 0;
-  background: #207c69;
-  color: white;
 }
 .asset-symbol.btc {
-  background: #f7931a;
-  color: #151515;
+  background: var(--asset-btc);
+  color: var(--asset-btc-ink);
 }
 .asset-symbol.msft {
-  background: #1673c5;
+  background: var(--asset-msft);
+  color: var(--asset-symbol-ink);
+}
+.asset-symbol.twt {
+  background: var(--asset-twt);
+  color: var(--asset-symbol-ink);
 }
 .mobile-label {
   display: none;
@@ -242,7 +243,6 @@
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
-.cash-balances,
 .asset-catalog {
   padding-top: 16px;
   border-top: 1px solid var(--line);

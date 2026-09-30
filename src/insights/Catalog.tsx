@@ -1,7 +1,10 @@
 import { useRef, useState } from 'react';
+import { DialogHeading, keepDialogFocus, openDialog } from '../Dialog.tsx';
 import { openOperation } from '../Forms.tsx';
-import { money, type Language } from '../i18n.ts';
+import { Icon } from '../Icon.tsx';
+import { getLabels, money, type Language } from '../i18n.ts';
 import { insightWords } from './words.ts';
+import './catalog.css';
 
 const instruments = [
   { id: 'MSFT', kind: 'stocks' },
@@ -18,9 +21,43 @@ export function CashAndCatalog({
   hidden,
 }: Readonly<{ language: Language; hidden: boolean }>) {
   const words = insightWords(language);
+  const trigger = useRef<HTMLButtonElement>(null);
   return (
-    <details className="cash-balances">
-      <summary>{words.cash}</summary>
+    <>
+      <div className="cash-catalog-trigger">
+        <button
+          type="button"
+          className="cash-catalog-open"
+          ref={trigger}
+          aria-haspopup="dialog"
+          onClick={() => openDialog('cash-catalog-dialog')}
+        >
+          {words.cash} <Icon name="chevron" />
+        </button>
+      </div>
+      <dialog
+        id="cash-catalog-dialog"
+        className="cash-catalog-dialog"
+        aria-labelledby="cash-catalog-title"
+        onClose={() => trigger.current?.focus()}
+        onKeyDown={keepDialogFocus}
+      >
+        <DialogHeading
+          title={words.cash}
+          id="cash-catalog-title"
+          dialog="cash-catalog-dialog"
+          labels={getLabels(language)}
+        />
+        <CashContent language={language} hidden={hidden} />
+      </dialog>
+    </>
+  );
+}
+
+function CashContent({ language, hidden }: Readonly<{ language: Language; hidden: boolean }>) {
+  const words = insightWords(language);
+  return (
+    <div className="cash-balances">
       <h3>{words.balance}</h3>
       <dl className="effects">
         {(['RUB', 'USD'] as const).map((currency) => (
@@ -35,7 +72,7 @@ export function CashAndCatalog({
         {words.opening}
       </button>
       <Catalog language={language} />
-    </details>
+    </div>
   );
 }
 

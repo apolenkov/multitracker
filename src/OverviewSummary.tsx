@@ -14,11 +14,11 @@ export function OverviewSummary({ result, currency, language, hidden }: Props) {
   const labels = getLabels(language);
   return (
     <section className="summary" aria-labelledby="summary-title">
-      <div className="section-top">
-        <p id="summary-title">{labels.total}</p>
-        <span className="valuation">{date(assessmentDate, language)}</span>
-      </div>
+      <p id="summary-title" className="summary-label">
+        {labels.total}
+      </p>
       <p className="main-amount">{hidden ? '••••' : money(result.value, currency, language)}</p>
+      <p className="valuation">{date(assessmentDate, language)}</p>
     </section>
   );
 }

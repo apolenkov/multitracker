@@ -68,7 +68,7 @@ export function OperationField({ field, ...props }: Props & Readonly<{ field: Fi
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : undefined}
         >
-          <option value="">{labels.selectionError}</option>
+          <option value="">{props.language === 'ru' ? 'Выберите…' : 'Choose…'}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

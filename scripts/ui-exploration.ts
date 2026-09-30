@@ -117,7 +117,81 @@ export function analyticsChanges(browser: Browser) {
     (section) => analysisPeriod(browser, section),
   );
   const currencies = analyticsCurrency(browser);
-  return { sections, currencies };
+  const responsive = analyticsNarrow(browser);
+  const allocation = analyticsAllocationNarrow(browser);
+  return { sections, currencies, responsive, allocation };
+}
+
+export function analyticsAllocationNarrow(browser: Browser) {
+  prepare(browser);
+  go(browser, 'analytics');
+  browser.run('select', '[data-testid="analytics-section"]', 'allocation');
+  return ['sector', 'exchange'].flatMap((slice) => {
+    browser.run('select', '[data-testid="analytics-allocation"]', slice);
+    reveal(browser, '.analytics-panel details.analytics-data:first-of-type > summary');
+    return [375, 320, 1440].flatMap((width) =>
+      (['ru', 'en'] as const).map((locale) => {
+        browser.run('set', 'viewport', String(width), '900');
+        browser.run('select', '#topbar-language', locale);
+        truth(
+          browser,
+          'document.documentElement.scrollWidth <= innerWidth + 1',
+          `Распределение ${slice} ${width} ${locale}: переполнение страницы`,
+        );
+        truth(
+          browser,
+          'document.querySelector(".analytics-panel details.analytics-data table")?.checkVisibility() === true && document.querySelector(".analytics-panel details.analytics-data table")?.getBoundingClientRect().right <= innerWidth + 1 && document.querySelector(".analytics-panel details.analytics-data")?.open === true',
+          `Распределение ${slice} ${width} ${locale}: таблица недоступна`,
+        );
+        return { slice, width, locale };
+      }),
+    );
+  });
+}
+
+export function analyticsNarrow(browser: Browser) {
+  prepare(browser);
+  go(browser, 'analytics');
+  browser.run('select', '[data-testid="analytics-section"]', 'performance');
+  reveal(browser, '.analytics-panel details.analytics-data:first-of-type > summary');
+  reveal(browser, '.analytics-panel details.analytics-data:nth-of-type(2) > summary');
+  browser.run('check', '.analytics-asset-choices label:nth-of-type(2) input');
+  return [375, 320, 1440].flatMap((width) =>
+    (['ru', 'en'] as const).flatMap((locale) => {
+      browser.run('set', 'viewport', String(width), '900');
+      browser.run('select', '#topbar-language', locale);
+      return (['month', 'year'] as const).map((period) => {
+        browser.run('select', '[data-testid="analytics-period"]', period);
+        truth(
+          browser,
+          'document.documentElement.scrollWidth <= innerWidth + 1',
+          `Аналитика ${width} ${locale} ${period}: переполнение страницы`,
+        );
+        truth(
+          browser,
+          'document.querySelector(".analytics-table-scroll")?.checkVisibility() === true',
+          `Аналитика ${width} ${locale} ${period}: таблица недоступна`,
+        );
+        if (width < 500)
+          truth(
+            browser,
+            'document.querySelector(".analytics-table-scroll")?.scrollWidth > document.querySelector(".analytics-table-scroll")?.clientWidth',
+            `Аналитика ${width} ${locale} ${period}: таблица не прокручивается внутри блока`,
+          );
+        truth(
+          browser,
+          'document.querySelectorAll(".analytics-panel details[open]").length >= 2',
+          `Аналитика ${width} ${locale} ${period}: раскрытые блоки потеряны`,
+        );
+        return {
+          width,
+          locale,
+          period,
+          scrollWidth: evaluate(browser, 'document.documentElement.scrollWidth'),
+        };
+      });
+    }),
+  );
 }
 
 function analyticsCurrency(browser: Browser) {

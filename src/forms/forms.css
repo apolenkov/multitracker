@@ -55,7 +55,7 @@
 }
 .operation-dialog :is(input, select),
 .entity-dialog :is(input, select) {
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 .operation-dialog select,
 .entity-dialog select {
@@ -64,7 +64,7 @@
 .operation-context {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 16px;
 }
 .operation-context legend {
@@ -109,7 +109,7 @@
   margin-block: 20px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 600;
 }
 .entity-members .confirmation {

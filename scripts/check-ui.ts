@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createBrowser, evaluate } from './ui-driver.ts';
 import type { Browser } from './ui-driver.ts';
-import { appearanceThemes, independentCurrencies } from './ui-preferences.ts';
+import { appearanceThemes, independentCurrencies, settingsPersist } from './ui-preferences.ts';
 import { analyticsChanges, analyticsPrivacy, widgetAppearance } from './ui-exploration.ts';
 import { alertDraft, marketFollowing, marketRouteClosure } from './ui-market-checks.ts';
 import { eventReminder, eventUpdates } from './ui-events-checks.ts';
@@ -10,7 +10,10 @@ import { conflictRadioChoices } from './ui-sync-checks.ts';
 import { reveal } from './ui-exploration.ts';
 import { operationExtras } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
-import { narrowAllocation } from './ui-overview-checks.ts';
+import { catalogDialog, initialSkipFocus, narrowAllocation } from './ui-overview-checks.ts';
+import { stableHeroDisclosure } from './ui-overview-checks.ts';
+import { recordMenuStability } from './ui-record-menu-checks.ts';
+import { emptyOverview } from './ui-empty-overview-checks.ts';
 
 const screens = [
   ['overview', 'Обзор', 'Overview'],
@@ -173,28 +176,6 @@ function cancelImport() {
   );
   return 'Bybit в черновике → Cancel → page Binance';
 }
-function settingsPersist() {
-  navigate('settings');
-  browser.run('click', '#settings-open-notifications');
-  browser.run('wait', '#settings-dialog[open]');
-  browser.run('check', '#settings-notification-price');
-  browser.run('click', '#settings-dialog button[type="submit"]');
-  browser.run('wait', '--fn', '!document.querySelector("#settings-dialog[open]")');
-  navigate('overview');
-  navigate('settings');
-  browser.run('click', '#settings-open-notifications');
-  browser.run('wait', '#settings-dialog[open]');
-  truth(
-    'document.querySelector("#settings-notification-price")?.checked === true',
-    'Настройка должна пережить переход в финансовый раздел',
-  );
-  browser.run('press', 'Escape');
-  const closed =
-    '!document.querySelector("#settings-dialog") && document.activeElement?.id === "settings-open-notifications"';
-  browser.run('wait', '--fn', closed);
-  truth(closed, 'Escape должен закрыть настройки и вернуть фокус исходной кнопке');
-  return 'Price notification сохранена settings→overview→settings; Escape закрывает и возвращает фокус';
-}
 function hiddenReconciliation() {
   language('ru');
   navigate('settings');
@@ -227,9 +208,10 @@ function hiddenReconciliation() {
   return 'В открытой сверке: три ••••; нет 0.04, 0.05, +0.01 с точкой или запятой';
 }
 function runChecks(driver: Browser): readonly Result[] {
-  driver.run('open', baseUrl.href);
-  driver.run('wait', '#main h1');
-  const pages = allScreens();
+  const pages = [
+    check('navigation:initial-skip-focus', () => initialSkipFocus(driver, baseUrl.href)),
+    ...allScreens(),
+  ];
   language('ru');
   const actions: readonly Readonly<[string, () => unknown]>[] = [
     ['preferences:appearance-themes', () => appearanceThemes(browser)],
@@ -238,7 +220,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ['feedback:repeat-save', repeatSave],
     ['import:mapping-locale-invalid', importMapping],
     ['import:cancel-source', cancelImport],
-    ['settings:finance-roundtrip', settingsPersist],
+    ['settings:finance-roundtrip', () => settingsPersist(browser)],
     ['markets:search-follow-roundtrip', () => marketFollowing(browser)],
     ['alerts:invalid-save-edit-cancel', () => alertDraft(browser)],
     ['markets:dialog-route-closure', () => marketRouteClosure(browser)],
@@ -250,6 +232,10 @@ function runChecks(driver: Browser): readonly Result[] {
     ['sync:radio-labels-width-selection', () => conflictRadioChoices(browser)],
     ['operations:meaningful-extras-visible', () => operationExtras(browser)],
     ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
+    ['overview:catalog-dialog-layout-focus', () => catalogDialog(browser)],
+    ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
+    ['history:record-menu-stable-row', () => recordMenuStability(browser)],
+    ['overview:empty-state-restores-example', () => emptyOverview(browser)],
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
   ];
   return actions.reduce<readonly Result[]>(

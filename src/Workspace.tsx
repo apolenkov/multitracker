@@ -1,7 +1,10 @@
 import type { AppView } from './App.tsx';
 import { getLabels, text } from './i18n.ts';
-import { demoState } from './model/portfolio.ts';
+import { demoState, summarize } from './model/portfolio.ts';
 import { Overview } from './Overview.tsx';
+import { OverviewSummary } from './OverviewSummary.tsx';
+import { Holdings } from './Holdings.tsx';
+import { Composition } from './insights/Composition.tsx';
 import { PortfolioList, History } from './Records.tsx';
 import { DemoScreens } from './DemoScreens.tsx';
 import { openDialog } from './Forms.tsx';
@@ -61,6 +64,9 @@ function PageContent({ view }: Readonly<{ view: AppView }>) {
   );
 }
 function FinancePage({ view }: Readonly<{ view: AppView }>) {
+  if (view.demoState === 'empty' && view.screen === 'overview') {
+    return <EmptyOverview view={view} />;
+  }
   if (view.demoState !== 'ready' && view.screen !== 'portfolios') {
     return (
       <StaticStates
@@ -100,6 +106,39 @@ function FinancePage({ view }: Readonly<{ view: AppView }>) {
       </div>
       <History {...shared} onSaved={view.onSaved} />
     </>
+  );
+}
+function EmptyOverview({ view }: Readonly<{ view: AppView }>) {
+  const emptyState = { ...demoState, buys: [] };
+  const shared = {
+    state: emptyState,
+    portfolioId: view.portfolioId,
+    language: view.language,
+    currency: view.currency,
+    baseCurrency: view.baseCurrency,
+    hidden: view.hidden,
+  };
+  return (
+    <div className="empty-overview">
+      <StaticStates
+        language={view.language}
+        state="empty"
+        onReturn={() => view.setDemoState('ready')}
+      />
+      <OverviewSummary
+        result={summarize(emptyState, view.portfolioId, view.currency)}
+        currency={view.currency}
+        language={view.language}
+        hidden={view.hidden}
+      />
+      <Holdings {...shared} />
+      <Composition
+        buys={emptyState.buys}
+        currency={view.currency}
+        language={view.language}
+        hidden={view.hidden}
+      />
+    </div>
   );
 }
 function PageHeading({ view }: Readonly<{ view: AppView }>) {

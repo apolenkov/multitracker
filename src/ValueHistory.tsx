@@ -258,8 +258,8 @@ function HistorySvg({ value }: Readonly<{ value: string }>) {
     >
       <defs>
         <linearGradient id="portfolio-area" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--green)" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="var(--green)" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--chart)" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="var(--chart)" stopOpacity="0" />
         </linearGradient>
       </defs>
       {[20, 70, 120, 170].map((y) => (

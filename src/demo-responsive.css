@@ -115,7 +115,7 @@
 .conflict-choices .check-row {
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 6px;
   margin-bottom: 8px;
   cursor: pointer;
   overflow-wrap: anywhere;

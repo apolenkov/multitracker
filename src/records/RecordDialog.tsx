@@ -124,7 +124,7 @@ function EditRecord(props: Props) {
   return (
     <OperationForm
       id="record-edit-dialog"
-      title={`${recordsCopy(props.language).edit} ${recordsCopy(props.language).transaction.toLocaleLowerCase()}`}
+      title={props.language === 'ru' ? 'Изменить операцию' : 'Edit transaction'}
       state={props.state}
       language={props.language}
       portfolioId={props.request.record.portfolioId}

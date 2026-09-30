@@ -14,6 +14,7 @@ import { catalogDialog, initialSkipFocus, narrowAllocation } from './ui-overview
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
 import { recordMenuStability } from './ui-record-menu-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
+import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
 
 const screens = [
   ['overview', 'Обзор', 'Overview'],
@@ -34,6 +35,7 @@ assert.ok(['http:', 'https:'].includes(baseUrl.protocol), 'URL должен бы
 assert.equal(baseUrl.username + baseUrl.password, '', 'URL не должен содержать credentials');
 const browser = createBrowser();
 const check = createCheck(browser);
+const headingLabel = "document.querySelector('#main h1')?.firstChild?.textContent?.trim()";
 
 function truth(source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
@@ -58,7 +60,7 @@ function navigate(screen: string, width = 1440, language: Language = 'ru') {
   browser.run(
     'wait',
     '--fn',
-    `location.hash === '#${screen}' && document.activeElement?.id === 'main' && document.querySelector('#main h1')?.textContent === ${JSON.stringify(heading)}`,
+    `location.hash === '#${screen}' && document.activeElement?.id === 'main' && ${headingLabel} === ${JSON.stringify(heading)}`,
   );
 }
 function language(value: Language) {
@@ -70,10 +72,12 @@ function screenChecks(width: number, locale: Language): readonly Result[] {
   return screens.map(([screen, ru, en]) =>
     check(`screen:${width}:${locale}:${screen}`, () => {
       navigate(screen, width, locale);
-      assert.equal(
-        evaluate(browser, 'document.querySelector("#main h1")?.textContent'),
-        locale === 'ru' ? ru : en,
-      );
+      assert.equal(evaluate(browser, headingLabel), locale === 'ru' ? ru : en);
+      if (screen === 'portfolios')
+        assert.equal(
+          evaluate(browser, 'document.querySelector("#main h1 .count")?.textContent.trim()'),
+          '3',
+        );
       truth(
         'document.documentElement.scrollWidth <= innerWidth + 1',
         'Горизонтальное переполнение страницы',
@@ -237,6 +241,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ['history:record-menu-stable-row', () => recordMenuStability(browser)],
     ['overview:empty-state-restores-example', () => emptyOverview(browser)],
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
+    ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],
   ];
   return actions.reduce<readonly Result[]>(
     (results, [id, action]) => [

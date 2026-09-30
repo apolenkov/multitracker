@@ -1,5 +1,5 @@
 import { accountSamples, accountLabel } from '../forms/accounts.ts';
-import { Icon } from '../Icon.tsx';
+import { ActionMenu } from '../ActionMenu.tsx';
 import { recordsCopy } from './copy.ts';
 import type { RecordsProps } from './data.ts';
 export type EntityRequest = Readonly<{
@@ -30,11 +30,11 @@ export function AccountList({
               <strong>{accountLabel(account.id, language).split(' · ').at(-1)}</strong>
               <small>{copy.account}</small>
             </div>
-            <details className="account-manage">
-              <summary>
-                <Icon name="more" />
-                {copy.manage}: {accountLabel(account.id, language).split(' · ').at(-1)}
-              </summary>
+            <ActionMenu
+              className="account-manage"
+              name="account-menu"
+              label={`${copy.manage}: ${accountLabel(account.id, language)}`}
+            >
               <EntityActions
                 entity="account"
                 name={accountLabel(account.id, language)}
@@ -42,7 +42,7 @@ export function AccountList({
                 language={language}
                 onManage={onManage}
               />
-            </details>
+            </ActionMenu>
           </li>
         ))}
     </ul>

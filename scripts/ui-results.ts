@@ -21,7 +21,7 @@ function failureContext(browser: Browser) {
       disclosures:Array.from(document.querySelectorAll('dialog[open] details > summary'), element=>{
         const box=element.getBoundingClientRect();
         const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);
-        return {text:element.innerText,open:element.closest('details').open,
+        return {text:element.getAttribute('aria-label') ?? element.innerText,open:element.closest('details').open,
           visible:element.checkVisibility(),rect:box.toJSON(),centerVisible:element.contains(hit),
           hit:hit?{tag:hit.tagName,id:hit.id,text:hit.innerText?.slice(0,100)}:null};
       })})`,

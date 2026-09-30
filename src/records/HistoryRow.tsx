@@ -4,6 +4,8 @@ import { accountLabel } from '../forms/accounts.ts';
 import type { RecordsProps, Transaction } from './data.ts';
 import { recordsCopy } from './copy.ts';
 import { Icon } from '../Icon.tsx';
+import { ActionMenu } from '../ActionMenu.tsx';
+import { AssetSymbol } from '../AssetSymbol.tsx';
 
 type Props = RecordsProps &
   Readonly<{
@@ -23,20 +25,13 @@ export function HistoryRow(props: Props) {
       <div className="record-heading">
         <time dateTime={props.record.date}>{date(props.record.date, props.language)}</time>
         <Heading>
+          <AssetSymbol symbol={props.record.asset} />
+          <RecordDirection type={props.record.type} />
           {operationLabel(props.record.type, props.language)} · {props.record.asset}
         </Heading>
         <p className="quiet">
           {portfolio} · {accountLabel(props.record.account, props.language).split(' · ').at(-1)}
         </p>
-        <span className="record-badge">
-          {props.record.sample
-            ? props.language === 'ru'
-              ? 'Пример формы'
-              : 'Form sample'
-            : props.language === 'ru'
-              ? 'В расчёте'
-              : 'Included'}
-        </span>
       </div>
       <RecordSummary {...props} />
       {!props.brief && <RecordActions {...props} />}
@@ -55,25 +50,31 @@ function RecordActions(props: Props) {
       >
         {copy.details}
       </button>
-      <details className="record-menu">
-        <summary>
-          <Icon name="more" />
-          {props.language === 'ru' ? 'Действия' : 'Actions'}
-        </summary>
-        <div className="record-menu-options">
-          <button aria-label={`${copy.edit}: ${title}`} onClick={props.onEdit}>
-            {copy.edit}
-          </button>
-          <button
-            className="danger"
-            aria-label={`${copy.delete}: ${title}`}
-            onClick={props.onDelete}
-          >
-            {copy.delete}
-          </button>
-        </div>
-      </details>
+      <ActionMenu
+        className="record-menu"
+        name="record-menu"
+        label={`${props.language === 'ru' ? 'Действия' : 'Actions'}: ${title}`}
+      >
+        <button aria-label={`${copy.edit}: ${title}`} onClick={props.onEdit}>
+          {copy.edit}
+        </button>
+        <button className="danger" aria-label={`${copy.delete}: ${title}`} onClick={props.onDelete}>
+          {copy.delete}
+        </button>
+      </ActionMenu>
     </div>
+  );
+}
+function RecordDirection({ type }: Readonly<{ type: Transaction['type'] }>) {
+  const name = ['deposit', 'income', 'opening'].includes(type)
+    ? 'incoming'
+    : ['withdrawal', 'fee'].includes(type)
+      ? 'outgoing'
+      : 'transfer';
+  return (
+    <span className={`record-direction record-direction-${name}`} aria-hidden="true">
+      <Icon name={name} />
+    </span>
   );
 }
 export function RecordSummary({

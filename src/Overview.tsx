@@ -73,7 +73,7 @@ function OverviewLinks({ language }: Readonly<{ language: Language }>) {
     >
       {(['analytics', 'markets', 'events'] as const).map((screen) => (
         <a key={screen} href={`#${screen}`}>
-          {text(labels, screen)} <Icon name="chevron" />
+          <Icon name={screen} /> {text(labels, screen)}
         </a>
       ))}
     </nav>

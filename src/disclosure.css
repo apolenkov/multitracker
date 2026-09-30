@@ -1,0 +1,120 @@
+html {
+  scrollbar-gutter: stable;
+}
+summary {
+  min-height: 44px;
+  padding-block: 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+details:not(.action-menu) > summary {
+  color: var(--ink);
+}
+details:not(.action-menu) > summary::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: -2px;
+  background: currentColor;
+  mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="m9 5 7 7-7 7" fill="none" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E')
+    center / contain no-repeat;
+  transition: transform 150ms ease-out;
+}
+details[open]:not(.action-menu) > summary::before {
+  transform: rotate(90deg);
+}
+@supports (interpolate-size: allow-keywords) {
+  details:not(.action-menu) {
+    interpolate-size: allow-keywords;
+  }
+  details:not(.action-menu)::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 200ms ease-out,
+      content-visibility 200ms allow-discrete;
+  }
+  details[open]:not(.action-menu)::details-content {
+    block-size: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  details:not(.action-menu)::details-content {
+    transition: none;
+  }
+}
+.action-menu {
+  position: relative;
+  width: 44px;
+  flex: none;
+}
+.action-menu > summary {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: var(--radius);
+  color: var(--ink);
+}
+.action-menu > summary:hover {
+  background: var(--surface);
+}
+.record-menu-options {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  width: min(220px, calc(100vw - 32px));
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.record-menu-options > .record-actions {
+  display: grid;
+  margin: 0;
+  gap: 8px;
+}
+.record-menu-options button {
+  width: 100%;
+  text-align: left;
+}
+.record-direction {
+  display: inline-flex;
+  color: var(--muted);
+}
+.record-direction-incoming {
+  color: var(--green);
+}
+.record-direction-outgoing {
+  color: var(--red);
+}
+.record-heading :is(h2, h3) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.portfolio-record > .portfolio-manage {
+  margin-block: 0 8px;
+}
+.portfolio-assets,
+.portfolio-assets > span {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 14px;
+}

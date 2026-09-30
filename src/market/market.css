@@ -188,14 +188,13 @@
   gap: 8px;
   flex-wrap: wrap;
 }
-.market-alert-actions [data-market-action='edit'],
 .market-alert-actions [data-market-action='delete'] {
   background: transparent;
   border-color: transparent;
   padding-inline: 8px;
 }
 .market-delete {
-  color: var(--warning);
+  color: var(--red);
 }
 .market-delete-condition {
   margin-top: 16px;

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Language } from '../i18n.ts';
-import type { Currency } from '../model/portfolio.ts';
+import { MoneyAmount } from '../MoneyAmount.tsx';
+import { currentFX, type Currency } from '../model/portfolio.ts';
 import { assetPrice, assetUnit, type MarketAsset } from './data.ts';
 import { marketWords } from './words.ts';
 
@@ -48,13 +49,7 @@ export function AssetQuote(props: Props & Readonly<{ value?: number }>) {
       </p>
       {props.asset.kind === 'forex' && <p className="quiet">EUR/{props.currency}</p>}
       <p className="market-leading-price">
-        {assetPrice(
-          props.asset,
-          props.value ?? props.asset.price,
-          props.currency,
-          props.language,
-          props.hidden,
-        )}
+        <LeadingPrice {...props} />
       </p>
       <p className="quiet">
         {words.range}:{' '}
@@ -66,5 +61,19 @@ export function AssetQuote(props: Props & Readonly<{ value?: number }>) {
         {props.asset.kind === 'crypto' && ` · ${words.roundTheClock}`}
       </p>
     </div>
+  );
+}
+
+function LeadingPrice(props: Props & Readonly<{ value?: number }>) {
+  const value = props.value ?? props.asset.price;
+  return props.asset.kind === 'index' ? (
+    assetPrice(props.asset, value, props.currency, props.language, props.hidden)
+  ) : (
+    <MoneyAmount
+      value={value * (props.currency === 'RUB' ? currentFX : 1)}
+      currency={props.currency}
+      language={props.language}
+      hidden={props.hidden}
+    />
   );
 }

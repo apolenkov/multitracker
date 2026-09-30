@@ -31,6 +31,7 @@
 .balance-panel .summary-result {
   grid-area: result;
   min-width: 0;
+  align-self: start;
 }
 .balance-panel .value-history {
   grid-area: chart;
@@ -43,9 +44,32 @@
   border-radius: 12px;
   background: var(--section-tint);
 }
-.overview-side .allocation-ring > div,
-.portfolio-report {
+.overview-side .allocation-ring > div {
   background: var(--section-tint);
+}
+.overview-report > .portfolio-report {
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  border-radius: 0;
+}
+.summary-result .result-pill {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.summary-result .result-pill.positive {
+  background: color-mix(in srgb, var(--green) 12%, transparent);
+}
+.summary-result .result-pill.negative {
+  background: color-mix(in srgb, var(--red) 12%, transparent);
+}
+.summary-result .result-pill small {
+  margin-left: 0;
 }
 .app-shell[data-monochrome='true'] .balance-panel {
   background: var(--surface);
@@ -121,10 +145,6 @@
   }
   .allocation-legend {
     align-self: center;
-  }
-  .allocation-legend dd {
-    grid-template-columns: 1fr;
-    font-size: 14px;
   }
   .finance-overview .history-plot,
   .finance-overview .history-plot-hidden {

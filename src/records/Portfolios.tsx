@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { getLabels, money } from '../i18n.ts';
-import { summarize } from '../model/portfolio.ts';
+import { selectedBuys, summarize } from '../model/portfolio.ts';
 import { EntityDialog, openDialog } from '../Forms.tsx';
 import { recordsCopy } from './copy.ts';
 import type { RecordsProps } from './data.ts';
 import { accountSamples } from '../forms/accounts.ts';
 import { Icon } from '../Icon.tsx';
+import { ActionMenu } from '../ActionMenu.tsx';
+import { AssetSymbol } from '../AssetSymbol.tsx';
 
 import { AccountList, EntityActions } from './PortfolioAccounts.tsx';
 import type { EntityRequest } from './PortfolioAccounts.tsx';
@@ -17,9 +19,6 @@ export function PortfolioList(props: Props) {
   return (
     <section>
       <div className="section-top">
-        <h2>
-          {labels.portfolios} <span className="count">{props.state.portfolios.length}</span>
-        </h2>
         <button className="primary" onClick={props.onCreate}>
           + {labels.create}
         </button>
@@ -133,10 +132,11 @@ function PortfolioRow(
   return (
     <article className="portfolio-record">
       <PortfolioValue {...props} name={portfolio.name} />
-      <details className="portfolio-manage">
-        <summary>
-          {copy.manage}: {portfolio.name}
-        </summary>
+      <ActionMenu
+        className="portfolio-manage"
+        name="portfolio-menu"
+        label={`${copy.manage}: ${portfolio.name}`}
+      >
         <EntityActions
           entity="portfolio"
           name={portfolio.name}
@@ -156,7 +156,7 @@ function PortfolioRow(
         >
           {copy.addAccount}
         </button>
-      </details>
+      </ActionMenu>
       <AccountList {...props} />
     </article>
   );
@@ -185,6 +185,7 @@ function PortfolioValue({
           {language === 'ru' ? 'Счетов' : 'Accounts'}:{' '}
           {accountSamples.filter((account) => account.portfolioId === id).length}
         </small>
+        <PortfolioAssets state={state} id={id} />
       </span>
       <span className="portfolio-value">
         <small className="quiet">{labels.total}</small>
@@ -198,6 +199,20 @@ function PortfolioValue({
         <Icon name="chevron" />
       </span>
     </button>
+  );
+}
+
+function PortfolioAssets({ state, id }: Readonly<{ state: RecordsProps['state']; id: string }>) {
+  const symbols = Array.from(new Set(selectedBuys(state, id).map((buy) => buy.asset)));
+  return (
+    <span className="portfolio-assets">
+      {symbols.map((symbol) => (
+        <span key={symbol}>
+          <AssetSymbol symbol={symbol} />
+          {symbol}
+        </span>
+      ))}
+    </span>
   );
 }
 

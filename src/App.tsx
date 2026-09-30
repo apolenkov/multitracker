@@ -8,15 +8,19 @@ import { BuyForm, PortfolioForm, PrivacyDialog } from './Forms.tsx';
 import { Workspace } from './Workspace.tsx';
 import type { DemoState, Density, Theme } from './demo/words.ts';
 import { focusMain, useNavigation } from './navigation.ts';
+import { useDialogPointerGuard } from './dialog-pointer-guard.ts';
 import './base.css';
 import './appearance.css';
 import './layout.css';
 import './finance.css';
 import './records.css';
 import './finance-responsive.css';
+import './disclosure.css';
+import './dialog-layout.css';
 
 export type AppView = ReturnType<typeof useAppView>;
 export function App() {
+  useDialogPointerGuard();
   const view = useAppView();
   const labels = getLabels(view.language);
   return (

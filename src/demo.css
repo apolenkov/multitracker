@@ -162,7 +162,7 @@ label.checkbox-row {
 .sync-devices article {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: start;
   gap: 12px 20px;
   padding-block: 16px;
   border-bottom: 1px solid var(--line);

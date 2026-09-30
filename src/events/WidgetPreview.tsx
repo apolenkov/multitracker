@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Language } from '../demo/words';
 import { copy } from './data';
 import { widgetNumber } from './widget-format';
+import { MoneyAmount } from '../MoneyAmount.tsx';
 import './events.css';
 
 type WidgetKind = 'portfolio' | 'market';
@@ -75,7 +76,13 @@ function PortfolioWidget(props: PreviewProps) {
   return (
     <>
       <p className="widget-value">
-        {masked(props.hidden, `${widgetNumber(props.language, 12480)} USD`)}
+        <MoneyAmount
+          value={12480}
+          currency="USD"
+          language={props.language}
+          hidden={props.hidden}
+          currencySuffix
+        />
       </p>
       {props.changes && (
         <p>

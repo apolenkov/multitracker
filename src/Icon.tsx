@@ -17,11 +17,24 @@ const paths = {
   check: 'M4 12l5 5L20 6',
   chevron: 'm9 5 7 7-7 7',
   more: 'M4 12h1M11.5 12h1M19 12h1',
+  incoming: 'M12 4v16m-6-6 6 6 6-6',
+  outgoing: 'M12 20V4m-6 6 6-6 6 6',
+  transfer: 'M4 8h16m-4-4 4 4-4 4M20 16H4m4-4-4 4 4 4',
   brand: 'M3 19V5l9 8 9-8v14M3 5h18',
 };
 const pathByName = new Map(Object.entries(paths));
 
-type Name = Screen | 'more' | 'brand' | 'close' | 'search' | 'check' | 'chevron';
+type Name =
+  | Screen
+  | 'more'
+  | 'brand'
+  | 'close'
+  | 'search'
+  | 'check'
+  | 'chevron'
+  | 'incoming'
+  | 'outgoing'
+  | 'transfer';
 export function Icon({ name }: Readonly<{ name: Name }>) {
   return (
     <svg className="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">

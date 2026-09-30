@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from './Icon.tsx';
+import { AssetSymbol } from './AssetSymbol.tsx';
 import { openDialog } from './Forms.tsx';
 import { totals, type Asset, type Buy, type Currency } from './model/portfolio.ts';
 import { getLabels, money, number, percentage, type Language } from './i18n.ts';
@@ -154,11 +155,37 @@ function HoldingRow({
         </span>
         {amount(performance.profit, baseCurrency, true)}
       </td>
-      <td className="holding-weight">
-        <span className="mobile-label">{labels.weight}</span>
-        {hidden ? '••••' : percentage((result.value / value) * 100, language)}
-      </td>
+      <HoldingWeight
+        asset={holding.asset}
+        weight={(result.value / value) * 100}
+        language={language}
+        hidden={hidden}
+      />
     </tr>
+  );
+}
+
+function HoldingWeight({
+  asset,
+  weight,
+  language,
+  hidden,
+}: Readonly<{
+  asset: Asset;
+  weight: number;
+  language: Language;
+  hidden: boolean;
+}>) {
+  return (
+    <td className="holding-weight">
+      <span className="mobile-label">{getLabels(language).weight}</span>
+      {hidden ? '••••' : percentage(weight, language)}
+      {!hidden && (
+        <span className={`holding-allocation ${asset.toLowerCase()}`} aria-hidden="true">
+          <span style={{ width: `${weight}%` }} />
+        </span>
+      )}
+    </td>
   );
 }
 
@@ -175,9 +202,7 @@ function HoldingAsset({
           openDialog('asset-dialog');
         }}
       >
-        <span className={`asset-symbol ${asset.toLowerCase()}`} aria-hidden="true">
-          {asset.slice(0, 1)}
-        </span>
+        <AssetSymbol symbol={asset} />
         <strong>{asset}</strong>
       </button>
     </td>

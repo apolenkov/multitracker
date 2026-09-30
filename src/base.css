@@ -76,7 +76,7 @@ input,
 select,
 textarea {
   min-height: 44px;
-  background: var(--surface);
+  background: var(--paper);
   border: 1px solid var(--control-border);
   border-radius: var(--radius);
   padding: 9px 12px;
@@ -110,11 +110,6 @@ input[type='radio'] {
   margin: 0;
   padding: 0;
   accent-color: var(--accent);
-}
-summary {
-  min-height: 44px;
-  padding-block: 10px;
-  cursor: pointer;
 }
 label {
   font-size: 14px;

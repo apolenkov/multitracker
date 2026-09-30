@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { evaluate, type Browser } from './ui-driver.ts';
+import { evaluate, settleLayout, type Browser } from './ui-driver.ts';
 
 const headings = new Map([
   ['overview', 'Обзор'],
@@ -34,6 +34,7 @@ export function content(browser: Browser, selector: string) {
 
 export function reveal(browser: Browser, summary: string) {
   const selector = JSON.stringify(summary);
+  settleLayout(browser);
   if (
     evaluate(browser, `document.querySelector(${selector})?.closest('details')?.open === false`)
   ) {
@@ -50,6 +51,7 @@ export function reveal(browser: Browser, summary: string) {
       `document.querySelector(${selector})?.closest('details')?.open === true`,
     );
   }
+  settleLayout(browser);
   truth(
     browser,
     `document.querySelector(${selector})?.checkVisibility() === true && document.querySelector(${selector})?.closest('details')?.open === true`,
@@ -101,7 +103,7 @@ function analysisPeriod(browser: Browser, section: string) {
   browser.run('select', '[data-testid="analytics-period"]', 'year');
   const year = analyticsValues(browser);
   assert.notEqual(year, month, `${heading}: период должен менять сами значения`);
-  browser.run('click', '.analytics-explanation summary');
+  reveal(browser, '.analytics-explanation summary');
   truth(
     browser,
     'document.querySelector(".analytics-explanation")?.open === true && Boolean(document.querySelector(".analytics-explanation p")?.innerText.trim())',

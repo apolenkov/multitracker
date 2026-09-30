@@ -65,6 +65,46 @@ function actionPaths(browser: Browser, index: number) {
   });
 }
 
+function resizedLastMenu(browser: Browser) {
+  const menu = `${rows}:last-child .record-menu`;
+  browser.run('scrollintoview', `${menu} summary`);
+  browser.run('click', `${menu} summary`);
+  browser.run(
+    'wait',
+    '--fn',
+    `document.querySelector('${menu}')?.open === true && Boolean(document.querySelector('${menu} .record-menu-options')?.style.left)`,
+  );
+  browser.run('set', 'viewport', '375', '900');
+  const ready = `(() => {
+    const details = document.querySelector('${menu}');
+    const panel = details?.querySelector('.record-menu-options');
+    const navigation = document.querySelector('.navigation');
+    if (!details?.open || !panel || !navigation) return false;
+    const box = panel.getBoundingClientRect();
+    const buttons = [...panel.querySelectorAll('button:not(:disabled)')];
+    return box.width > 0 && box.height > 0 && box.left >= 0 && box.top >= 0 &&
+      box.right <= innerWidth && box.bottom <= navigation.getBoundingClientRect().top &&
+      buttons.length === 2 && buttons.every(button => {
+        const target = button.getBoundingClientRect();
+        return button.contains(document.elementFromPoint(
+          target.left + target.width / 2, target.top + target.height / 2));
+      });
+  })()`;
+  browser.run('wait', '--fn', ready);
+  assert.equal(evaluate(browser, ready), true, 'После сужения меню и кнопки должны быть доступны');
+  const position = evaluate(
+    browser,
+    `document.querySelector('${menu} .record-menu-options').getBoundingClientRect().toJSON()`,
+  );
+  browser.run('focus', `${menu} button:first-child`);
+  browser.run('press', 'Escape');
+  const closed = `document.querySelector('${menu}')?.open === false && document.activeElement === document.querySelector('${menu} summary')`;
+  browser.run('wait', '--fn', closed);
+  assert.equal(evaluate(browser, closed), true, 'Escape из кнопки должен вернуть фокус опенеру');
+  browser.run('set', 'viewport', '1440', '900');
+  return { from: 1440, to: 375, position, escapedWithOpenerFocus: true };
+}
+
 export function recordMenuStability(browser: Browser) {
   browser.run('set', 'viewport', '1440', '900');
   browser.run('select', '#topbar-language', 'ru');
@@ -72,6 +112,7 @@ export function recordMenuStability(browser: Browser) {
   browser.run('wait', '--fn', 'location.hash === "#history"');
   const count = evaluate(browser, `document.querySelectorAll('${rows}').length`);
   assert.ok(typeof count === 'number' && count > 1, 'Нужны первая и последняя операции');
+  const resized = resizedLastMenu(browser);
   const layout = ['ru', 'en'].flatMap((language) => {
     browser.run('select', '#topbar-language', language);
     return [1440, 375, 320].flatMap((width) => {
@@ -86,5 +127,5 @@ export function recordMenuStability(browser: Browser) {
   });
   browser.run('set', 'viewport', '1440', '900');
   browser.run('select', '#topbar-language', 'ru');
-  return { layout, result: 'Своя строка стабильна; правка и удаление отменены' };
+  return { layout, resized, result: 'Своя строка стабильна; правка и удаление отменены' };
 }

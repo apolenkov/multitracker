@@ -145,7 +145,12 @@ function PageHeading({ view }: Readonly<{ view: AppView }>) {
   const labels = getLabels(view.language);
   return (
     <div className="page-heading">
-      <h1>{text(labels, view.screen)}</h1>
+      <h1>
+        {text(labels, view.screen)}
+        {view.screen === 'portfolios' && (
+          <span className="count"> {demoState.portfolios.length}</span>
+        )}
+      </h1>
       {(view.screen === 'overview' || view.screen === 'history') && (
         <label className="portfolio-filter">
           <span className="visually-hidden">{labels.portfolio}</span>

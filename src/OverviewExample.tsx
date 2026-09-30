@@ -22,7 +22,7 @@ export function Example({ buys, currency, language, hidden }: Props) {
   return (
     <details className="attribution">
       <summary>
-        {words.reasons} <span className="unit">{currency}</span>
+        {words.reasons} · {currency}
       </summary>
       <dl className="effects">
         {rows.map(([label, value]) => (

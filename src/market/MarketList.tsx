@@ -1,4 +1,5 @@
 import { Icon } from '../Icon.tsx';
+import { AssetSymbol } from '../AssetSymbol.tsx';
 import { percentage, type Language } from '../i18n.ts';
 import type { Currency } from '../model/portfolio.ts';
 import {
@@ -102,21 +103,20 @@ export function MarketList(
       {props.assets.map((asset) => (
         <li key={asset.symbol} data-market-symbol={asset.symbol}>
           <button type="button" className="market-open" onClick={() => props.onOpen(asset)}>
-            <span className="market-identity">
-              <strong>{asset.symbol}</strong>
-              <span>
-                {assetName(asset, props.language)} · {className(asset.kind, props.language)}
+            <span className="market-asset-identity">
+              <AssetSymbol symbol={asset.symbol} />
+              <span className="market-identity">
+                <strong>{asset.symbol}</strong>
+                <span>
+                  {assetName(asset, props.language)} · {className(asset.kind, props.language)}
+                </span>
               </span>
             </span>
             <span className="market-quote">
               <strong>
                 {assetPrice(asset, asset.price, props.currency, props.language, props.hidden)}
               </strong>
-              <span className={asset.change > 0 ? 'positive' : 'negative'}>
-                {props.hidden
-                  ? '••••'
-                  : `${asset.change > 0 ? '+' : ''}${percentage(asset.change, props.language)}`}
-              </span>
+              <PriceChange change={asset.change} language={props.language} hidden={props.hidden} />
             </span>
           </button>
           <button
@@ -131,6 +131,22 @@ export function MarketList(
         </li>
       ))}
     </ul>
+  );
+}
+
+function PriceChange({
+  change,
+  language,
+  hidden,
+}: Readonly<{
+  change: number;
+  language: Language;
+  hidden: boolean;
+}>) {
+  return (
+    <span className={`market-change ${hidden ? '' : change > 0 ? 'positive' : 'negative'}`}>
+      {hidden ? '••••' : `${change > 0 ? '+' : ''}${percentage(change, language)}`}
+    </span>
   );
 }
 

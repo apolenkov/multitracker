@@ -89,8 +89,9 @@ export function ValueHistory(props: Props) {
   );
 }
 
-function HistoryPlot({ value, language, hidden, period }: Props & { period: Period }) {
+function HistoryPlot({ value, currency, language, hidden, period }: Props & { period: Period }) {
   const labels = getLabels(language);
+  if (hidden) return <p className="history-plot-hidden">{labels.hidden}</p>;
   const amounts = period.points.map(([, factor]) => value * factor);
   const minimum = Math.min(...amounts);
   const maximum = Math.max(...amounts);
@@ -106,13 +107,11 @@ function HistoryPlot({ value, language, hidden, period }: Props & { period: Peri
       })
       .join(' ');
   return (
-    <>
-      {hidden ? (
-        <p className="history-plot-hidden">{labels.hidden}</p>
-      ) : (
-        <HistorySvg value={coordinates()} />
-      )}
-    </>
+    <HistorySvg
+      value={coordinates()}
+      endpointY={170 - ((value - minimum) / range) * 150}
+      label={money(value, currency, language)}
+    />
   );
 }
 
@@ -248,25 +247,39 @@ function HistoryData(props: Props & Readonly<{ period: Period }>) {
   );
 }
 
-function HistorySvg({ value }: Readonly<{ value: string }>) {
+function HistorySvg({
+  value,
+  endpointY,
+  label,
+}: Readonly<{ value: string; endpointY: number; label: string }>) {
   return (
-    <svg
-      className="history-plot"
-      viewBox="0 0 600 190"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id="portfolio-area" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--chart)" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="var(--chart)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {[20, 70, 120, 170].map((y) => (
-        <line key={y} x1="20" x2="580" y1={y} y2={y} className="history-grid" />
-      ))}
-      <polygon points={`${value} 580,180 20,180`} className="history-area" />
-      <polyline points={value} className="history-value" />
-    </svg>
+    <div className="history-chart">
+      <span
+        className="history-endpoint-label"
+        style={{ top: `${(endpointY / 190) * 100}%` }}
+        aria-hidden="true"
+      >
+        {label}
+      </span>
+      <svg
+        className="history-plot"
+        viewBox="0 0 600 190"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="portfolio-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--chart)" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="var(--chart)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[20, 70, 120, 170].map((y) => (
+          <line key={y} x1="20" x2="580" y1={y} y2={y} className="history-grid" />
+        ))}
+        <polygon points={`${value} 580,180 20,180`} className="history-area" />
+        <polyline points={value} className="history-value" pathLength="1" />
+        <circle cx="580" cy={endpointY} r="4" className="history-endpoint" />
+      </svg>
+    </div>
   );
 }

@@ -61,21 +61,6 @@
 .entity-dialog select {
   width: 100%;
 }
-.operation-context {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 16px;
-}
-.operation-context legend {
-  color: var(--ink);
-  padding-inline: 6px;
-  margin: 0;
-}
-.operation-context input,
-.operation-context select {
-  background: var(--paper);
-}
 .exchange-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -130,9 +115,6 @@
   }
   .form-field:only-child {
     grid-column: 1 / -1;
-  }
-  .operation-context {
-    padding: 12px;
   }
   .operation-kind {
     flex-wrap: wrap;

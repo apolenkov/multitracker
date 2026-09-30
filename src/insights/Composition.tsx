@@ -28,19 +28,21 @@ export function Composition({ buys, currency, language, hidden }: Props) {
       </h2>
       <div className="allocation-content">
         <AllocationRing rows={rows} total={total} language={language} hidden={hidden} />
-        <dl className="allocation-legend">
-          {rows.map((row) => (
-            <div key={row.asset} className={`allocation-${row.asset.toLowerCase()}`}>
-              <dt>{row.asset}</dt>
-              <dd>
-                <span className="allocation-share">
-                  {hidden ? '••••' : percentage((row.value / total) * 100, language)}
-                </span>
-                <span>{hidden ? '••••' : money(row.value, currency, language)}</span>
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <div className="allocation-details">
+          <dl className="allocation-legend">
+            {rows.map((row) => (
+              <div key={row.asset} className={`allocation-${row.asset.toLowerCase()}`}>
+                <dt>{row.asset}</dt>
+                <dd>
+                  <span className="allocation-share">
+                    {hidden ? '••••' : percentage((row.value / total) * 100, language)}
+                  </span>
+                  <span>{hidden ? '••••' : money(row.value, currency, language)}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
       {rows.length === 0 && (
         <p>{language === 'ru' ? 'Нет активов в выборке' : 'No assets in selection'}</p>

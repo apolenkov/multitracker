@@ -48,6 +48,34 @@ export function createBrowser() {
 
 export type Browser = ReturnType<typeof createBrowser>;
 
+export function batch(
+  browser: Browser,
+  commands: readonly (readonly string[])[],
+): readonly unknown[] {
+  const output = execute(['--namespace', browser.namespace, 'batch', '--bail', '--json'], {
+    env: browser.env,
+    input: JSON.stringify(commands),
+    encoding: 'utf8',
+    timeout: 35_000,
+    maxBuffer: 2 * 1024 * 1024,
+  });
+  const envelopes: unknown = JSON.parse(output);
+  assert.ok(Array.isArray(envelopes), 'batch: ответ не является массивом');
+  assert.equal(envelopes.length, commands.length, 'batch: последовательность не завершена');
+  return envelopes.map((envelope: unknown) => {
+    assert.ok(object(envelope) && 'result' in envelope, 'batch: отсутствует result');
+    return data(JSON.stringify({ ...envelope, data: envelope.result }));
+  });
+}
+
+export function settleLayout(browser: Browser, selector = 'body') {
+  browser.run(
+    'wait',
+    '--fn',
+    `document.querySelector(${JSON.stringify(selector)})?.getAnimations({subtree:true}).every(animation => animation.playState !== 'running' && !animation.pending) === true`,
+  );
+}
+
 export function evaluate(browser: Browser, source: string): unknown {
   const result = data(
     execute(['--namespace', browser.namespace, '--json', 'eval', '--stdin'], {

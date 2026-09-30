@@ -1,0 +1,220 @@
+.app-shell {
+  max-width: 1800px;
+  margin: 0 auto;
+}
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 224px;
+  border-right: 1px solid var(--line);
+  padding: 32px 20px;
+  background: #f0f0e8;
+  z-index: 10;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.7px;
+  min-height: 44px;
+}
+.brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--green);
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  color: var(--green);
+  font-size: 23px;
+  letter-spacing: -4px;
+  padding-right: 4px;
+}
+.brand-mark span {
+  font-weight: 400;
+}
+.brand-note {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 16px 0 32px;
+}
+.navigation,
+.desktop-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.navigation :is(button, a) {
+  border: 0;
+  text-align: left;
+  background: transparent;
+  font-weight: 500;
+  padding-left: 16px;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  text-decoration: none;
+}
+.navigation a:hover {
+  background: #eceee6;
+}
+.navigation [aria-current='page'] {
+  background: #dce6dc;
+  color: #194433;
+  font-weight: 650;
+}
+.desktop-links {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.navigation .more-button {
+  display: none;
+}
+.workspace {
+  margin-left: 224px;
+  padding: 0 48px;
+  max-width: 1376px;
+}
+.topbar {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  gap: 20px;
+}
+.demo-badge {
+  font-size: 14px;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.demo-badge > span {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+}
+.utility-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.utility-controls label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 14px;
+}
+.utility-controls select {
+  background: transparent;
+  min-height: 44px;
+  padding: 8px;
+  border-color: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+main {
+  padding: 32px 0 28px;
+}
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.portfolio-filter select {
+  min-width: 180px;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  padding: 12px 0 24px;
+  gap: 12px;
+}
+.footer button {
+  font-weight: 400;
+  font-size: 14px;
+  border: 0;
+  background: transparent;
+  padding-right: 0;
+  white-space: nowrap;
+}
+.status-message {
+  padding: 12px 16px;
+  border-left: 3px solid var(--green);
+  background: #e7ede2;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.status-message:empty {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+main:focus-visible {
+  outline: none;
+}
+main:focus-visible > .page-heading h1 {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+.history-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+.welcome-guide {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.welcome-guide summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--green);
+}
+.welcome-guide p {
+  max-width: 70ch;
+  margin: 12px 0;
+}
+.welcome-steps {
+  display: grid;
+  gap: 16px;
+  padding-left: 24px;
+  max-width: 70ch;
+}
+.welcome-steps li {
+  padding-left: 8px;
+}
+.welcome-glossary {
+  font-size: 14px;
+  color: var(--muted);
+}
+.welcome-glossary > div {
+  display: grid;
+  gap: 4px;
+  padding-block: 12px;
+  border-top: 1px solid var(--line);
+}
+.welcome-glossary dt {
+  color: var(--ink);
+  font-weight: 600;
+}

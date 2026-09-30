@@ -1,0 +1,119 @@
+.unit {
+  font-size: 14px;
+  color: var(--muted);
+  margin-left: 8px;
+  font-weight: 400;
+}
+.chart-key {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 16px;
+}
+.chart-key dt {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chart-key dd {
+  font-size: 14px;
+  font-weight: 600;
+  padding-left: 26px;
+  margin-top: 4px;
+}
+.key-line {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  background: var(--green);
+}
+.key-line.dashed {
+  background: transparent;
+  border-top: 2px dashed #7a827d;
+}
+.value-history {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+.value-history .section-top {
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.period-controls {
+  display: flex;
+  gap: 8px;
+}
+.period-controls button {
+  min-width: 44px;
+  padding: 9px 12px;
+  font-size: 14px;
+}
+.period-controls button[aria-pressed='true'] {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.history-plot {
+  display: block;
+  width: 100%;
+  height: 190px;
+  margin-top: 16px;
+}
+.history-grid {
+  stroke: var(--line);
+}
+.history-value,
+.history-basis {
+  fill: none;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+.history-value {
+  stroke: var(--green);
+}
+.history-basis {
+  stroke: var(--muted);
+  stroke-dasharray: 7 5;
+}
+.history-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.history-plot-hidden {
+  min-height: 190px;
+  display: grid;
+  place-content: center;
+  color: var(--muted);
+}
+.history-dates {
+  margin-top: 16px;
+}
+.history-dates summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 14px;
+}
+.history-date-scroll {
+  overflow-x: auto;
+}
+.history-dates table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.history-dates th,
+.history-dates td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+}
+.history-dates th:first-child {
+  text-align: left;
+}

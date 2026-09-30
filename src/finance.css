@@ -1,0 +1,243 @@
+.section-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.valuation {
+  color: var(--muted);
+  font-size: 14px;
+}
+.summary {
+  padding: 0 0 28px;
+  border-bottom: 1px solid var(--line);
+}
+.main-amount {
+  font-size: clamp(35px, 4vw, 54px);
+  letter-spacing: -2px;
+  font-weight: 600;
+  margin: 8px 0 24px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.summary-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.summary-bottom dl {
+  display: flex;
+  gap: 36px;
+}
+.summary-bottom dt {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.summary-bottom dd {
+  font-size: 19px;
+  font-weight: 600;
+}
+.summary-bottom small {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+.summary > .quiet {
+  font-size: 14px;
+  margin-top: 16px;
+}
+.effects {
+  max-width: 520px;
+  margin: 20px 0;
+}
+.effects div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+  padding: 9px 0;
+  font-size: 14px;
+}
+.effects dd {
+  font-weight: 600;
+}
+.holdings {
+  padding: 28px 0 0;
+}
+.holdings h2 {
+  margin-bottom: 24px;
+}
+.holdings-sort {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.holdings-sort button {
+  font-size: 14px;
+  font-weight: 400;
+}
+.holdings-sort button[aria-pressed='true'] {
+  border-color: var(--green);
+  color: var(--green);
+  background: #e3e8df;
+}
+.holding-head,
+.holding-row {
+  display: grid;
+  grid-template-columns: 1.1fr 0.75fr 1fr 1fr 0.5fr;
+  gap: 16px;
+  align-items: center;
+}
+.holding-head {
+  font-size: 14px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+.holding-row {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.holding-row > td:not(:first-child),
+.holding-head > th:not(:first-child) {
+  text-align: right;
+}
+.asset-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.asset-symbol {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 600;
+  flex-shrink: 0;
+  background: #e3e8e1;
+  color: var(--green);
+}
+.asset-symbol.btc {
+  background: #ede3d2;
+  color: #745124;
+}
+.asset-symbol.msft {
+  background: #e0e7ec;
+  color: #355567;
+}
+.mobile-label {
+  display: none;
+}
+.empty-state {
+  padding: 36px 0;
+  color: var(--muted);
+}
+.empty-state h3 {
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.holdings-table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+}
+.holdings-table thead,
+.holdings-table tbody {
+  display: block;
+}
+.holding-head th {
+  font-weight: 400;
+  text-align: left;
+}
+.holding-row td {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.asset-name {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+}
+.asset-detail-values {
+  margin: 20px 0;
+}
+.asset-detail-values div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.asset-detail-values dd {
+  text-align: right;
+}
+#asset-dialog > .primary {
+  margin-top: 20px;
+}
+.attribution,
+.cash-balances,
+.portfolio-report,
+.asset-catalog {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.attribution h2,
+.portfolio-report h2 {
+  margin-bottom: 16px;
+}
+.insight-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-block: 16px;
+}
+.asset-catalog summary,
+.portfolio-report summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.asset-catalog ul {
+  display: grid;
+  gap: 12px;
+  padding-left: 20px;
+}
+.allocation-list {
+  display: grid;
+  gap: 12px;
+  margin-block: 20px;
+}
+.allocation-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.asset-timeline {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 20px;
+  font-size: 14px;
+}
+.asset-timeline th,
+.asset-timeline td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.asset-price-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}

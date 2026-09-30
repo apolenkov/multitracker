@@ -1,0 +1,37 @@
+.static-state {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+}
+.static-state > p {
+  max-width: 640px;
+}
+.loading-sample {
+  display: grid;
+  gap: 16px;
+  width: min(100%, 640px);
+  height: 176px;
+  padding: 16px 0;
+}
+.skeleton {
+  height: 32px;
+  background: #e3e8df;
+  border-radius: 6px;
+}
+.skeleton:last-child {
+  width: 70%;
+}
+.unknown-value {
+  font-size: 28px;
+  font-weight: 600;
+}
+.demo-state-settings {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 16px;
+}

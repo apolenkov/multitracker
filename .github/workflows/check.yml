@@ -1,0 +1,49 @@
+name: Проверки
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Установить Gitleaks из официального выпуска
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --location \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            --output "$RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz"
+          cd "$RUNNER_TEMP"
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks_8.30.1_linux_x64.tar.gz' | sha256sum --check
+          tar --extract --gzip --file gitleaks_8.30.1_linux_x64.tar.gz gitleaks
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - run: npm ci
+      - run: npm run check
+      - name: Установить проверку интерфейса
+        run: |
+          npm install --global agent-browser@0.38.1
+          agent-browser install --with-deps
+      - name: Проверить действия интерфейса
+        shell: bash
+        env:
+          MULTITRACKER_UI_URL: http://127.0.0.1:5173
+        run: |
+          ./node_modules/.bin/vite --host 127.0.0.1 --port 5173 --strictPort \
+            > "$RUNNER_TEMP/vite.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --show-error --retry 30 --retry-delay 1 \
+            --retry-connrefused --retry-all-errors --retry-max-time 40 \
+            --connect-timeout 2 --max-time 2 "$MULTITRACKER_UI_URL" > /dev/null
+          npm run test:ui

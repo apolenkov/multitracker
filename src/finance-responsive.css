@@ -1,0 +1,121 @@
+@media (max-width: 1000px) {
+  .summary-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .holding-head,
+  .holding-row {
+    grid-template-columns: 1fr 0.7fr 1fr 1fr 0.5fr;
+    gap: 8px;
+  }
+}
+@media (max-width: 600px) {
+  .value-history .section-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .value-history h2 {
+    font-size: 18px;
+  }
+  .holdings-sort > span {
+    width: 100%;
+  }
+  .portfolio-row {
+    flex-wrap: wrap;
+  }
+  .portfolio-name {
+    flex: 1;
+  }
+  .portfolio-value {
+    width: 100%;
+    text-align: left;
+    padding-left: 46px;
+  }
+  .valuation {
+    font-size: 14px;
+    max-width: 135px;
+    text-align: right;
+  }
+  .summary-bottom dl {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .summary-bottom dd {
+    font-size: 17px;
+  }
+  .summary-bottom small {
+    margin-left: 0;
+    display: block;
+    margin-top: 4px;
+  }
+  .summary-bottom button {
+    width: 100%;
+  }
+  .main-amount {
+    margin-bottom: 24px;
+  }
+  .chart-key {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chart-key div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .chart-key dd {
+    margin: 0;
+    padding: 0;
+  }
+  .holding-head {
+    display: none;
+  }
+  .holding-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .holding-row > td:first-child {
+    grid-column: 1/-1;
+  }
+  .holding-row > td:not(:first-child) {
+    text-align: left;
+  }
+  .mobile-label {
+    display: block;
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  .portfolio-row {
+    gap: 10px;
+  }
+  .portfolio-value {
+    font-size: 14px;
+  }
+  .portfolio-row > span:last-child {
+    display: none;
+  }
+  .portfolio-name {
+    font-size: 14px;
+  }
+  .portfolio-initial {
+    width: 36px;
+    height: 36px;
+  }
+  .history-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .history-row dl {
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+  .history-row dl > div {
+    width: calc(50% - 12px);
+  }
+  .section-top > button {
+    font-size: 14px;
+    padding: 9px 10px;
+  }
+}

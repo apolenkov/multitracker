@@ -50,6 +50,11 @@
     grid-area: 1 / 1;
     font-size: 16px;
   }
+  /* 16 px titles: 10 px fields keep the one-line button at 44 px. */
+  .with-head .history-row-open {
+    padding-block: 10px;
+    margin-block: -10px;
+  }
   .with-head .history-row > .record-summary {
     grid-area: 1 / 2;
   }

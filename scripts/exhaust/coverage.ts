@@ -1,141 +1,242 @@
-/** Покрытие кода: V8 precise coverage через CDP WebSocket, развёртка на src/ по картам. */
-import { execFileSync } from 'node:child_process';
+/** Кодовое покрытие: V8 precise coverage через CDP страницы, развёртка на src/ по картам. */
 import type { Browser } from '../ui-driver.ts';
-import { parseMap, mapPosition, lineStartOffsets, positionOf } from './sourcemap.ts';
+import { lineStartOffsets, mapPosition, offsetAt, parseMap } from './sourcemap.ts';
+import type { SourceMap } from './sourcemap.ts';
+import { asArray, asText, isRecord } from './guards.ts';
 
-type CdpResult = Readonly<Record<string, unknown>>;
+export type CdpResult = { readonly [key: string]: unknown };
+export type CdpSend = (
+  method: string,
+  params?: Readonly<Record<string, unknown>>,
+) => Promise<CdpResult>;
+export type PageCdp = Readonly<{ send: CdpSend; close: () => void }>;
 
-const sendOnce = (ws: WebSocket, method: string, params: Readonly<Record<string, unknown>>) =>
-  new Promise<CdpResult>((resolve, reject) => {
-    const id = crypto.randomUUID();
+const cdpId = 1;
+
+const sendOnce = (
+  socket: WebSocket,
+  method: string,
+  params: Readonly<Record<string, unknown>>,
+): Promise<CdpResult> =>
+  new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
-      ws.removeEventListener('message', onMessage);
+      socket.removeEventListener('message', onMessage);
       reject(new Error(`CDP timeout: ${method}`));
     }, 30_000);
     const onMessage = (event: MessageEvent) => {
-      const msg = JSON.parse(String(event.data)) as Readonly<Record<string, unknown>>;
-      if (msg.id !== id) return;
+      if (typeof event.data !== 'string') return;
+      const msg: unknown = JSON.parse(event.data);
+      if (!isRecord(msg) || msg.id !== cdpId) return;
       clearTimeout(timer);
-      ws.removeEventListener('message', onMessage);
+      socket.removeEventListener('message', onMessage);
       if ('error' in msg) reject(new Error(`${method}: ${JSON.stringify(msg.error)}`));
-      else resolve((msg.result ?? {}) as CdpResult);
+      else resolve(isRecord(msg.result) ? msg.result : {});
     };
-    ws.addEventListener('message', onMessage);
-    ws.send(JSON.stringify({ id, method, params }));
+    socket.addEventListener('message', onMessage);
+    socket.send(JSON.stringify({ id: cdpId, method, params }));
   });
 
-export type Cdp = Readonly<{
-  send: (method: string, params?: Readonly<Record<string, unknown>>) => Promise<CdpResult>;
-  screenshot: (fullPage: boolean) => Promise<string>;
-  close: () => void;
-}>;
+const cdpUrlOf = (browser: Browser): string => {
+  const raw: unknown = browser.run('get', 'cdp-url');
+  if (!isRecord(raw) || typeof raw.cdpUrl !== 'string') throw new Error('cdp-url unavailable');
+  return raw.cdpUrl;
+};
 
-export const connectCdp = (browser: Browser): Promise<Cdp> =>
-  new Promise<Cdp>((resolve, reject) => {
-    const url = browser.run('get', 'cdp-url');
-    if (typeof url !== 'string') reject(new Error('cdp-url unavailable'));
-    const ws = new WebSocket(String(url));
-    const timer = setTimeout(() => reject(new Error('CDP ws timeout')), 10_000);
-    ws.addEventListener('open', () => {
+const pageSocketOf = async (cdpUrl: string): Promise<string> => {
+  const port = cdpUrl.match(/:(\d+)\//)?.at(1) ?? '';
+  const response = await fetch(`http://127.0.0.1:${port}/json/list`);
+  const list: unknown = await response.json();
+  const page = asArray(list).find((entry) => isRecord(entry) && entry.type === 'page');
+  const socket = isRecord(page) ? page.webSocketDebuggerUrl : undefined;
+  if (typeof socket !== 'string' || socket === '') throw new Error('page socket unavailable');
+  return socket;
+};
+
+const openSocket = (url: string): Promise<WebSocket> =>
+  new Promise((resolve, reject) => {
+    const socket = new WebSocket(url);
+    const timer = setTimeout(() => reject(new Error('CDP socket timeout')), 10_000);
+    socket.addEventListener('open', () => {
       clearTimeout(timer);
-      const send = (method: string, params: Readonly<Record<string, unknown>> = {}) =>
-        sendOnce(ws, method, params);
-      const screenshot = (fullPage: boolean) =>
-        send('Page.captureScreenshot', {
-          format: 'png',
-          captureBeyondViewport: fullPage,
-        }).then((result) => String(result.data ?? ''));
-      resolve({ send, screenshot, close: () => ws.close() });
+      resolve(socket);
     });
-    ws.addEventListener('error', () => reject(new Error('CDP ws error')));
+    socket.addEventListener('error', () => reject(new Error('CDP socket error')));
   });
 
-export const startCoverage = (cdp: Cdp) =>
-  cdp
-    .send('Profiler.enable')
-    .then(() => cdp.send('Profiler.startPreciseCoverage', { callCount: true, detailed: true }));
+/** Прямое соединение со страницей: числовые id (строковые прокси не отвечает). */
+export const connectPage = async (browser: Browser): Promise<PageCdp> => {
+  const socket = await openSocket(await pageSocketOf(cdpUrlOf(browser)));
+  const send: CdpSend = (method, params = {}) => sendOnce(socket, method, params);
+  return { send, close: () => socket.close() };
+};
+
+export const startCoverage = (send: CdpSend): Promise<unknown> =>
+  send('Profiler.enable').then(() =>
+    send('Profiler.startPreciseCoverage', { callCount: true, detailed: true }),
+  );
+
+export const stopCoverage = (send: CdpSend): Promise<unknown> =>
+  send('Profiler.stopPreciseCoverage').then(() => send('Profiler.disable'));
 
 export type Range = Readonly<{ startOffset: number; endOffset: number; count: number }>;
-export type FunctionCoverage = Readonly<{ functionName: string; ranges: readonly Range[] }>;
-export type ScriptCoverage = Readonly<{ scriptId: string; url: string; functions: readonly FunctionCoverage[] }>;
+export type FunctionCoverage = Readonly<{
+  functionName: string;
+  ranges: readonly Range[];
+}>;
+export type ScriptCoverage = Readonly<{
+  scriptId: string;
+  url: string;
+  functions: readonly FunctionCoverage[];
+}>;
 
-const isRange = (v: unknown): v is Range =>
-  typeof v === 'object' && v !== null && 'startOffset' in v && 'count' in v;
+const asRange = (value: unknown): Range | null =>
+  isRecord(value) &&
+  typeof value.startOffset === 'number' &&
+  typeof value.endOffset === 'number' &&
+  typeof value.count === 'number'
+    ? { startOffset: value.startOffset, endOffset: value.endOffset, count: value.count }
+    : null;
 
-export const takeCoverage = (cdp: Cdp): Promise<readonly ScriptCoverage[]> =>
-  cdp.send('Profiler.takePreciseCoverage').then((result) =>
-    (Array.isArray(result.result) ? result.result : [])
-      .filter((s): s is Readonly<Record<string, unknown>> => typeof s === 'object' && s !== null)
-      .map((s) => ({
-        scriptId: String(s.scriptId ?? ''),
-        url: String(s.url ?? ''),
-        functions: (Array.isArray(s.functions) ? s.functions : [])
-          .filter((f): f is Readonly<Record<string, unknown>> => typeof f === 'object' && f !== null)
-          .map((f) => ({
-            functionName: String(f.functionName ?? ''),
-            ranges: (Array.isArray(f.ranges) ? f.ranges : []).filter(isRange),
-          })),
-      })),
+const one = <T>(value: T | null): readonly T[] => (value === null ? [] : [value]);
+
+const asFunction = (value: unknown): FunctionCoverage | null => {
+  if (!isRecord(value)) return null;
+  const name = typeof value.functionName === 'string' ? value.functionName : '';
+  return {
+    functionName: name,
+    ranges: asArray(value.ranges).flatMap((entry) => one(asRange(entry))),
+  };
+};
+
+export const takeCoverage = (send: CdpSend): Promise<readonly ScriptCoverage[]> =>
+  send('Profiler.takePreciseCoverage').then((result) =>
+    asArray(result.result).flatMap((entry) => {
+      if (!isRecord(entry)) return [];
+      return [
+        {
+          scriptId: asText(entry.scriptId),
+          url: asText(entry.url),
+          functions: asArray(entry.functions).flatMap((fn) => one(asFunction(fn))),
+        },
+      ];
+    }),
   );
 
-export const stopCoverage = (cdp: Cdp) => cdp.send('Profiler.stopPreciseCoverage');
+export type ScriptSource = Readonly<{ url: string; js: string; map: string }>;
+export type FileReport = Readonly<{
+  file: string;
+  functionsCovered: number;
+  functionsTotal: number;
+  branchesCovered: number;
+  branchesTotal: number;
+  uncoveredFunctions: readonly string[];
+}>;
 
-type FileCov = Readonly<{ covered: number; total: number; uncovered: readonly string[] }>;
+type Hit = Readonly<{
+  key: string;
+  file: string;
+  name: string;
+  covered: boolean;
+  branches: number;
+  branchesCovered: number;
+}>;
 
-const mapRange = (
-  map: ReturnType<typeof parseMap>,
-  starts: readonly number[],
-  range: Range,
-): readonly [string, number] | [] => {
-  const start = positionOf(starts, range.startOffset);
-  const hit = mapPosition(map, start.line, start.column);
-  return hit ? [hit.source, hit.line] : [];
+const sourcePath = (source: string): string =>
+  source
+    .split('/')
+    .filter((part) => part !== '..' && part !== '.')
+    .join('/');
+
+const hitOf = (map: SourceMap, starts: readonly number[], fn: FunctionCoverage): readonly Hit[] => {
+  const first = fn.ranges.at(0);
+  if (first === undefined) return [];
+  const pos = offsetAt(starts, first.startOffset);
+  const hit = mapPosition(map, pos.line, pos.column);
+  if (hit === null) return [];
+  const file = sourcePath(hit.source);
+  const name = `${fn.functionName === '' ? '(anon)' : fn.functionName}@${hit.line}`;
+  const branches = fn.ranges.slice(1);
+  return [
+    {
+      key: `${file}|${name}`,
+      file,
+      name,
+      covered: fn.ranges.some((range) => range.count > 0),
+      branches: branches.length,
+      branchesCovered: branches.filter((range) => range.count > 0).length,
+    },
+  ];
 };
 
-const scriptFileCoverage = (
-  script: ScriptCoverage,
-  mapText: string,
-): ReadonlyMap<string, { covered: number; total: number; uncovered: string[] }> => {
-  const map = parseMap(mapText);
-  const perFile = new Map<string, { covered: number; total: number; uncovered: string[] }>();
-  const jsText = execFileSync('cat', [`/dist/assets/${script.url.split('/').at(-1)}`], {
-    encoding: 'utf8',
-  });
-  const starts = lineStartOffsets(jsText);
-  const seen = new Set<string>();
-  script.functions.forEach((fn) => {
-    const first = fn.ranges.at(0);
-    if (!first) return;
-    const hit = mapRange(map, starts, first);
-    if (!hit.length) return;
-    const [file, line] = hit;
-    const name = `${fn.functionName || '(anon)'}@${line}`;
-    if (seen.has(`${file}|${name}`)) return;
-    const covered = fn.ranges.some((r) => r.count > 0);
-    const entry = perFile.get(file) ?? { covered: 0, total: 0, uncovered: [] };
-    perFile.set(file, {
-      covered: entry.covered + (covered ? 1 : 0),
-      total: entry.total + 1,
-      uncovered: covered ? entry.uncovered : [...entry.uncovered, name],
-    });
-    seen.add(`${file}|${name}`);
-  });
-  return perFile;
+const safeMap = (text: string): SourceMap | null => {
+  try {
+    const parsed: unknown = JSON.parse(text);
+    return parseMap(parsed);
+  } catch {
+    return null;
+  }
 };
 
-export const functionCoverage = (
+/** Отчёт по файлам: функции и ветви из бандла, отнесённые к src/ по карте. */
+export const fileReports = (
   scripts: readonly ScriptCoverage[],
-  distDir: string,
-): ReadonlyMap<string, { covered: number; total: number; uncovered: string[] }> => {
-  const bundle = scripts.find((s) => s.url.includes('/assets/') && s.url.endsWith('.js'));
-  if (!bundle) return new Map();
-  const file = bundle.url.split('/').at(-1) ?? '';
-  const mapFile = `${distDir}/assets/${file}.map`;
-  const mapText = execFileSync('cat', [mapFile], { encoding: 'utf8' });
-  return scriptFileCoverage({ ...bundle, url: file }, mapText);
+  sources: readonly ScriptSource[],
+): readonly FileReport[] => {
+  const bundles = scripts.filter(
+    (script) => script.url.includes('/assets/') && script.url.endsWith('.js'),
+  );
+  return bundles.flatMap((script) => {
+    const source = sources.find((item) => script.url.endsWith(item.url));
+    const map = source === undefined ? null : safeMap(source.map);
+    if (source === undefined || map === null) return [];
+    const starts = lineStartOffsets(source.js);
+    const hits = script.functions.flatMap((fn) => hitOf(map, starts, fn));
+    const unique = hits.filter(
+      (hit, index) => hits.findIndex((other) => other.key === hit.key) === index,
+    );
+    const files = [...new Set(unique.map((hit) => hit.file))];
+    return files.map((file) => {
+      const owned = unique.filter((hit) => hit.file === file);
+      return {
+        file,
+        functionsCovered: owned.filter((hit) => hit.covered).length,
+        functionsTotal: owned.length,
+        branchesCovered: owned.reduce((sum, hit) => sum + hit.branchesCovered, 0),
+        branchesTotal: owned.reduce((sum, hit) => sum + hit.branches, 0),
+        uncoveredFunctions: owned
+          .filter((hit) => !hit.covered)
+          .map((hit) => hit.name)
+          .toSorted(),
+      };
+    });
+  });
 };
 
-export const branchHits = (script: ScriptCoverage | undefined) =>
-  (script?.functions ?? []).flatMap((fn) =>
-    fn.ranges.slice(1).map((r) => ({ fn: fn.functionName, count: r.count })),
-  );
+/** Новые покрытые ключи file|fn@line между последовательными снимками. */
+export const newlyCovered = (
+  prev: readonly FileReport[],
+  next: readonly FileReport[],
+): readonly string[] => {
+  const keys = (reports: readonly FileReport[]) =>
+    reports.flatMap((report) =>
+      report.uncoveredFunctions.map((fn) => `${report.file}|${fn}`),
+    );
+  const before = new Set(keys(prev));
+  const after = new Set(keys(next));
+  return [...before].filter((key) => !after.has(key)).toSorted();
+};
+
+const getText = async (url: string): Promise<string | null> => {
+  const response = await fetch(url);
+  return response.ok ? response.text() : null;
+};
+
+/** Текст бандла и его карты по HTTP: fs с вычисляемым путём запрещён правилами. */
+export const fetchSource = async (url: string): Promise<ScriptSource | null> => {
+  const js = await getText(url);
+  if (js === null) return null;
+  const map = (await getText(`${url}.map`)) ?? '';
+  return { url: url.split('/').at(-1) ?? url, js, map };
+};
+
+

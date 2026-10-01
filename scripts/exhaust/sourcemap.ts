@@ -1,4 +1,5 @@
 /** Минимальный декодер source map v3: VLQ-сегменты и сопоставление позиций. */
+import { isRecord } from './guards.ts';
 const digits = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const decodeChar = (char: string) => Math.max(0, digits.indexOf(char));
 
@@ -83,10 +84,12 @@ export const decodeMappings = (mappings: string): readonly (readonly Span[])[] =
   ).lines;
 
 export const parseMap = (json: unknown): SourceMap | null => {
-  if (typeof json !== 'object' || json === null) return null;
-  const map = json as Readonly<Record<string, unknown>>;
-  if (!Array.isArray(map.sources) || typeof map.mappings !== 'string') return null;
-  return { sources: map.sources.map(String), lines: decodeMappings(map.mappings) };
+  if (!isRecord(json)) return null;
+  if (!Array.isArray(json.sources) || typeof json.mappings !== 'string') return null;
+  return {
+    sources: json.sources.map((entry) => (typeof entry === 'string' ? entry : '')),
+    lines: decodeMappings(json.mappings),
+  };
 };
 
 /** Позиция в исходнике по строке/колонке собранного кода (0-индексация входа). */
@@ -108,9 +111,11 @@ export const lineStartOffsets = (text: string): readonly number[] =>
     [0],
   );
 
-/** Позиция (строка, колонка, 0-индексация) смещения в единицах UTF-16. */
-export const positionOf = (text: string, offset: number) => {
-  const starts = lineStartOffsets(text);
+/** Позиция (строка, колонка, 0-индексация) по готовым началам строк: без повторного сканирования. */
+export const offsetAt = (starts: readonly number[], offset: number) => {
   const line = starts.reduce((best, at, index) => (at <= offset ? index : best), 0);
   return { line, column: offset - (starts.at(line) ?? 0) };
 };
+
+/** Позиция (строка, колонка, 0-индексация) смещения в единицах UTF-16. */
+export const positionOf = (text: string, offset: number) => offsetAt(lineStartOffsets(text), offset);

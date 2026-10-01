@@ -11,11 +11,16 @@ export type DesignConfig = Readonly<{
   tokenNames: readonly string[];
 }>;
 
+const cssFiles = [
+  readFileSync('src/appearance.css', 'utf8'),
+  readFileSync('src/charts.css', 'utf8'),
+  readFileSync('src/base.css', 'utf8'),
+  readFileSync('src/forms/forms.css', 'utf8'),
+];
+
 export const designConfig = (): DesignConfig => {
   const scales = designScales(readFileSync('DESIGN.md', 'utf8'));
-  const css = ['src/appearance.css', 'src/charts.css', 'src/base.css', 'src/forms/forms.css']
-    .map((file) => readFileSync(file, 'utf8'))
-    .join('\n');
+  const css = cssFiles.join('\n');
   return {
     fontSizes: scales.fontSizes,
     fontWeights: scales.fontWeights,

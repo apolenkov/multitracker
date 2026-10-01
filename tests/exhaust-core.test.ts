@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { nextRandom, randoms, shuffle, pick } from '../scripts/exhaust/prng.ts';
 import {
+  axisOptions,
   axisOrder,
+  axisValue,
   axisValues,
   baseEnv,
   cartesian,
@@ -17,6 +19,7 @@ import { splitChunks, ddmin } from '../scripts/exhaust/shrink.ts';
 import { contrastRatio, luminance, over, parseColor } from '../scripts/exhaust/contrast.ts';
 import { decodeMappings, mapPosition, parseMap, positionOf } from '../scripts/exhaust/sourcemap.ts';
 import { designScales, tokenNames, cssRadii } from '../scripts/exhaust/tokens.ts';
+import { asArray, asText, isRecord } from '../scripts/exhaust/guards.ts';
 import { readFileSync } from 'node:fs';
 
 await test('prng is deterministic and covers the unit interval', () => {
@@ -35,7 +38,24 @@ await test('covering array covers every pair of axis values', () => {
   assert.ok(rows.length >= 12 && rows.length <= 40, `size ${rows.length}`);
   assert.deepEqual(uncoveredPairs(rows, axisValues), []);
   assert.deepEqual(coveringArray(axisValues), rows, 'deterministic');
-  assert.ok(rows.every((row) => axisOrder.every((axis) => axisValues[axis].includes(row[axis]))));
+  assert.ok(
+    rows.every((row) =>
+      axisOrder.every((axis) => axisOptions(axisValues, axis).includes(axisValue(row, axis))),
+    ),
+  );
+});
+
+await test('cartesian of a narrowed axis set is the exact product', () => {
+  const rows = cartesian({ ...axisValues, language: ['ru'], width: ['375', '768'] });
+  assert.equal(rows.length, 2 * 3 * 2 * 2 * 2 * 2 * 2 * 5 * 2);
+  assert.ok(rows.every((row) => row.language === 'ru'));
+  assert.equal(new Set(rows.map((row) => row.width)).size, 2);
+});
+
+await test('decodeMappings keeps one span list per generated line', () => {
+  const lines = decodeMappings('AAAA;AACA');
+  assert.equal(lines.length, 2);
+  assert.equal(lines.at(1)?.length, 1);
 });
 
 await test('cartesian produces the full product for the layout grid', () => {
@@ -115,7 +135,18 @@ await test('source map decode maps generated offsets back to sources', () => {
 });
 
 await test('rowPairs enumerates each axis pair exactly once', () => {
-  assert.equal(rowPairs(baseEnv).length, (8 * 7) / 2);
+  assert.equal(rowPairs(baseEnv).length, (axisOrder.length * (axisOrder.length - 1)) / 2);
+});
+
+await test('guards coerce unknown values without throwing', () => {
+  assert.equal(asText('a'), 'a');
+  assert.equal(asText(7), '7');
+  assert.equal(asText(true), 'true');
+  assert.equal(asText({}), '');
+  assert.equal(asText(undefined), '');
+  assert.ok(isRecord({ a: 1 }) && !isRecord(null) && !isRecord([1]));
+  assert.deepEqual(asArray([1, 'x']), [1, 'x']);
+  assert.deepEqual(asArray('nope'), []);
 });
 
 await test('design scales come from DESIGN.md and token names from appearance.css', () => {
@@ -125,9 +156,11 @@ await test('design scales come from DESIGN.md and token names from appearance.cs
   assert.ok(scales.fontWeights.includes(400) && scales.fontWeights.includes(700));
   [8, 12, 16, 20, 24, 28, 32].forEach((step) => assert.ok(scales.spacings.includes(step), `${step}`));
   assert.ok(scales.radii.includes('8px') && scales.radii.includes('12px'));
-  const css = ['src/appearance.css', 'src/charts.css', 'src/base.css']
-    .map((file) => readFileSync(file, 'utf8'))
-    .join('\n');
+  const css = [
+    readFileSync('src/appearance.css', 'utf8'),
+    readFileSync('src/charts.css', 'utf8'),
+    readFileSync('src/base.css', 'utf8'),
+  ].join('\n');
   assert.ok(cssRadii(css).includes('50%'));
   const names = tokenNames(readFileSync('src/appearance.css', 'utf8'));
   assert.ok(names.includes('--ink') && names.includes('--canvas') && names.includes('--green'));

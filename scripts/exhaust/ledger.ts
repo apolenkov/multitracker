@@ -1,4 +1,6 @@
 /** Книга принятых исключений покрытия: каждая запись обязана иметь причину. */
+import { asArray, isRecord } from './guards.ts';
+
 export type LedgerEntry = Readonly<{ signature: string; reason: string }>;
 export type Ledger = Readonly<{ version: number; exceptions: readonly LedgerEntry[] }>;
 
@@ -8,18 +10,25 @@ export type LedgerCheck = Readonly<{
   ok: boolean;
 }>;
 
+const ledgerEntry = (entry: unknown): LedgerEntry | null => {
+  if (!isRecord(entry)) return null;
+  const signature = entry.signature;
+  const reason = entry.reason;
+  return typeof signature === 'string' && typeof reason === 'string'
+    ? { signature, reason }
+    : null;
+};
+
 export const parseLedger = (text: string): Ledger => {
   const raw: unknown = JSON.parse(text);
-  const value = raw as Readonly<Record<string, unknown>>;
-  const exceptions = Array.isArray(value.exceptions) ? value.exceptions : [];
+  if (!isRecord(raw)) return { version: 1, exceptions: [] };
+  const exceptions = asArray(raw.exceptions).flatMap((entry) => {
+    const parsed = ledgerEntry(entry);
+    return parsed === null ? [] : [parsed];
+  });
   return {
-    version: typeof value.version === 'number' ? value.version : 1,
-    exceptions: exceptions.flatMap((entry: unknown) => {
-      const item = entry as Readonly<Record<string, unknown>>;
-      return typeof item.signature === 'string' && typeof item.reason === 'string'
-        ? [{ signature: item.signature, reason: item.reason }]
-        : [];
-    }),
+    version: typeof raw.version === 'number' ? raw.version : 1,
+    exceptions,
   };
 };
 
@@ -27,10 +36,7 @@ export const parseLedger = (text: string): Ledger => {
  * missing — открытые сигнатуры без записи (запуск падает);
  * stale — записи, чьи сигнатуры уже покрыты: книге разрешено только уменьшаться.
  */
-export const checkLedger = (
-  uncovered: readonly string[],
-  ledger: Ledger,
-): LedgerCheck => {
+export const checkLedger = (uncovered: readonly string[], ledger: Ledger): LedgerCheck => {
   const known = new Set(ledger.exceptions.map((entry) => entry.signature));
   const seen = new Set(uncovered);
   const missing = uncovered.filter((signature) => !known.has(signature));

@@ -41,13 +41,22 @@ export const baseEnv: Env = {
   reducedMotion: 'off',
 };
 
-export const envKey = (env: Env) => axisOrder.map((axis) => env[axis]).join('|');
+/** Значение оси и варианты оси через Map: прямой индекс по переменной запрещён правилами. */
+export const axisValue = (env: Env, axis: Axis): string =>
+  new Map(Object.entries(env)).get(axis) ?? '';
+
+export const axisOptions = (axes: Axes, axis: Axis): readonly string[] =>
+  new Map(Object.entries(axes)).get(axis) ?? [];
+
+export const envKey = (env: Env) => axisOrder.map((axis) => axisValue(env, axis)).join('|');
 
 export const cartesian = (axes: Axes): readonly Env[] =>
   axisOrder.reduce<readonly Env[]>(
     (rows, axis) =>
-      rows.flatMap((row) => (axes[axis] ?? []).map((value) => ({ ...row, [axis]: value }))),
-    [{}],
+      rows.flatMap((row) =>
+        axisOptions(axes, axis).map((value) => ({ ...row, [axis]: value })),
+      ),
+    [baseEnv],
   );
 
 const pairKey = (first: number, a: string, second: number, b: string) =>
@@ -55,7 +64,9 @@ const pairKey = (first: number, a: string, second: number, b: string) =>
 
 export const rowPairs = (row: Env): readonly string[] =>
   axisOrder.flatMap((first, i) =>
-    axisOrder.slice(i + 1).map((second, j) => pairKey(i, row[first], i + j + 1, row[second])),
+    axisOrder
+      .slice(i + 1)
+      .map((second, j) => pairKey(i, axisValue(row, first), i + j + 1, axisValue(row, second))),
   );
 
 const allPairs = (axes: Axes): readonly string[] =>
@@ -63,8 +74,8 @@ const allPairs = (axes: Axes): readonly string[] =>
     axisOrder
       .slice(i + 1)
       .flatMap((second, j) =>
-        (axes[first] ?? []).flatMap((a) =>
-          (axes[second] ?? []).map((b) => pairKey(i, a, i + j + 1, b)),
+        axisOptions(axes, first).flatMap((a) =>
+          axisOptions(axes, second).map((b) => pairKey(i, a, i + j + 1, b)),
         ),
       ),
   );

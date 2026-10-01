@@ -7,45 +7,56 @@ export type Scales = Readonly<{
   radii: readonly string[];
 }>;
 
-const section = (frontmatter: string, name: string) =>
-  frontmatter.match(new RegExp(`^${name}:\\n((?:^ {2,}\\S.*\\n?)*)`, 'm'))?.at(1) ?? '';
+const sectionLines = (frontmatter: string, name: string): readonly string[] => {
+  const lines = frontmatter.split('\n');
+  const start = lines.findIndex((line) => line === `${name}:`);
+  if (start < 0) return [];
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((line) => line !== '' && !line.startsWith(' '));
+  return end < 0 ? rest : rest.slice(0, end);
+};
 
-const pxNumbers = (text: string) =>
-  [...text.matchAll(/(\d+(?:\.\d+)?)\s*px/g)].map((match) => Number.parseFloat(match[1] ?? '0'));
-
-const fontSizesOf = (typography: string) =>
-  [...typography.matchAll(/fontSize:\s*(\d+(?:\.\d+)?)px/g)].map((match) =>
-    Number.parseFloat(match[1] ?? '0'),
+const pxNumbers = (lines: readonly string[]) =>
+  lines.flatMap((line) =>
+    [...line.matchAll(/([\d.]+)px/g)].map((match) => Number.parseFloat(match[1] ?? '0')),
   );
 
-const fontWeightsOf = (typography: string) =>
-  [...typography.matchAll(/fontWeight:\s*(\d+)/g)].map((match) =>
-    Number.parseInt(match[1] ?? '0', 10),
+const valuesAfter = (lines: readonly string[], key: string): readonly string[] =>
+  lines
+    .filter((line) => line.includes(key))
+    .map((line) => line.slice(line.indexOf(key) + key.length).trim());
+
+const fontSizesOf = (typography: readonly string[]) =>
+  valuesAfter(typography, 'fontSize:').map((value) => Number.parseFloat(value));
+
+const fontWeightsOf = (typography: readonly string[]) =>
+  valuesAfter(typography, 'fontWeight:').map((value) => Number.parseInt(value, 10));
+
+const paddingsOf = (components: readonly string[]) =>
+  valuesAfter(components, 'padding:').flatMap((value) =>
+    value.split(' ').map((part) => Number.parseFloat(part)),
   );
 
-const paddingsOf = (components: string) =>
-  [...components.matchAll(/padding:\s*([0-9.\spx]+)/g)].flatMap((match) =>
-    pxNumbers(match[1] ?? ''),
-  );
-
-const radiiOf = (rounded: string) =>
-  [...rounded.matchAll(/:\s*(\d+px|50%)/g)].map((match) => match[1] ?? '0px');
+const radiiOf = (rounded: readonly string[]) =>
+  rounded
+    .map((line) => line.slice(line.lastIndexOf(':') + 1).trim())
+    .filter((value) => /^(\d+px|50%)$/.test(value));
 
 const unique = (values: readonly number[]) => [...new Set(values)].toSorted((a, b) => a - b);
 
 /** Шкалы из фронтматтера DESIGN.md: типографика, отступы, радиусы и паддинги компонентов. */
 export const designScales = (designMd: string): Scales => {
   const frontmatter = designMd.match(/^---\n([\s\S]*?)\n---/)?.at(1) ?? '';
-  const typography = section(frontmatter, 'typography');
+  const typography = sectionLines(frontmatter, 'typography');
   return {
     fontSizes: unique(fontSizesOf(typography)),
     fontWeights: unique(fontWeightsOf(typography)),
     spacings: unique([
-      ...pxNumbers(section(frontmatter, 'spacing')),
-      ...paddingsOf(section(frontmatter, 'components')),
+      ...pxNumbers(sectionLines(frontmatter, 'spacing')),
+      ...paddingsOf(sectionLines(frontmatter, 'components')),
       0, 1, 2, 4, 6, 40, 44, 48,
     ]),
-    radii: [...new Set(['0px', ...radiiOf(section(frontmatter, 'rounded'))])],
+    radii: [...new Set(['0px', ...radiiOf(sectionLines(frontmatter, 'rounded'))])],
   };
 };
 

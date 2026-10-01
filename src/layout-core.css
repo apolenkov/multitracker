@@ -233,6 +233,9 @@ main:focus-visible > .page-heading h1 {
 [data-density='compact'] .portfolio-row {
   padding-block: 12px;
 }
+[data-density='compact'] .history-row {
+  padding-block: 8px;
+}
 [data-density='compact'] .holdings h2 {
   margin-bottom: 16px;
 }

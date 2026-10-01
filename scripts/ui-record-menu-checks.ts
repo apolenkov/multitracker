@@ -49,6 +49,18 @@ function stableMenu(browser: Browser, index: number) {
   return { index, before, after: geometry(browser, index) };
 }
 
+function headVisibility(browser: Browser, width: number) {
+  const display = evaluate(
+    browser,
+    `getComputedStyle(document.querySelector('.history-head')).display`,
+  );
+  assert.equal(
+    display === 'none',
+    width <= 600,
+    `Шапка колонки суммы: display=${String(display)} при ${width} px`,
+  );
+}
+
 function actionPaths(browser: Browser, index: number) {
   const row = `${rows}:nth-child(${index + 1})`;
   return ['edit', 'delete'].map((action) => {
@@ -112,6 +124,7 @@ export function recordMenuStability(browser: Browser) {
     browser.run('select', '#topbar-language', language);
     return [1440, 375, 320].flatMap((width) => {
       browser.run('set', 'viewport', String(width), '900');
+      headVisibility(browser, width);
       return [0, count - 1].map((index) => ({
         width,
         language,

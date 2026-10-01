@@ -32,13 +32,7 @@ export function HistoryRow(props: Props) {
           {props.brief ? (
             text
           ) : (
-            <button
-              className="history-row-open"
-              aria-label={`${copy.details}: ${title}`}
-              onClick={props.onDetails}
-            >
-              {text}
-            </button>
+            <RowOpen label={`${copy.details}: ${title}`} text={text} onClick={props.onDetails} />
           )}
         </Heading>
         <p className="quiet">
@@ -63,6 +57,17 @@ export function HistoryRow(props: Props) {
         />
       )}
     </article>
+  );
+}
+function RowOpen({
+  label,
+  text,
+  onClick,
+}: Readonly<{ label: string; text: string; onClick: () => void }>) {
+  return (
+    <button type="button" className="history-row-open" aria-label={label} onClick={onClick}>
+      {text}
+    </button>
   );
 }
 function RecordDirection({ type }: Readonly<{ type: Transaction['type'] }>) {

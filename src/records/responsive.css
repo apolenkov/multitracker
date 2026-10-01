@@ -33,7 +33,7 @@
   .portfolio-record .account-list {
     padding: 0 32px 0 54px;
   }
-  .history-head {
+  .workspace .history-head {
     display: none;
   }
   .history-list.with-head .history-row {

@@ -4,7 +4,6 @@ import './demo-responsive.css';
 import { ConnectionsPanel, SyncPanel } from './demo/connection-sync.tsx';
 import { ImportPanel } from './demo/import-panel.tsx';
 import { SettingsPanel } from './demo/settings-panel.tsx';
-import { ExplorationScreens } from './ExplorationScreens.tsx';
 import { Icon } from './Icon.tsx';
 import { focusUndo, UndoButton, undoneText } from './RowActions.tsx';
 import { focusMain } from './navigation.ts';
@@ -34,7 +33,6 @@ export function DemoScreens(props: Props) {
     <section ref={page} className="demo-page">
       <div className="demo-content">
         <StandardScreens {...props} notify={notify} />
-        <ExplorationScreens {...props} />
       </div>
       <DemoNotice
         text={notice.screen === props.screen ? notice.text : ''}

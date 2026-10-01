@@ -1,4 +1,4 @@
-import type { Language } from '../demo/words';
+import type { Language } from './words';
 
 export function widgetNumber(language: Language, value: number, signed = false) {
   return new Intl.NumberFormat(language === 'ru' ? 'ru-RU' : 'en-US', {

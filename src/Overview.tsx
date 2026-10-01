@@ -1,7 +1,6 @@
 import { summarize, selectedBuys } from './model/portfolio.ts';
 import type { Currency, State } from './model/portfolio.ts';
-import { getLabels, text, type Language } from './i18n.ts';
-import { Icon } from './Icon.tsx';
+import { type Language } from './i18n.ts';
 import { Holdings } from './Holdings.tsx';
 import { OverviewSummary, OverviewResult, OverviewAcquisition } from './OverviewSummary.tsx';
 import { Example } from './OverviewExample.tsx';
@@ -54,28 +53,11 @@ export function Overview(props: Props) {
         <Example {...display} currency={baseCurrency} />
       </aside>
       <div className="overview-report">
-        <OverviewLinks language={language} />
         <Report {...display} />
       </div>
       <div className="overview-history">
         <History {...props} brief />
       </div>
     </div>
-  );
-}
-
-function OverviewLinks({ language }: Readonly<{ language: Language }>) {
-  const labels = getLabels(language);
-  return (
-    <nav
-      className="overview-links"
-      aria-label={language === 'ru' ? 'Другие разделы' : 'Other sections'}
-    >
-      {(['analytics', 'markets', 'events'] as const).map((screen) => (
-        <a key={screen} href={`#${screen}`}>
-          <Icon name={screen} /> {text(labels, screen)}
-        </a>
-      ))}
-    </nav>
   );
 }

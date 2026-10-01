@@ -1,13 +1,4 @@
-export const demoScreens = [
-  'import',
-  'connections',
-  'sync',
-  'settings',
-  'markets',
-  'following',
-  'analytics',
-  'events',
-] as const;
+export const demoScreens = ['import', 'connections', 'sync', 'settings'] as const;
 export type Screen = (typeof demoScreens)[number];
 export type Language = 'ru' | 'en';
 export type Currency = 'RUB' | 'USD';

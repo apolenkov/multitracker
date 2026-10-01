@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { WidgetPreview } from '../events/WidgetPreview.tsx';
+import { WidgetPreview } from './settings-widget.tsx';
 import { DemoModal } from './modal';
 import { DemoStateSettings } from './settings-display';
 import { SettingsGroups, settingName } from './settings-layout';

@@ -1,17 +1,15 @@
 import { useState } from 'react';
-import type { Language } from '../demo/words';
-import { copy } from './data';
-import { widgetNumber } from './widget-format';
+import type { Language } from './words';
 import { MoneyAmount } from '../MoneyAmount.tsx';
-import './events.css';
+import { widgetNumber } from './widget-format.ts';
+import './widget.css';
 
-type WidgetKind = 'portfolio' | 'market';
 type WidgetLayout = 'compact' | 'detailed';
 type Props = Readonly<{ language: Language; hidden: boolean }>;
-type PreviewProps = Props & Readonly<{ kind: WidgetKind; layout: WidgetLayout; changes: boolean }>;
+type PreviewProps = Props & Readonly<{ layout: WidgetLayout; changes: boolean }>;
+const copy = (language: Language) => (ru: string, en: string) => (language === 'ru' ? ru : en);
 
 export function WidgetPreview(props: Props) {
-  const [kind, setKind] = useState<WidgetKind>('portfolio');
   const [layout, setLayout] = useState<WidgetLayout>('compact');
   const [changes, setChanges] = useState(true);
   const text = copy(props.language);
@@ -26,13 +24,7 @@ export function WidgetPreview(props: Props) {
       </p>
       <div className="widget-workspace">
         <div className="widget-controls">
-          <WidgetOptions
-            language={props.language}
-            kind={kind}
-            layout={layout}
-            onKind={setKind}
-            onLayout={setLayout}
-          />
+          <WidgetOptions language={props.language} layout={layout} onLayout={setLayout} />
           <label className="check-row">
             <input
               id="widget-changes"
@@ -43,9 +35,9 @@ export function WidgetPreview(props: Props) {
             {text('Показывать изменение за день', 'Show daily change')}
           </label>
         </div>
-        <WidgetCanvas {...props} kind={kind} layout={layout} changes={changes} />
+        <WidgetCanvas {...props} layout={layout} changes={changes} />
       </div>
-      <WidgetAnnouncement language={props.language} kind={kind} layout={layout} changes={changes} />
+      <WidgetAnnouncement language={props.language} layout={layout} changes={changes} />
     </section>
   );
 }
@@ -55,10 +47,8 @@ function WidgetCanvas(props: PreviewProps) {
   return (
     <div id="widget-preview" className={`widget-canvas widget-${props.layout}`}>
       <p className="quiet">{text('Снимок · USD', 'Snapshot · USD')}</p>
-      <h3>
-        {props.kind === 'portfolio' ? text('Портфель', 'Portfolio') : text('Рынок', 'Market')}
-      </h3>
-      {props.kind === 'portfolio' ? <PortfolioWidget {...props} /> : <MarketWidget {...props} />}
+      <h3>{text('Портфель', 'Portfolio')}</h3>
+      <PortfolioWidget {...props} />
       <p className="quiet">
         {text(
           'Снимок на 30 сентября 2026. Данные вымышлены.',
@@ -107,80 +97,18 @@ function PortfolioWidget(props: PreviewProps) {
   );
 }
 
-function MarketWidget(props: PreviewProps) {
-  const text = copy(props.language);
-  return (
-    <>
-      <dl className="widget-breakdown">
-        <dt>LUMA</dt>
-        <dd>
-          {masked(props.hidden, `${widgetNumber(props.language, 48)} USD`)}{' '}
-          {props.changes && (
-            <span className="positive">
-              {masked(props.hidden, `${widgetNumber(props.language, 2.1, true)}%`)}
-            </span>
-          )}
-        </dd>
-        {props.layout === 'detailed' && (
-          <>
-            <dt>NOMA</dt>
-            <dd>
-              {masked(props.hidden, `${widgetNumber(props.language, 32)} USD`)}{' '}
-              {props.changes && (
-                <span className="negative">
-                  {masked(props.hidden, `${widgetNumber(props.language, -0.8, true)}%`)}
-                </span>
-              )}
-            </dd>
-            <dt>ORBIT</dt>
-            <dd>
-              {masked(props.hidden, `${widgetNumber(props.language, 6)} USD`)}{' '}
-              {props.changes && (
-                <span className="positive">
-                  {masked(props.hidden, `${widgetNumber(props.language, 0.4, true)}%`)}
-                </span>
-              )}
-            </dd>
-          </>
-        )}
-      </dl>
-      <p className="quiet">
-        {text(
-          'Вымышленные символы, без торговых действий.',
-          'Fictional symbols, no trading actions.',
-        )}
-      </p>
-    </>
-  );
-}
-
 function WidgetOptions({
   language,
-  kind,
   layout,
-  onKind,
   onLayout,
 }: Readonly<{
   language: Language;
-  kind: WidgetKind;
   layout: WidgetLayout;
-  onKind: (kind: WidgetKind) => void;
   onLayout: (layout: WidgetLayout) => void;
 }>) {
   const text = copy(language);
   return (
     <div className="widget-options">
-      <label htmlFor="widget-kind">
-        {text('Что показывать', 'Content')}
-        <select
-          id="widget-kind"
-          value={kind}
-          onChange={(event) => onKind(event.target.value === 'market' ? 'market' : 'portfolio')}
-        >
-          <option value="portfolio">{text('Портфель', 'Portfolio')}</option>
-          <option value="market">{text('Рынок', 'Market')}</option>
-        </select>
-      </label>
       <label htmlFor="widget-layout">
         {text('Размер', 'Layout')}
         <select
@@ -202,15 +130,13 @@ function masked(hidden: boolean, value: string) {
 
 function WidgetAnnouncement({
   language,
-  kind,
   layout,
   changes,
-}: Readonly<{ language: Language; kind: WidgetKind; layout: WidgetLayout; changes: boolean }>) {
+}: Readonly<{ language: Language; layout: WidgetLayout; changes: boolean }>) {
   const text = copy(language);
   return (
     <p className="visually-hidden" role="status">
-      {text('Предпросмотр', 'Preview')}:{' '}
-      {kind === 'portfolio' ? text('портфель', 'portfolio') : text('рынок', 'market')},{' '}
+      {text('Предпросмотр', 'Preview')}: {text('портфель', 'portfolio')},{' '}
       {layout === 'compact' ? text('компактный', 'compact') : text('подробный', 'detailed')},{' '}
       {changes
         ? text('с изменением за день', 'with daily change')

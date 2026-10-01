@@ -2,17 +2,8 @@ import { text } from './i18n.ts';
 import { Icon } from './Icon.tsx';
 import { useEffect, useState, type MouseEvent } from 'react';
 import type { Labels, Screen } from './i18n.ts';
-const mainScreens = ['overview', 'markets', 'history'] as const;
-const extraScreens = [
-  'portfolios',
-  'following',
-  'analytics',
-  'events',
-  'import',
-  'connections',
-  'sync',
-  'settings',
-] as const;
+const mainScreens = ['overview', 'portfolios', 'history'] as const;
+const extraScreens = ['import', 'connections', 'sync', 'settings'] as const;
 type Props = Readonly<{ screen: Screen; onScreen: (screen: Screen) => void; labels: Labels }>;
 export function Navigation({ screen, onScreen, labels }: Props) {
   const [expanded, setExpanded] = useMoreMenu();
@@ -72,9 +63,8 @@ function NavigationGroups(props: Omit<ScreenButtonsProps, 'items'>) {
   const groups = [
     {
       title: ru ? 'Мой портфель' : 'My portfolio',
-      items: ['overview', 'portfolios', 'history', 'analytics'],
+      items: ['overview', 'portfolios', 'history'],
     },
-    { title: ru ? 'Исследование' : 'Explore', items: ['markets', 'following', 'events'] },
     {
       title: ru ? 'Данные и настройки' : 'Data and settings',
       items: ['import', 'connections', 'sync', 'settings'],

@@ -126,7 +126,12 @@ export const elementMarkdown = (
   sections: readonly SectionCoverage[],
   entries: readonly RegistryEntry[],
 ): string => {
-  const head = ['# Element coverage', '', '| route | seen | clicked | pct |', '| --- | --- | --- | --- |'];
+  const head = [
+    '# Element coverage',
+    '',
+    '| route | seen | clicked | pct |',
+    '| --- | --- | --- | --- |',
+  ];
   const rows = sections.map(
     (section) =>
       `| ${section.route} | ${section.seen} | ${section.clicked} | ${coveragePercent(section.clicked, section.seen)}% |`,

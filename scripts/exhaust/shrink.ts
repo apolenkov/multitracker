@@ -12,17 +12,14 @@ const firstReproducing = async <T>(
   chunks: readonly (readonly T[])[],
   test: (candidate: readonly T[]) => Promise<boolean>,
 ): Promise<readonly T[] | null> =>
-  chunks.reduce<Promise<readonly T[] | null>>(
-    async (found, chunk) => {
-      const done = await found;
-      if (done !== null) return done;
-      const candidate = current.filter((item) => !chunk.includes(item));
-      return candidate.length > 0 && candidate.length < current.length && (await test(candidate))
-        ? candidate
-        : null;
-    },
-    Promise.resolve(null),
-  );
+  chunks.reduce<Promise<readonly T[] | null>>(async (found, chunk) => {
+    const done = await found;
+    if (done !== null) return done;
+    const candidate = current.filter((item) => !chunk.includes(item));
+    return candidate.length > 0 && candidate.length < current.length && (await test(candidate))
+      ? candidate
+      : null;
+  }, Promise.resolve(null));
 
 /**
  * Классический ddmin: test(candidate) = true, когда сбой воспроизводится.
@@ -32,10 +29,7 @@ export const ddmin = async <T>(
   items: readonly T[],
   test: (candidate: readonly T[]) => Promise<boolean>,
 ): Promise<readonly T[]> => {
-  const round = async (
-    current: readonly T[],
-    granularity: number,
-  ): Promise<readonly T[]> => {
+  const round = async (current: readonly T[], granularity: number): Promise<readonly T[]> => {
     const reduced = await firstReproducing(current, splitChunks(current, granularity), test);
     if (reduced !== null) return round(reduced, Math.max(granularity - 1, 2));
     return granularity >= current.length ? current : round(current, current.length);

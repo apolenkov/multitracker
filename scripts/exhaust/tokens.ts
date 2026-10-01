@@ -54,7 +54,14 @@ export const designScales = (designMd: string): Scales => {
     spacings: unique([
       ...pxNumbers(sectionLines(frontmatter, 'spacing')),
       ...paddingsOf(sectionLines(frontmatter, 'components')),
-      0, 1, 2, 4, 6, 40, 44, 48,
+      0,
+      1,
+      2,
+      4,
+      6,
+      40,
+      44,
+      48,
     ]),
     radii: [...new Set(['0px', ...radiiOf(sectionLines(frontmatter, 'rounded'))])],
   };
@@ -65,9 +72,7 @@ export const cssRadii = (css: string): readonly string[] =>
   [
     ...new Set(
       [...css.matchAll(/border-radius:\s*([^;}]+)/g)].flatMap((match) =>
-        (match[1] ?? '')
-          .split(/\s+/)
-          .filter((value) => /^(\d+px|50%)$/.test(value)),
+        (match[1] ?? '').split(/\s+/).filter((value) => /^(\d+px|50%)$/.test(value)),
       ),
     ),
   ].toSorted();

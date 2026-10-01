@@ -6,26 +6,34 @@ export const clamp = (value: number) => Math.min(255, Math.max(0, Math.round(val
 const hexDigits = '0123456789abcdefABCDEF';
 
 const isHexBody = (text: string) =>
-  (text.length === 6 || text.length === 8) &&
-  [...text].every((char) => hexDigits.includes(char));
+  (text.length === 6 || text.length === 8) && [...text].every((char) => hexDigits.includes(char));
 
 export const hex = (value: string): Rgba | null => {
   const raw = value.replace('#', '');
   const full =
-    raw.length === 3 || raw.length === 4
-      ? [...raw].map((char) => char + char).join('')
-      : raw;
+    raw.length === 3 || raw.length === 4 ? [...raw].map((char) => char + char).join('') : raw;
   if (!isHexBody(full)) return null;
   const channel = (at: number) => Number.parseInt(full.slice(at, at + 2), 16);
-  return { r: channel(0), g: channel(2), b: channel(4), a: full.length === 8 ? channel(6) / 255 : 1 };
+  return {
+    r: channel(0),
+    g: channel(2),
+    b: channel(4),
+    a: full.length === 8 ? channel(6) / 255 : 1,
+  };
 };
 
 export const colorChannel = (part: string, scale: number) =>
-  part.trim().endsWith('%') ? (Number.parseFloat(part) / 100) * 255 : Number.parseFloat(part) * scale;
+  part.trim().endsWith('%')
+    ? (Number.parseFloat(part) / 100) * 255
+    : Number.parseFloat(part) * scale;
 
 const channelParts = (value: string): readonly string[] | null => {
   const match = value.match(/^rgba?\(\s*([^)]*?)\s*\)$/i);
-  const parts = match?.at(1)?.split(/[\s,/]+/).filter(Boolean) ?? [];
+  const parts =
+    match
+      ?.at(1)
+      ?.split(/[\s,/]+/)
+      .filter(Boolean) ?? [];
   return match && parts.length >= 3 ? parts : null;
 };
 

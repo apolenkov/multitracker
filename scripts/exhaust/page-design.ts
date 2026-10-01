@@ -15,7 +15,18 @@ import type { DesignConfig } from './design.ts';
 
 const math =
   'const CX = (() => {' +
-  [clamp, hex, colorChannel, rgb, lumChannel, parseColor, luminance, over, contrastRatio, contrastLimit]
+  [
+    clamp,
+    hex,
+    colorChannel,
+    rgb,
+    lumChannel,
+    parseColor,
+    luminance,
+    over,
+    contrastRatio,
+    contrastLimit,
+  ]
     .map((fn) => `const ${fn.name} = ${fn.toString()};`)
     .join('') +
   'return { parseColor, luminance, over, contrastRatio, contrastLimit }; })();';

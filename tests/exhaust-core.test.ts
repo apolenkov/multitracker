@@ -13,7 +13,12 @@ import {
   rowPairs,
   uncoveredPairs,
 } from '../scripts/exhaust/axes.ts';
-import { elementSignature, normalizeName, stripIndices, dialogOf } from '../scripts/exhaust/signature.ts';
+import {
+  elementSignature,
+  normalizeName,
+  stripIndices,
+  dialogOf,
+} from '../scripts/exhaust/signature.ts';
 import { checkLedger, parseLedger } from '../scripts/exhaust/ledger.ts';
 import { splitChunks, ddmin } from '../scripts/exhaust/shrink.ts';
 import { contrastRatio, luminance, over, parseColor } from '../scripts/exhaust/contrast.ts';
@@ -67,7 +72,10 @@ await test('cartesian produces the full product for the layout grid', () => {
 
 await test('signature normalizes names, strips indices and keeps context', () => {
   assert.equal(normalizeName('  Купить  BTC  12 '), 'купить btc #');
-  assert.equal(stripIndices('html > body > div:nth-of-type(2) > button:nth-of-type(1)'), 'html > body > div > button');
+  assert.equal(
+    stripIndices('html > body > div:nth-of-type(2) > button:nth-of-type(1)'),
+    'html > body > div > button',
+  );
   assert.equal(dialogOf('html > body > dialog#buy-dialog > form > button'), 'buy-dialog');
   const sig = elementSignature({
     route: 'overview',
@@ -76,7 +84,10 @@ await test('signature normalizes names, strips indices and keeps context', () =>
     name: 'Сохранить 3',
     path: 'html > body > dialog#buy-dialog:nth-of-type(2) > form > button',
   });
-  assert.equal(sig, 'overview|buy-dialog|button|сохранить #|html > body > dialog#buy-dialog > form > button');
+  assert.equal(
+    sig,
+    'overview|buy-dialog|button|сохранить #|html > body > dialog#buy-dialog > form > button',
+  );
   assert.equal(
     elementSignature({ route: 'r', dialog: '-', role: 'a', name: 'x', path: 'p' }),
     elementSignature({ route: 'r', dialog: '-', role: 'a', name: 'X', path: 'p' }),
@@ -98,7 +109,10 @@ await test('ddmin shrinks a failing sequence to its minimal repro', async () => 
     Promise.resolve(items.includes(3) && items.includes(9));
   assert.deepEqual(await ddmin([1, 2, 3, 4, 9, 8], reproduces), [3, 9]);
   assert.deepEqual(await ddmin([1, 2], reproduces), [1, 2]);
-  assert.deepEqual(splitChunks([1, 2, 3, 4, 5], 2), [[1, 2, 3], [4, 5]]);
+  assert.deepEqual(splitChunks([1, 2, 3, 4, 5], 2), [
+    [1, 2, 3],
+    [4, 5],
+  ]);
   assert.deepEqual(splitChunks([1], 4), [[1]]);
 });
 
@@ -152,9 +166,14 @@ await test('guards coerce unknown values without throwing', () => {
 await test('design scales come from DESIGN.md and token names from appearance.css', () => {
   const design = readFileSync('DESIGN.md', 'utf8');
   const scales = designScales(design);
-  assert.ok(scales.fontSizes.includes(16) && scales.fontSizes.includes(28), String(scales.fontSizes));
+  assert.ok(
+    scales.fontSizes.includes(16) && scales.fontSizes.includes(28),
+    String(scales.fontSizes),
+  );
   assert.ok(scales.fontWeights.includes(400) && scales.fontWeights.includes(700));
-  [8, 12, 16, 20, 24, 28, 32].forEach((step) => assert.ok(scales.spacings.includes(step), `${step}`));
+  [8, 12, 16, 20, 24, 28, 32].forEach((step) =>
+    assert.ok(scales.spacings.includes(step), `${step}`),
+  );
   assert.ok(scales.radii.includes('8px') && scales.radii.includes('12px'));
   const css = [
     readFileSync('src/appearance.css', 'utf8'),

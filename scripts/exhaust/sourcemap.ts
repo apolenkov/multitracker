@@ -99,7 +99,10 @@ export const mapPosition = (
   column: number,
 ): Readonly<{ source: string; line: number } | null> => {
   const spans = map.lines.at(line) ?? [];
-  const hit = spans.reduce<Span | null>((best, span) => (span.column <= column ? span : best), null);
+  const hit = spans.reduce<Span | null>(
+    (best, span) => (span.column <= column ? span : best),
+    null,
+  );
   if (hit === null || hit.source < 0) return null;
   const source = map.sources.at(hit.source);
   return source === undefined ? null : { source, line: hit.line + 1 };
@@ -118,4 +121,5 @@ export const offsetAt = (starts: readonly number[], offset: number) => {
 };
 
 /** Позиция (строка, колонка, 0-индексация) смещения в единицах UTF-16. */
-export const positionOf = (text: string, offset: number) => offsetAt(lineStartOffsets(text), offset);
+export const positionOf = (text: string, offset: number) =>
+  offsetAt(lineStartOffsets(text), offset);

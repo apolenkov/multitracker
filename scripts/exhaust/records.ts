@@ -75,8 +75,7 @@ const isFinding = (value: unknown): value is Finding =>
   typeof value.expected === 'string' &&
   typeof value.actual === 'string';
 
-const strings = (value: unknown): readonly string[] =>
-  asArray(value).map((entry) => asText(entry));
+const strings = (value: unknown): readonly string[] => asArray(value).map((entry) => asText(entry));
 
 export const record = (
   seq: number,

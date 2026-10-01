@@ -9,8 +9,9 @@ import {
   elementMarkdown,
   coveragePercent,
 } from '../scripts/exhaust/registry.ts';
-import { fileReports, newlyCovered } from '../scripts/exhaust/coverage.ts';
+import { codeMarkdown, fileReports, newlyCovered } from '../scripts/exhaust/coverage.ts';
 import { parseEnumerate, parseSweepRecord } from '../scripts/exhaust/page-rows.ts';
+import { asFinding, clickedSignatures, hitClicks, joinSeen } from '../scripts/exhaust/sweep.ts';
 import { parseLedger, checkLedger } from '../scripts/exhaust/ledger.ts';
 
 const tmpRoot = `docs/audits/tmp-exhaust-test-${process.pid}`;
@@ -18,26 +19,35 @@ const rmTmp = () => execFileSync('rm', ['-rf', tmpRoot]);
 const catTmp = (name: string) =>
   execFileSync('cat', [`${tmpRoot}/stamp-exhaust/${process.pid}/${name}`], { encoding: 'utf8' });
 
-await test('run log writes click jsonl and artifacts under a run dir', () => {
-  rmTmp();
-  const log = createRunLog(tmpRoot, 'stamp', String(process.pid));
-  const rec = record(1, baseEnv, 'overview', { b: 'h1', a: 'h2', dur: 3 }, 'sig|1', {
+const sampleClick = () =>
+  record(1, baseEnv, 'overview', { b: 'h1', a: 'h2', dur: 3 }, 'sig|1', {
     role: 'button',
     name: 'Save',
     tag: 'button',
     trusted: false,
     purpose: 'sweep',
   });
+
+await test('run log appends click records as jsonl', () => {
+  rmTmp();
+  const log = createRunLog(tmpRoot, 'stamp', String(process.pid));
+  const rec = sampleClick();
   assert.equal(rec.seq, 1);
   assert.equal(rec.stateBefore, 'h1');
   assert.equal(rec.duration, 3);
-  log.appendClicks([rec]);
-  log.saveJson('summary.json', { clicks: 1 });
-  log.saveText('notes.txt', 'hello');
+  log.appendClicks([rec, { ...rec, seq: 2 }]);
   const lines = catTmp('clicks.jsonl').trim().split('\n');
-  assert.equal(lines.length, 1);
+  assert.equal(lines.length, 2);
   const parsed: unknown = JSON.parse(lines.at(0) ?? '');
   assert.ok(parsed !== null && typeof parsed === 'object' && 'seq' in parsed);
+  rmTmp();
+});
+
+await test('run log saves artifacts and rejects unsafe names', () => {
+  rmTmp();
+  const log = createRunLog(tmpRoot, 'stamp', String(process.pid));
+  log.saveJson('summary.json', { clicks: 1 });
+  log.saveText('notes.txt', 'hello');
   const summary: unknown = JSON.parse(catTmp('summary.json'));
   assert.deepEqual(summary, { clicks: 1 });
   assert.equal(catTmp('notes.txt'), 'hello');
@@ -49,9 +59,36 @@ await test('run log writes click jsonl and artifacts under a run dir', () => {
 await test('registry marks clicked signatures and explains the rest', () => {
   const entries = buildRegistry(
     [
-      { route: 'r', role: 'button', name: 'Go', tag: 'button', path: 'html > body > button', visible: true, disabled: false, skip: '' },
-      { route: 'r', role: 'button', name: 'Nope', tag: 'button', path: 'html > body > dialog#d > button', visible: true, disabled: true, skip: 'disabled' },
-      { route: 'r', role: 'link', name: 'More', tag: 'a', path: 'html > body > details > a', visible: false, disabled: false, skip: 'closed-disclosure' },
+      {
+        route: 'r',
+        role: 'button',
+        name: 'Go',
+        tag: 'button',
+        path: 'html > body > button',
+        visible: true,
+        disabled: false,
+        skip: '',
+      },
+      {
+        route: 'r',
+        role: 'button',
+        name: 'Nope',
+        tag: 'button',
+        path: 'html > body > dialog#d > button',
+        visible: true,
+        disabled: true,
+        skip: 'disabled',
+      },
+      {
+        route: 'r',
+        role: 'link',
+        name: 'More',
+        tag: 'a',
+        path: 'html > body > details > a',
+        visible: false,
+        disabled: false,
+        skip: 'closed-disclosure',
+      },
     ],
     new Set(['r|-|button|go|html > body > button']),
   );
@@ -141,9 +178,109 @@ await test('enumerate and sweep rows parse to typed rows, junk is dropped', () =
   assert.equal(parseSweepRecord('junk'), null);
 });
 
+await test('code markdown totals functions and branches', () => {
+  const md = codeMarkdown([
+    {
+      file: 'src/a.ts',
+      functionsCovered: 1,
+      functionsTotal: 2,
+      branchesCovered: 0,
+      branchesTotal: 1,
+      uncoveredFunctions: ['f@1'],
+    },
+    {
+      file: 'src/b.ts',
+      functionsCovered: 2,
+      functionsTotal: 2,
+      branchesCovered: 3,
+      branchesTotal: 3,
+      uncoveredFunctions: [],
+    },
+  ]);
+  assert.ok(md.includes('Total: 3/4 functions (75%), 3/4 branches (75%)'));
+  assert.ok(md.includes('- src/a.ts|f@1'));
+});
+
+await test('joinSeen merges enumerate info with sweep skips by path', () => {
+  const seen = joinSeen(
+    'r',
+    [
+      {
+        path: 'p1',
+        role: 'button',
+        name: 'Go',
+        tag: 'button',
+        visible: true,
+        disabled: false,
+        skip: '',
+      },
+    ],
+    [
+      {
+        path: 'p1',
+        before: 'a',
+        after: 'b',
+        duration: 1,
+        dialogs: [],
+        errors: [],
+        warnings: [],
+        skipped: '',
+        meta: null,
+      },
+      {
+        path: 'p2',
+        before: '',
+        after: '',
+        duration: 0,
+        dialogs: [],
+        errors: [],
+        warnings: [],
+        skipped: 'disabled',
+        meta: null,
+      },
+    ],
+  );
+  assert.equal(seen.length, 2);
+  assert.equal(seen.at(0)?.name, 'Go');
+  assert.equal(seen.at(0)?.skip, '');
+  assert.equal(seen.at(1)?.skip, 'disabled');
+  const sigs = clickedSignatures(seen);
+  assert.deepEqual(sigs, ['r|-|button|go|p1']);
+  const clicks = hitClicks('r', baseEnv, 10, seen, [
+    {
+      path: 'p1',
+      before: 'a',
+      after: 'b',
+      duration: 1,
+      dialogs: [],
+      errors: [],
+      warnings: [],
+      skipped: '',
+      meta: null,
+    },
+  ]);
+  assert.equal(clicks.length, 1);
+  assert.equal(clicks.at(0)?.seq, 10);
+  assert.equal(clicks.at(0)?.signature, sigs.at(0));
+  assert.equal(clicks.at(0)?.trusted, false);
+});
+
+await test('asFinding maps invariant rows and drops junk', () => {
+  assert.deepEqual(asFinding({ rule: 'x', sel: 's', expected: 'e', actual: 'a' }), {
+    rule: 'x',
+    selector: 's',
+    expected: 'e',
+    actual: 'a',
+  });
+  assert.equal(asFinding({ rule: 'x' }), null);
+});
+
 await test('code ledger reuses the ratchet: unknown functions fail, fixed ones shrink', () => {
   const ledger = parseLedger(
-    JSON.stringify({ version: 1, exceptions: [{ signature: 'src/a.ts|dead@9', reason: 'not reachable' }] }),
+    JSON.stringify({
+      version: 1,
+      exceptions: [{ signature: 'src/a.ts|dead@9', reason: 'not reachable' }],
+    }),
   );
   assert.equal(checkLedger(['src/a.ts|dead@9'], ledger).ok, true);
   assert.equal(checkLedger(['src/a.ts|dead@9', 'src/a.ts|new@1'], ledger).ok, false);

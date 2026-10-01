@@ -50,8 +50,7 @@ export type SweepHit = Readonly<{
   meta: Readonly<{ role: string; name: string; tag: string; dialog: string }> | null;
 }>;
 
-const strings = (value: unknown): readonly string[] =>
-  asArray(value).map((entry) => asText(entry));
+const strings = (value: unknown): readonly string[] => asArray(value).map((entry) => asText(entry));
 
 const metaOf = (value: unknown): SweepHit['meta'] => {
   const cells = asArray(value);

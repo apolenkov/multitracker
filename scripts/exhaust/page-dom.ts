@@ -148,7 +148,7 @@ export const sweepSource = `async (opts) => { ${helpers}; ${anchors};
       const disabled = el.matches(':disabled') || el.getAttribute('aria-disabled') === 'true';
       if (!visible || disabled || closed) { records.push({ p, skip: closed ? 'closed-disclosure' : disabled ? 'disabled' : 'hidden', b: '', a: '' }); continue; }
       if (depth === 0 && scope === 'background') { records.push({ p, skip: 'background', b: '', a: '' }); continue; }
-      if (depth === 0 && scope === 'none' && !p.includes(scopeSel) && !p.includes('dialog')) {
+      if (depth === 0 && scope === 'none' && opts.chrome !== true && !p.includes(scopeSel) && !p.includes('dialog')) {
         const shared = ['.desktop-links', '.mobile-links', '.more-menu', 'header', 'nav', 'footer'];
         if (shared.some((s) => el.closest(s))) { records.push({ p, skip: 'shared-chrome', b: '', a: '' }); continue; }
       }

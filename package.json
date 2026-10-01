@@ -25,6 +25,7 @@
     "check": "npm run format:check && npm run typecheck && npm run typecheck:ts6 && npm run complexity && npm run test:gates && npm test && npm run build && npm run security && npm run secrets",
     "test:ui": "node --experimental-strip-types scripts/check-ui.ts",
     "test:ui:docker": "vite build --outDir dist && scripts/ui-docker.sh dist check-ui.ts",
+    "test:ui:exhaust": "vite build --outDir dist-exhaust --emptyOutDir --sourcemap && scripts/exhaust-docker.sh dist-exhaust exhaust/run.ts",
     "test:smoke": "node --experimental-strip-types scripts/ui-smoke.ts"
   },
   "dependencies": {

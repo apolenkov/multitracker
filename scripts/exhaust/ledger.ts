@@ -14,9 +14,7 @@ const ledgerEntry = (entry: unknown): LedgerEntry | null => {
   if (!isRecord(entry)) return null;
   const signature = entry.signature;
   const reason = entry.reason;
-  return typeof signature === 'string' && typeof reason === 'string'
-    ? { signature, reason }
-    : null;
+  return typeof signature === 'string' && typeof reason === 'string' ? { signature, reason } : null;
 };
 
 export const parseLedger = (text: string): Ledger => {

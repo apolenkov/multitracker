@@ -53,9 +53,7 @@ export const envKey = (env: Env) => axisOrder.map((axis) => axisValue(env, axis)
 export const cartesian = (axes: Axes): readonly Env[] =>
   axisOrder.reduce<readonly Env[]>(
     (rows, axis) =>
-      rows.flatMap((row) =>
-        axisOptions(axes, axis).map((value) => ({ ...row, [axis]: value })),
-      ),
+      rows.flatMap((row) => axisOptions(axes, axis).map((value) => ({ ...row, [axis]: value }))),
     [baseEnv],
   );
 

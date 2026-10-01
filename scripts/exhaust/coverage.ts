@@ -212,15 +212,38 @@ export const fileReports = (
   });
 };
 
+/** Сводка покрытия кода: таблица по файлам, итоги и список непокрытых функций. */
+export const codeMarkdown = (reports: readonly FileReport[]): string => {
+  const head = ['# Code coverage', '', '| file | functions | branches |', '| --- | --- | --- |'];
+  const rows = reports.map(
+    (report) =>
+      `| ${report.file} | ${report.functionsCovered}/${report.functionsTotal} | ${report.branchesCovered}/${report.branchesTotal} |`,
+  );
+  const fns = reports.reduce((sum, report) => sum + report.functionsCovered, 0);
+  const fnsTotal = reports.reduce((sum, report) => sum + report.functionsTotal, 0);
+  const br = reports.reduce((sum, report) => sum + report.branchesCovered, 0);
+  const brTotal = reports.reduce((sum, report) => sum + report.branchesTotal, 0);
+  const pct = (part: number, total: number) => (total === 0 ? 0 : Math.round((part / total) * 100));
+  const open = reports.flatMap((report) =>
+    report.uncoveredFunctions.map((fn) => `${report.file}|${fn}`),
+  );
+  return [
+    ...head,
+    ...rows,
+    '',
+    `Total: ${fns}/${fnsTotal} functions (${pct(fns, fnsTotal)}%), ${br}/${brTotal} branches (${pct(br, brTotal)}%)`,
+    '',
+    ...open.map((key) => `- ${key}`),
+  ].join('\n');
+};
+
 /** Новые покрытые ключи file|fn@line между последовательными снимками. */
 export const newlyCovered = (
   prev: readonly FileReport[],
   next: readonly FileReport[],
 ): readonly string[] => {
   const keys = (reports: readonly FileReport[]) =>
-    reports.flatMap((report) =>
-      report.uncoveredFunctions.map((fn) => `${report.file}|${fn}`),
-    );
+    reports.flatMap((report) => report.uncoveredFunctions.map((fn) => `${report.file}|${fn}`));
   const before = new Set(keys(prev));
   const after = new Set(keys(next));
   return [...before].filter((key) => !after.has(key)).toSorted();
@@ -238,5 +261,3 @@ export const fetchSource = async (url: string): Promise<ScriptSource | null> => 
   const map = (await getText(`${url}.map`)) ?? '';
   return { url: url.split('/').at(-1) ?? url, js, map };
 };
-
-

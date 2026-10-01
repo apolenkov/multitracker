@@ -10,7 +10,7 @@ export type LedgerCheck = Readonly<{
   ok: boolean;
 }>;
 
-const ledgerEntry = (entry: unknown): LedgerEntry | null => {
+export const ledgerEntry = (entry: unknown): LedgerEntry | null => {
   if (!isRecord(entry)) return null;
   const signature = entry.signature;
   const reason = entry.reason;

@@ -36,7 +36,8 @@
 .brand-note {
   color: var(--muted);
   font-size: 14px;
-  margin: 12px 8px 24px;
+  /* One line: the RU label is 193 px; the 216 px sidebar uses 13 px (layout.css). */
+  margin: 12px 0 24px 8px;
 }
 .navigation,
 .desktop-links,

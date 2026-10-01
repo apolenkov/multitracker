@@ -15,18 +15,12 @@ type Props = Readonly<{
 
 export function EventDialog(props: Props) {
   const [reminder, setReminder] = useState(false);
-  const text = copy(props.language);
   const title = local(props.language, props.event.title);
   useEffect(() => {
     document.getElementById(reminder ? 'event-reminder-minutes' : 'event-reminder-open')?.focus();
   }, [reminder]);
   return (
-    <DemoModal
-      id="event-dialog"
-      language={props.language}
-      onClose={props.onClose}
-      title={reminder ? `${text('Напоминание', 'Reminder')} · ${title}` : title}
-    >
+    <DemoModal id="event-dialog" language={props.language} onClose={props.onClose} title={title}>
       <div className="event-dialog-content">
         <p className="quiet">
           <time dateTime={props.event.date}>

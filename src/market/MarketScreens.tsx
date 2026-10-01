@@ -86,6 +86,7 @@ export function MarketScreens(props: Props) {
       {props.screen === 'markets' && (
         <MarketIndices {...props} onOpen={(asset) => model.setDialog({ kind: 'asset', asset })} />
       )}
+      {props.screen === 'following' && <h2>{marketWords(props.language).watched}</h2>}
       <MarketList
         {...props}
         {...model}

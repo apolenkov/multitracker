@@ -17,6 +17,7 @@ const paths = {
   check: 'M4 12l5 5L20 6',
   chevron: 'm9 5 7 7-7 7',
   more: 'M4 12h1M11.5 12h1M19 12h1',
+  menu: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
   incoming: 'M12 4v16m-6-6 6 6 6-6',
   outgoing: 'M12 20V4m-6 6 6-6 6 6',
   transfer: 'M4 8h16m-4-4 4 4-4 4M20 16H4m4-4-4 4 4 4',
@@ -27,6 +28,7 @@ const pathByName = new Map(Object.entries(paths));
 type Name =
   | Screen
   | 'more'
+  | 'menu'
   | 'brand'
   | 'close'
   | 'search'

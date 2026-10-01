@@ -46,6 +46,6 @@ export function plotPoints(values: HistoryValues) {
   const high = Math.max(...values);
   const range = high > low ? high - low : 1;
   return values
-    .map((value, index) => `${20 + index * 130},${120 - ((value - low) / range) * 100}`)
+    .map((value, index) => `${index * 150},${120 - ((value - low) / range) * 100}`)
     .join(' ');
 }

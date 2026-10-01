@@ -100,6 +100,9 @@
   margin-top: 20px;
   color: var(--green);
 }
+.events-confirm:empty {
+  margin-top: 0;
+}
 .widget-settings {
   display: grid;
   gap: 16px;

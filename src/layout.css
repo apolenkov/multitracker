@@ -9,6 +9,9 @@
     margin-left: 216px;
     padding-inline: 24px;
   }
+  .brand-note {
+    font-size: 13px;
+  }
 }
 @media (max-width: 900px) {
   .sidebar {

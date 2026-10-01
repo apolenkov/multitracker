@@ -39,9 +39,16 @@ export function PriceHistory(props: Props) {
       </select>
       <HistoryRange {...props} values={sample.values} />
       {!props.hidden && (
-        <svg viewBox="0 0 300 140" aria-hidden="true">
-          <polyline points={plotPoints(sample.values)} />
-        </svg>
+        <div className="market-chart" aria-hidden="true">
+          <svg viewBox="0 0 300 140" preserveAspectRatio="none">
+            <line x1="0" y1="139" x2="300" y2="139" />
+            <polyline points={plotPoints(sample.values)} />
+          </svg>
+          <p className="quiet">
+            <span>{pointDate(period, sample.dates.at(0), props.language)}</span>
+            <span>{pointDate(period, sample.dates.at(-1), props.language)}</span>
+          </p>
+        </div>
       )}
       <details className="market-chart-data">
         <summary>{words.chartData}</summary>
@@ -95,11 +102,7 @@ function HistoryTable(
         <tbody>
           {props.sample.values.map((value, index) => (
             <tr key={props.sample.dates.at(index)}>
-              <td>
-                {props.period === 'day'
-                  ? props.sample.dates.at(index)
-                  : date(props.sample.dates.at(index) ?? '2026-09-30', props.language)}
-              </td>
+              <td>{pointDate(props.period, props.sample.dates.at(index), props.language)}</td>
               <td>
                 {assetPrice(props.asset, value, props.currency, props.language, props.hidden)}
               </td>
@@ -109,4 +112,8 @@ function HistoryTable(
       </table>
     </div>
   );
+}
+
+function pointDate(period: HistoryPeriod, value: string | undefined, language: Language) {
+  return period === 'day' ? value : date(value ?? '2026-09-30', language);
 }

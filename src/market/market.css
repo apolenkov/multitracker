@@ -214,16 +214,31 @@
 .market-session-control select {
   width: 100%;
 }
-.market-history svg {
-  display: block;
-  width: 100%;
-  max-height: 160px;
+.market-chart {
   margin-block: 12px;
 }
-.market-history polyline {
+.market-chart svg {
+  display: block;
+  width: 100%;
+  height: 140px;
+  overflow: visible;
+}
+.market-chart :is(polyline, line) {
   fill: none;
   stroke: var(--accent);
   stroke-width: 3px;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.market-chart line {
+  stroke: var(--line);
+  stroke-width: 1px;
+}
+.market-chart p {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0 0;
+  font-size: 14px;
 }
 .market-chart-data,
 .market-disclosure {

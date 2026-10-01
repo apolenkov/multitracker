@@ -174,3 +174,17 @@
     flex-wrap: wrap;
   }
 }
+/* Status lines keep the height of their longest text, so a sync result replaces text in place. */
+@media (max-width: 900px) {
+  .sync-state {
+    min-height: 2lh;
+  }
+}
+@media (max-width: 600px) {
+  .sync-state {
+    min-height: 3lh;
+  }
+  .sync-status .demo-note {
+    min-height: 2lh;
+  }
+}

@@ -61,7 +61,7 @@ function MoreButton({
       aria-current={extraScreens.some((item) => item === screen) ? 'page' : undefined}
       onClick={toggle}
     >
-      <Icon name="more" />
+      <Icon name="menu" />
       <span>{labels.more}</span>
     </button>
   );

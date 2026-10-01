@@ -61,6 +61,30 @@ function headVisibility(browser: Browser, width: number) {
   );
 }
 
+// The 27 px row button stretches ::after over the whole row: any point outside the menu opens details.
+function rowHitArea(browser: Browser, index: number) {
+  const row = `${rows}:nth-child(${index + 1})`;
+  browser.run('scrollintoview', row);
+  const misses = evaluate(
+    browser,
+    `(() => {
+      const row = document.querySelector('${row}');
+      const box = row.getBoundingClientRect();
+      const menu = row.querySelector('.record-menu').getBoundingClientRect();
+      const points = [
+        [box.left + 2, box.top + 2],
+        [box.left + 2, box.bottom - 2],
+        [(box.left + menu.left) / 2, box.top + box.height / 2],
+        [menu.left - 2, box.bottom - 2],
+      ];
+      return points.filter(([x, y]) => !document.elementFromPoint(x, y)?.closest('.history-row-open'))
+        .map(point => point.map(Math.round).join(','));
+    })()`,
+  );
+  assert.deepEqual(misses, [], 'Вся строка операции должна открывать подробности');
+  return 'whole row';
+}
+
 function actionPaths(browser: Browser, index: number) {
   const row = `${rows}:nth-child(${index + 1})`;
   return ['edit', 'delete'].map((action) => {
@@ -128,6 +152,7 @@ export function recordMenuStability(browser: Browser) {
       return [0, count - 1].map((index) => ({
         width,
         language,
+        hitArea: rowHitArea(browser, index),
         ...stableMenu(browser, index),
         actions: actionPaths(browser, index),
       }));

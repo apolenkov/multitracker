@@ -228,13 +228,21 @@
 .events-refine {
   margin-top: 12px;
 }
-.event-back {
+.link-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   justify-self: start;
   width: auto;
   background: transparent;
   border: 0;
   padding-inline: 0;
   color: var(--accent);
+}
+.link-back .ui-icon {
+  width: 16px;
+  height: 16px;
+  transform: rotate(180deg);
 }
 .event-dialog-content p {
   max-width: 65ch;

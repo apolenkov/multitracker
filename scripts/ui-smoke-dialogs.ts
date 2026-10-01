@@ -47,17 +47,27 @@ function fold() {
     visibleWithoutScroll: primaryVisible(primary, frame),
   };
 }
+export function nestedDialogs(browser: Browser): readonly Finding[] {
+  const open = evaluate(
+    browser,
+    `[...document.querySelectorAll('dialog[open]')].map((dialog) => dialog.id)`,
+  );
+  return Array.isArray(open) && open.length > 1
+    ? [{ kind: 'nested-dialog', path: open.join(' + '), observed: open }]
+    : [];
+}
 export function dialogFold(browser: Browser): readonly Finding[] {
+  const nested = nestedDialogs(browser);
   const observed = evaluate(
     browser,
     `(() => { const rectangle = ${rectangle.toString()}; const primaryVisible = ${primaryVisible.toString()}; return (${fold.toString()})(); })()`,
   );
-  if (observed === null) return [];
+  if (observed === null) return nested;
   assert.ok(record(observed));
   save(`fold-${Date.now()}`, observed);
   return observed.visibleWithoutScroll === true
-    ? []
-    : [{ kind: 'dialog-primary-below-fold', path: String(observed.id), observed }];
+    ? nested
+    : [...nested, { kind: 'dialog-primary-below-fold', path: String(observed.id), observed }];
 }
 export function operationKinds(browser: Browser, state: State): Outcome {
   const outcomes = operationTypes.map((type) => {

@@ -211,21 +211,6 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.asset-detail-values {
-  margin: 16px 0;
-}
-.asset-detail-values div {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 14px;
-}
-.asset-detail-values dd {
-  text-align: right;
-  font-size: 16px;
-}
 .attribution,
 .portfolio-report,
 .allocation-list {

@@ -1,10 +1,17 @@
 import { useRef, useState } from 'react';
-import { DialogHeading, keepDialogFocus, openDialog } from '../Dialog.tsx';
-import { openOperation } from '../Forms.tsx';
+import { closeDialog, DialogHeading, keepDialogFocus, openDialog } from '../Dialog.tsx';
+import { openOperation as openOperationDialog } from '../Forms.tsx';
 import { Icon } from '../Icon.tsx';
 import { getLabels, money, type Language } from '../i18n.ts';
 import { insightWords } from './words.ts';
 import './catalog.css';
+
+// Close the catalog first: native dialogs restore focus on close, so the operation
+// dialog is opened from `.cash-catalog-open` and returns focus there.
+const openOperation: typeof openOperationDialog = (type, context) => {
+  closeDialog('cash-catalog-dialog');
+  openOperationDialog(type, context);
+};
 
 const instruments = [
   { id: 'MSFT', kind: 'stocks' },

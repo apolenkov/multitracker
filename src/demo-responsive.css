@@ -71,38 +71,6 @@
 .import-rows [data-status='duplicate'] .import-row-status {
   color: var(--warning);
 }
-.conflict-times,
-.conflict-field dl {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-.conflict-times p,
-.conflict-field dl {
-  margin: 0;
-}
-.conflict-times span {
-  display: block;
-  color: var(--muted);
-  margin-top: 6px;
-  font-size: 14px;
-}
-.conflict-field {
-  padding: 18px 0;
-  border-bottom: 1px solid var(--line);
-}
-.conflict-field h3 {
-  margin: 0 0 14px;
-  font-size: 16px;
-}
-.conflict-field dt {
-  color: var(--muted);
-  font-size: 14px;
-}
-.conflict-field dd {
-  margin: 4px 0 0;
-  font-weight: 600;
-}
 .conflict-choices {
   border: 0;
   padding: 0;
@@ -112,17 +80,40 @@
 .conflict-choices legend {
   padding-bottom: 12px;
 }
-.conflict-choices .check-row {
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  margin-bottom: 8px;
-  cursor: pointer;
+.conflict-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.conflict-table :is(th, td) {
+  padding: 12px 8px 12px 0;
+  text-align: left;
+  vertical-align: top;
   overflow-wrap: anywhere;
 }
-.conflict-choices .check-row:has(input:checked) {
-  border-color: var(--accent);
-  background: var(--surface);
+.conflict-table :is(thead td, tbody th) {
+  width: 22%;
+}
+.conflict-table tbody tr {
+  border-top: 1px solid var(--line);
+}
+.conflict-table tbody th {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+.conflict-table tbody td {
+  font-weight: 600;
+}
+.conflict-table thead th > span {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+.conflict-table .check-row {
+  align-items: start;
+  gap: 8px;
 }
 .form-row {
   display: grid;
@@ -162,10 +153,24 @@
   margin-bottom: 8px;
 }
 @media (max-width: 600px) {
+  .conflict-table :is(thead, tbody) {
+    display: block;
+  }
+  .conflict-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .conflict-table thead td {
+    display: none;
+  }
+  .conflict-table tbody th {
+    grid-column: 1 / -1;
+    width: auto;
+    padding-bottom: 0;
+  }
   .settings-groups,
   .mapping-list,
-  .form-row,
-  .conflict-field dl {
+  .form-row {
     grid-template-columns: 1fr;
   }
   .settings-groups {
@@ -207,9 +212,6 @@
   }
   .import-source-table {
     display: none;
-  }
-  .conflict-times {
-    font-size: 14px;
   }
   .dialog-actions {
     flex-wrap: wrap;

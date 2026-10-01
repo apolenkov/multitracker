@@ -13,84 +13,84 @@ export function SyncConflict({ language, t, close, confirm }: Props) {
   return (
     <DemoModal id="sync-conflict" title={t.conflict} language={language} onClose={close}>
       <p className="demo-note">{t.warning}</p>
-      <ConflictPreview t={t} />
       <fieldset className="conflict-choices">
         <legend>{t.choose}</legend>
-        <label className="check-row">
-          <input
-            type="radio"
-            name="conflict-version"
-            value="local"
-            checked={chosen === 'local'}
-            onChange={() => setChosen('local')}
-          />
-          {t.local}
-        </label>
-        <label className="check-row">
-          <input
-            type="radio"
-            name="conflict-version"
-            value="remote"
-            checked={chosen === 'remote'}
-            onChange={() => setChosen('remote')}
-          />
-          {t.remote}
-        </label>
+        <table className="conflict-table">
+          <thead>
+            <tr>
+              <td>
+                <span className="visually-hidden">{t.field}</span>
+              </td>
+              <VersionHead
+                version="local"
+                label={t.local}
+                time={t.localTime}
+                {...{ chosen, setChosen }}
+              />
+              <VersionHead
+                version="remote"
+                label={t.remote}
+                time={t.remoteTime}
+                {...{ chosen, setChosen }}
+              />
+            </tr>
+          </thead>
+          <ConflictRows t={t} />
+        </table>
       </fieldset>
-      <p>
-        {t.selected}: {chosen === 'local' ? t.local : t.remote}
-      </p>
       <div className="dialog-actions">
         <button className="quiet" onClick={close}>
           {t.cancel}
         </button>
-        <button onClick={() => confirm(chosen)}>{t.confirm}</button>
+        <button className="primary" onClick={() => confirm(chosen)}>
+          {t.confirm}
+        </button>
       </div>
     </DemoModal>
   );
 }
-function ConflictPreview({ t }: Readonly<{ t: SyncWords }>) {
+function ConflictRows({ t }: Readonly<{ t: SyncWords }>) {
   return (
-    <section className="conflict-preview" aria-label={t.conflict}>
-      <div className="conflict-times">
-        <p>
-          <strong>{t.local}</strong>
-          <span>{t.localTime}</span>
-        </p>
-        <p>
-          <strong>{t.remote}</strong>
-          <span>{t.remoteTime}</span>
-        </p>
-      </div>
-      <ConflictField name={t.name} local={t.localName} remote={t.remoteName} t={t} />
-      <ConflictField name={t.label} local={t.localLabel} remote={t.remoteLabel} t={t} />
-    </section>
+    <tbody>
+      <tr>
+        <th scope="row">{t.name}</th>
+        <td>{t.localName}</td>
+        <td>{t.remoteName}</td>
+      </tr>
+      <tr>
+        <th scope="row">{t.label}</th>
+        <td>{t.localLabel}</td>
+        <td>{t.remoteLabel}</td>
+      </tr>
+    </tbody>
   );
 }
-function ConflictField({
-  name,
-  local,
-  remote,
-  t,
+function VersionHead({
+  version,
+  label,
+  time,
+  chosen,
+  setChosen,
 }: Readonly<{
-  name: string;
-  local: string;
-  remote: string;
-  t: SyncWords;
+  version: Version;
+  label: string;
+  time: string;
+  chosen: Version;
+  setChosen: (version: Version) => void;
 }>) {
   return (
-    <div className="conflict-field">
-      <h3>{name}</h3>
-      <dl>
-        <div>
-          <dt>{t.local}</dt>
-          <dd>{local}</dd>
-        </div>
-        <div>
-          <dt>{t.remote}</dt>
-          <dd>{remote}</dd>
-        </div>
-      </dl>
-    </div>
+    <th scope="col">
+      <label className="check-row">
+        <input
+          type="radio"
+          name="conflict-version"
+          value={version}
+          checked={chosen === version}
+          onChange={() => setChosen(version)}
+        />
+        {label}
+      </label>
+      <span>{time}</span>
+    </th>
   );
 }

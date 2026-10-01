@@ -73,22 +73,16 @@ export function catalogDialog(browser: Browser) {
   browser.run('click', '#cash-catalog-dialog .asset-catalog li:first-child button');
   truth(
     browser,
-    'document.querySelector("#buy-dialog")?.open === true && document.querySelector("#buy-dialog [name=asset]")?.value === "MSFT" && document.querySelector("#cash-catalog-dialog")?.open === true',
-    'Покупка из каталога должна открыть форму MSFT',
+    'document.querySelector("#buy-dialog")?.open === true && document.querySelector("#buy-dialog [name=asset]")?.value === "MSFT" && document.querySelectorAll("dialog[open]").length === 1',
+    'Покупка из каталога должна открыть форму MSFT вместо каталога, без второго окна',
   );
   browser.run('press', 'Escape');
   truth(
     browser,
-    'document.querySelector("#cash-catalog-dialog")?.open === true && document.activeElement?.closest(".asset-catalog li:first-child") !== null',
-    'После формы фокус должен вернуться к активу',
+    'document.querySelectorAll("dialog[open]").length === 0 && document.activeElement?.matches(".cash-catalog-open") === true',
+    'После формы фокус должен вернуться на кнопку каталога',
   );
-  browser.run('press', 'Escape');
-  truth(
-    browser,
-    'document.activeElement?.matches(".cash-catalog-open") === true',
-    'После каталога фокус должен вернуться в обзор',
-  );
-  return '375/1440: обзор неподвижен; Escape и вложенная покупка возвращают фокус';
+  return '375/1440: обзор неподвижен; покупка из каталога заменяет окно, Escape возвращает фокус на кнопку каталога';
 }
 
 export function narrowAllocation(browser: Browser) {

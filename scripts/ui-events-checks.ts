@@ -33,7 +33,7 @@ function reminderBackFocus(browser: Browser) {
   truth(browser, returned, 'Назад должен вернуть событие и фокус кнопке напоминания');
   browser.run('click', '#event-reminder-open');
   browser.run('wait', '--fn', 'document.activeElement?.id === "event-reminder-minutes"');
-  assert.equal(evaluate(browser, 'document.querySelector("#event-reminder-minutes")?.value'), '');
+  assert.equal(evaluate(browser, 'document.querySelector("#event-reminder-minutes")?.value'), '15');
   assert.equal(
     evaluate(browser, 'document.querySelector("#event-reminder-channel")?.value'),
     'app',
@@ -71,7 +71,7 @@ function cancelReminder(browser: Browser) {
   browser.run('wait', '--fn', '!document.querySelector("#event-dialog[open]")');
   assert.equal(evaluate(browser, 'document.querySelector(".events-confirm")?.innerText'), status);
   openReminder(browser);
-  assert.equal(evaluate(browser, 'document.querySelector("#event-reminder-minutes")?.value'), '');
+  assert.equal(evaluate(browser, 'document.querySelector("#event-reminder-minutes")?.value'), '15');
   assert.equal(
     evaluate(browser, 'document.querySelector("#event-reminder-channel")?.value'),
     'app',
@@ -80,6 +80,8 @@ function cancelReminder(browser: Browser) {
 
 function invalidReminder(browser: Browser) {
   ['', 'abc', '0', '-1', '10081'].forEach((value) => {
+    // The field starts at "15": filling "" directly is not seen by React, so type something first.
+    browser.run('fill', '#event-reminder-minutes', 'x');
     browser.run('fill', '#event-reminder-minutes', value);
     browser.run('click', '#event-reminder-save');
     truth(
@@ -102,14 +104,14 @@ export function eventReminder(browser: Browser) {
   browser.run('wait', '--fn', '!document.querySelector("#event-dialog[open]")');
   assert.match(content(browser, '.events-confirm'), /сохранён/);
   openReminder(browser);
-  assert.equal(evaluate(browser, 'document.querySelector("#event-reminder-minutes")?.value'), '');
+  assert.equal(evaluate(browser, 'document.querySelector("#event-reminder-minutes")?.value'), '15');
   browser.run('press', 'Escape');
   browser.run(
     'wait',
     '--fn',
     '!document.querySelector("#event-dialog[open]") && document.activeElement?.id === "event-luma-report"',
   );
-  return 'Пустой календарь → сброс; отмена не сохраняет; неверный срок блокирован; 15 минут → результат';
+  return 'Срок по умолчанию 15 → сброс; отмена не сохраняет; неверный срок блокирован; 15 минут → результат';
 }
 
 function updateDetail(browser: Browser, category: string) {

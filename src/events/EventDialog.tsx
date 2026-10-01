@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import type { Language } from '../demo/words';
+import { Icon } from '../Icon';
 import { DemoModal } from '../demo/modal';
 import { copy, eventDate, local } from './data';
 import type { CalendarEvent } from './data';
@@ -24,7 +25,7 @@ export function EventDialog(props: Props) {
       id="event-dialog"
       language={props.language}
       onClose={props.onClose}
-      title={reminder ? `${text('Напоминание', 'Reminder')}: ${title}` : title}
+      title={reminder ? `${text('Напоминание', 'Reminder')} · ${title}` : title}
     >
       <div className="event-dialog-content">
         <p className="quiet">
@@ -68,7 +69,7 @@ function EventDetails(props: Props & Readonly<{ onRemind: () => void }>) {
 }
 
 function ReminderForm(props: Props & Readonly<{ onBack: () => void }>) {
-  const [minutes, setMinutes] = useState('');
+  const [minutes, setMinutes] = useState('15');
   const [channel, setChannel] = useState('app');
   const [error, setError] = useState(false);
   const field = useRef<HTMLInputElement>(null);
@@ -86,7 +87,8 @@ function ReminderForm(props: Props & Readonly<{ onBack: () => void }>) {
         props.onSave();
       }}
     >
-      <button type="button" id="event-reminder-back" className="event-back" onClick={props.onBack}>
+      <button type="button" id="event-reminder-back" className="link-back" onClick={props.onBack}>
+        <Icon name="chevron" />
         {text('Назад к событию', 'Back to event')}
       </button>
       <ReminderMinutes

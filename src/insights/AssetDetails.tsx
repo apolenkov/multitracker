@@ -122,32 +122,25 @@ function PositionValues({
   const result = totals(buys, currency);
   const performance = totals(buys, baseCurrency);
   const total = totals(selectedBuys(state, portfolioId), currency).value;
+  const quantity = buys.reduce((sum, buy) => sum + buy.quantity, 0);
   const rows = [
-    [words.current, result.value, currency],
-    [`${words.unrealized} · ${baseCurrency}`, performance.profit, baseCurrency],
-    [`${words.cost} · ${baseCurrency}`, performance.basis, baseCurrency],
+    [words.quantity, number(quantity, language)],
+    [
+      getLabels(language).weight,
+      percentage(total > 0 ? (result.value / total) * 100 : 0, language),
+    ],
+    [words.current, money(result.value, currency, language)],
+    [`${words.unrealized} · ${baseCurrency}`, money(performance.profit, baseCurrency, language)],
+    [`${words.cost} · ${baseCurrency}`, money(performance.basis, baseCurrency, language)],
   ] as const;
   return (
     <div>
       <h3>{words.units}</h3>
-      <p>
-        {words.quantity}:{' '}
-        {hidden
-          ? '••••'
-          : number(
-              buys.reduce((sum, buy) => sum + buy.quantity, 0),
-              language,
-            )}
-      </p>
-      <p>
-        {getLabels(language).weight}:{' '}
-        {hidden ? '••••' : percentage(total > 0 ? (result.value / total) * 100 : 0, language)}
-      </p>
-      <dl className="asset-detail-values">
-        {rows.map(([label, value, unit]) => (
-          <div key={label}>
+      <dl className="fact-list">
+        {rows.map(([label, value], index) => (
+          <div key={label} className={index === 2 ? 'fact-break' : undefined}>
             <dt>{label}</dt>
-            <dd>{hidden ? '••••' : money(value, unit, language)}</dd>
+            <dd>{hidden ? '••••' : value}</dd>
           </div>
         ))}
       </dl>
@@ -163,7 +156,7 @@ function Quote({ asset, state, buys, language, hidden }: ValuesProps) {
   });
   return (
     <div>
-      <dl className="asset-detail-values">
+      <dl className="fact-list">
         <div>
           <dt>{words.amount}</dt>
           <dd>

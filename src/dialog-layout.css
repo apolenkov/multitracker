@@ -4,12 +4,25 @@ dialog {
   --dialog-footer-reserve: calc(var(--dialog-button-height) + 16px + 1px + 6px);
   max-height: var(--dialog-limit);
   margin-block: calc((100dvh - var(--dialog-limit)) / 2) auto;
+  scroll-padding-top: calc(var(--dialog-pad) + 44px);
   scroll-padding-bottom: var(--dialog-footer-reserve);
 }
+/* Sticky offsets are measured from the padding-inset scrollport, so the bars reach the dialog edge
+   with a negative offset and pad themselves back. */
 dialog :is(.form-actions, .dialog-actions) {
   position: sticky;
-  bottom: 0;
+  bottom: calc(-1 * var(--dialog-pad));
   z-index: 1;
+  margin: 16px calc(-1 * var(--dialog-pad)) calc(-1 * var(--dialog-pad));
+  padding: 16px var(--dialog-pad) var(--dialog-pad);
+  background: var(--paper);
+}
+dialog .dialog-heading {
+  position: sticky;
+  top: calc(-1 * var(--dialog-pad));
+  z-index: 1;
+  margin: calc(-1 * var(--dialog-pad)) calc(-1 * var(--dialog-pad)) 16px;
+  padding: var(--dialog-pad) var(--dialog-pad) 0;
   background: var(--paper);
 }
 dialog :is(input, select, textarea, summary, a[href]) {

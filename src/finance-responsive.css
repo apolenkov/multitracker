@@ -192,6 +192,9 @@
   .holding-row > td:nth-child(3) .mobile-label {
     display: none;
   }
+  .cash-holding-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
   .cash-holding-row > td:nth-child(3) .mobile-label {
     display: block;
   }

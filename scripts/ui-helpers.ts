@@ -72,7 +72,8 @@ function boxes(browser: Browser): Boxes {
   assert.ok(Array.isArray(raw), 'layoutMap: нужен список позиций');
   const entries = raw.map((entry: unknown) => {
     assert.ok(Array.isArray(entry) && entry.length === 5, 'layoutMap: неверная запись');
-    const [path, top, left, inside, desc] = entry as readonly unknown[];
+    const cells: readonly unknown[] = entry;
+    const [path, top, left, inside, desc] = cells;
     assert.ok(
       typeof path === 'string' &&
         typeof top === 'number' &&

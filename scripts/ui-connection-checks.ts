@@ -73,6 +73,14 @@ function disconnectUndo(browser: Browser) {
     '--fn',
     `document.querySelector('${status}')?.textContent === 'Источник отключён в примере. Никакие ключи и операции не удалялись.' && document.querySelector('${card}')?.classList.contains('row-removed')`,
   );
+  // Фокус ставится в requestAnimationFrame: ждём кадр, а не читаем состояние мгновенно.
+  browser.run(
+    'wait',
+    '--fn',
+    `document.querySelector('${card} .undo-action') === document.activeElement`,
+    '--timeout',
+    '5000',
+  );
   truth(
     browser,
     `document.querySelector('${card} .undo-action') === document.activeElement`,

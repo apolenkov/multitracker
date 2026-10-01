@@ -1,1 +1,2461 @@
-{"exceptions": [], "version": 1}
+{
+  "version": 1,
+  "exceptions": [
+    {
+      "signature": "connections|-|button|backup and restore|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-backup",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|column mapping|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|compare versions|html > body > div#root > div > div > main#main > div > section > div > div > div > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|delete data|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-delete",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|details|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-history-details",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|export data|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-export",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|import # transactions|html > body > div#root > div > div > main#main > div > section > div > div > div > button#import-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|mockup scenarios|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|more|html > body > div#root > div > aside > nav > div > button#navigation-more-button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|notifications|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-notifications",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|reconcile balance|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-reconcile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|recovery key|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-recovery",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|revoke access: phone|html > body > div#root > div > div > main#main > div > section > div > div > div > section > article > button#sync-revoke-mobile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|run sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > button#sync-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|show on overview|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|button|sync mode|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|checkbox|automatic sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|checkbox|hide balances|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > input#settings-hidden",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|checkbox|lock the screen (sample)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-lock",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|checkbox|monochrome appearance|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-monochrome",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|checkbox|show a network error when starting|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label > input",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "connections|-|checkbox|show daily change|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label > input#widget-changes",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|checkbox|skip duplicate (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|checkbox|skip unknown asset (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|action buyskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-action",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|asset msftskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-asset",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|calculation currencyrub ₽usd $invested amounts and investment returns are compared in this currency.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-base-currency",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|currency usdskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-currency",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|date #-#-#skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-date",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|destination accountbinance · spot|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|destination portfoliotradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|interface densitycomfortablecompact|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-density",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|layoutcompactdetailed|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label > select#widget-layout",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|overview statepopulatedloadingempty portfoliomissing price or ratesave error|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|price ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-price",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|quantity ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-quantity",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|combobox|sourcechoose a sourcetradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select#import-page-source",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|action buyskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|asset msftskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|automatic sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|calculation currencyrub ₽usd $invested amounts and investment returns are compared in this currency.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|currency usdskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|date #-#-#skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|destination accountbinance · spot|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|destination portfoliotradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|hide balances|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|interface densitycomfortablecompact|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|layoutcompactdetailed|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|lock the screen (sample)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|monochrome appearance|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|overview statepopulatedloadingempty portfoliomissing price or ratesave error|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|price ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|quantity ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|show a network error when starting|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "connections|-|label|show daily change|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|skip duplicate (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|skip unknown asset (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|label|sourcechoose a sourcetradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|link|overview|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|link|portfolios|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|-|link|transactions|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "connections|buy-dialog|combobox|fee currency|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > select#buy-dialog-feeCurrency",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "connections|buy-dialog|label|fee currency|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "connections|buy-dialog|label|fee, usd|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "connections|buy-dialog|label|note|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "connections|buy-dialog|textbox|fee, usd|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > input#buy-dialog-fee",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "connections|buy-dialog|textbox|note|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > input#buy-dialog-note",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "connections|portfolio-dialog|button|cancel|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "connections|portfolio-dialog|button|close|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "connections|portfolio-dialog|button|create portfolio|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "connections|portfolio-dialog|combobox|transaction currency|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-currency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "connections|portfolio-dialog|combobox|venue|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-venue",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "connections|portfolio-dialog|label|name|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "connections|portfolio-dialog|label|transaction currency|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "connections|portfolio-dialog|label|venue|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "connections|portfolio-dialog|textbox|name|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > input#portfolio-dialog-name",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|-|button|backup and restore|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-backup",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|column mapping|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|compare versions|html > body > div#root > div > div > main#main > div > section > div > div > div > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|configure|html > body > div#root > div > div > main#main > div > section > div > div > div > article > div > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|connection privacy|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|delete data|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-delete",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|details|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-history-details",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|export data|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-export",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|import # transactions|html > body > div#root > div > div > main#main > div > section > div > div > div > button#import-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|mockup scenarios|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|more|html > body > div#root > div > aside > nav > div > button#navigation-more-button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|notifications|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-notifications",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|reconcile balance|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-reconcile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|recovery key|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-recovery",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|reset filters|html > body > div#root > div > div > main#main > section > div > details > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|button|revoke access: phone|html > body > div#root > div > div > main#main > div > section > div > div > div > section > article > button#sync-revoke-mobile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|run sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > button#sync-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|show on overview|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|button|sync mode|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|checkbox|automatic sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|checkbox|hide balances|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > input#settings-hidden",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|checkbox|lock the screen (sample)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-lock",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|checkbox|monochrome appearance|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-monochrome",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|checkbox|show a network error when starting|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label > input",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|checkbox|show daily change|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label > input#widget-changes",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|checkbox|skip duplicate (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|checkbox|skip unknown asset (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|combobox|action buyskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-action",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|combobox|asset msftskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-asset",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|combobox|calculation currencyrub ₽usd $invested amounts and investment returns are compared in this currency.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-base-currency",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|combobox|currency usdskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-currency",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|combobox|date #-#-#skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-date",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|combobox|destination accounttradernet · maintradernet · savings|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|combobox|destination portfoliotradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|combobox|interface densitycomfortablecompact|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-density",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|combobox|layoutcompactdetailed|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label > select#widget-layout",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|combobox|overview statepopulatedloadingempty portfoliomissing price or ratesave error|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|combobox|price ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-price",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|combobox|quantity ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-quantity",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|combobox|sourcechoose a sourcetradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select#import-page-source",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|action buyskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|label|asset msftskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|label|automatic sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|calculation currencyrub ₽usd $invested amounts and investment returns are compared in this currency.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|currency usdskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|label|date #-#-#skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|label|destination accounttradernet · maintradernet · savings|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|destination portfoliotradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|hide balances|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|interface densitycomfortablecompact|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|layoutcompactdetailed|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|lock the screen (sample)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|monochrome appearance|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|overview statepopulatedloadingempty portfoliomissing price or ratesave error|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|price ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|label|quantity ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|label|show a network error when starting|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "history|-|label|show daily change|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|skip duplicate (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|skip unknown asset (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|label|sourcechoose a sourcetradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|link|overview|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|link|portfolios|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|-|link|transactions|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "history|portfolio-dialog|button|cancel|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|portfolio-dialog|button|close|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|portfolio-dialog|button|create portfolio|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|portfolio-dialog|combobox|transaction currency|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-currency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|portfolio-dialog|combobox|venue|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-venue",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|portfolio-dialog|label|name|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|portfolio-dialog|label|transaction currency|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|portfolio-dialog|label|venue|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|portfolio-dialog|textbox|name|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > input#portfolio-dialog-name",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "history|record-edit-dialog|||html > body > div#root > div > div > main#main > section > dialog#record-edit-dialog > form > div > details > summary",
+      "reason": "disabled"
+    },
+    {
+      "signature": "import|-|button|добавить операцию|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "import|-|button|ещё|html > body > div#root > div > aside > nav > div > button#navigation-more-button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|запустить синхронизацию|html > body > div#root > div > div > main#main > div > section > div > div > div > div > button#sync-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|ключ восстановления|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-recovery",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|настроить|html > body > div#root > div > div > main#main > div > section > div > div > div > article > div > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|открыть импорт|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "import|-|button|открыть портфели|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "import|-|button|отозвать доступ: телефон|html > body > div#root > div > div > main#main > div > section > div > div > div > section > article > button#sync-revoke-mobile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|показать на обзоре|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|приватность подключений|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|режим синхронизации|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|резервная копия и восстановление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-backup",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|сравнить версии|html > body > div#root > div > div > main#main > div > section > div > div > div > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|сценарии макета|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|уведомления|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-notifications",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|удаление данных|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-delete",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|button|экспорт данных|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-export",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|checkbox|автоматическая синхронизация|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|checkbox|заблокировать экран (пример)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-lock",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|checkbox|монохромное представление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-monochrome",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|checkbox|показать ошибку сети при запуске|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label > input",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "import|-|checkbox|показывать изменение за день|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label > input#widget-changes",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|checkbox|скрыть суммы|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > input#settings-hidden",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|combobox|валюта расчётаrub ₽usd $в этой валюте сравниваются вложения и финансовый результат.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-base-currency",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|combobox|плотность интерфейсасвободнокомпактно|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-density",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|combobox|размеркомпактныйподробный|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label > select#widget-layout",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|combobox|состояние обзоразаполненозагрузкапустой портфельнет цены или курсаошибка сохранения|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|автоматическая синхронизация|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|валюта расчётаrub ₽usd $в этой валюте сравниваются вложения и финансовый результат.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|заблокировать экран (пример)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|монохромное представление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|плотность интерфейсасвободнокомпактно|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|показать ошибку сети при запуске|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "import|-|label|показывать изменение за день|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|размеркомпактныйподробный|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|скрыть суммы|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|label|состояние обзоразаполненозагрузкапустой портфельнет цены или курсаошибка сохранения|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|link|обзор|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|link|операции|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|-|link|портфели|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "import|buy-dialog|button|добавить покупку|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|button|дополнительные сведения|html > body > div#root > div > dialog#buy-dialog > form > div > details > summary",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|button|закрыть|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|button|отменить|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|combobox|актив|html > body > div#root > div > dialog#buy-dialog > form > div > div > div > div > select#buy-dialog-asset",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|combobox|валюта комиссии|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > select#buy-dialog-feeCurrency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|combobox|валюта цены|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-priceCurrency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|combobox|портфель|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-portfolioId",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|combobox|счёт|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-account",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|combobox|тип операции|html > body > div#root > div > dialog#buy-dialog > form > div > select#buy-dialog-type",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|актив|html > body > div#root > div > dialog#buy-dialog > form > div > div > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|валюта комиссии|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|валюта цены|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|дата операции|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|заметка|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|количество, btc|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|комиссия, usd|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|курс на дату операции: rub за # usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|портфель|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|счёт|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|тип операции|html > body > div#root > div > dialog#buy-dialog > form > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|label|цена за единицу, usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|textbox|дата операции|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-date",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|textbox|заметка|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > input#buy-dialog-note",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|textbox|количество, btc|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-quantity",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|textbox|комиссия, usd|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > input#buy-dialog-fee",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|textbox|курс на дату операции: rub за # usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-fx",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|buy-dialog|textbox|цена за единицу, usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-price",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|button|закрыть|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|button|отменить|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|button|создать портфель|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|combobox|валюта операции|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-currency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|combobox|площадка|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-venue",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|label|валюта операции|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|label|название|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|label|площадка|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "import|portfolio-dialog|textbox|название|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > input#portfolio-dialog-name",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|-|button|bbtc|html > body > div#root > div > div > main#main > div > section > table > tbody > tr > td > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|column mapping|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|compare versions|html > body > div#root > div > div > main#main > div > section > div > div > div > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|configure|html > body > div#root > div > div > main#main > div > section > div > div > div > article > div > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|connection privacy|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|details|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-history-details",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|import # transactions|html > body > div#root > div > div > main#main > div > section > div > div > div > button#import-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|mmsft|html > body > div#root > div > div > main#main > div > section > table > tbody > tr > td > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|more|html > body > div#root > div > aside > nav > div > button#navigation-more-button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|reconcile balance|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-reconcile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|revoke access: phone|html > body > div#root > div > div > main#main > div > section > div > div > div > section > article > button#sync-revoke-mobile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|run sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > button#sync-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|sync mode|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|button|ttwt|html > body > div#root > div > div > main#main > div > section > table > tbody > tr > td > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|актив · по возрастанию|html > body > div#root > div > div > main#main > div > section > div > div > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|данные и расчёт|html > body > div#root > div > div > main#main > div > div > section > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|добавить операцию|html > body > div#root > div > div > main#main > div > div > section > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|запустить синхронизацию|html > body > div#root > div > div > main#main > div > section > div > div > div > div > button#sync-run",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|изменить остаток: rub|html > body > div#root > div > div > main#main > div > section > table > tbody > tr > td > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|изменить остаток: usd|html > body > div#root > div > div > main#main > div > section > table > tbody > tr > td > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|импортировать # операции|html > body > div#root > div > div > main#main > div > section > div > div > div > button#import-run",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|как считается результат|html > body > div#root > div > div > main#main > div > aside > details > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|ключ восстановления|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-recovery",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|настроить|html > body > div#root > div > div > main#main > div > section > div > div > div > article > div > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|отозвать доступ: телефон|html > body > div#root > div > div > main#main > div > section > div > div > div > section > article > button#sync-revoke-mobile",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|отчёт по выбранным портфелям|html > body > div#root > div > div > main#main > div > div > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|подробности|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-history-details",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|показать на обзоре|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|приватность подключений|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|режим синхронизации|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|резервная копия и восстановление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-backup",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|сверить остаток|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-reconcile",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|сопоставление столбцов|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|сравнить версии|html > body > div#root > div > div > main#main > div > section > div > div > div > section > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|стоимость|html > body > div#root > div > div > main#main > div > section > div > div > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|сценарии макета|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|уведомления|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-notifications",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|удаление данных|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-delete",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|что дало результат · rub|html > body > div#root > div > div > main#main > div > aside > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|экспорт данных|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-export",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|button|экспорт отчёта|html > body > div#root > div > div > main#main > div > div > details > div > div > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|checkbox|automatic sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|checkbox|show a network error when starting|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label > input",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|checkbox|skip duplicate (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|checkbox|skip unknown asset (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|checkbox|автоматическая синхронизация|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|checkbox|заблокировать экран (пример)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-lock",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|checkbox|монохромное представление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-monochrome",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|checkbox|показать ошибку сети при запуске|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label > input",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|checkbox|показывать изменение за день|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label > input#widget-changes",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|checkbox|пропустить неизвестный актив (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|checkbox|пропустить повтор (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|checkbox|скрыть суммы|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > input#settings-hidden",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|action buyskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-action",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|combobox|asset msftskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-asset",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|combobox|currency usdskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-currency",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|combobox|date #-#-#skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-date",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|combobox|destination accounttradernet · maintradernet · savings|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|combobox|destination portfoliotradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|combobox|price #skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-price",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|combobox|quantity #skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-quantity",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|combobox|sourcechoose a sourcetradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select#import-page-source",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|combobox|актив msftпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-asset",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|валюта usdпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-currency",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|валюта отчётаrubusd|html > body > div#root > div > div > main#main > div > div > details > div > label > select",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|валюта расчётаrub ₽usd $в этой валюте сравниваются вложения и финансовый результат.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-base-currency",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|дата #-#-#пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-date",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|действие покупкапропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-action",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|источниквыберите источникtradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select#import-page-source",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|количество #пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-quantity",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|период операцийза всё время# годiii квартал #|html > body > div#root > div > div > main#main > div > div > details > section > div > label > select",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|плотность интерфейсасвободнокомпактно|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-density",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|портфель назначенияtradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|портфельвсе портфелиtradernetbinancebybit|html > body > div#root > div > div > main#main > div > div > label > select",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|размеркомпактныйподробный|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label > select#widget-layout",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|состояние обзоразаполненозагрузкапустой портфельнет цены или курсаошибка сохранения|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label > select",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|счёт назначенияtradernet · основнойtradernet · накопительный|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|combobox|цена #пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-price",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|action buyskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|label|asset msftskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|label|automatic sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|label|currency usdskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|label|date #-#-#skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|label|destination accounttradernet · maintradernet · savings|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|label|destination portfoliotradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|label|price #skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|label|quantity #skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|label|show a network error when starting|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "overview|-|label|skip duplicate (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|label|skip unknown asset (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|label|sourcechoose a sourcetradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|label|автоматическая синхронизация|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|актив msftпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|валюта usdпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|валюта отчётаrubusd|html > body > div#root > div > div > main#main > div > div > details > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|валюта расчётаrub ₽usd $в этой валюте сравниваются вложения и финансовый результат.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|дата #-#-#пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|действие покупкапропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|заблокировать экран (пример)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|источниквыберите источникtradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|количество #пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|монохромное представление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|период операцийза всё время# годiii квартал #|html > body > div#root > div > div > main#main > div > div > details > section > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|плотность интерфейсасвободнокомпактно|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|показать ошибку сети при запуске|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|показывать изменение за день|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|портфель назначенияtradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|портфельвсе портфелиtradernetbinancebybit|html > body > div#root > div > div > main#main > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|пропустить неизвестный актив (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|пропустить повтор (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|размеркомпактныйподробный|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|скрыть суммы|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|состояние обзоразаполненозагрузкапустой портфельнет цены или курсаошибка сохранения|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|счёт назначенияtradernet · основнойtradernet · накопительный|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|label|цена #пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|link|overview|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|link|portfolios|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|link|transactions|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "overview|-|tab|#г: один год|html > body > div#root > div > div > main#main > div > div > section > div > div > div > button#radix-_r_0_-trigger-year",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|tab|#м: один месяц|html > body > div#root > div > div > main#main > div > div > section > div > div > div > button#radix-_r_0_-trigger-month",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|tab|#м: три месяца|html > body > div#root > div > div > main#main > div > div > section > div > div > div > button#radix-_r_0_-trigger-quarter",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|-|tab|всё: вся история|html > body > div#root > div > div > main#main > div > div > section > div > div > div > button#radix-_r_0_-trigger-all",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|asset-dialog|button|график цены: вымышленный пример|html > body > div#root > div > div > main#main > div > section > dialog#asset-dialog > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|asset-dialog|button|закрыть|html > body > div#root > div > div > main#main > div > section > dialog#asset-dialog > div > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|asset-dialog|button|история позиции|html > body > div#root > div > div > main#main > div > section > dialog#asset-dialog > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|asset-dialog|button|ручная оценка|html > body > div#root > div > div > main#main > div > section > dialog#asset-dialog > div > button",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|asset-dialog|button|цена и источник|html > body > div#root > div > div > main#main > div > section > dialog#asset-dialog > details > summary",
+      "reason": "not-visited"
+    },
+    {
+      "signature": "overview|portfolio-dialog|button|cancel|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|portfolio-dialog|button|close|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|portfolio-dialog|button|create portfolio|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|portfolio-dialog|combobox|transaction currency|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-currency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|portfolio-dialog|combobox|venue|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-venue",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|portfolio-dialog|label|name|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|portfolio-dialog|label|transaction currency|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|portfolio-dialog|label|venue|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "overview|portfolio-dialog|textbox|name|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > input#portfolio-dialog-name",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|-|button|группа: криптовалюты|html > body > div#root > div > div > main#main > section > details > div > span > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|button|добавить операцию|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|button|ещё|html > body > div#root > div > aside > nav > div > button#navigation-more-button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|запустить синхронизацию|html > body > div#root > div > div > main#main > div > section > div > div > div > div > button#sync-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|изменить группу: криптовалюты|html > body > div#root > div > div > main#main > section > details > div > span > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|button|импортировать # операции|html > body > div#root > div > div > main#main > div > section > div > div > div > button#import-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|ключ восстановления|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-recovery",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|настроить|html > body > div#root > div > div > main#main > div > section > div > div > div > article > div > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|открыть импорт|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|button|открыть портфели|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|button|отозвать доступ: телефон|html > body > div#root > div > div > main#main > div > section > div > div > div > section > article > button#sync-revoke-mobile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|подробности|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-history-details",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|показать выбранные|html > body > div#root > div > div > main#main > section > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|button|показать на обзоре|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|приватность подключений|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|режим синхронизации|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|резервная копия и восстановление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-backup",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|сверить остаток|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-reconcile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|создать группу|html > body > div#root > div > div > main#main > section > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|button|сопоставление столбцов|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|сравнить версии|html > body > div#root > div > div > main#main > div > section > div > div > div > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|сценарии макета|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|уведомления|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-notifications",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|удаление данных|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-delete",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|button|экспорт данных|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-export",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|checkbox|binance|html > body > div#root > div > div > main#main > section > details > fieldset > label > input",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|checkbox|bybit|html > body > div#root > div > div > main#main > section > details > fieldset > label > input",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|checkbox|tradernet|html > body > div#root > div > div > main#main > section > details > fieldset > label > input",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|checkbox|автоматическая синхронизация|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|checkbox|заблокировать экран (пример)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-lock",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|checkbox|монохромное представление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-monochrome",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|checkbox|показать ошибку сети при запуске|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label > input",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|checkbox|показывать изменение за день|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label > input#widget-changes",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|checkbox|пропустить неизвестный актив (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|checkbox|пропустить повтор (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|checkbox|скрыть суммы|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > input#settings-hidden",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|combobox|актив msftпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-asset",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|combobox|валюта usdпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-currency",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|combobox|валюта расчётаrub ₽usd $в этой валюте сравниваются вложения и финансовый результат.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-base-currency",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|combobox|дата #-#-#пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-date",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|combobox|действие покупкапропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-action",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|combobox|источниквыберите источникtradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select#import-page-source",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|combobox|количество ••••пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-quantity",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|combobox|плотность интерфейсасвободнокомпактно|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-density",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|combobox|портфель назначенияtradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|combobox|размеркомпактныйподробный|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label > select#widget-layout",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|combobox|состояние обзоразаполненозагрузкапустой портфельнет цены или курсаошибка сохранения|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|combobox|счёт назначенияtradernet · основнойtradernet · накопительный|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|combobox|цена ••••пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-price",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|binance|html > body > div#root > div > div > main#main > section > details > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|bybit|html > body > div#root > div > div > main#main > section > details > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|tradernet|html > body > div#root > div > div > main#main > section > details > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|автоматическая синхронизация|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|актив msftпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|валюта usdпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|валюта расчётаrub ₽usd $в этой валюте сравниваются вложения и финансовый результат.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|дата #-#-#пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|действие покупкапропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|заблокировать экран (пример)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|источниквыберите источникtradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|количество ••••пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|монохромное представление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|плотность интерфейсасвободнокомпактно|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|показать ошибку сети при запуске|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|label|показывать изменение за день|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|портфель назначенияtradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|пропустить неизвестный актив (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|пропустить повтор (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|размеркомпактныйподробный|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|скрыть суммы|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|состояние обзоразаполненозагрузкапустой портфельнет цены или курсаошибка сохранения|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|счёт назначенияtradernet · основнойtradernet · накопительный|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|label|цена ••••пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "portfolios|-|link|обзор|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|link|операции|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|-|link|портфели|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "portfolios|buy-dialog|button|добавить покупку|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|button|дополнительные сведения|html > body > div#root > div > dialog#buy-dialog > form > div > details > summary",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|button|закрыть|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|button|отменить|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|combobox|актив|html > body > div#root > div > dialog#buy-dialog > form > div > div > div > div > select#buy-dialog-asset",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|combobox|валюта комиссии|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > select#buy-dialog-feeCurrency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|combobox|валюта цены|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-priceCurrency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|combobox|портфель|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-portfolioId",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|combobox|счёт|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-account",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|combobox|тип операции|html > body > div#root > div > dialog#buy-dialog > form > div > select#buy-dialog-type",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|актив|html > body > div#root > div > dialog#buy-dialog > form > div > div > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|валюта комиссии|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|валюта цены|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|дата операции|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|заметка|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|количество, btc|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|комиссия, usd|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|курс на дату операции: rub за # usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|портфель|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|счёт|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|тип операции|html > body > div#root > div > dialog#buy-dialog > form > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|label|цена за единицу, usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|textbox|дата операции|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-date",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|textbox|заметка|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > input#buy-dialog-note",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|textbox|количество, btc|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-quantity",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|textbox|комиссия, usd|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > input#buy-dialog-fee",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|textbox|курс на дату операции: rub за # usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-fx",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "portfolios|buy-dialog|textbox|цена за единицу, usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-price",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|-|button|column mapping|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|compare versions|html > body > div#root > div > div > main#main > div > section > div > div > div > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|configure|html > body > div#root > div > div > main#main > div > section > div > div > div > article > div > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|connection privacy|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|details|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-history-details",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|import # transactions|html > body > div#root > div > div > main#main > div > section > div > div > div > button#import-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|more|html > body > div#root > div > aside > nav > div > button#navigation-more-button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|reconcile balance|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-reconcile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|revoke access: phone|html > body > div#root > div > div > main#main > div > section > div > div > div > section > article > button#sync-revoke-mobile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|run sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > button#sync-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|button|show on overview|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "settings|-|button|sync mode|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|checkbox|automatic sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|checkbox|show a network error when starting|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|checkbox|skip duplicate (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|checkbox|skip unknown asset (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|action buyskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-action",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|asset msftskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-asset",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|currency usdskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-currency",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|date #-#-#skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-date",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|destination accountbinance · spot|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|destination portfoliotradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|overview statepopulatedloadingempty portfoliomissing price or ratesave error|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label > select",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "settings|-|combobox|price ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-price",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|quantity ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-quantity",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|combobox|sourcechoose a sourcetradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select#import-page-source",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|action buyskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|asset msftskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|automatic sync|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|currency usdskip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|date #-#-#skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|destination accountbinance · spot|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|destination portfoliotradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|overview statepopulatedloadingempty portfoliomissing price or ratesave error|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "settings|-|label|price ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|quantity ••••skip columndateassetactionquantitypricecurrency|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|show a network error when starting|html > body > div#root > div > div > main#main > div > section > div > div > div > div > details > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|skip duplicate (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|skip unknown asset (row #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|label|sourcechoose a sourcetradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|link|overview|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|link|portfolios|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|-|link|transactions|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "settings|portfolio-dialog|button|cancel|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|portfolio-dialog|button|close|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|portfolio-dialog|button|create portfolio|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|portfolio-dialog|combobox|transaction currency|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-currency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|portfolio-dialog|combobox|venue|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-venue",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|portfolio-dialog|label|name|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|portfolio-dialog|label|transaction currency|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|portfolio-dialog|label|venue|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "settings|portfolio-dialog|textbox|name|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > input#portfolio-dialog-name",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|-|button|добавить операцию|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "sync|-|button|ещё|html > body > div#root > div > aside > nav > div > button#navigation-more-button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|импортировать # операции|html > body > div#root > div > div > main#main > div > section > div > div > div > button#import-run",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|ключ восстановления|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-recovery",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|настроить|html > body > div#root > div > div > main#main > div > section > div > div > div > article > div > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|открыть импорт|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "sync|-|button|открыть портфели|html > body > div#root > div > div > footer > details > div > button",
+      "reason": "inside closed details"
+    },
+    {
+      "signature": "sync|-|button|подробности|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-history-details",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|показать на обзоре|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > button",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|приватность подключений|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|резервная копия и восстановление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-backup",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|сверить остаток|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > button#import-reconcile",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|сопоставление столбцов|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|сценарии макета|html > body > div#root > div > div > main#main > div > section > div > div > div > details > summary",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|уведомления|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-notifications",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|удаление данных|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-delete",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|button|экспорт данных|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > button#settings-open-export",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|checkbox|заблокировать экран (пример)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-lock",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|checkbox|монохромное представление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label > input#settings-monochrome",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|checkbox|показывать изменение за день|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label > input#widget-changes",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|checkbox|пропустить неизвестный актив (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|checkbox|пропустить повтор (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > input",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|checkbox|скрыть суммы|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > input#settings-hidden",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|актив msftпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-asset",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|валюта usdпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-currency",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|валюта расчётаrub ₽usd $в этой валюте сравниваются вложения и финансовый результат.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-base-currency",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|дата #-#-#пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-date",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|действие покупкапропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-action",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|источниквыберите источникtradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select#import-page-source",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|количество ••••пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-quantity",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|плотность интерфейсасвободнокомпактно|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label > select#settings-density",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|портфель назначенияtradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|размеркомпактныйподробный|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label > select#widget-layout",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|состояние обзоразаполненозагрузкапустой портфельнет цены или курсаошибка сохранения|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|счёт назначенияbinance · спотовый|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label > select",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|combobox|цена ••••пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label > select#import-page-map-price",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|актив msftпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|валюта usdпропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|валюта расчётаrub ₽usd $в этой валюте сравниваются вложения и финансовый результат.|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|дата #-#-#пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|действие покупкапропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|заблокировать экран (пример)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|источниквыберите источникtradernetbinancebybitcsv|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|количество ••••пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|монохромное представление|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|плотность интерфейсасвободнокомпактно|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|показывать изменение за день|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|портфель назначенияtradernetbinancebybit|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|пропустить неизвестный актив (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|пропустить повтор (строка #)|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|размеркомпактныйподробный|html > body > div#root > div > div > main#main > div > section > div > div > div > section > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|скрыть суммы|html > body > div#root > div > div > main#main > div > section > div > div > div > div > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|состояние обзоразаполненозагрузкапустой портфельнет цены или курсаошибка сохранения|html > body > div#root > div > div > main#main > div > section > div > div > div > details > section > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|счёт назначенияbinance · спотовый|html > body > div#root > div > div > main#main > div > section > div > div > div > div > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|label|цена ••••пропустить столбецдатаактивдействиеколичествоценавалюта|html > body > div#root > div > div > main#main > div > section > div > div > div > details#import-mapping-options > fieldset > label",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|link|обзор|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|link|операции|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|-|link|портфели|html > body > div#root > div > aside > nav > div > a",
+      "reason": "not visible"
+    },
+    {
+      "signature": "sync|buy-dialog|button|добавить покупку|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|button|дополнительные сведения|html > body > div#root > div > dialog#buy-dialog > form > div > details > summary",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|button|закрыть|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|button|отменить|html > body > div#root > div > dialog#buy-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|combobox|актив|html > body > div#root > div > dialog#buy-dialog > form > div > div > div > div > select#buy-dialog-asset",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|combobox|валюта комиссии|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > select#buy-dialog-feeCurrency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|combobox|валюта цены|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-priceCurrency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|combobox|портфель|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-portfolioId",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|combobox|счёт|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > select#buy-dialog-account",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|combobox|тип операции|html > body > div#root > div > dialog#buy-dialog > form > div > select#buy-dialog-type",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|актив|html > body > div#root > div > dialog#buy-dialog > form > div > div > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|валюта комиссии|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|валюта цены|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|дата операции|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|заметка|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|количество, btc|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|комиссия, usd|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|курс на дату операции: rub за # usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|портфель|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|счёт|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|тип операции|html > body > div#root > div > dialog#buy-dialog > form > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|label|цена за единицу, usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|textbox|дата операции|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-date",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|textbox|заметка|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > input#buy-dialog-note",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|textbox|количество, btc|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-quantity",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|textbox|комиссия, usd|html > body > div#root > div > dialog#buy-dialog > form > div > details > div > div > input#buy-dialog-fee",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|textbox|курс на дату операции: rub за # usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-fx",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|buy-dialog|textbox|цена за единицу, usd|html > body > div#root > div > dialog#buy-dialog > form > div > fieldset > div > div > input#buy-dialog-price",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|button|закрыть|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|button|отменить|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|button|создать портфель|html > body > div#root > div > dialog#portfolio-dialog > form > div > button",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|combobox|валюта операции|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-currency",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|combobox|площадка|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > select#portfolio-dialog-venue",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|label|валюта операции|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|label|название|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|label|площадка|html > body > div#root > div > dialog#portfolio-dialog > form > div > fieldset > div > div > label",
+      "reason": "dialog-unreachable"
+    },
+    {
+      "signature": "sync|portfolio-dialog|textbox|название|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > input#portfolio-dialog-name",
+      "reason": "dialog-unreachable"
+    }
+  ]
+}

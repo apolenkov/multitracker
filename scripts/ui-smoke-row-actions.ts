@@ -12,10 +12,10 @@ export function rowActionGeometry(browser: Browser, route: string): readonly Fin
       const buttons = [...document.querySelectorAll('#main .row-action')].filter(button => button.checkVisibility());
       return { count: buttons.length, bad: buttons.map(button => {
         button.scrollIntoView({ block: 'center' });
-        const row = button.closest('.history-row, .portfolio-record, li');
+        const row = button.closest('.history-row, .portfolio-record, .holding-row, li');
         const box = button.getBoundingClientRect();
-        const area = row.getBoundingClientRect();
-        const amount = row.querySelector(':scope > .record-summary')?.getBoundingClientRect();
+        const area = row?.getBoundingClientRect() ?? box;
+        const amount = row?.querySelector(':scope > .record-summary')?.getBoundingClientRect();
         const overlaps = Boolean(amount) && !(box.right <= amount.left || box.left >= amount.right ||
           box.bottom <= amount.top || box.top >= amount.bottom);
         const hit = button.contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2));
@@ -27,7 +27,7 @@ export function rowActionGeometry(browser: Browser, route: string): readonly Fin
     })()`,
   );
   assert.ok(record(observed));
-  const expected = route === 'history' || route === 'portfolios';
+  const expected = route === 'history' || route === 'portfolios' || route === 'overview';
   const count = typeof observed.count === 'number' ? observed.count : 0;
   const bad = Array.isArray(observed.bad) ? observed.bad : [];
   return bad.length === 0 && (!expected || count > 1)

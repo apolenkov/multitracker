@@ -116,8 +116,13 @@ function positions(selector: string, keys: readonly string[]) {
   const candidates = [
     ...(modal ?? document).querySelectorAll<HTMLElement>('h1,h2,h3,p,dt,dd,button,summary,svg'),
   ];
+  // Pinned elements: their box already includes the stick offset, so adding the
+  // ancestor scroll back mis-measures layout position when scrollTop clamps.
+  const pinned = (item: Element) =>
+    parentChain(item).some((node) => ['sticky', 'fixed'].includes(getComputedStyle(node).position));
   const selected = candidates.filter((item) => {
     if (keys.length > 0) return keys.includes(elementPath(item));
+    if (pinned(item)) return false;
     const box = item.getBoundingClientRect();
     return (
       item.checkVisibility() &&

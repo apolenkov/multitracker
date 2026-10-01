@@ -88,8 +88,9 @@ export function operationExtras(browser: Browser) {
 function editedExtras(browser: Browser) {
   browser.run('click', '.desktop-links a[href="#history"]');
   browser.run('wait', '--fn', 'document.querySelector("#main h1")?.textContent === "Операции"');
-  browser.run('find', 'first', '.history-row .record-menu summary', 'click');
-  browser.run('find', 'first', '.history-row .record-menu[open] button', 'click');
+  browser.run('find', 'first', '.history-row button.action-menu-trigger', 'click');
+  browser.run('wait', '[role="menu"]');
+  browser.run('find', 'first', '[role="menu"] [role="menuitem"]', 'click');
   browser.run('wait', '#record-edit-dialog[open]');
   truth(
     browser,
@@ -109,7 +110,7 @@ function editedExtras(browser: Browser) {
     'document.querySelector("#record-edit-dialog .operation-additional")?.open === false',
     'Пустой исправленный черновик должен сворачиваться по явному действию',
   );
-  browser.run('press', 'Escape');
+  browser.run('click', '#record-edit-dialog .close-button');
   browser.run('wait', '--fn', '!document.querySelector("#record-edit-dialog[open]")');
   return 'Исходное примечание → очистка с фокусом → явное сворачивание → отмена';
 }

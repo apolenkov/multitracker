@@ -1,5 +1,5 @@
 import { accountSamples, accountLabel } from '../forms/accounts.ts';
-import { ActionMenu } from '../ActionMenu.tsx';
+import { ActionMenu, type ActionItem } from '../ActionMenu.tsx';
 import { recordsCopy } from './copy.ts';
 import type { RecordsProps } from './data.ts';
 export type EntityRequest = Readonly<{
@@ -32,53 +32,64 @@ export function AccountList({
             </div>
             <ActionMenu
               className="account-manage"
-              name="account-menu"
               label={`${copy.manage}: ${accountLabel(account.id, language)}`}
-            >
-              <EntityActions
-                entity="account"
-                name={accountLabel(account.id, language)}
-                portfolioId={id}
-                language={language}
-                onManage={onManage}
-              />
-            </ActionMenu>
+              items={entityActions({
+                entity: 'account',
+                name: accountLabel(account.id, language),
+                portfolioId: id,
+                language,
+                onManage,
+              })}
+            />
           </li>
         ))}
     </ul>
   );
 }
-export function EntityActions({
+type EntityActionParams = Readonly<
+  Omit<EntityRequest, 'action'> & {
+    language: RecordsProps['language'];
+    onManage: (request: EntityRequest) => void;
+  }
+>;
+export function entityActions({
   entity,
   name,
   portfolioId,
   members,
   language,
   onManage,
-}: Readonly<
-  Omit<EntityRequest, 'action'> & {
-    language: RecordsProps['language'];
-    onManage: (request: EntityRequest) => void;
-  }
->) {
+}: EntityActionParams): ReadonlyArray<ActionItem> {
   const copy = recordsCopy(language);
+  const actions = [
+    ['edit', copy.edit],
+    ['archive', copy.archive],
+    ['delete', copy.delete],
+  ] as const;
+  return actions.map(([action, label]) => ({
+    label,
+    ariaLabel: `${label}: ${name}`,
+    danger: action === 'delete',
+    onSelect: () =>
+      onManage({
+        entity,
+        action,
+        name,
+        ...(portfolioId ? { portfolioId } : {}),
+        ...(members ? { members } : {}),
+      }),
+  }));
+}
+export function EntityActionButtons(params: EntityActionParams) {
   return (
     <div className="record-actions">
-      {(['edit', 'archive', 'delete'] as const).map((action) => (
+      {entityActions(params).map((item) => (
         <button
-          key={action}
-          className={action === 'delete' ? 'danger' : undefined}
-          onClick={() =>
-            onManage({
-              entity,
-              action,
-              name,
-              ...(portfolioId ? { portfolioId } : {}),
-              ...(members ? { members } : {}),
-            })
-          }
+          key={item.label}
+          className={item.danger ? 'danger' : undefined}
+          onClick={item.onSelect}
         >
-          {new Map(Object.entries(copy)).get(action)}
+          {item.label}
         </button>
       ))}
     </div>

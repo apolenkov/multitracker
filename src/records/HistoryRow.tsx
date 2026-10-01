@@ -52,16 +52,17 @@ function RecordActions(props: Props) {
       </button>
       <ActionMenu
         className="record-menu"
-        name="record-menu"
         label={`${props.language === 'ru' ? 'Действия' : 'Actions'}: ${title}`}
-      >
-        <button aria-label={`${copy.edit}: ${title}`} onClick={props.onEdit}>
-          {copy.edit}
-        </button>
-        <button className="danger" aria-label={`${copy.delete}: ${title}`} onClick={props.onDelete}>
-          {copy.delete}
-        </button>
-      </ActionMenu>
+        items={[
+          { label: copy.edit, ariaLabel: `${copy.edit}: ${title}`, onSelect: props.onEdit },
+          {
+            label: copy.delete,
+            ariaLabel: `${copy.delete}: ${title}`,
+            onSelect: props.onDelete,
+            danger: true,
+          },
+        ]}
+      />
     </div>
   );
 }

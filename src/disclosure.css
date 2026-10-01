@@ -49,49 +49,6 @@ details[open]:not(.action-menu) > summary::before {
     transition: none;
   }
 }
-.action-menu {
-  position: relative;
-  width: 44px;
-  flex: none;
-}
-.action-menu > summary {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: var(--radius);
-  color: var(--ink);
-}
-.action-menu > summary:hover {
-  background: var(--surface);
-}
-.record-menu-options {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 30;
-  display: grid;
-  width: min(220px, calc(100vw - 32px));
-  gap: 8px;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--paper);
-  color: var(--ink);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
-  overflow: auto;
-  overscroll-behavior: contain;
-}
-.record-menu-options > .record-actions {
-  display: grid;
-  margin: 0;
-  gap: 8px;
-}
-.record-menu-options button {
-  width: 100%;
-  text-align: left;
-}
 .record-direction {
   display: inline-flex;
   color: var(--muted);

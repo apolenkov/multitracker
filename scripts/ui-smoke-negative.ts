@@ -11,12 +11,6 @@ const probes = [
     css: '.balance-panel { grid-template-rows: auto auto !important }',
     id: 'historical-F1',
   },
-  {
-    route: 'history',
-    selector: '.history-row:first-child .record-menu > summary',
-    css: '.history-row { align-items: center !important } .record-menu-options { position: static !important }',
-    id: 'historical-F2',
-  },
 ];
 function temporaryStyle(css: string) {
   const style = document.createElement('style');

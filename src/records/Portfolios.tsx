@@ -9,7 +9,7 @@ import { Icon } from '../Icon.tsx';
 import { ActionMenu } from '../ActionMenu.tsx';
 import { AssetSymbol } from '../AssetSymbol.tsx';
 
-import { AccountList, EntityActions } from './PortfolioAccounts.tsx';
+import { AccountList, EntityActionButtons, entityActions } from './PortfolioAccounts.tsx';
 import type { EntityRequest } from './PortfolioAccounts.tsx';
 type Props = RecordsProps & Readonly<{ onSelect: (id: string) => void; onCreate: () => void }>;
 export function PortfolioList(props: Props) {
@@ -81,7 +81,7 @@ function PortfolioSelection({
         onSelect={onSelect}
         onManage={onManage}
       />
-      <EntityActions
+      <EntityActionButtons
         entity="group"
         members={['binance', 'bybit']}
         name={copy.groupName}
@@ -129,34 +129,37 @@ function PortfolioRow(
   const portfolio = props.state.portfolios.find((item) => item.id === props.id);
   if (!portfolio) return null;
   const copy = recordsCopy(props.language);
+  const actions = entityActions({
+    entity: 'portfolio',
+    name: portfolio.name,
+    portfolioId: portfolio.id,
+    language: props.language,
+    onManage: props.onManage,
+  });
+  const edit = actions.slice(0, -1);
+  const remove = actions.slice(-1);
   return (
     <article className="portfolio-record">
       <PortfolioValue {...props} name={portfolio.name} />
       <ActionMenu
         className="portfolio-manage"
-        name="portfolio-menu"
         label={`${copy.manage}: ${portfolio.name}`}
-      >
-        <EntityActions
-          entity="portfolio"
-          name={portfolio.name}
-          portfolioId={portfolio.id}
-          language={props.language}
-          onManage={props.onManage}
-        />
-        <button
-          onClick={() =>
-            props.onManage({
-              entity: 'account',
-              action: 'create',
-              name: '',
-              portfolioId: portfolio.id,
-            })
-          }
-        >
-          {copy.addAccount}
-        </button>
-      </ActionMenu>
+        items={[
+          ...edit,
+          {
+            label: copy.addAccount,
+            ariaLabel: `${copy.addAccount}: ${portfolio.name}`,
+            onSelect: () =>
+              props.onManage({
+                entity: 'account',
+                action: 'create',
+                name: '',
+                portfolioId: portfolio.id,
+              }),
+          },
+          ...remove,
+        ]}
+      />
       <AccountList {...props} />
     </article>
   );

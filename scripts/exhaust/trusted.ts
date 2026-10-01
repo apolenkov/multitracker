@@ -113,7 +113,10 @@ const safeOne = (
 };
 
 const closeDialogs = (browser: Browser): void => {
-  evaluate(browser, "([...document.querySelectorAll('dialog[open]')].forEach((d) => d.close()), true)");
+  evaluate(
+    browser,
+    "([...document.querySelectorAll('dialog[open]')].forEach((d) => d.close()), true)",
+  );
 };
 
 /** Выборка настоящих кликов после обхода: stride-семпл подходящих сигнатур. */

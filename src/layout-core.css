@@ -176,7 +176,8 @@ main:focus-visible > .page-heading h1 {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
 }
-.welcome-guide[open] {
+.welcome-guide {
+  /* Отдельная строка: раскрытие сдвигает только нижнюю строку, не соседей по ряду. */
   flex: 1 0 100%;
 }
 .welcome-guide p {

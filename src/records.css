@@ -123,7 +123,9 @@
   min-height: 0;
   border: 0;
   background: transparent;
-  padding: 0;
+  /* Цель 44 px: поля 9 px компенсированы отрицательным внешним отступом, высота строки прежняя. */
+  padding: 9px 0;
+  margin-block: -9px;
   font-weight: inherit;
   text-align: left;
   overflow-wrap: anywhere;

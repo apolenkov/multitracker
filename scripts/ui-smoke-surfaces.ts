@@ -32,13 +32,21 @@ function testedPaths(outcomes: readonly Outcome[]) {
 }
 function switchSurface(browser: Browser, state: State, choice: Choice) {
   settleLayout(browser);
-  const before = query(browser, '#' + choice.id, 'element?.getAttribute("aria-pressed")');
+  const before = query(
+    browser,
+    '#' + choice.id,
+    'element?.getAttribute("aria-selected") ?? element?.getAttribute("aria-pressed")',
+  );
   batch(browser, [
     ['scrollintoview', '#' + choice.id],
     ['click', '#' + choice.id],
   ]);
   settleLayout(browser);
-  const after = query(browser, '#' + choice.id, 'element?.getAttribute("aria-pressed")');
+  const after = query(
+    browser,
+    '#' + choice.id,
+    'element?.getAttribute("aria-selected") ?? element?.getAttribute("aria-pressed")',
+  );
   if (after !== 'true') throw new Error(`Surface choice ${choice.id} was not selected`);
   const report = inspect(browser);
   const control = report.controls.find((item) => item.path.endsWith('button#' + choice.id));
@@ -67,8 +75,8 @@ function categories(
 ): Outcome {
   const selector =
     view.panel === 'events-calendar-panel'
-      ? '#events-calendar-panel .events-calendar > .events-filter > button'
-      : '#events-updates-panel .events-feed-filter > button';
+      ? '#events-calendar-panel .events-filter [role="tab"]'
+      : '#events-updates-panel .events-feed-filter [role="tab"]';
   const available = choices(browser, selector);
   if (available.length === 0) throw new Error('Event surface has no available categories');
   const outcomes = available.reduce<readonly Outcome[]>((previous, choice) => {

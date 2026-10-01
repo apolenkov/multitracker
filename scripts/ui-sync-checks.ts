@@ -83,8 +83,8 @@ export function conflictRadioChoices(browser: Browser) {
 export function syncPostConflictDisclosure(browser: Browser) {
   prepare(browser);
   go(browser, 'sync');
-  const welcome = 'main#main > details > summary';
-  if (evaluate(browser, 'document.querySelector("main#main > details")?.open') === true) {
+  const welcome = '.footer > .welcome-guide > summary';
+  if (evaluate(browser, 'document.querySelector(".footer > .welcome-guide")?.open') === true) {
     browser.run('click', welcome);
     settleLayout(browser);
   }
@@ -100,7 +100,7 @@ export function syncPostConflictDisclosure(browser: Browser) {
   settleLayout(browser);
   truth(
     browser,
-    '!document.querySelector("#sync-conflict[open]") && document.querySelector("main#main > details")?.open === true',
+    '!document.querySelector("#sync-conflict[open]") && document.querySelector(".footer > .welcome-guide")?.open === true',
     'Осмысленный клик по помощи после подтверждения должен открыть её',
   );
   assert.match(content(browser, '.sync-panel > .sync-actions:last-child'), /Версия из облака/);

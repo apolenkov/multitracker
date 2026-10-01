@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { evaluate, type Browser } from './ui-driver.ts';
+import { evaluate, settleLayout, type Browser } from './ui-driver.ts';
 import { content, go, prepare, reveal, truth } from './ui-exploration.ts';
 
 const eventOpener = '#event-luma-report';
@@ -136,6 +136,8 @@ function recapTranscript(browser: Browser, period: 'daily' | 'weekly') {
     'document.querySelector(".events-transcript")?.open === true',
     'Расшифровка не открылась',
   );
+  // Раскрытие анимирует ::details-content 200 мс; ждём конца перехода, а не первого кадра.
+  settleLayout(browser, '.events-transcript');
   return content(browser, '.events-transcript p');
 }
 

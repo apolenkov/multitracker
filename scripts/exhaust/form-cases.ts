@@ -33,13 +33,18 @@ const boundaryDates = ['2000-01-01', '2026-09-30', '1999-12-31', '2026-10-01'] a
 export const dateFor = (index: number): string =>
   boundaryDates[index % boundaryDates.length] ?? '2000-01-01';
 
-const numericFields = ['quantity', 'price', 'amount', 'fee', 'fx', 'receivedAmount'] as const;
+const numericFields: readonly Field[] = [
+  'quantity',
+  'price',
+  'amount',
+  'fee',
+  'fx',
+  'receivedAmount',
+];
 
 /** Первое числовое поле типа по схеме (куда кладём класс значения). */
 export const primaryField = (type: OperationType): Field | undefined =>
-  operationFields(type).find((field): field is Field =>
-    (numericFields as readonly string[]).includes(field),
-  );
+  operationFields(type).find((field) => numericFields.includes(field));
 
 /** Все 70 кейсов: каждый тип × каждый класс значений. */
 export const formCases = (): readonly FormCase[] =>

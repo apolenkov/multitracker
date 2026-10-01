@@ -7,7 +7,6 @@ import { applyEnv } from './envctl.ts';
 import { fullInvariantsSource } from './page-checks.ts';
 import { designScan } from './page-design.ts';
 import type { DesignConfig } from './design.ts';
-import { parseEnumerate as _unused } from './page-rows.ts';
 import { asFinding } from './page-rows.ts';
 import { asArray } from './guards.ts';
 import type { Finding } from './records.ts';

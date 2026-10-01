@@ -117,6 +117,8 @@ FORM028 SHALL сохраняться в перечне 135 ID; cash-catalog-dial
 
 ## Текущий срез L06
 
+> Историческое: статусы «заморожен», GREEN и DCFLyTeR/BEzUCEsU ниже описывают дерево Codex до слияния с примитивами shadcn; текущее состояние — в DESIGN.md, раздел «Границы проверки».
+
 DCFLyTeR/BEzUCEsU, 138 файлов: UI70 exit 0 за 87,577 с;
 cash12/catalog14/sort4/focus3 и FORM026 GREEN. Check-final после native-keyboard
 exit 0 за 45,627 с, 269listed/268present/32/39/audit0/Gitleaks0, freeze совпал.

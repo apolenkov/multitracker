@@ -646,6 +646,17 @@ YAML хранит допустимые размеры в px: минимум, м�
 без поддержки раскрывается сразу. `prefers-reduced-motion` отключает движение.
 `scrollbar-gutter: stable` резервирует место полосы прокрутки.
 
+Переключатели периода, сортировки активов, ленты, сводок и календаря — вкладки
+Radix Tabs ([src/components/ui/tabs.tsx](src/components/ui/tabs.tsx)): текст с
+подчёркиванием 2px цвета `--primary` у выбранной, без заливки и скруглений,
+высота 44px, линия `--line` под рядом. Выбранная вкладка имеет `aria-selected`;
+стрелки переключают вкладки, вкладки сортировки активируются вручную.
+
+Базовые примитивы (меню, вкладки) собраны на Tailwind v4 без сброса стилей
+(preflight) и shadcn; токены Tailwind ссылаются на переменные
+[src/appearance.css](src/appearance.css), см. [decision-091](docs/decisions/decision-091-tailwind-shadcn.md).
+Нативные dialog, details и select сохранены.
+
 [ActionMenu](src/ActionMenu.tsx) — меню на Radix DropdownMenu
 ([src/components/ui/dropdown-menu.tsx](src/components/ui/dropdown-menu.tsx))
 с кнопкой-эллипсисом 44×44px и доступной подписью. Список открывается в
@@ -715,10 +726,14 @@ positive/negative и без стрелки, поэтому знак не рас�
 ## Границы проверки
 
 Текущее основание и результаты — в [Текущее оформление](docs/design/current-style.md).
-Проверки денежного потока Codex (check, UI70, smoke, срез DCFLyTeR/BEzUCEsU)
-относятся к дереву до слияния с примитивами shadcn и стали историей —
-[docs/audits/2026-10-01-cash-flow/](docs/audits/2026-10-01-cash-flow/);
-объединённое дерево требует нового прогона.
+Текущее состояние объединённого дерева (примитивы shadcn и денежный поток
+Codex, коммит 74617eb): UI 70/70 PASS в Linux-контейнере (agent-browser 0.38.1 и
+Linux Chromium; на macOS Chrome 154 Escape порождает тысячи событий клавиш,
+см. [decision-092](docs/decisions/decision-092-linux-ui-runner.md)). `test:smoke` и
+строгая матрица 135 ID на объединённом дереве ещё не запускались; визуальная
+приёмка владельцем ожидается. Прежние результаты Codex (check, UI70, smoke, срез
+DCFLyTeR/BEzUCEsU) относятся к дереву до слияния и исторические —
+[docs/audits/2026-10-01-cash-flow/](docs/audits/2026-10-01-cash-flow/).
 [Текущая приёмка](docs/design/product-ui-acceptance.md) сохраняет историю
 14e9ee2; её 135/135, 540 конфигураций и SHIP не переносятся на новый diff.
 Полный перебор всех вариантов и WCAG AAA не заявлены. Визуальная приёмка

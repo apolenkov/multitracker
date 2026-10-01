@@ -18,7 +18,8 @@ export type AxisDetail = Readonly<{
   findings: readonly Finding[];
 }>;
 
-const cfgOf = (env: Env) => JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
+const cfgOf = (env: Env) =>
+  JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
 
 const pageFindings = (browser: Browser, env: Env, config: DesignConfig): readonly Finding[] => {
   const invariants: unknown = evaluate(browser, `(${fullInvariantsSource})(${cfgOf(env)})`);
@@ -32,7 +33,12 @@ const pageFindings = (browser: Browser, env: Env, config: DesignConfig): readonl
   });
 };
 
-const checkRoute = (browser: Browser, env: Env, route: string, config: DesignConfig): AxisDetail => {
+const checkRoute = (
+  browser: Browser,
+  env: Env,
+  route: string,
+  config: DesignConfig,
+): AxisDetail => {
   applyEnv(browser, env, route);
   browser.run('wait', '--fn', "!!document.querySelector('#main h1')");
   return { env, route, findings: pageFindings(browser, env, config) };

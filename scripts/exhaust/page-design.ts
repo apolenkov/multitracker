@@ -1,8 +1,11 @@
 /** Детерминированный скан дизайна внутри страницы: шкалы, контраст, геометрия, иерархия. */
 import {
+  alphaOf,
+  channelParts,
   clamp,
   hex,
   colorChannel,
+  isHexBody,
   rgb,
   lumChannel,
   parseColor,
@@ -17,8 +20,11 @@ const math =
   'const CX = (() => {' +
   [
     clamp,
+    isHexBody,
     hex,
     colorChannel,
+    channelParts,
+    alphaOf,
     rgb,
     lumChannel,
     parseColor,

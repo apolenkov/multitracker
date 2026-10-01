@@ -3,7 +3,7 @@ export type Rgba = Readonly<{ r: number; g: number; b: number; a: number }>;
 
 export const clamp = (value: number) => Math.min(255, Math.max(0, Math.round(value)));
 
-const isHexBody = (text: string) =>
+export const isHexBody = (text: string) =>
   (text.length === 6 || text.length === 8) && /^[0-9a-fA-F]+$/.test(text);
 
 export const hex = (value: string): Rgba | null => {
@@ -25,7 +25,7 @@ export const colorChannel = (part: string, scale: number) =>
     ? (Number.parseFloat(part) / 100) * 255
     : Number.parseFloat(part) * scale;
 
-const channelParts = (value: string): readonly string[] | null => {
+export const channelParts = (value: string): readonly string[] | null => {
   const match = /^rgba?\(\s*([^)]*?)\s*\)$/i.exec(value);
   const parts =
     match
@@ -35,7 +35,7 @@ const channelParts = (value: string): readonly string[] | null => {
   return match && parts.length >= 3 ? parts : null;
 };
 
-const alphaOf = (parts: readonly string[]): number => {
+export const alphaOf = (parts: readonly string[]): number => {
   const alpha = parts.at(3);
   if (alpha === undefined || alpha === 'none') return 1;
   const scale = alpha.endsWith('%') ? 100 : 1;

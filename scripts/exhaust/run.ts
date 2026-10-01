@@ -16,6 +16,7 @@ import { fetchSource, fileReports, mergeScripts, newlyCovered } from './coverage
 import type { FileReport, ScriptSource } from './coverage.ts';
 import { reportChecks, routes, writeReports } from './reports.ts';
 import type { Acc } from './reports.ts';
+import { runPartB } from './part-b.ts';
 
 const seedAcc = (scripts: readonly ScriptCoverage[], sources: readonly ScriptSource[]): Acc => ({
   seq: 1,
@@ -84,6 +85,28 @@ const bundleSources = async (
   return sources.flatMap((source) => (source === null ? [] : [source]));
 };
 
+const finishRun = async (
+  browser: Browser,
+  log: RunLog,
+  send: CdpSend,
+  sources: readonly ScriptSource[],
+  acc: Acc,
+  started: number,
+): Promise<void> => {
+  const partB = await runPartB(browser, log, acc.seen);
+  const full: Acc = { ...acc, findings: [...acc.findings, ...partB.findings] };
+  log.saveJson('part-b.json', {
+    axisTuples: partB.axisTuples,
+    formCases: partB.formCases,
+    walks: partB.walks,
+    findings: partB.findings.length,
+  });
+  const merged = mergeScripts(full.scripts, await takeCoverage(send));
+  const finalReports = fileReports(merged, sources);
+  log.saveText('timings.txt', `totalMs=${Date.now() - started}\n`);
+  reportChecks(writeReports(log, full, finalReports));
+};
+
 const coverRun = async (
   browser: Browser,
   log: RunLog,
@@ -99,11 +122,8 @@ const coverRun = async (
     console.log(`cdp: ${initial.length} scripts, ${sources.length} bundle sources`);
     assert.ok(sources.length > 0, 'no bundle sources: source maps missing or bundle URL mismatch');
     const acc = await collectAll(browser, log, cdp.send, sources, initial);
-    const merged = mergeScripts(acc.scripts, await takeCoverage(cdp.send));
-    const finalReports = fileReports(merged, sources);
+    await finishRun(browser, log, cdp.send, sources, acc, started);
     await stopCoverage(cdp.send);
-    log.saveText('timings.txt', `totalMs=${Date.now() - started}\n`);
-    reportChecks(writeReports(log, acc, finalReports));
   } finally {
     cdp.close();
   }

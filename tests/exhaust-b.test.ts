@@ -25,8 +25,16 @@ await test('walk shrinking keeps only the failing suffix', async () => {
 
 await test('findings markdown records repro and product verdict', () => {
   const md = findingsMarkdown([
-    { rule: 'page-overflow', selector: 'html', expected: 'a', actual: 'b', seed: 7, path: 'a>b', env: 'ru|light' },
+    {
+      rule: 'page-overflow',
+      selector: 'html',
+      expected: 'a',
+      actual: 'b',
+      seed: 7,
+      path: 'a>b',
+      env: 'ru|light',
+    },
   ]);
   assert.ok(md.includes('product defect'));
-  assert.equal(verdictOf({ rule: 'contrast-text', selector: 's', expected: 'e', actual: 'a' }), 'product defect');
+  assert.equal(verdictOf({ rule: 'contrast-text' }), 'product defect');
 });

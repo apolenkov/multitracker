@@ -105,7 +105,7 @@ export function NotificationSettings(
           onChange={(event) => setDraft({ ...draft, channel: event.target.value })}
         >
           <option value="app">{props.text('В приложении', 'In app')}</option>
-          <option value="email">{props.text('Электронная почта: пример', 'Email: sample')}</option>
+          <option value="email">{props.text('Электронная почта', 'Email')}</option>
         </select>
       </label>
       <SettingsActions {...props} />

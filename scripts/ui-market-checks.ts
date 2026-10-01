@@ -134,7 +134,7 @@ export function alertDraft(browser: Browser) {
   ruleAction(browser, 'pause');
   assert.match(content(browser, lastAlert), /Приостановлено/);
   ruleAction(browser, 'pause');
-  assert.match(content(browser, lastAlert), /Пример включён/);
+  assert.match(content(browser, lastAlert), /Включено/);
   deleteAlert(browser, before);
   assert.equal(alertCount(browser), before, 'Удаление не восстановило исходный список');
   return { saved, invalid: ['', 'abc', '0', '-1'], editedDraft: '999 → отмена → 910' };

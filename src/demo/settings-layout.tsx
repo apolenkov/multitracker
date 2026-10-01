@@ -82,7 +82,7 @@ function HiddenSetting(props: Props & Readonly<{ text: SettingText }>) {
 export function settingName(text: SettingText, kind: Kind) {
   if (kind === 'display') return text('Плотность интерфейса', 'Interface density');
   if (kind === 'notifications') return text('Уведомления', 'Notifications');
-  if (kind === 'privacy') return text('Блокировка примера', 'Sample lock');
+  if (kind === 'privacy') return text('Блокировка', 'Lock');
   if (kind === 'recovery') return text('Ключ восстановления', 'Recovery key');
   if (kind === 'backup') return text('Резервная копия и восстановление', 'Backup and restore');
   if (kind === 'export') return text('Экспорт данных', 'Export data');

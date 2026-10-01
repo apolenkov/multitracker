@@ -170,7 +170,7 @@ function CalendarSelection(
         </select>
       </label>
       <label htmlFor="events-asset">
-        {text('Учебный актив', 'Sample asset')}
+        {text('Актив', 'Asset')}
         <select
           id="events-asset"
           value={props.value.asset}

@@ -30,7 +30,7 @@ function EventsDisclosure({ language }: Readonly<{ language: Language }>) {
   const text = copy(language);
   return (
     <details className="events-disclosure">
-      <summary>{text('О данных примера', 'About sample data')}</summary>
+      <summary>{text('О данных', 'About the data')}</summary>
       <p>
         {text(
           'Все события, организации и новости вымышлены. Это не текущие данные и не инвестиционные рекомендации.',

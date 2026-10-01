@@ -48,8 +48,8 @@ const periods = [
     id: 'all',
     ru: 'Всё',
     en: 'All',
-    ruName: 'Вся история примера',
-    enName: 'Full sample history',
+    ruName: 'Вся история',
+    enName: 'Full history',
     points: [
       ['2025-01-01', 0.3, 0.35],
       ['2025-09-30', 0.48, 0.5],
@@ -240,7 +240,7 @@ function HistoryData(props: Props & Readonly<{ period: Period }>) {
         {labels.chartSampleNote} {labels.fixed}
       </p>
       <p className="chart-range">
-        {language === 'ru' ? 'Диапазон примера' : 'Sample range'}:{' '}
+        {language === 'ru' ? 'Диапазон' : 'Range'}:{' '}
         {hidden
           ? '••••'
           : `${money(Math.min(...values), currency, language)} – ${money(Math.max(...values), currency, language)}`}

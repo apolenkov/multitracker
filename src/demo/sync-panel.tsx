@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DemoModal } from './modal';
+import { ActionMenu } from '../ActionMenu';
 import { SyncConflict } from './sync-conflict';
 import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
@@ -83,7 +84,7 @@ function SyncActions({
         </button>
       )}
       <details>
-        <summary>{t.more}</summary>
+        <summary>{t.mode}</summary>
         <label className="check-row">
           <input
             type="checkbox"
@@ -124,14 +125,7 @@ function SyncDevices({
       <article>
         <h3>{t.mobile}</h3>
         <p>{revoked ? t.revoked : t.activity}</p>
-        {!revoked && (
-          <details>
-            <summary>{t.more}</summary>
-            <button className="quiet" onClick={() => setConfirmOpen(true)}>
-              {t.revoke}
-            </button>
-          </details>
-        )}
+        {!revoked && <DeviceMenu t={t} revoke={() => setConfirmOpen(true)} />}
       </article>
       {confirmOpen && (
         <RevokeDevice
@@ -145,6 +139,22 @@ function SyncDevices({
   );
 }
 
+function DeviceMenu({ t, revoke }: Readonly<{ t: SyncWords; revoke: () => void }>) {
+  return (
+    <ActionMenu
+      className="device-menu"
+      label={`${t.deviceActions}: ${t.mobile}`}
+      items={[
+        {
+          label: t.revoke,
+          ariaLabel: `${t.revoke}: ${t.mobile}`,
+          onSelect: revoke,
+          danger: true,
+        },
+      ]}
+    />
+  );
+}
 function SyncStatus({
   t,
   automatic,

@@ -44,7 +44,7 @@ export function ImportWizard({ language, hidden, initial, onClose, onComplete }:
   return (
     <DemoModal
       id="import-wizard"
-      title={importText(language, 'Импорт учебного файла', 'Import sample file')}
+      title={importText(language, 'Импорт файла', 'Import file')}
       language={language}
       onClose={onClose}
     >
@@ -109,22 +109,10 @@ function WizardActions({
 function WizardProgress({ step, language }: Readonly<{ step: number; language: ImportLanguage }>) {
   const current = steps.at(step);
   return (
-    <>
-      <p className="import-current-step" role="status" aria-live="polite">
-        {importText(language, 'Шаг', 'Step')} {step + 1} / 5 ·{' '}
-        {current && importText(language, current[0], current[1])}
-      </p>
-      <ol
-        className="import-steps"
-        aria-label={importText(language, 'Этапы импорта', 'Import steps')}
-      >
-        {steps.map(([ru, en], index) => (
-          <li key={en} aria-current={index === step ? 'step' : undefined}>
-            <span>{importText(language, ru, en)}</span>
-          </li>
-        ))}
-      </ol>
-    </>
+    <p className="import-current-step" role="status" aria-live="polite">
+      {language === 'ru' ? `Шаг ${step + 1} из 5` : `Step ${step + 1} of 5`} ·{' '}
+      {current && importText(language, current[0], current[1])}
+    </p>
   );
 }
 function WizardStep({

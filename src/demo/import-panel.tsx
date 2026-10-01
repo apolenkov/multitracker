@@ -20,8 +20,8 @@ export function ImportPanel({ language, hidden, notify }: Props) {
     notify(
       importText(
         language,
-        'В примере добавлено 2, пропущено 2: 1 ошибка актива и 1 повтор. Данные не сохранены.',
-        'Sample complete: added 2, skipped 2: 1 unknown asset and 1 duplicate. Data was not saved.',
+        'Добавлено 2, пропущено 2: 1 ошибка актива и 1 повтор. Данные не сохранены.',
+        'Added 2, skipped 2: 1 unknown asset and 1 duplicate. Data was not saved.',
       ),
     );
   }
@@ -40,7 +40,7 @@ export function ImportPanel({ language, hidden, notify }: Props) {
         <ImportMapping language={language} hidden={hidden} draft={draft} update={setDraft} />
       </details>
       <button type="button" className="primary" onClick={() => setEditing(true)}>
-        {importText(language, 'Начать импорт-пример', 'Start sample import')}
+        {importText(language, 'Начать импорт', 'Start import')}
       </button>
       <p className="demo-note">
         {importText(

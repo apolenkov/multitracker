@@ -138,7 +138,7 @@ function repeatSave() {
   return 'Два Save: непустой результат, второй DOM-узел отличается';
 }
 function startImport() {
-  browser.run('find', 'role', 'button', 'click', '--name', 'Начать импорт-пример', '--exact');
+  browser.run('find', 'role', 'button', 'click', '--name', 'Начать импорт', '--exact');
   browser.run('wait', '#import-wizard[open]');
 }
 function importMapping() {
@@ -194,7 +194,8 @@ function hiddenReconciliation() {
   mappingSamples(browser, 'wizard', true);
   browser.run('press', 'Escape');
   browser.run('wait', '--fn', '!document.querySelector("#import-wizard[open]")');
-  browser.run('find', 'role', 'button', 'click', '--name', 'Сверить остаток', '--exact');
+  browser.run('click', '.import-history button.action-menu-trigger');
+  browser.run('find', 'role', 'menuitem', 'click', '--name', 'Сверить остаток', '--exact');
   browser.run('wait', '#import-history[open]');
   assert.deepEqual(
     evaluate(

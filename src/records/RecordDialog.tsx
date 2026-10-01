@@ -34,9 +34,7 @@ export function RecordDialog(props: Props) {
         {date(props.request.record.date, props.language)}
       </p>
       <p className="form-sample">
-        {props.language === 'ru'
-          ? 'Учебный пример · данные не сохраняются'
-          : 'Teaching sample · records are not saved'}
+        {props.language === 'ru' ? 'Данные не сохраняются' : 'Records are not saved'}
       </p>
       {props.request.mode === 'delete' ? (
         <RecordSummary {...props} record={props.request.record} />

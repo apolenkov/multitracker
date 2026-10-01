@@ -69,7 +69,7 @@ function OverviewLinks({ language }: Readonly<{ language: Language }>) {
   return (
     <nav
       className="overview-links"
-      aria-label={language === 'ru' ? 'Другие учебные разделы' : 'Other sample sections'}
+      aria-label={language === 'ru' ? 'Другие разделы' : 'Other sections'}
     >
       {(['analytics', 'markets', 'events'] as const).map((screen) => (
         <a key={screen} href={`#${screen}`}>

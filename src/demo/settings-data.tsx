@@ -125,7 +125,7 @@ export function DeleteSettings(props: SettingFormProps & Readonly<{ onDelete: ()
           {props.text('Отмена', 'Cancel')}
         </button>
         <button type="submit" className="danger" disabled={confirmation !== 'DEMO'}>
-          {props.text('Удалить учебные данные', 'Delete sample data')}
+          {props.text('Удалить данные', 'Delete data')}
         </button>
       </div>
     </form>

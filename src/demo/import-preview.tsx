@@ -40,7 +40,7 @@ function ImportTable({
       className="table-scroll import-source-table"
       role="region"
       tabIndex={0}
-      aria-label={importText(language, 'Строки учебного файла', 'Sample file rows')}
+      aria-label={importText(language, 'Строки файла', 'File rows')}
     >
       <table>
         <thead>

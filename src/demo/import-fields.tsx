@@ -129,8 +129,8 @@ export function ImportFile({ language, draft, update, error }: ImportFieldsProps
       <p>
         {importText(
           language,
-          'Учебный CSV: sample-transactions.csv · 4 строки · UTF-8',
-          'Sample CSV: sample-transactions.csv · 4 rows · UTF-8',
+          'CSV: sample-transactions.csv · 4 строки · UTF-8',
+          'CSV: sample-transactions.csv · 4 rows · UTF-8',
         )}
       </p>
       <p>
@@ -148,8 +148,8 @@ export function ImportFile({ language, draft, update, error }: ImportFieldsProps
         onClick={() => update({ ...draft, fileSelected: true })}
       >
         {draft.fileSelected
-          ? importText(language, 'Файл-пример выбран', 'Sample file selected')
-          : importText(language, 'Выбрать файл-пример', 'Select sample file')}
+          ? importText(language, 'Файл выбран', 'File selected')
+          : importText(language, 'Выбрать файл', 'Select file')}
       </button>
     </div>
   );

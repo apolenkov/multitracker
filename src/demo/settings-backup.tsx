@@ -53,7 +53,7 @@ function RestorePreview(
 ) {
   return (
     <section className="demo-note">
-      <h3>{props.text('Восстановление: пример', 'Restore: sample')}</h3>
+      <h3>{props.text('Восстановление', 'Restore')}</h3>
       <p>
         {props.text(
           'Версия 1 совместима. Tradernet, Binance, Bybit; 3 операции. В настоящем приложении восстановление заменит текущие данные.',
@@ -112,7 +112,7 @@ function BackupControls(
           )
         }
       >
-        {props.text('Создать копию: пример', 'Create backup: sample')}
+        {props.text('Создать копию', 'Create backup')}
       </button>
       <button type="button" className="quiet" onClick={props.onPreview}>
         {props.text('Предпросмотр восстановления', 'Preview restore')}
@@ -130,7 +130,7 @@ function BackupActions(
       disabled={props.preview && !props.confirmed}
       action={
         props.preview
-          ? props.text('Восстановить пример', 'Restore sample')
+          ? props.text('Восстановить', 'Restore')
           : props.text('Применить напоминание', 'Apply reminder')
       }
     />

@@ -143,7 +143,7 @@ function LockExample({ text, unlock }: Readonly<{ text: SettingText; unlock: () 
         )}
       </p>
       <button className="primary" onClick={unlock}>
-        {text('Разблокировать пример', 'Unlock sample')}
+        {text('Разблокировать', 'Unlock')}
       </button>
     </section>
   );

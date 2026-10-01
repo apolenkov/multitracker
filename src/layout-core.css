@@ -89,19 +89,11 @@
 .topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
   min-height: 64px;
   padding-block: 10px 9px;
   border-bottom: 1px solid var(--line);
-}
-.demo-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--muted);
-  font-size: 14px;
-  white-space: nowrap;
 }
 .utility-controls {
   display: flex;
@@ -145,21 +137,25 @@ main {
 }
 .footer {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 4px 24px;
   padding: 12px 0 20px;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: 14px;
 }
-.footer button {
+.footer > button {
   border: 0;
-  padding-right: 0;
+  padding-inline: 0;
   background: transparent;
-  font-size: 14px;
-  font-weight: 400;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 500;
   white-space: nowrap;
+}
+.footer > span {
+  margin-left: auto;
 }
 .status-message {
   padding: 12px 16px;
@@ -180,15 +176,8 @@ main:focus-visible > .page-heading h1 {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
 }
-.welcome-guide {
-  margin-top: 24px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
-}
-.welcome-guide summary {
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 600;
+.welcome-guide[open] {
+  flex: 1 0 100%;
 }
 .welcome-guide p {
   max-width: 70ch;

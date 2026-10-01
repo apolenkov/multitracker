@@ -3,8 +3,8 @@ import { evaluate, type Browser } from './ui-driver.ts';
 import { content, go, prepare, truth } from './ui-exploration.ts';
 
 const labels = {
-  ru: ['Локальная версия', 'Версия из облака, пример'],
-  en: ['Local version', 'Cloud version, sample'],
+  ru: ['Локальная версия', 'Версия из облака'],
+  en: ['Local version', 'Cloud version'],
 } as const;
 
 function radioLayout(browser: Browser, language: 'ru' | 'en') {

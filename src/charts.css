@@ -85,11 +85,6 @@
   place-content: center;
   color: var(--muted);
 }
-.chart-disclosure > summary {
-  color: var(--muted);
-  font-size: 14px;
-  min-height: 44px;
-}
 .history-date-scroll,
 .table-scroll {
   overflow-x: auto;

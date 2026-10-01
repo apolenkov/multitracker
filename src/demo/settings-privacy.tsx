@@ -29,7 +29,7 @@ export function PrivacySettings(
           checked={draft}
           onChange={(event) => setDraft(event.target.checked)}
         />
-        {props.text('Заблокировать учебный экран', 'Lock the sample screen')}
+        {props.text('Заблокировать экран', 'Lock the screen')}
       </label>
       <SettingsActions {...props} />
     </form>

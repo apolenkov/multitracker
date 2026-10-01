@@ -6,14 +6,6 @@ type Props = Readonly<{ view: AppView }>;
 export function Topbar({ view }: Props) {
   return (
     <header className="topbar">
-      <span
-        className="demo-badge"
-        role="note"
-        aria-label={view.language === 'ru' ? 'Демо · вымышленные данные' : 'Demo · fictional data'}
-        title={view.language === 'ru' ? 'Демо · вымышленные данные' : 'Demo · fictional data'}
-      >
-        {view.language === 'ru' ? 'Демо' : 'Demo'}
-      </span>
       <div className="utility-controls">
         <LanguageControl view={view} />
         <ThemeControl view={view} />

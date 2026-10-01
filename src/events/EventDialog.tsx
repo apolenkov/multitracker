@@ -106,7 +106,7 @@ function ReminderForm(props: Props & Readonly<{ onBack: () => void }>) {
           {text('Отмена', 'Cancel')}
         </button>
         <button type="submit" id="event-reminder-save" className="primary">
-          {text('Сохранить пример', 'Save sample')}
+          {text('Сохранить', 'Save')}
         </button>
       </div>
     </form>

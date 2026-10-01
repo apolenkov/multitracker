@@ -48,13 +48,11 @@ function Story({
   const text = copy(language);
   return (
     <article className="events-story">
-      <p className="quiet">
-        {text('30 сентября 2026 · Учебный пример', '30 September 2026 · Educational sample')}
-      </p>
+      <p className="quiet">{text('30 сентября 2026', '30 September 2026')}</p>
       <h3>{local(language, item.title)}</h3>
       <p>{local(language, item.summary)}</p>
       <button type="button" id={`feed-detail-${opener ?? item.id}`} onClick={() => setOpen(true)}>
-        {text('Разобрать пример', 'Explore sample')}
+        {text('Разобрать', 'Explore')}
       </button>
       {open && (
         <DemoModal
@@ -64,9 +62,7 @@ function Story({
           title={local(language, item.title)}
         >
           <div className="event-dialog-content">
-            <p className="quiet">
-              {text('30 сентября 2026 · Учебный пример', '30 September 2026 · Educational sample')}
-            </p>
+            <p className="quiet">{text('30 сентября 2026', '30 September 2026')}</p>
             <p>{local(language, item.detail)}</p>
             <StoryMetric language={language} hidden={hidden} item={item} />
             <p className="quiet">
@@ -101,7 +97,7 @@ function AnnouncementScope({
         value={followed ? 'followed' : 'all'}
         onChange={(event) => onChange(event.target.value === 'followed')}
       >
-        <option value="all">{text('Все учебные активы', 'All sample assets')}</option>
+        <option value="all">{text('Все активы', 'All assets')}</option>
         <option value="followed">
           {text('Наблюдаемые: учебная Noma', 'Followed: sample Noma')}
         </option>

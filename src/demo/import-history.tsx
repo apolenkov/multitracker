@@ -4,6 +4,7 @@ import { importText } from './import-model';
 import { ImportSample } from './import-fields';
 import { DemoModal } from './modal';
 import { closeDialog } from '../Dialog';
+import { ActionMenu } from '../ActionMenu';
 
 type HistoryProps = Readonly<{
   language: ImportLanguage;
@@ -13,7 +14,7 @@ type HistoryProps = Readonly<{
 type HistoryDialog = 'details' | 'undo' | 'reconcile' | null;
 export function ImportHistory({ language, hidden, notify }: HistoryProps) {
   const [dialog, setDialog] = useState<HistoryDialog>(null);
-  const title = importText(language, 'История импорта · учебный пример', 'Import history · sample');
+  const title = importText(language, 'История импорта', 'Import history');
   return (
     <section className="import-history" aria-label={title}>
       <h2>{title}</h2>
@@ -25,17 +26,7 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
           'To add: 2 · To skip: 2 (1 unknown asset, 1 duplicate)',
         )}
       </p>
-      <div className="import-history-actions">
-        <button type="button" onClick={() => setDialog('details')}>
-          {importText(language, 'Подробности импорта', 'Import details')}
-        </button>
-        <button type="button" onClick={() => setDialog('reconcile')}>
-          {importText(language, 'Сверить остаток', 'Reconcile balance')}
-        </button>
-        <button type="button" className="quiet" onClick={() => setDialog('undo')}>
-          {importText(language, 'Отменить импорт', 'Undo import')}
-        </button>
-      </div>
+      <HistoryMenu language={language} open={setDialog} />
       {dialog && (
         <DemoModal
           id="import-history"
@@ -51,6 +42,35 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
         </DemoModal>
       )}
     </section>
+  );
+}
+function HistoryMenu({
+  language,
+  open,
+}: Readonly<{ language: ImportLanguage; open: (dialog: HistoryDialog) => void }>) {
+  return (
+    <ActionMenu
+      className="import-menu"
+      label={importText(language, 'Действия: импорт', 'Actions: import')}
+      items={[
+        {
+          label: importText(language, 'Подробности импорта', 'Import details'),
+          ariaLabel: importText(language, 'Подробности импорта', 'Import details'),
+          onSelect: () => open('details'),
+        },
+        {
+          label: importText(language, 'Сверить остаток', 'Reconcile balance'),
+          ariaLabel: importText(language, 'Сверить остаток', 'Reconcile balance'),
+          onSelect: () => open('reconcile'),
+        },
+        {
+          label: importText(language, 'Отменить импорт', 'Undo import'),
+          ariaLabel: importText(language, 'Отменить импорт', 'Undo import'),
+          onSelect: () => open('undo'),
+          danger: true,
+        },
+      ]}
+    />
   );
 }
 function HistoryDetails({
@@ -129,7 +149,7 @@ function Reconciliation({ language, hidden, notify }: HistoryProps) {
     <div>
       <ReconciliationSummary language={language} hidden={hidden} />
       <label>
-        {importText(language, 'Как исправить — пример', 'Resolution — sample')}
+        {importText(language, 'Как исправить', 'Resolution')}
         <select value={resolution} onChange={(e) => setResolution(e.target.value)}>
           <option value="history">
             {importText(language, 'Проверить историю операций', 'Review transaction history')}

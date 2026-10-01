@@ -54,11 +54,9 @@ function WidgetCanvas(props: PreviewProps) {
   const text = copy(props.language);
   return (
     <div id="widget-preview" className={`widget-canvas widget-${props.layout}`}>
-      <p className="quiet">{text('Учебный снимок · USD', 'Sample snapshot · USD')}</p>
+      <p className="quiet">{text('Снимок · USD', 'Snapshot · USD')}</p>
       <h3>
-        {props.kind === 'portfolio'
-          ? text('Учебный портфель', 'Sample portfolio')
-          : text('Учебный рынок', 'Sample market')}
+        {props.kind === 'portfolio' ? text('Портфель', 'Portfolio') : text('Рынок', 'Market')}
       </h3>
       {props.kind === 'portfolio' ? <PortfolioWidget {...props} /> : <MarketWidget {...props} />}
       <p className="quiet">
@@ -97,11 +95,11 @@ function PortfolioWidget(props: PreviewProps) {
       )}
       {props.layout === 'detailed' && (
         <dl className="widget-breakdown">
-          <dt>{text('Учебные акции', 'Sample stocks')}</dt>
+          <dt>{text('Акции', 'Stocks')}</dt>
           <dd>{masked(props.hidden, `${widgetNumber(props.language, 7488)} USD`)}</dd>
-          <dt>{text('Учебные фонды', 'Sample funds')}</dt>
+          <dt>{text('Фонды', 'Funds')}</dt>
           <dd>{masked(props.hidden, `${widgetNumber(props.language, 3744)} USD`)}</dd>
-          <dt>{text('Учебные цифровые активы', 'Sample digital assets')}</dt>
+          <dt>{text('Цифровые активы', 'Digital assets')}</dt>
           <dd>{masked(props.hidden, `${widgetNumber(props.language, 1248)} USD`)}</dd>
         </dl>
       )}

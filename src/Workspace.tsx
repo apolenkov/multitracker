@@ -24,11 +24,11 @@ export function Workspace({ view }: Readonly<{ view: AppView }>) {
           {view.notice.message && <p key={view.notice.sequence}>{view.notice.message}</p>}
         </div>
         <PageContent view={view} />
-        <Welcome language={view.language} navigate={view.navigate} />
       </main>
       <footer className="footer">
-        <span>{labels.memory}</span>
+        <Welcome language={view.language} navigate={view.navigate} />
         <button onClick={() => openDialog('privacy-dialog')}>{labels.privacy}</button>
+        <span>{labels.memory}</span>
       </footer>
     </div>
   );

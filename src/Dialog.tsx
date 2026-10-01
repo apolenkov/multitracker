@@ -35,6 +35,9 @@ export function keepDialogFocus(event: KeyboardEvent<HTMLDialogElement>) {
 export function openDialog(id: string) {
   const dialog = document.getElementById(id);
   if (dialog instanceof HTMLDialogElement && !dialog.open && !dialog.closest('[hidden]')) {
+    document
+      .querySelectorAll<HTMLDialogElement>('dialog[open]')
+      .forEach((current) => current.close());
     dialog.showModal();
   }
 }

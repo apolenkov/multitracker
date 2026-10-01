@@ -3,8 +3,6 @@ import type { Browser } from './ui-driver.ts';
 import { content, go, prepare, truth } from './ui-exploration.ts';
 import { evaluate } from './ui-driver.ts';
 
-const catalogTrigger = '.cash-catalog-open, .cash-balances > summary';
-
 export function stableHeroDisclosure(browser: Browser) {
   prepare(browser);
   go(browser, 'overview');
@@ -36,53 +34,6 @@ export function stableHeroDisclosure(browser: Browser) {
     'После закрытия левая часть должна остаться на месте',
   );
   return '1440: раскрытие данных графика не двигает сумму, результат и кнопку';
-}
-
-function catalogGeometry(browser: Browser, width: number) {
-  browser.run('set', 'viewport', String(width), width === 375 ? '812' : '900');
-  browser.run('scrollintoview', catalogTrigger);
-  const geometry =
-    '({scroll:scrollY,side:document.querySelector(".overview-side").getBoundingClientRect().top,report:document.querySelector(".overview-report").getBoundingClientRect().top})';
-  const before = evaluate(browser, geometry);
-  browser.run('click', catalogTrigger);
-  assert.deepEqual(evaluate(browser, geometry), before, 'Каталог не должен сдвигать обзор');
-  truth(
-    browser,
-    'document.querySelector("#cash-catalog-dialog")?.open === true',
-    'Нет диалога каталога',
-  );
-  browser.run('press', 'Escape');
-  browser.run('wait', '--fn', '!document.querySelector("#cash-catalog-dialog[open]")');
-  assert.deepEqual(evaluate(browser, geometry), before, 'Закрытие не должно сдвигать обзор');
-  browser.run('wait', '--fn', 'document.activeElement?.matches(".cash-catalog-open") === true');
-  truth(
-    browser,
-    'document.activeElement?.matches(".cash-catalog-open") === true',
-    'Фокус должен вернуться на кнопку каталога',
-  );
-}
-
-export function catalogDialog(browser: Browser) {
-  prepare(browser);
-  go(browser, 'overview');
-  catalogGeometry(browser, 375);
-  catalogGeometry(browser, 1440);
-  browser.run('set', 'viewport', '375', '812');
-  browser.run('scrollintoview', '.cash-catalog-open');
-  browser.run('click', '.cash-catalog-open');
-  browser.run('click', '#cash-catalog-dialog .asset-catalog li:first-child button');
-  truth(
-    browser,
-    'document.querySelector("#buy-dialog")?.open === true && document.querySelector("#buy-dialog [name=asset]")?.value === "MSFT" && document.querySelectorAll("dialog[open]").length === 1',
-    'Покупка из каталога должна открыть форму MSFT вместо каталога, без второго окна',
-  );
-  browser.run('press', 'Escape');
-  truth(
-    browser,
-    'document.querySelectorAll("dialog[open]").length === 0 && document.activeElement?.matches(".cash-catalog-open") === true',
-    'После формы фокус должен вернуться на кнопку каталога',
-  );
-  return '375/1440: обзор неподвижен; покупка из каталога заменяет окно, Escape возвращает фокус на кнопку каталога';
 }
 
 export function narrowAllocation(browser: Browser) {

@@ -1,17 +1,7 @@
 import { useRef, useState } from 'react';
-import { closeDialog, DialogHeading, keepDialogFocus, openDialog } from '../Dialog.tsx';
-import { openOperation as openOperationDialog } from '../Forms.tsx';
-import { Icon } from '../Icon.tsx';
-import { getLabels, money, type Language } from '../i18n.ts';
+import { openOperation } from '../Forms.tsx';
+import { type Language } from '../i18n.ts';
 import { insightWords } from './words.ts';
-import './catalog.css';
-
-// Close the catalog first: native dialogs restore focus on close, so the operation
-// dialog is opened from `.cash-catalog-open` and returns focus there.
-const openOperation: typeof openOperationDialog = (type, context) => {
-  closeDialog('cash-catalog-dialog');
-  openOperationDialog(type, context);
-};
 
 const instruments = [
   { id: 'MSFT', kind: 'stocks' },
@@ -19,71 +9,9 @@ const instruments = [
   { id: 'BOND-DEMO', kind: 'bonds' },
   { id: 'BTC', kind: 'crypto' },
   { id: 'TWT', kind: 'crypto' },
-  { id: 'RUB', kind: 'money' },
-  { id: 'USD', kind: 'money' },
 ] as const;
 
-export function CashAndCatalog({
-  language,
-  hidden,
-}: Readonly<{ language: Language; hidden: boolean }>) {
-  const words = insightWords(language);
-  const trigger = useRef<HTMLButtonElement>(null);
-  return (
-    <>
-      <div className="cash-catalog-trigger">
-        <button
-          type="button"
-          className="cash-catalog-open"
-          ref={trigger}
-          aria-haspopup="dialog"
-          onClick={() => openDialog('cash-catalog-dialog')}
-        >
-          {words.cash} <Icon name="chevron" />
-        </button>
-      </div>
-      <dialog
-        id="cash-catalog-dialog"
-        className="cash-catalog-dialog"
-        aria-labelledby="cash-catalog-title"
-        onClose={() => trigger.current?.focus()}
-        onKeyDown={keepDialogFocus}
-      >
-        <DialogHeading
-          title={words.cash}
-          id="cash-catalog-title"
-          dialog="cash-catalog-dialog"
-          labels={getLabels(language)}
-        />
-        <CashContent language={language} hidden={hidden} />
-      </dialog>
-    </>
-  );
-}
-
-function CashContent({ language, hidden }: Readonly<{ language: Language; hidden: boolean }>) {
-  const words = insightWords(language);
-  return (
-    <div className="cash-balances">
-      <h3>{words.balance}</h3>
-      <dl className="effects">
-        {(['RUB', 'USD'] as const).map((currency) => (
-          <div key={currency}>
-            <dt>{currency}</dt>
-            <dd>{hidden ? '••••' : money(0, currency, language)}</dd>
-          </div>
-        ))}
-      </dl>
-      <p className="quiet">{words.cashNote}</p>
-      <button type="button" onClick={() => openOperation('opening')}>
-        {words.opening}
-      </button>
-      <Catalog language={language} />
-    </div>
-  );
-}
-
-function Catalog({ language }: Readonly<{ language: Language }>) {
+export function Catalog({ language }: Readonly<{ language: Language }>) {
   const words = insightWords(language);
   const [search, setSearch] = useState('');
   const searchInput = useRef<HTMLInputElement>(null);
@@ -93,8 +21,8 @@ function Catalog({ language }: Readonly<{ language: Language }>) {
       .includes(search.trim().toLocaleLowerCase()),
   );
   return (
-    <div className="asset-catalog">
-      <h3>{words.catalog}</h3>
+    <section className="asset-catalog" aria-labelledby="asset-catalog-title">
+      <h2 id="asset-catalog-title">{words.catalog}</h2>
       <p className="quiet">{words.catalogNote}</p>
       <label>
         {words.catalogSearch}
@@ -120,7 +48,7 @@ function Catalog({ language }: Readonly<{ language: Language }>) {
           </button>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -138,11 +66,11 @@ function CatalogRows({
         <li key={item.id}>
           <button
             type="button"
-            aria-label={`${language === 'ru' ? 'Добавить операцию для' : 'Add a transaction for'} ${item.id}`}
+            aria-label={`${language === 'ru' ? 'Купить' : 'Buy'} ${item.id}`}
             onClick={() =>
-              openOperation(item.kind === 'money' ? 'opening' : 'buy', {
+              openOperation('buy', {
                 asset: item.id,
-                currency: item.id === 'RUB' ? 'RUB' : 'USD',
+                currency: 'USD',
               })
             }
           >

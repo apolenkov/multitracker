@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { evaluate, type Browser } from './ui-driver.ts';
+import { batch, evaluate, settleLayout, type Browser } from './ui-driver.ts';
 import { content, go, prepare, truth } from './ui-exploration.ts';
 
 const labels = {
@@ -78,4 +78,33 @@ export function conflictRadioChoices(browser: Browser) {
   browser.run('select', '#topbar-language', 'ru');
   browser.run('wait', '--fn', 'document.documentElement.lang === "ru"');
   return results;
+}
+
+export function syncPostConflictDisclosure(browser: Browser) {
+  prepare(browser);
+  go(browser, 'sync');
+  const welcome = 'main#main > details > summary';
+  if (evaluate(browser, 'document.querySelector("main#main > details")?.open') === true) {
+    browser.run('click', welcome);
+    settleLayout(browser);
+  }
+  browser.run('click', '.sync-panel > .sync-actions:last-child > button');
+  browser.run('wait', '#sync-conflict[open]');
+  browser.run('click', '#sync-conflict input[value="remote"]');
+  settleLayout(browser);
+  batch(browser, [
+    ['click', '#sync-conflict .dialog-actions button:last-child'],
+    ['scrollintoview', welcome],
+    ['click', welcome],
+  ]);
+  settleLayout(browser);
+  truth(
+    browser,
+    '!document.querySelector("#sync-conflict[open]") && document.querySelector("main#main > details")?.open === true',
+    'Осмысленный клик по помощи после подтверждения должен открыть её',
+  );
+  assert.match(content(browser, '.sync-panel > .sync-actions:last-child'), /Версия из облака/);
+  browser.run('click', welcome);
+  settleLayout(browser);
+  return 'Подтверждение облачной версии → прокрутка → один настоящий клик открывает помощь';
 }

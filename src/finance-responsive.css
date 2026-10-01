@@ -192,6 +192,9 @@
   .holding-row > td:nth-child(3) .mobile-label {
     display: none;
   }
+  .cash-holding-row > td:nth-child(3) .mobile-label {
+    display: block;
+  }
   .asset-symbol {
     width: 30px;
     height: 30px;

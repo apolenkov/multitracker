@@ -207,12 +207,12 @@ a {
   top: 12px;
 }
 dialog {
-  --dialog-pad: 24px;
+  --dialog-inset: 24px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--paper);
   color: var(--ink);
-  padding: var(--dialog-pad);
+  padding: var(--dialog-inset);
   width: min(640px, calc(100% - 32px));
   max-height: min(85dvh, calc(100dvh - 32px));
   overflow: auto;
@@ -239,7 +239,7 @@ dialog::backdrop {
 }
 @media (max-width: 600px) {
   dialog {
-    --dialog-pad: 20px;
+    --dialog-inset: 20px;
   }
   h1 {
     font-size: 27px;

@@ -12,11 +12,11 @@ function emptyAtWidth(browser: Browser, width: number) {
   browser.run(
     'wait',
     '--fn',
-    'location.hash === "#overview" && document.querySelector("#holdings-title .count")?.textContent === "0" && document.querySelector("#composition-title .count")?.textContent === "0"',
+    'location.hash === "#overview" && document.querySelector("#holdings-title .count")?.textContent === "2" && document.querySelector("#composition-title .count")?.textContent === "0"',
   );
   truth(
     browser,
-    'document.querySelector("#holdings-title")?.checkVisibility() === true && document.querySelector("#composition-title")?.checkVisibility() === true && document.querySelectorAll("#main .holding-row, #main .allocation-legend > div").length === 0 && !document.querySelector("#main .value-history, #main .history-plot") && !document.querySelector("#main")?.innerText.includes("NaN")',
+    'document.querySelector("#holdings-title")?.checkVisibility() === true && document.querySelector("#composition-title")?.checkVisibility() === true && document.querySelectorAll("#main .holding-row:not(.cash-holding-row), #main .allocation-legend > div").length === 0 && document.querySelectorAll("#main .cash-holding-row").length === 2 && !document.querySelector("#main .value-history, #main .history-plot") && !document.querySelector("#main")?.innerText.includes("NaN")',
     `${width}: пустой обзор должен показывать пустые активы и состав без истории и NaN`,
   );
   browser.run('scrollintoview', '.static-state button');
@@ -24,14 +24,20 @@ function emptyAtWidth(browser: Browser, width: number) {
   browser.run(
     'wait',
     '--fn',
-    'document.querySelectorAll("#main .holding-row").length === 3 && document.querySelector("#holdings-title .count")?.textContent === "3"',
+    'document.querySelectorAll("#main .holding-row:not(.cash-holding-row)").length === 3 && document.querySelectorAll("#main .cash-holding-row").length === 2 && document.querySelector("#holdings-title .count")?.textContent === "5"',
   );
   truth(
     browser,
     'document.querySelectorAll("#main .allocation-legend > div").length === 3 && !document.querySelector("#main .static-state") && !document.querySelector("#main")?.innerText.includes("NaN")',
     `${width}: возврат к примеру должен восстановить три актива и состав`,
   );
-  return { width, emptyRows: 0, emptyComposition: 0, restoredRows: 3 };
+  return {
+    width,
+    emptyInvestmentRows: 0,
+    cashRows: 2,
+    emptyComposition: 0,
+    restoredInvestmentRows: 3,
+  };
 }
 
 export function emptyOverview(browser: Browser) {

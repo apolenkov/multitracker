@@ -6,15 +6,20 @@ import type { Env } from './axes.ts';
 import type { Enumerated, SweepHit } from './page-rows.ts';
 import type { RegistryInput } from './registry.ts';
 
-const fallbackEnumerated = (path: string): Enumerated => ({
-  path,
-  role: '',
-  name: '',
-  tag: '',
-  visible: false,
-  disabled: false,
-  skip: '',
-});
+const blankMeta = { role: '', name: '', tag: '', dialog: '' };
+
+const fallbackEnumerated = (hit: SweepHit | undefined, path: string): Enumerated => {
+  const meta = hit?.meta ?? blankMeta;
+  return {
+    path,
+    role: meta.role,
+    name: meta.name,
+    tag: meta.tag,
+    visible: false,
+    disabled: false,
+    skip: '',
+  };
+};
 
 const hitSkip = (hits: readonly SweepHit[], path: string): string =>
   hits.find((hit) => hit.path === path)?.skipped ?? 'not-visited';
@@ -27,7 +32,12 @@ export const joinSeen = (
 ): readonly RegistryInput[] => {
   const paths = [...new Set([...items.map((item) => item.path), ...hits.map((hit) => hit.path)])];
   return paths.map((path) => {
-    const info = items.find((item) => item.path === path) ?? fallbackEnumerated(path);
+    const info =
+      items.find((item) => item.path === path) ??
+      fallbackEnumerated(
+        hits.find((hit) => hit.path === path),
+        path,
+      );
     return {
       route,
       path,

@@ -81,7 +81,6 @@ export function EntityError({ id, error }: Readonly<{ id: string; error: string 
 function ParentField({ props }: Readonly<{ props: EntityProps }>) {
   return (
     <fieldset className="operation-group operation-context">
-      <legend>{presentationCopy(props.language).parent}</legend>
       <div className="form-field">
         <label htmlFor={`${props.id}-portfolio`}>{getLabels(props.language).portfolio}</label>
         <select id={`${props.id}-portfolio`} defaultValue={props.portfolioId}>

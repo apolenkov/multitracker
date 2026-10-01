@@ -120,8 +120,7 @@ export const feed: ReadonlyArray<FeedItem> = [
 export function eventDate(language: Language, date: string) {
   return new Intl.DateTimeFormat(language === 'ru' ? 'ru-RU' : 'en-GB', {
     day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+    month: 'short',
     hour: '2-digit',
     minute: '2-digit',
     timeZone: 'UTC',

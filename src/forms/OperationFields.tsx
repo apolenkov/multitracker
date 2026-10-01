@@ -42,8 +42,12 @@ function PrimaryFields(props: Props) {
   if (type === 'buy' || type === 'sell')
     return (
       <>
-        <OperationGroup {...props} title={copy.asset} fields={['asset', 'quantity']} />
-        <OperationGroup {...props} title={copy.trade} fields={['price', 'priceCurrency']} />
+        <OperationGroup {...props} title={copy.asset} fields={['asset']} />
+        <OperationGroup
+          {...props}
+          title={copy.trade}
+          fields={['quantity', 'price', 'priceCurrency']}
+        />
       </>
     );
   if (type === 'corporate')
@@ -106,7 +110,7 @@ function OperationGroup({
 }: Props & Readonly<{ title: string; fields: readonly Field[]; className?: string }>) {
   return (
     <fieldset className={`operation-group ${className}`}>
-      <legend>{title}</legend>
+      {fields.length > 1 && <legend>{title}</legend>}
       <div className="form-grid">
         {fields.map((field) => (
           <OperationField key={field} {...props} field={field} />

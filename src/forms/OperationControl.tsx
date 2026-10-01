@@ -80,7 +80,7 @@ export function OperationField({ field, ...props }: Props & Readonly<{ field: Fi
       )}
       {error && (
         <p id={`${id}-error`} className="field-error" role="alert">
-          {errorText(error, props.language)}
+          {errorText(error, field, props.language)}
         </p>
       )}
     </div>
@@ -104,10 +104,14 @@ function OperationInputControl({ field, id, value, update, error }: ControlProps
     />
   );
 }
-function errorText(error: string, language: Language) {
+function errorText(error: string, field: Field, language: Language) {
   const labels = getFormCopy(language);
   const messages = {
-    positive: labels.positive,
+    positive:
+      new Map([
+        ['quantity', labels.quantityError],
+        ['price', labels.priceError],
+      ]).get(field) ?? labels.positive,
     fee: labels.positive,
     total: labels.positive,
     date: labels.dateError,

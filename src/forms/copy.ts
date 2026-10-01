@@ -31,6 +31,8 @@ export const formCopy = {
       'Сохранение закрывает форму. Фиксированные остатки и результат примера не меняются.',
     positive:
       'Введите число в пределах макета: положительное; комиссия и начальный остаток могут быть нулевыми.',
+    quantityError: 'Введите количество больше 0',
+    priceError: 'Введите цену больше 0',
     dateError: 'Выберите существующую дату с 01.01.2000 до 30.09.2026.',
     selectionError: 'Выберите подходящее значение из списка.',
     destination: 'Получатель должен отличаться от источника.',
@@ -80,6 +82,8 @@ export const formCopy = {
     noteSample: 'Saving closes the form. Fixed sample balances and results remain unchanged.',
     positive:
       'Enter a positive number within prototype limits. Fees and opening balances may be zero.',
+    quantityError: 'Enter a quantity above 0',
+    priceError: 'Enter a price above 0',
     dateError: 'Choose a valid date from Jan 1, 2000 to Sep 30, 2026.',
     selectionError: 'Choose a valid option from the list.',
     destination: 'The receiving account must differ from the source.',

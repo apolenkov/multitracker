@@ -90,7 +90,7 @@ function CalendarRow({
 }: Props & Readonly<{ item: CalendarEvent; onOpen: () => void }>) {
   return (
     <button type="button" id={`event-${item.id}`} className="event-row" onClick={onOpen}>
-      <time dateTime={item.date}>{eventDate(language, item.date)} UTC</time>
+      <time dateTime={item.date}>{eventDate(language, item.date)}&nbsp;UTC</time>
       <span className="event-row-info">
         <span className="event-type">
           {local(
@@ -164,7 +164,7 @@ function CalendarSelection(
           <option value="">{text('Все даты', 'All dates')}</option>
           {calendar.map((item) => (
             <option key={item.id} value={item.date.slice(0, 10)}>
-              {eventDate(props.language, item.date)} UTC
+              {eventDate(props.language, item.date)}&nbsp;UTC
             </option>
           ))}
         </select>

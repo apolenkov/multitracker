@@ -66,6 +66,27 @@ export function operationExtras(browser: Browser) {
   go(browser, 'overview');
   browser.run('click', '.summary-result > button.primary');
   browser.run('wait', '#buy-dialog[open]');
+  truth(
+    browser,
+    'document.querySelectorAll(\'dialog[open] [role="alert"]:not(:empty)\').length === 0',
+    'Сразу после открытия покупки ошибок быть не должно',
+  );
+  browser.run('click', '#buy-dialog button[type="submit"]');
+  truth(
+    browser,
+    'document.querySelector("#buy-dialog-quantity-error")?.textContent === "Введите количество больше 0"',
+    'Пустое количество после отправки должно получить собственный текст ошибки',
+  );
+  browser.run('fill', '#buy-dialog-quantity', '1');
+  truth(
+    browser,
+    '!document.querySelector("#buy-dialog-quantity-error")',
+    'Ошибка после отправки должна исчезать сразу при исправлении поля',
+  );
+  browser.run('click', '#buy-dialog .close-button');
+  browser.run('wait', '--fn', '!document.querySelector("#buy-dialog[open]")');
+  browser.run('click', '.summary-result > button.primary');
+  browser.run('wait', '#buy-dialog[open]');
   reveal(browser, summary);
   const valid = validExtras(browser);
   reveal(browser, summary);

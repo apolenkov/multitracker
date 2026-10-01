@@ -5,19 +5,13 @@
   font-size: 14px;
 }
 .operation-kind {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  display: grid;
+  gap: 8px;
   padding-block: 4px 20px;
   border-bottom: 1px solid var(--line);
 }
 .operation-kind label {
-  flex: none;
   color: var(--ink);
-}
-.operation-kind select {
-  flex: 1;
-  min-width: 0;
 }
 .operation-groups,
 .entity-fields {
@@ -115,13 +109,6 @@
   }
   .form-field:only-child {
     grid-column: 1 / -1;
-  }
-  .operation-kind {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .operation-kind select {
-    flex-basis: 100%;
   }
   .exchange-pair {
     grid-template-columns: 1fr;

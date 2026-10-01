@@ -36,10 +36,19 @@ export function ConnectionForm({ provider, language, initial, t, onSave, onCance
       <ConnectionTest t={t} result={result} setResult={setResult} />
       <p className="demo-note">{t.onlyDemo}</p>
       <div className="dialog-actions">
+        {result !== 'passed' && (
+          <p id="connection-save-hint" className="demo-note">
+            {t.required}
+          </p>
+        )}
         <button type="button" className="quiet" onClick={onCancel}>
           {t.cancel}
         </button>
-        <button type="submit" disabled={result !== 'passed'}>
+        <button
+          type="submit"
+          disabled={result !== 'passed'}
+          aria-describedby={result === 'passed' ? undefined : 'connection-save-hint'}
+        >
           {t.save}
         </button>
       </div>
@@ -59,7 +68,6 @@ function ConnectionFields({
 }>) {
   return (
     <fieldset className="demo-field-group">
-      <legend>{t.destination}</legend>
       <label>
         {t.destination}
         <select
@@ -93,7 +101,7 @@ function ConnectionResult({
   t: ConnectionWords;
   retry: () => void;
 }>) {
-  if (result === 'idle') return <p>{t.required}</p>;
+  if (result === 'idle') return null;
   return (
     <div role="status">
       <p>{result === 'passed' ? t.passed : t.failed}</p>
@@ -217,11 +225,10 @@ function ConnectionTest({
 function ConnectionAccess({ t }: Readonly<{ t: ConnectionWords }>) {
   return (
     <fieldset className="demo-field-group">
-      <legend>{t.token}</legend>
       <p className="demo-note">{t.rights}</p>
       <label>
-        DEMO
-        <input readOnly value="demo-token-••••••••" aria-label={t.token} />
+        {t.token}
+        <input readOnly value="demo-token-••••••••" />
       </label>
     </fieldset>
   );

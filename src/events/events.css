@@ -50,7 +50,9 @@
   background: transparent;
   overflow-wrap: anywhere;
 }
+.event-dialog-content time,
 .event-row time {
+  white-space: nowrap;
   align-self: start;
   font-size: 14px;
   font-weight: 400;

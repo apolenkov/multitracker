@@ -26,7 +26,7 @@ export function HistoryFilters(props: Props) {
   return (
     <div className="history-filter-panel">
       <label className="history-search">
-        <span>{copy.search}</span>
+        <span className="visually-hidden">{copy.search}</span>
         <div>
           <Icon name="search" />
           <input

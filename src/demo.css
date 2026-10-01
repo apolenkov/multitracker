@@ -279,3 +279,10 @@ label.checkbox-row {
   gap: 16px;
   margin-bottom: 16px;
 }
+
+.dialog-actions > .demo-note {
+  flex: 1 0 100%;
+  grid-column: 1 / -1;
+  margin: 0;
+  text-align: right;
+}

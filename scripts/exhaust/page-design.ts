@@ -127,18 +127,14 @@ const paints = (el) => {
   return paintsBox(bg?.a ?? 0, bw, ba, cs.backgroundImage !== 'none');
 };
 const fixedNear = (el) => {
-  for (let n = el; n; n = n.parentElement) {
-    if (['fixed', 'sticky'].includes(getComputedStyle(n).position)) return true;
-  }
+  for (let n = el; n; n = n.parentElement) if (['fixed', 'sticky'].includes(getComputedStyle(n).position)) return true;
   return false;
 };
 const covers = (t, c) => {
-  const tr = rectOf(t);
-  const cr = rectOf(c);
+  const [tr, cr] = [rectOf(t), rectOf(c)];
   if (!overlap(tr, cr) || t.contains(c) || c.contains(t)) return false;
   // Текст для скринридера (1px, clip-path) никто не видит — закрытие им не считается.
-  const tcs = getComputedStyle(t);
-  if (Math.min(tr.w, tr.h) <= 1 || tcs.clipPath === 'inset(50%)') return false;
+  if (Math.min(tr.w, tr.h) <= 1 || getComputedStyle(t).clipPath === 'inset(50%)') return false;
   const x = (Math.max(tr.l, cr.l) + Math.min(tr.r, cr.r)) / 2;
   const y = (Math.max(tr.t, cr.t) + Math.min(tr.b, cr.b)) / 2;
   const top = x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight ? document.elementFromPoint(x, y) : null;

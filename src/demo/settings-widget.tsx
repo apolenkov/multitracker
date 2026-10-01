@@ -73,15 +73,26 @@ function PortfolioWidget(props: PreviewProps) {
         />
       </p>
       {props.changes && (
-        <p>
-          {text('Изменение за день', 'Daily change')}:{' '}
-          <span className="positive">
-            {masked(
-              props.hidden,
-              `${widgetNumber(props.language, 180, true)} USD (${widgetNumber(props.language, 1.46, true)}%)`,
-            )}
-          </span>
-        </p>
+        <>
+          <p>
+            {text('Изменение за день', 'Daily change')}:{' '}
+            <span className="positive">
+              {masked(
+                props.hidden,
+                `${widgetNumber(props.language, 180, true)} USD (${widgetNumber(props.language, 1.46, true)}%)`,
+              )}
+            </span>
+          </p>
+          <p>
+            {text('Изменение за неделю', 'Weekly change')}:{' '}
+            <span className="negative">
+              {masked(
+                props.hidden,
+                `${widgetNumber(props.language, -320, true)} USD (${widgetNumber(props.language, -2.5, true)}%)`,
+              )}
+            </span>
+          </p>
+        </>
       )}
       {props.layout === 'detailed' && (
         <dl className="widget-breakdown">

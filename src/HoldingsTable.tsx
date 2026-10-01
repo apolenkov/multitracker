@@ -3,6 +3,7 @@ import { tabsListClass, tabsTriggerClass } from '@/components/ui/tabs.tsx';
 import { Icon } from './Icon.tsx';
 import { AssetSymbol } from './AssetSymbol.tsx';
 import { openDialog, openOperation } from './Forms.tsx';
+import { RowAction } from './RowActions.tsx';
 import { totals, type Asset, type Buy, type Currency } from './model/portfolio.ts';
 import { getLabels, money, number, percentage, resultTone, type Language } from './i18n.ts';
 import { groupHoldings, holdingClassName, type HoldingGroup } from './holding-groups.ts';
@@ -173,8 +174,9 @@ function CashHoldingRow({
   hidden,
 }: Pick<TableProps, 'currency' | 'language' | 'hidden'>) {
   const labels = getLabels(language);
-  const action = language === 'ru' ? 'Задать остаток' : 'Set balance';
+  const action = language === 'ru' ? 'Изменить остаток' : 'Edit balance';
   const balance = language === 'ru' ? 'Остаток' : 'Balance';
+  const open = () => openOperation('opening', { asset: currency, currency });
   return (
     <tr className="holding-row cash-holding-row" data-currency={currency}>
       <td className="cash-holding-identity">
@@ -182,13 +184,9 @@ function CashHoldingRow({
           <AssetSymbol symbol={currency} />
           <strong>{currency}</strong>
         </div>
-        <button
-          type="button"
-          aria-label={`${action} · ${currency}`}
-          onClick={() => openOperation('opening', { asset: currency, currency })}
-        >
-          {action}
-        </button>
+        <div className="row-actions">
+          <RowAction icon="edit" label={action} subject={currency} onClick={open} />
+        </div>
       </td>
       <td className="holding-quantity">
         <span className="mobile-label">{labels.quantity}</span>

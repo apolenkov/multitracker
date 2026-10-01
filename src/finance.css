@@ -234,10 +234,6 @@
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
-.asset-catalog {
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-}
 .insight-controls,
 .report-toolbar {
   display: flex;
@@ -251,28 +247,6 @@
 }
 .report-transactions {
   margin-top: 28px;
-}
-.asset-catalog ul {
-  display: grid;
-  gap: 0;
-  list-style: none;
-  padding: 0;
-}
-.asset-catalog li button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
-  background: transparent;
-  text-align: left;
-}
-.asset-catalog li span {
-  color: var(--muted);
-  font-size: 14px;
 }
 .allocation-list h2 {
   font-size: 18px;

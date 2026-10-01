@@ -8,11 +8,6 @@
   align-items: flex-start;
   gap: 8px;
 }
-.cash-holding-identity button {
-  max-width: 100%;
-  font-size: 14px;
-  white-space: nowrap;
-}
 .holding-allocation {
   display: block;
   width: 100%;
@@ -35,16 +30,6 @@
 }
 .holding-allocation.twt > span {
   background: var(--allocation-twt);
-}
-.market-asset-identity {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-.market-change {
-  justify-self: end;
-  white-space: nowrap;
 }
 .portfolio-meta {
   display: flex;

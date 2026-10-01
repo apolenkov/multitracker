@@ -36,11 +36,14 @@ export function ConnectionForm({ provider, language, initial, t, onSave, onCance
       <ConnectionTest t={t} result={result} setResult={setResult} />
       <p className="demo-note">{t.onlyDemo}</p>
       <div className="dialog-actions">
-        {result !== 'passed' && (
-          <p id="connection-save-hint" className="demo-note">
-            {t.required}
-          </p>
-        )}
+        {/* Kept in place when hidden so the footer buttons do not move after the check. */}
+        <p
+          id="connection-save-hint"
+          className="demo-note"
+          style={result === 'passed' ? { visibility: 'hidden' } : undefined}
+        >
+          {t.required}
+        </p>
         <button type="button" className="quiet" onClick={onCancel}>
           {t.cancel}
         </button>

@@ -1,10 +1,12 @@
 dialog {
-  --dialog-limit: min(85dvh, calc(100dvh - 32px));
+  /* Anchored to the top: the dialog grows downward and its heading never moves. */
+  --dialog-top: min(8dvh, 64px);
   --dialog-button-height: max(44px, calc(1lh + 18px));
   --dialog-footer-reserve: calc(var(--dialog-button-height) + 16px + 1px + 6px);
-  max-height: var(--dialog-limit);
-  margin-block: calc((100dvh - var(--dialog-limit)) / 2) auto;
-  scroll-padding-top: calc(var(--dialog-inset) + 44px);
+  max-height: calc(100dvh - 2 * var(--dialog-top));
+  margin: var(--dialog-top) auto auto;
+  /* Covers a heading whose title wraps to two lines. */
+  scroll-padding-top: calc(var(--dialog-inset) + max(44px, 2lh) + 16px);
   scroll-padding-bottom: var(--dialog-footer-reserve);
 }
 /* Sticky offsets are measured from the padding-inset scrollport, so the bars reach the dialog edge

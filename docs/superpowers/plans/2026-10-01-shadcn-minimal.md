@@ -6,7 +6,7 @@
 
 **Architecture:** Tailwind v4 без preflight и shadcn-примитивы (Radix) вводятся рядом с существующим CSS; примитивы стилизуются через `cn()` и токены `src/appearance.css`. Заменяются только ручные компоненты, которые ломаются (меню «⋯» → DropdownMenu, чипы → Tabs). Нативные `<dialog>`, `<details>` и `<select>` верхней панели остаются: на них завязаны 39/22/8 проверок и мобильные системные списки; их дефекты чинятся CSS.
 
-**Tech Stack:** React 19, Vite 8, TypeScript, Tailwind 4 (`@tailwindcss/vite`), `radix-ui`, `class-variance-authority`, `clsx`, `tailwind-merge`. Без lucide: значки из `src/Icon.tsx`.
+**Tech Stack:** React 19, Vite 8, TypeScript, Tailwind 4 (`@tailwindcss/vite`), `radix-ui`, `clsx`, `tailwind-merge`. Без lucide: значки из `src/Icon.tsx`.
 
 **Spec:** `docs/audits/2026-09-30-claude-crawl/visual-review-1.md` (пункты 1–23), `docs/audits/2026-09-30-claude-crawl/handoff.md`, направление — минимализм (один акцент, границы 1 px, без вложенных рамок).
 
@@ -42,7 +42,7 @@
 
 - [ ] **Step 1: Установить зависимости**
 
-Run: `npm i tailwindcss @tailwindcss/vite radix-ui class-variance-authority clsx tailwind-merge`
+Run: `npm i tailwindcss @tailwindcss/vite radix-ui clsx tailwind-merge`
 Expected: `package.json` содержит все шесть; `npm audit --audit-level=high` — 0 high.
 
 - [ ] **Step 2: `src/tailwind.css` без preflight**

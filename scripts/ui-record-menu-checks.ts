@@ -87,17 +87,22 @@ function rowHitArea(browser: Browser, index: number) {
 
 function actionPaths(browser: Browser, index: number) {
   const row = `${rows}:nth-child(${index + 1})`;
+  const trigger = `${row} button.action-menu-trigger`;
+  // Правка закрывается настоящим Escape, удаление — кнопкой X; оба возвращают фокус на «⋯».
   return ['edit', 'delete'].map((action) => {
-    browser.run('click', `${row} button.action-menu-trigger`);
+    browser.run('click', trigger);
     browser.run('wait', '[role="menu"]');
     const item = action === 'edit' ? '[role="menuitem"]:not(.danger)' : '[role="menuitem"].danger';
     browser.run('click', `[role="menu"] ${item}`);
     const dialog = action === 'edit' ? '#record-edit-dialog' : '#record-dialog';
     browser.run('wait', `${dialog}[open]`);
-    // agent-browser 0.38.1 + Chrome 154: press floods keydown; dialog Escape is covered in ui-operation-checks.ts
-    browser.run('click', `${dialog} .close-button`);
+    if (action === 'edit') browser.run('press', 'Escape');
+    else browser.run('click', `${dialog} .close-button`);
     browser.run('wait', '--fn', `!document.querySelector('${dialog}[open]')`);
-    return { index, action, openedAndCancelled: true };
+    const focused = `document.activeElement === document.querySelector('${trigger}')`;
+    browser.run('wait', '--fn', focused);
+    assert.equal(evaluate(browser, focused), true, `${action}: фокус должен вернуться на «⋯»`);
+    return { index, action, closedBy: action === 'edit' ? 'Escape' : 'X', triggerFocus: true };
   });
 }
 

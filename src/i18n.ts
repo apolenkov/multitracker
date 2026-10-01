@@ -230,6 +230,9 @@ export const money = (value: number, currency: Currency, language: Language, sig
     maximumFractionDigits: 2,
     signDisplay: signed ? 'exceptZero' : 'auto',
   }).format(value);
+// Скрытые суммы не раскрывают знак результата цветом.
+export const resultTone = (value: number, hidden: boolean) =>
+  hidden ? undefined : value >= 0 ? 'positive' : 'negative';
 export const number = (value: number, language: Language) =>
   new Intl.NumberFormat(locale(language), { maximumFractionDigits: 6 }).format(value);
 export const date = (value: string, language: Language) =>

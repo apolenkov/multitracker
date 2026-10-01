@@ -13,8 +13,8 @@
 ## Решение
 
 1. Подключить Tailwind v4 (`tailwindcss`, плагин `@tailwindcss/vite`), примитивы
-   Radix (`radix-ui`) и вспомогательные `class-variance-authority`, `clsx`,
-   `tailwind-merge`. Это первая зависимость сверх React; плагин Vite — только
+   Radix (`radix-ui`) и вспомогательные `clsx`, `tailwind-merge`
+   (`class-variance-authority` не понадобился и удалён). Это первая зависимость сверх React; плагин Vite — только
    для сборки (devDependencies), остальное — среда выполнения.
 2. Preflight (сброс стилей Tailwind) не подключается: `src/tailwind.css` импортирует
    только `theme.css` и `utilities.css`. Иначе сброс перекрыл бы `base.css` и

@@ -62,12 +62,10 @@ function DemoNotice({
   language,
   dismiss,
 }: Readonly<{ text: string; count: number; language: 'ru' | 'en'; dismiss: () => void }>) {
-  const notice = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (text) notice.current?.scrollIntoView({ block: 'nearest' });
-  }, [text, count]);
+  // Сообщение остаётся в потоке страницы и объявляется live-регионом; страницу к нему
+  // не прокручиваем: прыжок уводил открыватель с фокусом за верхний край окна.
   return (
-    <div className="demo-status" ref={notice}>
+    <div className="demo-status">
       <div role="status" aria-live="polite" aria-atomic="true">
         <span key={count}>{text}</span>
       </div>

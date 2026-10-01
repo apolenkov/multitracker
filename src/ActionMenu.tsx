@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { cn } from '@/lib/utils.ts';
 import {
   DropdownMenu,
@@ -24,17 +24,14 @@ type Props = Readonly<{
 }>;
 
 export function ActionMenu({ className, label, items, align = 'end' }: Props) {
-  // Действие выполняется после закрытия меню: диалог, открытый из пункта,
-  // иначе запомнил бы исчезающий пункт как место возврата фокуса.
+  // Действие выполняется, когда меню уже сняло ловушку фокуса (onCloseAutoFocus): фокус
+  // сначала ставится на «⋯», и диалог из пункта запоминает его как место возврата.
+  const trigger = useRef<HTMLButtonElement>(null);
   const [selected, setSelected] = useState<ActionItem | null>(null);
-  useEffect(() => {
-    if (!selected) return;
-    selected.onSelect();
-    setSelected(null);
-  }, [selected]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
+        ref={trigger}
         aria-label={label}
         className={cn(
           'action-menu-trigger text-ink hover:bg-surface grid size-11 flex-none place-items-center border-0 bg-transparent p-0',
@@ -49,6 +46,13 @@ export function ActionMenu({ className, label, items, align = 'end' }: Props) {
         align={align}
         sideOffset={8}
         collisionPadding={{ bottom: 72, top: 8, left: 16, right: 16 }}
+        onCloseAutoFocus={(event) => {
+          if (!selected) return;
+          event.preventDefault();
+          trigger.current?.focus();
+          setSelected(null);
+          selected.onSelect();
+        }}
       >
         {items.map((item) => (
           <Fragment key={item.label}>

@@ -237,7 +237,6 @@ label.checkbox-row {
 }
 .demo-status {
   color: var(--ink);
-  scroll-margin-block: 20px 90px;
 }
 .demo-status:has(span:not(:empty)) {
   padding: 14px 16px;

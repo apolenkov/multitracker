@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
+import { tabsListClass, tabsTriggerClass } from '@/components/ui/tabs.tsx';
 import { Icon } from './Icon.tsx';
 import { AssetSymbol } from './AssetSymbol.tsx';
 import { openDialog, openOperation } from './Forms.tsx';
 import { totals, type Asset, type Buy, type Currency } from './model/portfolio.ts';
-import { getLabels, money, number, percentage, type Language } from './i18n.ts';
+import { getLabels, money, number, percentage, resultTone, type Language } from './i18n.ts';
 
 type Holding = Readonly<{ asset: Asset; buys: readonly Buy[] }>;
 type SortColumn = 'asset' | 'value';
@@ -58,26 +58,27 @@ function SortControls({
   return (
     <div className="holdings-sort">
       <span>{labels.sortBy}:</span>
-      {/* Повторный клик по активной вкладке меняет направление, поэтому выбор — через onClick. */}
-      <Tabs value={sort.column} activationMode="manual">
-        <TabsList aria-label={labels.sortBy}>
-          {(['asset', 'value'] as const).map((column) => (
-            <TabsTrigger
-              key={column}
-              value={column}
-              aria-label={`${column === 'asset' ? labels.asset : labels.value}${sort.column === column ? ` · ${direction}` : ''}`}
-              onClick={() => toggle(column)}
-            >
-              {column === 'asset' ? labels.asset : labels.value}
-              {sort.column === column && (
-                <span className={`sort-marker ${sort.direction}`}>
-                  <Icon name="chevron" />
-                </span>
-              )}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      {/* Не вкладки: кнопки с aria-pressed, повторный клик меняет направление. */}
+      <div role="group" aria-label={labels.sortBy} className={tabsListClass}>
+        {(['asset', 'value'] as const).map((column) => (
+          <button
+            type="button"
+            key={column}
+            className={tabsTriggerClass}
+            data-state={sort.column === column ? 'active' : 'inactive'}
+            aria-pressed={sort.column === column}
+            aria-label={`${column === 'asset' ? labels.asset : labels.value}${sort.column === column ? ` · ${direction}` : ''}`}
+            onClick={() => toggle(column)}
+          >
+            {column === 'asset' ? labels.asset : labels.value}
+            {sort.column === column && (
+              <span className={`sort-marker ${sort.direction}`}>
+                <Icon name="chevron" />
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -205,7 +206,7 @@ function HoldingRow({
         <span className="mobile-label">{labels.value}</span>
         {amount(result.value)}
       </td>
-      <td className={performance.profit >= 0 ? 'positive' : 'negative'}>
+      <td className={resultTone(performance.profit, hidden)}>
         <span className="mobile-label">
           {labels.result} · {baseCurrency}
         </span>

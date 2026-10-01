@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getLabels, money } from '../i18n.ts';
+import { getLabels, money, resultTone } from '../i18n.ts';
 import { selectedBuys, summarize } from '../model/portfolio.ts';
 import { EntityDialog, openDialog } from '../Forms.tsx';
 import { recordsCopy } from './copy.ts';
@@ -194,7 +194,7 @@ function PortfolioValue({
       </span>
       <span className="portfolio-value">
         {hidden ? '••••' : money(result.value, currency, language)}
-        <small className={performance.profit >= 0 ? 'positive' : 'negative'}>
+        <small className={resultTone(performance.profit, hidden)}>
           {labels.result} · {baseCurrency}:{' '}
           {hidden ? '••••' : money(performance.profit, baseCurrency, language, true)}
         </small>

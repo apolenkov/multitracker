@@ -27,18 +27,33 @@ function rows(browser: Browser): readonly Row[] {
   return observed;
 }
 
+const names = new Map([
+  ['asset', 'Актив'],
+  ['value', 'Стоимость'],
+]);
+const directions = new Map([
+  ['ascending', 'по возрастанию'],
+  ['descending', 'по убыванию'],
+]);
+
 export function holdingsSort(browser: Browser) {
   return (['asset', 'value'] as const).flatMap((column) =>
     (['ascending', 'descending'] as const).map((direction) => {
       const header = `.holding-head th:nth-child(${column === 'asset' ? 1 : 3})`;
       const desired = `document.querySelector('${header}')?.getAttribute('aria-sort') === '${direction}'`;
-      const tab = `.holdings-sort [role=tab]:nth-of-type(${column === 'asset' ? 1 : 2})`;
+      const tab = `.holdings-sort [role=group] button:nth-of-type(${column === 'asset' ? 1 : 2})`;
       if (evaluate(browser, desired) !== true) browser.run('click', tab);
       assert.equal(evaluate(browser, desired), true, 'Сортировка должна объявить своё направление');
-      assert.equal(
-        evaluate(browser, `document.querySelector('${tab}')?.getAttribute('aria-selected')`),
-        'true',
-        'Активная вкладка сортировки должна быть выбрана',
+      assert.deepEqual(
+        evaluate(
+          browser,
+          `[...document.querySelectorAll('.holdings-sort [role=group] button')].map(b => [b.getAttribute('aria-pressed'), b.getAttribute('aria-label')])`,
+        ),
+        (['asset', 'value'] as const).map((name) => [
+          String(name === column),
+          `${names.get(name) ?? ''}${name === column ? ` · ${directions.get(direction) ?? ''}` : ''}`,
+        ]),
+        'Нажатая кнопка сортировки и направление в доступном имени',
       );
       const actual = rows(browser);
       const sorted = actual.toSorted((left, right) =>

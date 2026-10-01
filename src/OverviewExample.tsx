@@ -1,5 +1,5 @@
 import { attribution, type Buy, type Currency } from './model/portfolio.ts';
-import { money, type Language } from './i18n.ts';
+import { money, resultTone, type Language } from './i18n.ts';
 import { insightWords } from './insights/words.ts';
 
 type Props = Readonly<{
@@ -28,7 +28,7 @@ export function Example({ buys, currency, language, hidden }: Props) {
         {rows.map(([label, value]) => (
           <div key={label}>
             <dt>{label}</dt>
-            <dd className={value >= 0 ? 'positive' : 'negative'}>
+            <dd className={resultTone(value, hidden)}>
               {hidden ? '••••' : money(value, currency, language, true)}
             </dd>
           </div>

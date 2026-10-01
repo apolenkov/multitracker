@@ -30,6 +30,14 @@ dialog .dialog-heading {
 dialog :is(input, select, textarea, summary, a[href]) {
   scroll-margin-block: 6px var(--dialog-footer-reserve);
 }
+/* Focus scrolls the field's own label (up to two lines) and, in the first row of a group,
+   the group legend out from under the sticky heading. */
+dialog .form-field > :is(input, select, textarea) {
+  scroll-margin-top: calc(6px + 2lh + 8px);
+}
+dialog fieldset > .form-grid > .form-field:nth-child(-n + 2) > :is(input, select, textarea) {
+  scroll-margin-top: calc(6px + 3lh + 22px);
+}
 dialog :is(.close-button, .icon-close) {
   display: grid;
   place-items: center;

@@ -79,3 +79,18 @@ export function initialSkipFocus(browser: Browser, url: string) {
   );
   return 'Свежая загрузка → #overview без рамки; Tab → ссылка пропуска; Enter → видимый фокус main';
 }
+
+// В режиме скрытия сумм знак результата не раскрывается цветом (DESIGN.md).
+export function maskedResultTones(browser: Browser) {
+  const tones = ['overview', 'portfolios', 'analytics'].map((screen) => {
+    go(browser, screen);
+    if (screen === 'analytics')
+      browser.run('select', '[data-testid="analytics-section"]', 'performance');
+    return evaluate(
+      browser,
+      'Array.from(document.querySelectorAll("#main .positive, #main .negative")).filter((node) => !node.closest("[hidden]")).map((node) => node.textContent?.trim())',
+    );
+  });
+  assert.deepEqual(tones, [[], [], []], 'Скрытый результат раскрывает знак цветом');
+  return 'Обзор, Портфели, Аналитика: нет .positive/.negative при скрытых суммах';
+}

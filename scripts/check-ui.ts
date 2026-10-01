@@ -10,7 +10,7 @@ import { conflictRadioChoices, syncPostConflictDisclosure } from './ui-sync-chec
 import { reveal } from './ui-exploration.ts';
 import { operationExtras } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
-import { initialSkipFocus, narrowAllocation } from './ui-overview-checks.ts';
+import { initialSkipFocus, maskedResultTones, narrowAllocation } from './ui-overview-checks.ts';
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
 import { recordMenuStability } from './ui-record-menu-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
@@ -82,6 +82,10 @@ function screenChecks(width: number, locale: Language): readonly Result[] {
       truth(
         'document.documentElement.scrollWidth <= innerWidth + 1',
         'Горизонтальное переполнение страницы',
+      );
+      truth(
+        '[...document.querySelectorAll("[role=tab][aria-controls]")].every((node) => node.getAttribute("aria-controls").split(" ").every((id) => document.getElementById(id)))',
+        'aria-controls вкладки ссылается на несуществующую панель',
       );
       return evaluate(
         browser,
@@ -210,8 +214,15 @@ function hiddenReconciliation() {
   assert.ok(typeof text === 'string', 'Открытый диалог сверки отсутствует');
   assert.equal(/\+?0[.,]0[145]/.test(text), false, 'Диалог раскрывает исходные суммы');
   browser.run('click', '#import-history[open] .icon-close');
-  browser.run('wait', '--fn', '!document.querySelector("#import-history[open]")');
-  return 'В открытой сверке: три ••••; нет 0.04, 0.05, +0.01 с точкой или запятой';
+  browser.run(
+    'wait',
+    '--fn',
+    '!document.querySelector("#import-history[open]") && document.activeElement === document.querySelector(".import-history button.action-menu-trigger")',
+  );
+  return [
+    maskedResultTones(browser),
+    'В открытой сверке: три ••••; нет 0.04, 0.05, +0.01 с точкой или запятой',
+  ];
 }
 function runChecks(driver: Browser): readonly Result[] {
   const pages = [

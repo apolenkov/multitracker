@@ -1,6 +1,11 @@
 html {
   scrollbar-gutter: stable;
 }
+/* The gutter is already reserved: cancel the scrollbar compensation that the Radix menu's
+   scroll lock (react-remove-scroll-bar) adds, otherwise the page shifts left by its width. */
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
+}
 summary {
   min-height: 44px;
   padding-block: 10px;

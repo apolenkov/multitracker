@@ -63,7 +63,7 @@ export function selectedChoice(browser: Browser, control: Control) {
       browser,
       control.path,
       `Boolean(
-    (element?.getAttribute('aria-pressed')==='true' && element.closest('.events-view-switch') || element?.getAttribute('aria-selected')==='true' && element.closest('.period-controls,.events-filter,.holdings-sort')) ||
+    (element?.getAttribute('aria-pressed')==='true' && element.closest('.events-view-switch,.holdings-sort') || element?.getAttribute('aria-selected')==='true' && element.closest('.period-controls,.events-filter')) ||
     element?.matches('input[type=radio]:checked') ||
     element?.closest('.welcome-guide') && (
       element.textContent==='Открыть портфели' && location.hash==='#portfolios' ||

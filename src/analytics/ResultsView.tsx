@@ -1,3 +1,4 @@
+import { resultTone } from '../i18n.ts';
 import { sampleMoney } from './format.ts';
 import { Answer } from './Answer.tsx';
 import type { ViewProps } from './types.ts';
@@ -22,7 +23,7 @@ export function ResultsView(props: ViewProps) {
         {rows.map((row) => (
           <div
             key={row.name}
-            className={row[props.period][1] + row[props.period][2] >= 0 ? 'positive' : 'negative'}
+            className={resultTone(row[props.period][1] + row[props.period][2], props.hidden)}
           >
             <dt>{row.name}</dt>
             <dd>

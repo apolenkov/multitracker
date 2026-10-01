@@ -3,6 +3,8 @@ import path from 'node:path';
 import { ESLint } from 'eslint';
 import ts from 'typescript';
 
+// typescript-eslint поддерживает TypeScript только до 6.1 (decision-094).
+assert.match(ts.version, /^6\.0\./, 'Типизированная проверка вышла из поддерживаемого диапазона');
 const filePath = path.resolve('src/gate-probe.tsx');
 const config = ts.getParsedCommandLineOfConfigFile(
   'tsconfig.json',

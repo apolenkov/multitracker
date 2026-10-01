@@ -80,7 +80,17 @@ export default tseslint.config(
       '@typescript-eslint/prefer-readonly': 'error',
       '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
       '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
-      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allowAny: false,
+          allowBoolean: false,
+          allowNever: false,
+          allowNullish: false,
+          allowNumber: true,
+          allowRegExp: false,
+        },
+      ],
       'max-depth': ['error', 2],
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
@@ -152,25 +162,55 @@ export default tseslint.config(
       'sonarjs/cognitive-complexity': ['error', 8],
     },
   },
+  // Долг (decision-094): файлы, где новое правило пока не проходит. Блок на правило;
+  // исправленный файл вычёркивается. Правила, что действовали до decision-094
+  // (restrict-plus-operands, restrict-template-expressions), возвращены к прежним
+  // параметрам, а не выключены.
   {
-    // Прежние нарушения новых правил: по одному-трём на файл. Каждое исправление
-    // сокращает список; новые файлы под список не попадают (decision-094).
     files: [
       'eslint.config.ts',
-      'src/Dialog.tsx',
       'src/demo/connection-form.tsx',
       'src/forms/EntityDialog.tsx',
       'src/forms/OperationForm.tsx',
-      'scripts/ui-smoke.ts',
-      'scripts/ui-smoke-dialogs.ts',
-      'scripts/ui-smoke-geometry.ts',
-      'scripts/ui-smoke-report.ts',
     ],
+    rules: { '@typescript-eslint/no-deprecated': 'off' },
+  },
+  {
+    files: ['src/Dialog.tsx', 'scripts/ui-smoke-dialogs.ts'],
+    rules: { '@typescript-eslint/no-unnecessary-condition': 'off' },
+  },
+  {
+    files: ['scripts/ui-smoke-report.ts', 'scripts/ui-smoke.ts'],
+    rules: { '@typescript-eslint/prefer-regexp-exec': 'off' },
+  },
+  {
+    files: ['scripts/ui-smoke-geometry.ts'],
     rules: {
-      '@typescript-eslint/no-deprecated': 'off',
-      '@typescript-eslint/no-unnecessary-condition': 'off',
-      '@typescript-eslint/prefer-regexp-exec': 'off',
-      '@typescript-eslint/restrict-plus-operands': 'off',
+      '@typescript-eslint/restrict-plus-operands': [
+        'error',
+        {
+          allowAny: true,
+          allowBoolean: true,
+          allowNullish: true,
+          allowNumberAndString: true,
+          allowRegExp: true,
+        },
+      ],
+    },
+  },
+  {
+    files: ['scripts/ui-smoke-negative.ts'],
+    rules: {
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allowAny: true,
+          allowBoolean: true,
+          allowNullish: true,
+          allowNumber: true,
+          allowRegExp: true,
+        },
+      ],
     },
   },
 );

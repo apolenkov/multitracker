@@ -9,9 +9,10 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node node_modules/typescript-7/bin/tsc --noEmit",
+    "typecheck:ts6": "tsc6 --noEmit",
     "format": "prettier --write \"{src,tests,scripts}/**/*.{ts,tsx,css}\" eslint.config.ts vite.config.ts",
     "format:check": "prettier --check \"{src,tests,scripts}/**/*.{ts,tsx,css}\" eslint.config.ts vite.config.ts",
     "lint": "eslint . --max-warnings 0 && npm run accessibility",
@@ -21,7 +22,7 @@
     "secrets": "gitleaks dir . --redact --no-banner",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:gates": "node --experimental-strip-types scripts/check-gates.ts",
-    "check": "npm run format:check && npm run typecheck && npm run complexity && npm run test:gates && npm test && npm run build && npm run security && npm run secrets",
+    "check": "npm run format:check && npm run typecheck && npm run typecheck:ts6 && npm run complexity && npm run test:gates && npm test && npm run build && npm run security && npm run secrets",
     "test:ui": "node --experimental-strip-types scripts/check-ui.ts",
     "test:ui:docker": "vite build --outDir dist && scripts/ui-docker.sh dist check-ui.ts",
     "test:smoke": "node --experimental-strip-types scripts/ui-smoke.ts"
@@ -36,6 +37,9 @@
   "overrides": {
     "eslint-plugin-functional": {
       "deepmerge-ts": "8.0.2"
+    },
+    "@typescript/typescript6": {
+      "@typescript/old": "npm:typescript@6.0.3"
     }
   },
   "devDependencies": {
@@ -57,7 +61,8 @@
     "oxlint": "1.86.0",
     "prettier": "3.9.9",
     "tailwindcss": "4.3.3",
-    "typescript": "6.0.3",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "typescript-7": "npm:typescript@7.0.2",
     "typescript-eslint": "8.71.0",
     "vite": "8.3.1"
   }

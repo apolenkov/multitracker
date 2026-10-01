@@ -40,6 +40,7 @@ function stableMenu(browser: Browser, index: number) {
   browser.run('press', 'Escape');
   browser.run('wait', '--fn', `!document.querySelector('[role="menu"]')`);
   assert.deepEqual(geometry(browser, index), before, 'Закрытие сдвинуло собственную строку');
+  browser.run('wait', '--fn', `document.activeElement === document.querySelector('${trigger}')`);
   assert.equal(
     evaluate(browser, `document.activeElement === document.querySelector('${trigger}')`),
     true,
@@ -57,6 +58,7 @@ function actionPaths(browser: Browser, index: number) {
     browser.run('click', `[role="menu"] ${item}`);
     const dialog = action === 'edit' ? '#record-edit-dialog' : '#record-dialog';
     browser.run('wait', `${dialog}[open]`);
+    // agent-browser 0.38.1 + Chrome 154: press floods keydown; dialog Escape is covered in ui-operation-checks.ts
     browser.run('click', `${dialog} .close-button`);
     browser.run('wait', '--fn', `!document.querySelector('${dialog}[open]')`);
     return { index, action, openedAndCancelled: true };

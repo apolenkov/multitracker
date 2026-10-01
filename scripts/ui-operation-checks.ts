@@ -110,6 +110,7 @@ function editedExtras(browser: Browser) {
     'document.querySelector("#record-edit-dialog .operation-additional")?.open === false',
     'Пустой исправленный черновик должен сворачиваться по явному действию',
   );
+  // agent-browser 0.38.1 + Chrome 154: press floods keydown; dialog Escape is covered in ui-operation-checks.ts
   browser.run('click', '#record-edit-dialog .close-button');
   browser.run('wait', '--fn', '!document.querySelector("#record-edit-dialog[open]")');
   return 'Исходное примечание → очистка с фокусом → явное сворачивание → отмена';

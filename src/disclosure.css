@@ -11,10 +11,10 @@ summary {
 summary::-webkit-details-marker {
   display: none;
 }
-details:not(.action-menu) > summary {
+details > summary {
   color: var(--ink);
 }
-details:not(.action-menu) > summary::before {
+details > summary::before {
   content: '';
   display: inline-block;
   width: 16px;
@@ -26,26 +26,26 @@ details:not(.action-menu) > summary::before {
     center / contain no-repeat;
   transition: transform 150ms ease-out;
 }
-details[open]:not(.action-menu) > summary::before {
+details[open] > summary::before {
   transform: rotate(90deg);
 }
 @supports (interpolate-size: allow-keywords) {
-  details:not(.action-menu) {
+  details {
     interpolate-size: allow-keywords;
   }
-  details:not(.action-menu)::details-content {
+  details::details-content {
     block-size: 0;
     overflow: hidden;
     transition:
       block-size 200ms ease-out,
       content-visibility 200ms allow-discrete;
   }
-  details[open]:not(.action-menu)::details-content {
+  details[open]::details-content {
     block-size: auto;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  details:not(.action-menu)::details-content {
+  details::details-content {
     transition: none;
   }
 }

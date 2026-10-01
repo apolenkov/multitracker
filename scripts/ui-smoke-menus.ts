@@ -25,15 +25,7 @@ export function menus(browser: Browser, state: State): Outcome {
   const expandedHeight = rowHeight(browser);
   capture(browser, state, 'last-menu');
   const geometry = menuGeometry(browser);
-  browser.run('click', first);
-  browser.run('wait', `${first}[aria-expanded="true"]`);
-  settleLayout(browser);
-  const observed = evaluate(
-    browser,
-    `({count:document.querySelectorAll('[role="menu"]').length,
-    lastClosed:document.querySelector('${last}')?.getAttribute('aria-expanded') === 'false'})`,
-  );
-  assert.ok(record(observed));
+  const observed = openSecond(browser);
   const followingAfter = evaluate(
     browser,
     'document.querySelector(".history-row:nth-child(2)")?.getBoundingClientRect().top + scrollY',
@@ -59,7 +51,22 @@ export function menus(browser: Browser, state: State): Outcome {
   ];
   return { entries: [], findings: [...findings, ...menuEscape(browser)] };
 }
-function menuGeometry(browser: Browser): readonly Finding[] {
+function openSecond(browser: Browser) {
+  // Модальное меню: клик снаружи только закрывает его, поэтому закрываем Escape и открываем соседнее.
+  browser.run('press', 'Escape');
+  browser.run('wait', '--fn', `!document.querySelector('[role="menu"]')`);
+  browser.run('click', first);
+  browser.run('wait', `${first}[aria-expanded="true"]`);
+  settleLayout(browser);
+  const observed = evaluate(
+    browser,
+    `({count:document.querySelectorAll('[role="menu"]').length,
+    lastClosed:document.querySelector('${last}')?.getAttribute('aria-expanded') === 'false'})`,
+  );
+  assert.ok(record(observed));
+  return observed;
+}
+export function menuGeometry(browser: Browser): readonly Finding[] {
   const observed = evaluate(
     browser,
     `(() => {
@@ -90,6 +97,8 @@ function menuGeometry(browser: Browser): readonly Finding[] {
 function menuEscape(browser: Browser): readonly Finding[] {
   browser.run('focus', '[role="menu"] [role="menuitem"]');
   browser.run('press', 'Escape');
+  browser.run('wait', '--fn', `!document.querySelector('[role="menu"]')`);
+  settleLayout(browser);
   const escaped = evaluate(
     browser,
     `({closed:!document.querySelector('[role="menu"]'), focus:document.activeElement?.matches(${JSON.stringify(first)})})`,

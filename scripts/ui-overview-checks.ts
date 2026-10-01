@@ -83,7 +83,12 @@ export function initialSkipFocus(browser: Browser, url: string) {
 // В режиме скрытия сумм знак результата не раскрывается цветом (DESIGN.md).
 export function maskedResultTones(browser: Browser) {
   const tones = ['overview', 'portfolios', 'analytics'].map((screen) => {
-    go(browser, screen);
+    browser.run('click', `.desktop-links a[href="#${screen}"]`);
+    browser.run(
+      'wait',
+      '--fn',
+      `location.hash === '#${screen}' && document.activeElement?.id === 'main'`,
+    );
     if (screen === 'analytics')
       browser.run('select', '[data-testid="analytics-section"]', 'performance');
     return evaluate(

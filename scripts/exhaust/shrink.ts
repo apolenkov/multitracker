@@ -12,7 +12,7 @@ const firstReproducing = async <T>(
   chunks: readonly (readonly T[])[],
   test: (candidate: readonly T[]) => Promise<boolean>,
 ): Promise<readonly T[] | null> =>
-  chunks.reduce<Promise<readonly T[] | null>>(async (found, chunk) => {
+  await chunks.reduce<Promise<readonly T[] | null>>(async (found, chunk) => {
     const done = await found;
     if (done !== null) return done;
     const candidate = current.filter((item) => !chunk.includes(item));
@@ -31,9 +31,9 @@ export const ddmin = async <T>(
 ): Promise<readonly T[]> => {
   const round = async (current: readonly T[], granularity: number): Promise<readonly T[]> => {
     const reduced = await firstReproducing(current, splitChunks(current, granularity), test);
-    if (reduced !== null) return round(reduced, Math.max(granularity - 1, 2));
-    return granularity >= current.length ? current : round(current, current.length);
+    if (reduced !== null) return await round(reduced, Math.max(granularity - 1, 2));
+    return granularity >= current.length ? current : await round(current, current.length);
   };
   if (!(await test(items)) || items.length < 2) return items;
-  return round(items, 2);
+  return await round(items, 2);
 };

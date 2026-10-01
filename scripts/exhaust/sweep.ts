@@ -1,41 +1,21 @@
-/** Один раздел за проход: навигация, перечисление, обход, инварианты, снимок покрытия. */
+/** Оркестрация раздела: навигация, обход с дедлайном, донабор диалогов, доверенные клики. */
 import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
 import type { Env } from './axes.ts';
-import { dialogOf, elementSignature } from './signature.ts';
 import { record } from './records.ts';
-import type { ClickRecord, Finding, RunLog } from './records.ts';
-import { enumerateSource, stateHashSource, sweepSource } from './page-dom.ts';
+import type { ClickRecord, Finding } from './records.ts';
+import { enumerateSource } from './page-dom.ts';
+import { sweepSource } from './page-sweep.ts';
 import { fullInvariantsSource } from './page-checks.ts';
-import { parseEnumerate, parseSweepRecord } from './page-rows.ts';
-import type { Enumerated, SweepHit } from './page-rows.ts';
-import { fileReports, newlyCovered, takeCoverage } from './coverage.ts';
-import type { CdpSend, FileReport, ScriptSource } from './coverage.ts';
+import { asFinding, parseEnumerate, parseSweepRecord } from './page-rows.ts';
+import { parseLeftover } from './page-rows.ts';
+import type { Enumerated, Leftover, SweepHit } from './page-rows.ts';
 import { asArray, asText, isRecord } from './guards.ts';
 import type { RegistryInput } from './registry.ts';
-
-export type SectionResult = Readonly<{
-  route: string;
-  clicks: readonly ClickRecord[];
-  seen: readonly RegistryInput[];
-  reports: readonly FileReport[];
-  newKeys: readonly string[];
-  findings: readonly Finding[];
-  consoleErrors: readonly string[];
-  durationMs: number;
-}>;
-
-export type PageState = Readonly<{ hash: string; own: string; dialogs: readonly string[] }>;
-
-export const stateOf = (browser: Browser): PageState => {
-  const value: unknown = evaluate(browser, stateHashSource);
-  if (!isRecord(value)) return { hash: '', own: '', dialogs: [] };
-  return {
-    hash: asText(value.hash),
-    own: asText(value.own),
-    dialogs: asArray(value.dialogs).map((entry) => asText(entry)),
-  };
-};
+import { hitClicks, joinSeen, openersOf } from './journal.ts';
+import type { PageState } from './probe.ts';
+import { stateOf } from './probe.ts';
+import { trustedSample } from './trusted.ts';
 
 /** Навигация настоящей кнопкой мыши: доверенная запись в журнале. */
 export const navClick = (
@@ -53,150 +33,158 @@ export const navClick = (
     `location.hash === '#${route}' && !!document.querySelector('#main h1')`,
   );
   const after = stateOf(browser);
-  return {
+  return record(
     seq,
-    route,
     env,
-    signature: `.desktop-links a[href="#${route}"]`,
-    role: 'link',
-    name: route,
-    tag: 'a',
-    trusted: true,
-    stateBefore: from.own,
-    stateAfter: after.own,
-    dialogOpen: after.dialogs,
-    consoleErrors: [],
-    consoleWarnings: [],
-    duration: Date.now() - started,
-    purpose: 'navigate',
-    shifted: [],
-    design: [],
-    shot: '',
-  };
-};
-
-const fallbackEnumerated = (path: string): Enumerated => ({
-  path,
-  role: '',
-  name: '',
-  tag: '',
-  visible: false,
-  disabled: false,
-  skip: '',
-});
-
-const hitSkip = (hits: readonly SweepHit[], path: string): string =>
-  hits.find((hit) => hit.path === path)?.skipped ?? 'not-visited';
-
-/** Объединение перечисления и обхода по пути: одна запись на элемент раздела. */
-export const joinSeen = (
-  route: string,
-  items: readonly Enumerated[],
-  hits: readonly SweepHit[],
-): readonly RegistryInput[] => {
-  const paths = [...new Set([...items.map((item) => item.path), ...hits.map((hit) => hit.path)])];
-  return paths.map((path) => {
-    const info = items.find((item) => item.path === path) ?? fallbackEnumerated(path);
-    return {
-      route,
-      path,
-      role: info.role,
-      name: info.name,
-      tag: info.tag,
-      visible: info.visible,
-      disabled: info.disabled,
-      skip: hitSkip(hits, path),
-    };
-  });
-};
-
-const signatureFor = (item: RegistryInput): string =>
-  elementSignature({
-    route: item.route,
-    dialog: dialogOf(item.path),
-    role: item.role,
-    name: item.name,
-    path: item.path,
-  });
-
-/** Сигнатуры кликнутых: те же ключи, что уйдут в реестр. */
-export const clickedSignatures = (seen: readonly RegistryInput[]): readonly string[] =>
-  seen.filter((item) => item.skip === '').map((item) => signatureFor(item));
-
-const blankHit: SweepHit = {
-  path: '',
-  before: '',
-  after: '',
-  duration: 0,
-  dialogs: [],
-  errors: [],
-  warnings: [],
-  skipped: '',
-  meta: null,
-};
-
-/** Записи журнала по кликнутым: время и хеши из обхода, мета из реестра. */
-export const hitClicks = (
-  route: string,
-  env: Env,
-  start: number,
-  seen: readonly RegistryInput[],
-  hits: readonly SweepHit[],
-): readonly ClickRecord[] => {
-  const live = seen.filter((item) => item.skip === '');
-  return live.map((item, index) => {
-    const hit = hits.find((row) => row.path === item.path) ?? blankHit;
-    return record(
-      start + index,
-      env,
-      route,
-      {
-        b: hit.before,
-        a: hit.after,
-        dlg: hit.dialogs,
-        err: hit.errors,
-        warn: hit.warnings,
-        dur: hit.duration,
-      },
-      signatureFor(item),
-      { role: item.role, name: item.name, tag: item.tag, trusted: false, purpose: 'sweep' },
-    );
-  });
-};
-
-/** Строка полных инвариантов в находку журнала; мусор отбрасывается. */
-export const asFinding = (value: unknown): Finding | null => {
-  if (!isRecord(value)) return null;
-  const rule = value.rule;
-  const selector = value.sel;
-  return typeof rule === 'string' && typeof selector === 'string'
-    ? { rule, selector, expected: asText(value.expected), actual: asText(value.actual) }
-    : null;
-};
-
-const sweepHits = (browser: Browser): readonly SweepHit[] => {
-  const value: unknown = evaluate(
-    browser,
-    `(${sweepSource})(${JSON.stringify({ scope: 'main', limit: 600, chrome: true })})`,
+    route,
+    { b: from.own, a: after.own, dur: Date.now() - started },
+    `.desktop-links a[href="#${route}"]`,
+    { role: 'link', name: route, tag: 'a', trusted: true, purpose: 'navigate' },
   );
-  if (!isRecord(value)) return [];
-  const left = isRecord(value.consoleLeft) ? asArray(value.consoleLeft.e) : [];
-  const consoleLeft = left.map((entry) => asText(entry));
+};
+
+const SLOT = 'window.__mtJob';
+
+const kick = (browser: Browser, source: string, opts: string) =>
+  evaluate(
+    browser,
+    `${SLOT} = null; (${source})(${opts}).then((r) => { ${SLOT} = r; }, (e) => { ${SLOT} = { error: String(e) }; }); 'started'`,
+  );
+
+const jobStatus = (browser: Browser): string =>
+  asText(
+    evaluate(browser, `${SLOT} === undefined ? 'none' : ${SLOT} === null ? 'pending' : 'ready'`),
+  );
+
+const awaitJob = (browser: Browser, left: number): unknown => {
+  if (jobStatus(browser) === 'ready') return evaluate(browser, SLOT);
+  if (left <= 0) throw new Error('in-page job did not finish in time');
+  try {
+    browser.run('wait', '--fn', `${SLOT} !== null && ${SLOT} !== undefined`);
+  } catch {
+    // Таймаут опроса не равен сбою работы: проверяем слот ещё раз.
+  }
+  return awaitJob(browser, left - 1);
+};
+
+const runJob = (
+  browser: Browser,
+  source: string,
+  opts: Readonly<Record<string, unknown>>,
+): unknown => {
+  kick(browser, source, JSON.stringify(opts));
+  const result = awaitJob(browser, 4);
+  if (isRecord(result) && typeof result.error === 'string')
+    throw new Error(`page job: ${result.error}`);
+  return result;
+};
+
+type Chunk = Readonly<{
+  hits: readonly SweepHit[];
+  done: readonly string[];
+  leftover: readonly Leftover[];
+  truncated: boolean;
+  errors: readonly string[];
+}>;
+
+const parseChunk = (value: unknown): Chunk => {
+  if (!isRecord(value))
+    return { hits: [], done: [], leftover: [], truncated: false, errors: ['job: junk result'] };
   const hits = asArray(value.records).flatMap((row) => {
     const hit = parseSweepRecord(row);
     return hit === null ? [] : [hit];
   });
-  return consoleLeft.length > 0
-    ? [
-        ...hits,
-        {
-          ...blankHit,
-          path: '(console-leftovers)',
-          errors: consoleLeft,
-        },
-      ]
-    : hits;
+  const left = isRecord(value.consoleLeft) ? asArray(value.consoleLeft.e) : [];
+  const thrown = typeof value.error === 'string' ? [value.error] : [];
+  return {
+    hits,
+    done: asArray(value.done).map((entry) => asText(entry)),
+    leftover: parseLeftover(value.leftover),
+    truncated: value.truncated === true,
+    errors: [...left.map((entry) => asText(entry)), ...thrown],
+  };
 };
+
+type SweepOutcome = Readonly<{
+  hits: readonly SweepHit[];
+  done: readonly string[];
+  leftover: readonly Leftover[];
+  errors: readonly string[];
+}>;
+
+const mergeChunks = (chunks: readonly Chunk[]): SweepOutcome => ({
+  hits: chunks.flatMap((chunk) => chunk.hits),
+  done: [...new Set(chunks.flatMap((chunk) => chunk.done))],
+  leftover: chunks.at(-1)?.leftover ?? [],
+  errors: chunks.flatMap((chunk) => chunk.errors),
+});
+
+const sweepStep = (browser: Browser, acc: readonly Chunk[], round: number): readonly Chunk[] => {
+  const chunk = parseChunk(
+    runJob(browser, sweepSource, {
+      done: acc.at(-1)?.done ?? [],
+      openers: {},
+      budget: 20_000,
+      limit: 700,
+      finalize: false,
+    }),
+  );
+  const next = [...acc, chunk];
+  return round >= 3 || !chunk.truncated ? next : sweepStep(browser, next, round + 1);
+};
+
+const sweepAll = (browser: Browser): SweepOutcome => mergeChunks(sweepStep(browser, [], 0));
+
+const rescue = (browser: Browser, outcome: SweepOutcome): Chunk =>
+  parseChunk(
+    runJob(browser, sweepSource, {
+      done: outcome.done,
+      openers: openersOf(outcome.hits),
+      budget: 20_000,
+      limit: 700,
+      finalize: true,
+    }),
+  );
+
+const mergeEnumerated = (
+  first: readonly Enumerated[],
+  last: readonly Enumerated[],
+): readonly Enumerated[] => [
+  ...new Map([...first, ...last].map((item) => [item.path, item])).values(),
+];
+
+export type Visit = Readonly<{
+  clicks: readonly ClickRecord[];
+  seen: readonly RegistryInput[];
+  errors: readonly string[];
+}>;
+
+/** Навигация, перечисление, обход и донабор: всё наблюдаемое за один визит. */
+export const visitRoute = (browser: Browser, route: string, seq: number, env: Env): Visit => {
+  const nav = navClick(browser, stateOf(browser), route, seq, env);
+  const first = parseEnumerate(evaluate(browser, enumerateSource));
+  const sweep = sweepAll(browser);
+  const extra = rescue(browser, sweep);
+  const last = parseEnumerate(evaluate(browser, enumerateSource));
+  const hits = [...sweep.hits, ...extra.hits];
+  const seen = joinSeen(route, mergeEnumerated(first, last), hits);
+  const count = hits.filter((hit) => hit.skipped === '').length;
+  const verified = trustedSample(browser, route, env, seq + 1 + count, seen, hits);
+  return {
+    clicks: [nav, ...hitClicks(route, env, seq + 1, seen, hits), ...verified],
+    seen,
+    errors: [...sweep.errors, ...extra.errors, ...hits.flatMap((hit) => hit.errors)],
+  };
+};
+
+export type SectionResult = Readonly<{
+  route: string;
+  clicks: readonly ClickRecord[];
+  seen: readonly RegistryInput[];
+  findings: readonly Finding[];
+  consoleErrors: readonly string[];
+  durationMs: number;
+}>;
 
 const invariantFindings = (browser: Browser, env: Env): readonly Finding[] => {
   const cfg = JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
@@ -207,45 +195,21 @@ const invariantFindings = (browser: Browser, env: Env): readonly Finding[] => {
   });
 };
 
-export type Visit = Readonly<{
-  clicks: readonly ClickRecord[];
-  seen: readonly RegistryInput[];
-  hits: readonly SweepHit[];
-}>;
-
-/** Навигация, перечисление и обход раздела: всё наблюдаемое за один визит. */
-export const visitRoute = (browser: Browser, route: string, seq: number, env: Env): Visit => {
-  const nav = navClick(browser, stateOf(browser), route, seq, env);
-  const items = parseEnumerate(evaluate(browser, enumerateSource));
-  const hits = sweepHits(browser);
-  const seen = joinSeen(route, items, hits);
-  return { clicks: [nav, ...hitClicks(route, env, seq + 1, seen, hits)], seen, hits };
-};
-
-/** Визит плюс инварианты, снимок покрытия и запись в журнал. */
-export const sweepSection = async (
+/** Визит плюс полные инварианты конечного состояния. */
+export const visitSection = (
   browser: Browser,
-  log: RunLog,
-  send: CdpSend,
   route: string,
   seq: number,
   env: Env,
-  sources: readonly ScriptSource[],
-  prev: readonly FileReport[],
-): Promise<SectionResult> => {
+): SectionResult => {
   const started = Date.now();
   const visit = visitRoute(browser, route, seq, env);
-  const findings = invariantFindings(browser, env);
-  const reports = fileReports(await takeCoverage(send), sources);
-  log.appendClicks(visit.clicks);
   return {
     route,
     clicks: visit.clicks,
     seen: visit.seen,
-    reports,
-    newKeys: newlyCovered(prev, reports),
-    findings,
-    consoleErrors: visit.hits.flatMap((hit) => hit.errors),
+    findings: invariantFindings(browser, env),
+    consoleErrors: visit.errors,
     durationMs: Date.now() - started,
   };
 };

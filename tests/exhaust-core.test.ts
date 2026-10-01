@@ -125,7 +125,7 @@ await test('contrast math matches published WCAG ratios', () => {
   assert.ok(green);
   assert.ok(contrastRatio(green, white) < 21 && contrastRatio(green, white) > 3);
   const half = parseColor('rgb(0 0 0 / 50%)');
-  assert.ok(half && half.a === 0.5);
+  assert.equal(half?.a, 0.5);
   assert.deepEqual(over(half, white).r, 128);
   assert.equal(luminance(white), 1);
   assert.equal(parseColor('not-a-color'), null);

@@ -12,7 +12,7 @@ export const normalizeName = (name: string) =>
 
 export const stripIndices = (path: string) => path.replaceAll(/:nth-of-type\(\d+\)/g, '');
 
-export const dialogOf = (path: string) => path.match(/dialog#([a-zA-Z0-9-]+)/)?.at(1) ?? '-';
+export const dialogOf = (path: string) => /dialog#([a-zA-Z0-9-]+)/.exec(path)?.at(1) ?? '-';
 
 export const elementSignature = (input: SigInput) =>
   [input.route, input.dialog, input.role, normalizeName(input.name), stripIndices(input.path)]

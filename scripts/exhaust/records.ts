@@ -77,6 +77,23 @@ const isFinding = (value: unknown): value is Finding =>
 
 const strings = (value: unknown): readonly string[] => asArray(value).map((entry) => asText(entry));
 
+const findingsOf = (item: Readonly<Record<string, unknown>>): readonly Finding[] =>
+  [...asArray(item.inv), ...asArray(item.design)].flatMap((entry) =>
+    isFinding(entry) ? [entry] : [],
+  );
+
+const recordState = (item: Readonly<Record<string, unknown>>) => ({
+  stateBefore: asText(item.b),
+  stateAfter: asText(item.a),
+  dialogOpen: strings(item.dlg),
+  consoleErrors: strings(item.err),
+  consoleWarnings: strings(item.warn),
+  duration: typeof item.dur === 'number' ? item.dur : 0,
+  shifted: asArray(item.moved).map((entry) => JSON.stringify(entry)),
+  design: findingsOf(item),
+  shot: asText(item.shot),
+});
+
 export const record = (
   seq: number,
   env: Env,
@@ -94,13 +111,5 @@ export const record = (
   tag: meta.tag,
   trusted: meta.trusted,
   purpose: meta.purpose,
-  stateBefore: asText(item.b),
-  stateAfter: asText(item.a),
-  dialogOpen: strings(item.dlg),
-  consoleErrors: strings(item.err),
-  consoleWarnings: strings(item.warn),
-  duration: typeof item.dur === 'number' ? item.dur : 0,
-  shifted: strings(item.moved),
-  design: asArray(item.design).flatMap((entry) => (isFinding(entry) ? [entry] : [])),
-  shot: asText(item.shot),
+  ...recordState(item),
 });

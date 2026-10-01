@@ -24,19 +24,23 @@ const vlq = (text: string, at: number): Readonly<{ value: number; used: number }
 const vlqValue = (raw: number) => (raw & 1 ? -(raw >> 1) : raw >> 1);
 
 type Carry = Readonly<{ src: number; sl: number }>;
+type Fields = Readonly<{ at: number; values: readonly number[] }>;
+
+const decodeFields = (segment: string): Fields =>
+  [0, 1, 2, 3].reduce<Fields>(
+    (acc) => {
+      const decoded = vlq(segment, acc.at);
+      return { at: acc.at + decoded.used, values: [...acc.values, vlqValue(decoded.value)] };
+    },
+    { at: 0, values: [] },
+  );
 
 const decodeSegment = (
   segment: string,
   column: number,
   carry: Carry,
 ): Readonly<{ column: number; src: number; sl: number; span: Span }> => {
-  const fields = [0, 1, 2, 3].reduce(
-    (acc) => {
-      const decoded = vlq(segment, acc.at);
-      return { at: acc.at + decoded.used, values: [...acc.values, vlqValue(decoded.value)] };
-    },
-    { at: 0, values: [] as readonly number[] },
-  );
+  const fields = decodeFields(segment);
   const nextColumn = column + (fields.values.at(0) ?? 0);
   const span =
     fields.values.length < 4
@@ -110,7 +114,7 @@ export const mapPosition = (
 
 export const lineStartOffsets = (text: string): readonly number[] =>
   [...text.matchAll(/\n/g)].reduce<readonly number[]>(
-    (acc, match) => [...acc, (match.index ?? 0) + 1],
+    (acc, match) => [...acc, match.index + 1],
     [0],
   );
 

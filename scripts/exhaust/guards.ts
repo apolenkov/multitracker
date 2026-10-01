@@ -7,7 +7,7 @@ export const asText = (value: unknown): string =>
       ? String(value)
       : '';
 
-export const isRecord = (value: unknown): value is { readonly [key: string]: unknown } =>
+export const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 export const asArray = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);

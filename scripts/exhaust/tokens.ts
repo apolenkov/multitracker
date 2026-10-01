@@ -46,7 +46,7 @@ const unique = (values: readonly number[]) => [...new Set(values)].toSorted((a, 
 
 /** Шкалы из фронтматтера DESIGN.md: типографика, отступы, радиусы и паддинги компонентов. */
 export const designScales = (designMd: string): Scales => {
-  const frontmatter = designMd.match(/^---\n([\s\S]*?)\n---/)?.at(1) ?? '';
+  const frontmatter = /^---\n([\s\S]*?)\n---/.exec(designMd)?.at(1) ?? '';
   const typography = sectionLines(frontmatter, 'typography');
   return {
     fontSizes: unique(fontSizesOf(typography)),

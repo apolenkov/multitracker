@@ -1,6 +1,6 @@
 /** Страничные инварианты: быстрые после каждого клика и полные для новых состояний. */
 
-const base = String.raw`
+export const invariantBase = String.raw`
 const find = (sel) => document.querySelector(sel);
 const openDialogs = () => [...document.querySelectorAll('dialog[open]')];
 const all = (sel) => [...document.querySelectorAll(sel)];
@@ -43,7 +43,7 @@ const fastInv = () => {
 `;
 
 /** Полные инварианты состояния: имена, размеры, маскировка сумм, i18n, липкие панели. */
-export const fullInvariantsSource = `async (cfg) => { ${base}; ${fastInvariants};
+export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastInvariants};
   const v = fastInv();
   const controls = all('button, a[href], input, select, textarea, summary, [role="tab"], [role="checkbox"], [role="switch"], [role="radio"], [role="button"], label').filter(shown);
   const accName = (el) => {

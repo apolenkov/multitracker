@@ -9,20 +9,16 @@ import { applyEnv } from './envctl.ts';
 import { createRunLog } from './records.ts';
 import type { RunLog } from './records.ts';
 import { buildRegistry, coveragePercent, elementMarkdown, sectionCoverage } from './registry.ts';
-import type { RegistryInput } from './registry.ts';
+import type { RegistryInput, SectionCoverage } from './registry.ts';
 import { checkLedger, parseLedger } from './ledger.ts';
 import type { LedgerCheck } from './ledger.ts';
-import { clickedSignatures, sweepSection } from './sweep.ts';
-import {
-  codeMarkdown,
-  connectPage,
-  fetchSource,
-  fileReports,
-  startCoverage,
-  stopCoverage,
-  takeCoverage,
-} from './coverage.ts';
-import type { CdpSend, FileReport, ScriptSource } from './coverage.ts';
+import { visitSection } from './sweep.ts';
+import type { SectionResult } from './sweep.ts';
+import { clickedSignatures } from './journal.ts';
+import { connectPage, startCoverage, stopCoverage, takeCoverage } from './cdp.ts';
+import type { CdpSend, ScriptCoverage } from './cdp.ts';
+import { codeMarkdown, fetchSource, fileReports, mergeScripts, newlyCovered } from './coverage.ts';
+import type { FileReport, ScriptSource } from './coverage.ts';
 
 const routes = [
   'overview',
@@ -42,18 +38,40 @@ type Acc = Readonly<{
   attribution: readonly Attribution[];
   errors: readonly string[];
   findings: number;
+  scripts: readonly ScriptCoverage[];
   prev: readonly FileReport[];
 }>;
 
-const empty: Acc = {
+const seedAcc = (scripts: readonly ScriptCoverage[], sources: readonly ScriptSource[]): Acc => ({
   seq: 1,
   seen: [],
   clicked: [],
   attribution: [],
   errors: [],
   findings: 0,
-  prev: [],
-};
+  scripts,
+  prev: fileReports(scripts, sources),
+});
+
+const nextAcc = (
+  prev: Acc,
+  result: SectionResult,
+  route: string,
+  scripts: readonly ScriptCoverage[],
+  reports: readonly FileReport[],
+): Acc => ({
+  seq: prev.seq + result.clicks.length,
+  seen: [...prev.seen, ...result.seen],
+  clicked: [...prev.clicked, ...clickedSignatures(result.seen)],
+  attribution: [
+    ...prev.attribution,
+    { route, fresh: newlyCovered(prev.prev, reports).length, durationMs: result.durationMs },
+  ],
+  errors: [...prev.errors, ...result.consoleErrors],
+  findings: prev.findings + result.findings.length,
+  scripts,
+  prev: reports,
+});
 
 const collectOne = async (
   browser: Browser,
@@ -63,59 +81,41 @@ const collectOne = async (
   prev: Acc,
   route: string,
 ): Promise<Acc> => {
-  const result = await sweepSection(
-    browser,
-    log,
-    send,
-    route,
-    prev.seq,
-    baseEnv,
-    sources,
-    prev.prev,
-  );
-  return {
-    seq: prev.seq + result.clicks.length,
-    seen: [...prev.seen, ...result.seen],
-    clicked: [...prev.clicked, ...clickedSignatures(result.seen)],
-    attribution: [
-      ...prev.attribution,
-      { route, fresh: result.newKeys.length, durationMs: result.durationMs },
-    ],
-    errors: [...prev.errors, ...result.consoleErrors],
-    findings: prev.findings + result.findings.length,
-    prev: result.reports,
-  };
+  const result = visitSection(browser, route, prev.seq, baseEnv);
+  log.appendClicks(result.clicks);
+  const scripts = mergeScripts(prev.scripts, await takeCoverage(send));
+  return nextAcc(prev, result, route, scripts, fileReports(scripts, sources));
 };
 
-const collectAll = async (
+const collectAll = (
   browser: Browser,
   log: RunLog,
   send: CdpSend,
   sources: readonly ScriptSource[],
+  initial: readonly ScriptCoverage[],
 ): Promise<Acc> =>
   routes.reduce<Promise<Acc>>(
-    async (prevP, route) => collectOne(browser, log, send, sources, await prevP, route),
-    Promise.resolve(empty),
+    async (prevP, route) => await collectOne(browser, log, send, sources, await prevP, route),
+    Promise.resolve(seedAcc(initial, sources)),
   );
 
 type Checks = Readonly<{ element: LedgerCheck; code: LedgerCheck; errors: readonly string[] }>;
 
-const writeReports = (log: RunLog, acc: Acc, finalReports: readonly FileReport[]): Checks => {
-  const entries = buildRegistry(acc.seen, new Set(acc.clicked));
-  const sections = sectionCoverage(entries);
-  log.saveText('element-coverage.md', elementMarkdown(sections, entries));
-  log.saveJson('element-coverage.json', { sections, entries });
-  const element = checkLedger(
+const ledgerChecks = (
+  sections: readonly SectionCoverage[],
+  finalReports: readonly FileReport[],
+): Readonly<{ element: LedgerCheck; code: LedgerCheck }> => ({
+  element: checkLedger(
     sections.flatMap((section) => section.uncovered),
     parseLedger(readFileSync('scripts/exhaust/uncovered-ledger.json', 'utf8')),
-  );
-  const codeKeys = finalReports.flatMap((report) =>
-    report.uncoveredFunctions.map((fn) => `${report.file}|${fn}`),
-  );
-  const code = checkLedger(
-    codeKeys,
+  ),
+  code: checkLedger(
+    finalReports.flatMap((report) => report.uncoveredFunctions.map((fn) => `${report.file}|${fn}`)),
     parseLedger(readFileSync('scripts/exhaust/uncovered-code-ledger.json', 'utf8')),
-  );
+  ),
+});
+
+const writeCodeReports = (log: RunLog, acc: Acc, finalReports: readonly FileReport[]): void => {
   const attribution = acc.attribution.map(
     (item) => `- ${item.route}: +${item.fresh} functions (${item.durationMs}ms)`,
   );
@@ -124,29 +124,98 @@ const writeReports = (log: RunLog, acc: Acc, finalReports: readonly FileReport[]
     [codeMarkdown(finalReports), '', '# Per-section attribution', ...attribution].join('\n'),
   );
   log.saveJson('code-coverage.json', { reports: finalReports, attribution: acc.attribution });
-  const summary = {
-    routes: routes.length,
-    clicks: acc.seq - 1,
-    element: sections.map((section) => ({
-      route: section.route,
-      pct: coveragePercent(section.clicked, section.seen),
-    })),
-    functions: [
-      finalReports.reduce((sum, report) => sum + report.functionsCovered, 0),
-      finalReports.reduce((sum, report) => sum + report.functionsTotal, 0),
-    ],
-    branches: [
-      finalReports.reduce((sum, report) => sum + report.branchesCovered, 0),
-      finalReports.reduce((sum, report) => sum + report.branchesTotal, 0),
-    ],
-    consoleErrors: acc.errors.length,
-    findings: acc.findings,
-    elementLedger: element,
-    codeLedger: code,
-  };
+};
+
+const totals = (reports: readonly FileReport[], pick: (r: FileReport) => number) =>
+  reports.reduce((sum, report) => sum + pick(report), 0);
+
+const summaryOf = (
+  acc: Acc,
+  sections: readonly SectionCoverage[],
+  finalReports: readonly FileReport[],
+  checks: Readonly<{ element: LedgerCheck; code: LedgerCheck }>,
+) => ({
+  routes: routes.length,
+  clicks: acc.seq - 1,
+  element: sections.map((section) => ({
+    route: section.route,
+    pct: coveragePercent(section.clicked, section.seen),
+  })),
+  functions: [
+    totals(finalReports, (r) => r.functionsCovered),
+    totals(finalReports, (r) => r.functionsTotal),
+  ],
+  branches: [
+    totals(finalReports, (r) => r.branchesCovered),
+    totals(finalReports, (r) => r.branchesTotal),
+  ],
+  consoleErrors: acc.errors.length,
+  findings: acc.findings,
+  elementLedger: checks.element,
+  codeLedger: checks.code,
+});
+
+const writeReports = (log: RunLog, acc: Acc, finalReports: readonly FileReport[]): Checks => {
+  const entries = buildRegistry(acc.seen, new Set(acc.clicked));
+  const sections = sectionCoverage(entries);
+  log.saveText('element-coverage.md', elementMarkdown(sections, entries));
+  log.saveJson('element-coverage.json', { sections, entries });
+  const checks = ledgerChecks(sections, finalReports);
+  writeCodeReports(log, acc, finalReports);
+  const summary = summaryOf(acc, sections, finalReports, checks);
   log.saveJson('summary.json', summary);
   console.log(JSON.stringify(summary, null, 2));
-  return { element, code, errors: acc.errors };
+  return { ...checks, errors: acc.errors };
+};
+
+const bundleSources = async (
+  scripts: readonly ScriptCoverage[],
+): Promise<readonly ScriptSource[]> => {
+  const urls = scripts
+    .filter((script) => script.url.includes('/assets/') && script.url.endsWith('.js'))
+    .map((script) => script.url);
+  const sources = await Promise.all(urls.map((url) => fetchSource(url)));
+  return sources.flatMap((source) => (source === null ? [] : [source]));
+};
+
+const reportChecks = (checks: Checks): void => {
+  assert.equal(checks.errors.length, 0, `console errors: ${checks.errors.slice(0, 3).join(' | ')}`);
+  assert.ok(checks.element.ok, `element ledger: ${JSON.stringify(checks.element)}`);
+  assert.ok(checks.code.ok, `code ledger: ${JSON.stringify(checks.code)}`);
+};
+
+const coverRun = async (browser: Browser, log: RunLog, started: number): Promise<void> => {
+  const cdp = await connectPage(browser);
+  try {
+    await startCoverage(cdp.send);
+    const initial = await takeCoverage(cdp.send);
+    const sources = await bundleSources(initial);
+    const acc = await collectAll(browser, log, cdp.send, sources, initial);
+    const merged = mergeScripts(acc.scripts, await takeCoverage(cdp.send));
+    const finalReports = fileReports(merged, sources);
+    await stopCoverage(cdp.send);
+    log.saveText('timings.txt', `totalMs=${Date.now() - started}\n`);
+    reportChecks(writeReports(log, acc, finalReports));
+  } finally {
+    cdp.close();
+  }
+};
+
+const openApp = (browser: Browser, base: string, log: RunLog): void => {
+  browser.run('open', base);
+  browser.run(
+    'wait',
+    '--fn',
+    "document.readyState === 'complete' && !!document.querySelector('.desktop-links a')",
+  );
+  evaluate(browser, installHooksSource);
+  const applied: unknown = applyEnv(browser, baseEnv, 'overview');
+  browser.run(
+    'wait',
+    '--fn',
+    "location.hash === '#overview' && !!document.querySelector('#main h1')",
+  );
+  log.saveJson('env.json', { base: process.env.MULTITRACKER_UI_URL ?? null, applied });
 };
 
 const main = async (): Promise<void> => {
@@ -157,34 +226,8 @@ const main = async (): Promise<void> => {
   const started = Date.now();
   const browser = createBrowser();
   try {
-    browser.run('open', base);
-    evaluate(browser, installHooksSource);
-    const applied: unknown = applyEnv(browser, baseEnv, 'overview');
-    log.saveJson('env.json', { base: process.env.MULTITRACKER_UI_URL ?? null, applied });
-    const cdp = await connectPage(browser);
-    try {
-      await startCoverage(cdp.send);
-      const urls = (await takeCoverage(cdp.send))
-        .filter((script) => script.url.includes('/assets/') && script.url.endsWith('.js'))
-        .map((script) => script.url);
-      const sources = (await Promise.all(urls.map((url) => fetchSource(url)))).flatMap((source) =>
-        source === null ? [] : [source],
-      );
-      const acc = await collectAll(browser, log, cdp.send, sources);
-      const finalReports = fileReports(await takeCoverage(cdp.send), sources);
-      await stopCoverage(cdp.send);
-      log.saveText('timings.txt', `totalMs=${Date.now() - started}\n`);
-      const checks = writeReports(log, acc, finalReports);
-      assert.equal(
-        checks.errors.length,
-        0,
-        `console errors: ${checks.errors.slice(0, 3).join(' | ')}`,
-      );
-      assert.ok(checks.element.ok, `element ledger: ${JSON.stringify(checks.element)}`);
-      assert.ok(checks.code.ok, `code ledger: ${JSON.stringify(checks.code)}`);
-    } finally {
-      cdp.close();
-    }
+    openApp(browser, base, log);
+    await coverRun(browser, log, started);
   } finally {
     browser.run('close');
   }

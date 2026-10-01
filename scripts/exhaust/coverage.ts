@@ -1,126 +1,7 @@
-/** Кодовое покрытие: V8 precise coverage через CDP страницы, развёртка на src/ по картам. */
-import type { Browser } from '../ui-driver.ts';
+/** Кодовое покрытие: развёртка V8-отсчётов на src/ по картам, сведение снимков. */
 import { lineStartOffsets, mapPosition, offsetAt, parseMap } from './sourcemap.ts';
 import type { SourceMap } from './sourcemap.ts';
-import { asArray, asText, isRecord } from './guards.ts';
-
-export type CdpResult = { readonly [key: string]: unknown };
-export type CdpSend = (
-  method: string,
-  params?: Readonly<Record<string, unknown>>,
-) => Promise<CdpResult>;
-export type PageCdp = Readonly<{ send: CdpSend; close: () => void }>;
-
-const cdpId = 1;
-
-const sendOnce = (
-  socket: WebSocket,
-  method: string,
-  params: Readonly<Record<string, unknown>>,
-): Promise<CdpResult> =>
-  new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      socket.removeEventListener('message', onMessage);
-      reject(new Error(`CDP timeout: ${method}`));
-    }, 30_000);
-    const onMessage = (event: MessageEvent) => {
-      if (typeof event.data !== 'string') return;
-      const msg: unknown = JSON.parse(event.data);
-      if (!isRecord(msg) || msg.id !== cdpId) return;
-      clearTimeout(timer);
-      socket.removeEventListener('message', onMessage);
-      if ('error' in msg) reject(new Error(`${method}: ${JSON.stringify(msg.error)}`));
-      else resolve(isRecord(msg.result) ? msg.result : {});
-    };
-    socket.addEventListener('message', onMessage);
-    socket.send(JSON.stringify({ id: cdpId, method, params }));
-  });
-
-const cdpUrlOf = (browser: Browser): string => {
-  const raw: unknown = browser.run('get', 'cdp-url');
-  if (!isRecord(raw) || typeof raw.cdpUrl !== 'string') throw new Error('cdp-url unavailable');
-  return raw.cdpUrl;
-};
-
-const pageSocketOf = async (cdpUrl: string): Promise<string> => {
-  const port = cdpUrl.match(/:(\d+)\//)?.at(1) ?? '';
-  const response = await fetch(`http://127.0.0.1:${port}/json/list`);
-  const list: unknown = await response.json();
-  const page = asArray(list).find((entry) => isRecord(entry) && entry.type === 'page');
-  const socket = isRecord(page) ? page.webSocketDebuggerUrl : undefined;
-  if (typeof socket !== 'string' || socket === '') throw new Error('page socket unavailable');
-  return socket;
-};
-
-const openSocket = (url: string): Promise<WebSocket> =>
-  new Promise((resolve, reject) => {
-    const socket = new WebSocket(url);
-    const timer = setTimeout(() => reject(new Error('CDP socket timeout')), 10_000);
-    socket.addEventListener('open', () => {
-      clearTimeout(timer);
-      resolve(socket);
-    });
-    socket.addEventListener('error', () => reject(new Error('CDP socket error')));
-  });
-
-/** Прямое соединение со страницей: числовые id (строковые прокси не отвечает). */
-export const connectPage = async (browser: Browser): Promise<PageCdp> => {
-  const socket = await openSocket(await pageSocketOf(cdpUrlOf(browser)));
-  const send: CdpSend = (method, params = {}) => sendOnce(socket, method, params);
-  return { send, close: () => socket.close() };
-};
-
-export const startCoverage = (send: CdpSend): Promise<unknown> =>
-  send('Profiler.enable').then(() =>
-    send('Profiler.startPreciseCoverage', { callCount: true, detailed: true }),
-  );
-
-export const stopCoverage = (send: CdpSend): Promise<unknown> =>
-  send('Profiler.stopPreciseCoverage').then(() => send('Profiler.disable'));
-
-export type Range = Readonly<{ startOffset: number; endOffset: number; count: number }>;
-export type FunctionCoverage = Readonly<{
-  functionName: string;
-  ranges: readonly Range[];
-}>;
-export type ScriptCoverage = Readonly<{
-  scriptId: string;
-  url: string;
-  functions: readonly FunctionCoverage[];
-}>;
-
-const asRange = (value: unknown): Range | null =>
-  isRecord(value) &&
-  typeof value.startOffset === 'number' &&
-  typeof value.endOffset === 'number' &&
-  typeof value.count === 'number'
-    ? { startOffset: value.startOffset, endOffset: value.endOffset, count: value.count }
-    : null;
-
-const one = <T>(value: T | null): readonly T[] => (value === null ? [] : [value]);
-
-const asFunction = (value: unknown): FunctionCoverage | null => {
-  if (!isRecord(value)) return null;
-  const name = typeof value.functionName === 'string' ? value.functionName : '';
-  return {
-    functionName: name,
-    ranges: asArray(value.ranges).flatMap((entry) => one(asRange(entry))),
-  };
-};
-
-export const takeCoverage = (send: CdpSend): Promise<readonly ScriptCoverage[]> =>
-  send('Profiler.takePreciseCoverage').then((result) =>
-    asArray(result.result).flatMap((entry) => {
-      if (!isRecord(entry)) return [];
-      return [
-        {
-          scriptId: asText(entry.scriptId),
-          url: asText(entry.url),
-          functions: asArray(entry.functions).flatMap((fn) => one(asFunction(fn))),
-        },
-      ];
-    }),
-  );
+import type { FunctionCoverage, Range, ScriptCoverage } from './cdp.ts';
 
 export type ScriptSource = Readonly<{ url: string; js: string; map: string }>;
 export type FileReport = Readonly<{
@@ -177,7 +58,29 @@ const safeMap = (text: string): SourceMap | null => {
   }
 };
 
-/** Отчёт по файлам: функции и ветви из бандла, отнесённые к src/ по карте. */
+const fileReport = (file: string, owned: readonly Hit[]): FileReport => ({
+  file,
+  functionsCovered: owned.filter((hit) => hit.covered).length,
+  functionsTotal: owned.length,
+  branchesCovered: owned.reduce((sum, hit) => sum + hit.branchesCovered, 0),
+  branchesTotal: owned.reduce((sum, hit) => sum + hit.branches, 0),
+  uncoveredFunctions: owned
+    .filter((hit) => !hit.covered)
+    .map((hit) => hit.name)
+    .toSorted(),
+});
+
+const scriptHits = (script: ScriptCoverage, sources: readonly ScriptSource[]): readonly Hit[] => {
+  const source = sources.find((item) => script.url.endsWith(item.url));
+  const map = source === undefined ? null : safeMap(source.map);
+  if (source === undefined || map === null) return [];
+  return script.functions.flatMap((fn) => hitOf(map, lineStartOffsets(source.js), fn));
+};
+
+const uniqueHits = (hits: readonly Hit[]): readonly Hit[] =>
+  hits.filter((hit, index) => hits.findIndex((other) => other.key === hit.key) === index);
+
+/** Отчёт по файлам src/: функции и ветви из бандла, отнесённые к исходникам по карте. */
 export const fileReports = (
   scripts: readonly ScriptCoverage[],
   sources: readonly ScriptSource[],
@@ -185,56 +88,49 @@ export const fileReports = (
   const bundles = scripts.filter(
     (script) => script.url.includes('/assets/') && script.url.endsWith('.js'),
   );
-  return bundles.flatMap((script) => {
-    const source = sources.find((item) => script.url.endsWith(item.url));
-    const map = source === undefined ? null : safeMap(source.map);
-    if (source === undefined || map === null) return [];
-    const starts = lineStartOffsets(source.js);
-    const hits = script.functions.flatMap((fn) => hitOf(map, starts, fn));
-    const unique = hits.filter(
-      (hit, index) => hits.findIndex((other) => other.key === hit.key) === index,
-    );
-    const files = [...new Set(unique.map((hit) => hit.file))];
-    return files.map((file) => {
-      const owned = unique.filter((hit) => hit.file === file);
-      return {
+  const hits = uniqueHits(bundles.flatMap((script) => scriptHits(script, sources)));
+  return [...new Set(hits.map((hit) => hit.file))]
+    .filter((file) => file.startsWith('src/'))
+    .map((file) =>
+      fileReport(
         file,
-        functionsCovered: owned.filter((hit) => hit.covered).length,
-        functionsTotal: owned.length,
-        branchesCovered: owned.reduce((sum, hit) => sum + hit.branchesCovered, 0),
-        branchesTotal: owned.reduce((sum, hit) => sum + hit.branches, 0),
-        uncoveredFunctions: owned
-          .filter((hit) => !hit.covered)
-          .map((hit) => hit.name)
-          .toSorted(),
-      };
-    });
-  });
+        hits.filter((hit) => hit.file === file),
+      ),
+    )
+    .toSorted((a, b) => a.file.localeCompare(b.file));
 };
 
-/** Сводка покрытия кода: таблица по файлам, итоги и список непокрытых функций. */
-export const codeMarkdown = (reports: readonly FileReport[]): string => {
-  const head = ['# Code coverage', '', '| file | functions | branches |', '| --- | --- | --- |'];
-  const rows = reports.map(
-    (report) =>
-      `| ${report.file} | ${report.functionsCovered}/${report.functionsTotal} | ${report.branchesCovered}/${report.branchesTotal} |`,
-  );
-  const fns = reports.reduce((sum, report) => sum + report.functionsCovered, 0);
-  const fnsTotal = reports.reduce((sum, report) => sum + report.functionsTotal, 0);
-  const br = reports.reduce((sum, report) => sum + report.branchesCovered, 0);
-  const brTotal = reports.reduce((sum, report) => sum + report.branchesTotal, 0);
-  const pct = (part: number, total: number) => (total === 0 ? 0 : Math.round((part / total) * 100));
-  const open = reports.flatMap((report) =>
-    report.uncoveredFunctions.map((fn) => `${report.file}|${fn}`),
-  );
-  return [
-    ...head,
-    ...rows,
-    '',
-    `Total: ${fns}/${fnsTotal} functions (${pct(fns, fnsTotal)}%), ${br}/${brTotal} branches (${pct(br, brTotal)}%)`,
-    '',
-    ...open.map((key) => `- ${key}`),
-  ].join('\n');
+const fnKey = (fn: FunctionCoverage): string =>
+  `${fn.functionName}@${fn.ranges.at(0)?.startOffset ?? 0}`;
+
+const mergeRanges = (a: readonly Range[], b: readonly Range[]): readonly Range[] =>
+  a.map((range, index) => ({ ...range, count: Math.max(range.count, b.at(index)?.count ?? 0) }));
+
+const mergeFunctions = (
+  prev: readonly FunctionCoverage[],
+  next: readonly FunctionCoverage[],
+): readonly FunctionCoverage[] => {
+  const merged = next.map((fn) => {
+    const old = prev.find((item) => fnKey(item) === fnKey(fn));
+    return old === undefined ? fn : { ...fn, ranges: mergeRanges(fn.ranges, old.ranges) };
+  });
+  const gone = prev.filter((item) => !next.some((fn) => fnKey(fn) === fnKey(item)));
+  return [...merged, ...gone];
+};
+
+/** Сведение снимков: takePreciseCoverage обнуляет счётчики, поэтому считаем ИЛИ по отрезкам. */
+export const mergeScripts = (
+  prev: readonly ScriptCoverage[],
+  next: readonly ScriptCoverage[],
+): readonly ScriptCoverage[] => {
+  const merged = next.map((script) => {
+    const old = prev.find((item) => item.scriptId === script.scriptId);
+    return old === undefined
+      ? script
+      : { ...script, functions: mergeFunctions(old.functions, script.functions) };
+  });
+  const gone = prev.filter((item) => !next.some((script) => script.scriptId === item.scriptId));
+  return [...merged, ...gone];
 };
 
 /** Новые покрытые ключи file|fn@line между последовательными снимками. */
@@ -249,9 +145,35 @@ export const newlyCovered = (
   return [...before].filter((key) => !after.has(key)).toSorted();
 };
 
+const pct = (part: number, total: number) => (total === 0 ? 0 : Math.round((part / total) * 100));
+
+/** Сводка покрытия кода: таблица по файлам, итоги и список непокрытых функций. */
+export const codeMarkdown = (reports: readonly FileReport[]): string => {
+  const head = ['# Code coverage', '', '| file | functions | branches |', '| --- | --- | --- |'];
+  const rows = reports.map(
+    (report) =>
+      `| ${report.file} | ${report.functionsCovered}/${report.functionsTotal} | ${report.branchesCovered}/${report.branchesTotal} |`,
+  );
+  const fns = reports.reduce((sum, report) => sum + report.functionsCovered, 0);
+  const fnsTotal = reports.reduce((sum, report) => sum + report.functionsTotal, 0);
+  const br = reports.reduce((sum, report) => sum + report.branchesCovered, 0);
+  const brTotal = reports.reduce((sum, report) => sum + report.branchesTotal, 0);
+  const open = reports.flatMap((report) =>
+    report.uncoveredFunctions.map((fn) => `${report.file}|${fn}`),
+  );
+  return [
+    ...head,
+    ...rows,
+    '',
+    `Total: ${fns}/${fnsTotal} functions (${pct(fns, fnsTotal)}%), ${br}/${brTotal} branches (${pct(br, brTotal)}%)`,
+    '',
+    ...open.map((key) => `- ${key}`),
+  ].join('\n');
+};
+
 const getText = async (url: string): Promise<string | null> => {
   const response = await fetch(url);
-  return response.ok ? response.text() : null;
+  return response.ok ? await response.text() : null;
 };
 
 /** Текст бандла и его карты по HTTP: fs с вычисляемым путём запрещён правилами. */

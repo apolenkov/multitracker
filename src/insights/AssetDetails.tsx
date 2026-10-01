@@ -13,7 +13,6 @@ import {
   type State,
 } from '../model/portfolio.ts';
 import { insightWords } from './words.ts';
-import { openOperation } from '../Forms.tsx';
 import { ManualValuation } from './ManualValuation.tsx';
 
 type Props = Readonly<{
@@ -101,13 +100,6 @@ function AssetContent(
       <div className="form-actions">
         <button type="button" ref={props.trigger} onClick={props.onEdit}>
           {words.valuation}
-        </button>
-        <button
-          type="button"
-          className="primary"
-          onClick={() => openOperation('buy', { asset: props.asset, currency: 'USD' })}
-        >
-          {props.language === 'ru' ? 'Купить' : 'Buy'} {props.asset}
         </button>
       </div>
     </>

@@ -59,19 +59,16 @@ const rmTmp = () => execFileSync('rm', ['-rf', tmpRoot]);
 const catTmp = (name: string) =>
   execFileSync('cat', [`${tmpRoot}/stamp-exhaust/${process.pid}/${name}`], { encoding: 'utf8' });
 
-const sampleClick = () =>
-  record(1, baseEnv, 'overview', { b: 'h1', a: 'h2', dur: 3 }, 'sig|1', {
+await test('run log appends click records as jsonl', () => {
+  rmTmp();
+  const log = createRunLog(tmpRoot, 'stamp', String(process.pid));
+  const rec = record(1, baseEnv, 'overview', { b: 'h1', a: 'h2', dur: 3 }, 'sig|1', {
     role: 'button',
     name: 'Save',
     tag: 'button',
     trusted: false,
     purpose: 'sweep',
   });
-
-await test('run log appends click records as jsonl', () => {
-  rmTmp();
-  const log = createRunLog(tmpRoot, 'stamp', String(process.pid));
-  const rec = sampleClick();
   assert.equal(rec.seq, 1);
   assert.equal(rec.stateBefore, 'h1');
   assert.equal(rec.duration, 3);
@@ -194,7 +191,6 @@ await test('enumerate and sweep rows parse to typed rows, junk is dropped', () =
   assert.equal(parseSweepRecord({ p: 'x', skip: 'disabled', b: '', a: '' })?.skipped, 'disabled');
   assert.equal(parseSweepRecord('junk'), null);
 });
-
 await test('code markdown totals functions and branches', () => {
   const md = codeMarkdown([
     {
@@ -217,7 +213,6 @@ await test('code markdown totals functions and branches', () => {
   assert.ok(md.includes('Total: 3/4 functions (75%), 3/4 branches (75%)'));
   assert.ok(md.includes('- src/a.ts|f@1'));
 });
-
 await test('joinSeen merges enumerate info with sweep skips by path', () => {
   const seen = joinSeen('r', [enumerated('p1')], [sweepHit('p1'), sweepHit('p2', 'disabled')]);
   assert.equal(seen.length, 2);
@@ -232,7 +227,6 @@ await test('joinSeen merges enumerate info with sweep skips by path', () => {
   assert.equal(clicks.at(0)?.signature, sigs.at(0));
   assert.equal(clicks.at(0)?.trusted, false);
 });
-
 await test('asFinding maps invariant rows and drops junk', () => {
   assert.deepEqual(asFinding({ rule: 'x', sel: 's', expected: 'e', actual: 'a' }), {
     rule: 'x',

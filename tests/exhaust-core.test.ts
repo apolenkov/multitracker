@@ -10,6 +10,7 @@ import {
   cartesian,
   coveringArray,
   layoutGrid,
+  partBAxes,
   rowPairs,
   uncoveredPairs,
 } from '../scripts/exhaust/axes.ts';
@@ -26,6 +27,9 @@ import { contrastRatio, luminance, over, parseColor } from '../scripts/exhaust/c
 import { decodeMappings, mapPosition, parseMap, positionOf } from '../scripts/exhaust/sourcemap.ts';
 import { designScales, tokenNames, cssRadii } from '../scripts/exhaust/tokens.ts';
 import { asArray, asText, isRecord } from '../scripts/exhaust/guards.ts';
+import { formCases, primaryField, valueFor } from '../scripts/exhaust/form-cases.ts';
+import { walkDepth, walkSeeds, walkSequences } from '../scripts/exhaust/walk-plan.ts';
+import { axisTable } from '../scripts/exhaust/axis-pass.ts';
 import { readFileSync } from 'node:fs';
 
 await test('prng is deterministic and covers the unit interval', () => {
@@ -210,4 +214,29 @@ await test('design scales come from DESIGN.md and token names from appearance.cs
   const names = tokenNames(readFileSync('src/appearance.css', 'utf8'));
   assert.ok(names.includes('--ink') && names.includes('--canvas') && names.includes('--green'));
   assert.ok(!names.includes('--select-chevron'));
+});
+
+await test('form cases cover 10 types times 7 value classes from schema', () => {
+  const cases = formCases();
+  assert.equal(cases.length, 70);
+  assert.equal(new Set(cases.map((c) => c.type)).size, 10);
+  assert.equal(new Set(cases.map((c) => c.valueClass)).size, 7);
+  assert.ok(cases.every((c) => primaryField(c.type) !== undefined));
+  assert.equal(valueFor('empty'), '');
+});
+
+await test('walk sequences are deterministic with depth from seeds', () => {
+  const paths = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const first = walkSequences(paths, walkSeeds[0], 3, walkDepth);
+  assert.equal(first.length, 3);
+  assert.ok(first.every((seq) => seq.length === walkDepth));
+  assert.deepEqual(first, walkSequences(paths, walkSeeds[0], 3, walkDepth));
+});
+
+await test('part b covering array and axis table record every tuple', () => {
+  const rows = coveringArray(partBAxes());
+  assert.deepEqual(uncoveredPairs(rows, partBAxes()), []);
+  const table = axisTable(rows);
+  assert.ok(table.includes(`rows: ${rows.length}`));
+  assert.equal(table.split('\n').filter((l) => /^\d+\. /.test(l)).length, rows.length);
 });

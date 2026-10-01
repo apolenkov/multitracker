@@ -51,7 +51,7 @@ export const joinSeen = (
   });
 };
 
-const signatureFor = (item: RegistryInput): string =>
+export const signatureFor = (item: RegistryInput): string =>
   elementSignature({
     route: item.route,
     dialog: dialogOf(item.path),

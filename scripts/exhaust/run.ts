@@ -7,7 +7,7 @@ import { baseEnv } from './axes.ts';
 import { installHooksSource } from './page-dom.ts';
 import { applyEnv } from './envctl.ts';
 import { createRunLog } from './records.ts';
-import type { RunLog } from './records.ts';
+import type { Finding, RunLog } from './records.ts';
 import { buildRegistry, coveragePercent, elementMarkdown, sectionCoverage } from './registry.ts';
 import type { RegistryInput, SectionCoverage } from './registry.ts';
 import { checkLedger, parseLedger } from './ledger.ts';
@@ -37,7 +37,7 @@ type Acc = Readonly<{
   clicked: readonly string[];
   attribution: readonly Attribution[];
   errors: readonly string[];
-  findings: number;
+  findings: readonly Finding[];
   scripts: readonly ScriptCoverage[];
   prev: readonly FileReport[];
 }>;
@@ -48,7 +48,7 @@ const seedAcc = (scripts: readonly ScriptCoverage[], sources: readonly ScriptSou
   clicked: [],
   attribution: [],
   errors: [],
-  findings: 0,
+  findings: [],
   scripts,
   prev: fileReports(scripts, sources),
 });
@@ -68,7 +68,7 @@ const nextAcc = (
     { route, fresh: newlyCovered(prev.prev, reports).length, durationMs: result.durationMs },
   ],
   errors: [...prev.errors, ...result.consoleErrors],
-  findings: prev.findings + result.findings.length,
+  findings: [...prev.findings, ...result.findings],
   scripts,
   prev: reports,
 });
@@ -150,7 +150,7 @@ const summaryOf = (
     totals(finalReports, (r) => r.branchesTotal),
   ],
   consoleErrors: acc.errors.length,
-  findings: acc.findings,
+  findings: acc.findings.length,
   elementLedger: checks.element,
   codeLedger: checks.code,
 });
@@ -162,6 +162,7 @@ const writeReports = (log: RunLog, acc: Acc, finalReports: readonly FileReport[]
   log.saveJson('element-coverage.json', { sections, entries });
   const checks = ledgerChecks(sections, finalReports);
   writeCodeReports(log, acc, finalReports);
+  log.saveJson('findings.json', acc.findings);
   const summary = summaryOf(acc, sections, finalReports, checks);
   log.saveJson('summary.json', summary);
   console.log(JSON.stringify(summary, null, 2));
@@ -184,12 +185,20 @@ const reportChecks = (checks: Checks): void => {
   assert.ok(checks.code.ok, `code ledger: ${JSON.stringify(checks.code)}`);
 };
 
-const coverRun = async (browser: Browser, log: RunLog, started: number): Promise<void> => {
+const coverRun = async (
+  browser: Browser,
+  log: RunLog,
+  base: string,
+  started: number,
+): Promise<void> => {
   const cdp = await connectPage(browser);
   try {
     await startCoverage(cdp.send);
+    openApp(browser, base, log);
     const initial = await takeCoverage(cdp.send);
     const sources = await bundleSources(initial);
+    console.log(`cdp: ${initial.length} scripts, ${sources.length} bundle sources`);
+    assert.ok(sources.length > 0, 'no bundle sources: source maps missing or bundle URL mismatch');
     const acc = await collectAll(browser, log, cdp.send, sources, initial);
     const merged = mergeScripts(acc.scripts, await takeCoverage(cdp.send));
     const finalReports = fileReports(merged, sources);
@@ -226,8 +235,13 @@ const main = async (): Promise<void> => {
   const started = Date.now();
   const browser = createBrowser();
   try {
-    openApp(browser, base, log);
-    await coverRun(browser, log, started);
+    browser.run('open', base);
+    browser.run(
+      'wait',
+      '--fn',
+      "document.readyState === 'complete' && !!document.querySelector('.desktop-links a')",
+    );
+    await coverRun(browser, log, base, started);
   } finally {
     browser.run('close');
   }

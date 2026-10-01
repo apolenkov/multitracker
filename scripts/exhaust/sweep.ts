@@ -169,7 +169,7 @@ export const visitRoute = (browser: Browser, route: string, seq: number, env: En
   const hits = [...sweep.hits, ...extra.hits];
   const seen = joinSeen(route, mergeEnumerated(first, last), hits);
   const count = hits.filter((hit) => hit.skipped === '').length;
-  const verified = trustedSample(browser, route, env, seq + 1 + count, seen, hits);
+  const verified = trustedSample(browser, env, seq + 1 + count, seen, hits);
   return {
     clicks: [nav, ...hitClicks(route, env, seq + 1, seen, hits), ...verified],
     seen,

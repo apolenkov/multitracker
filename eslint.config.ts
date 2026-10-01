@@ -13,7 +13,18 @@ const securityRules = Object.fromEntries(
 );
 
 export default tseslint.config(
-  { ignores: ['node_modules/**', 'dist/**', 'coverage/**'] },
+  {
+    // Те же пути, что в .gitignore: локальные доказательства и параллельные рабочие копии не код репозитория.
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'coverage/**',
+      'docs/audits/**',
+      'docs/evidence/**',
+      '.claude/**',
+      '.impeccable/review/**',
+    ],
+  },
   {
     files,
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],

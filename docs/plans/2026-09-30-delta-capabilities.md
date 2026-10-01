@@ -1,5 +1,9 @@
 # Delta capabilities implementation plan
 
+> **Out of current scope:** the owner removed Markets, Favorites, Analytics and
+> Events (decision-093); this plan is a historical record of the 11-section
+> prototype kept under tag `prototype-full-11-sections`.
+
 > **For agentic workers:** Use superpowers:subagent-driven-development. Root owns integration and one final review; workers own disjoint scenario folders.
 
 **Goal:** Show the documented Delta feature families as usable static scenarios,

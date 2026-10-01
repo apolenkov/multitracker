@@ -125,6 +125,11 @@ export function alertDraft(browser: Browser) {
   browser.run('select', '#market-frequency', 'repeat');
   browser.run('click', '#market-save-alert');
   browser.run('wait', '--fn', '!document.querySelector("#market-alert-dialog[open]")');
+  truth(
+    browser,
+    `document.activeElement === document.querySelector('${asset} .market-open')`,
+    'Сохранение оповещения должно вернуть фокус на устойчивую кнопку актива на странице',
+  );
   assert.equal(alertCount(browser), before + 1, 'Сохранение не добавило уведомление');
   const saved = cancelAlertEdit(browser);
   assert.ok(saved.includes('910,00\u00a0$'), 'Сохранённое условие должно показывать ровно 910 USD');

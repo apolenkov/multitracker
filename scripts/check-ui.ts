@@ -6,15 +6,16 @@ import { analyticsChanges, analyticsPrivacy, widgetAppearance } from './ui-explo
 import { alertDraft, marketFollowing, marketRouteClosure } from './ui-market-checks.ts';
 import { eventReminder, eventUpdates } from './ui-events-checks.ts';
 import { createCheck, type Result } from './ui-results.ts';
-import { conflictRadioChoices } from './ui-sync-checks.ts';
+import { conflictRadioChoices, syncPostConflictDisclosure } from './ui-sync-checks.ts';
 import { reveal } from './ui-exploration.ts';
 import { operationExtras } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
-import { catalogDialog, initialSkipFocus, narrowAllocation } from './ui-overview-checks.ts';
+import { initialSkipFocus, narrowAllocation } from './ui-overview-checks.ts';
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
 import { recordMenuStability } from './ui-record-menu-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
+import { cashFlow } from './ui-cash-flow-checks.ts';
 
 const screens = [
   ['overview', 'Обзор', 'Overview'],
@@ -236,12 +237,13 @@ function runChecks(driver: Browser): readonly Result[] {
     ['sync:radio-labels-width-selection', () => conflictRadioChoices(browser)],
     ['operations:meaningful-extras-visible', () => operationExtras(browser)],
     ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
-    ['overview:catalog-dialog-layout-focus', () => catalogDialog(browser)],
+    ['cash:direct-opening-and-market-catalog-focus', () => cashFlow(browser)],
     ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
     ['history:record-menu-stable-row', () => recordMenuStability(browser)],
     ['overview:empty-state-restores-example', () => emptyOverview(browser)],
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
     ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],
+    ['sync:confirm-then-intentional-disclosure', () => syncPostConflictDisclosure(browser)],
   ];
   return actions.reduce<readonly Result[]>(
     (results, [id, action]) => [

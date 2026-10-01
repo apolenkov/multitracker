@@ -15,13 +15,9 @@ function pointerActivation(event: MouseEvent) {
   return event.isTrusted && event.button === 0 && (event.type !== 'click' || event.detail > 0);
 }
 
-function insideButton(event: MouseEvent, rect: DOMRectReadOnly) {
-  return (
-    event.clientX >= rect.left &&
-    event.clientX <= rect.right &&
-    event.clientY >= rect.top &&
-    event.clientY <= rect.bottom
-  );
+function nearActivation(event: MouseEvent, origin: readonly [number, number]) {
+  // Product tolerance: 12 CSS px allows pointer jitter, not movement across the old button.
+  return Math.hypot(event.clientX - origin[0], event.clientY - origin[1]) <= 12;
 }
 
 function dialogContext() {
@@ -33,19 +29,19 @@ function guardActivation(event: MouseEvent, lifetime: AbortSignal) {
   const button = event.target.closest('button');
   if (!(button instanceof HTMLButtonElement)) return;
   const context = button.closest('dialog[open]');
-  const rect = button.getBoundingClientRect();
+  const origin = [event.clientX, event.clientY] as const;
   const controller = new AbortController();
   // Same-position repeats expire 500 ms after a modal context transition.
   const signal = AbortSignal.any([lifetime, controller.signal, AbortSignal.timeout(500)]);
   const cancel = () => controller.abort();
   const blockRepeat = (next: MouseEvent) => {
-    if (next.type === 'pointerdown' && next.isTrusted && !insideButton(next, rect)) {
+    if (next.type === 'pointerdown' && next.isTrusted && !nearActivation(next, origin)) {
       cancel();
       return;
     }
     if (!pointerActivation(next)) return;
     if (dialogContext() === context) return;
-    if (!insideButton(next, rect)) return;
+    if (!nearActivation(next, origin)) return;
     next.preventDefault();
     next.stopImmediatePropagation();
   };

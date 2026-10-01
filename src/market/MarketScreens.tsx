@@ -17,6 +17,7 @@ import {
 import { MarketFilters, MarketIndices, MarketList } from './MarketList.tsx';
 import { NotificationPreview } from './NotificationPreview.tsx';
 import { marketWords } from './words.ts';
+import { Catalog } from '../insights/Catalog.tsx';
 import './market.css';
 
 type Props = Readonly<{
@@ -97,6 +98,7 @@ export function MarketScreens(props: Props) {
       />
       {assets.length === 0 && <MarketEmpty {...props} onClear={filters.onClear} />}
       <MarketDisclosure language={props.language} />
+      {props.screen === 'markets' && <Catalog language={props.language} />}
       <AlertList
         {...props}
         {...model}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Icon } from './Icon.tsx';
 import { AssetSymbol } from './AssetSymbol.tsx';
-import { openDialog } from './Forms.tsx';
+import { openDialog, openOperation } from './Forms.tsx';
 import { totals, type Asset, type Buy, type Currency } from './model/portfolio.ts';
 import { getLabels, money, number, percentage, type Language } from './i18n.ts';
 
@@ -17,6 +17,8 @@ type TableProps = Readonly<{
   hidden: boolean;
   onSelect: (asset: Asset) => void;
 }>;
+type TableRow = Holding | Currency;
+type SortedTableProps = Omit<TableProps, 'rows'> & Readonly<{ rows: readonly TableRow[] }>;
 
 export function HoldingsTable(props: TableProps) {
   const [sort, setSort] = useState<Sort>({ column: 'asset', direction: 'ascending' });
@@ -26,11 +28,15 @@ export function HoldingsTable(props: TableProps) {
       direction:
         sort.column === column && sort.direction === 'ascending' ? 'descending' : 'ascending',
     });
-  const rows = props.rows.toSorted((left, right) => {
+  const cashRows = ['RUB', 'USD'] as const;
+  const assetName = (row: TableRow) => (typeof row === 'string' ? row : row.asset);
+  const assetValue = (row: TableRow) =>
+    typeof row === 'string' ? 0 : totals(row.buys, props.currency).value;
+  const rows = [...props.rows, ...cashRows].toSorted((left, right) => {
     const difference =
       sort.column === 'asset'
-        ? left.asset.localeCompare(right.asset)
-        : totals(left.buys, props.currency).value - totals(right.buys, props.currency).value;
+        ? assetName(left).localeCompare(assetName(right))
+        : assetValue(left) - assetValue(right);
     return sort.direction === 'ascending' ? difference : -difference;
   });
   return (
@@ -80,7 +86,7 @@ function AssetTable({
   hidden,
   onSelect,
   sort,
-}: TableProps & Readonly<{ sort: Sort }>) {
+}: SortedTableProps & Readonly<{ sort: Sort }>) {
   const labels = getLabels(language);
   return (
     <table className="holdings-table">
@@ -101,20 +107,65 @@ function AssetTable({
         </tr>
       </thead>
       <tbody>
-        {rows.map((row) => (
-          <HoldingRow
-            key={row.asset}
-            holding={row}
-            value={value}
-            currency={currency}
-            baseCurrency={baseCurrency}
-            language={language}
-            hidden={hidden}
-            onSelect={onSelect}
-          />
-        ))}
+        <HoldingRows {...{ rows, value, currency, baseCurrency, language, hidden, onSelect }} />
       </tbody>
     </table>
+  );
+}
+
+function HoldingRows(props: SortedTableProps) {
+  return props.rows.map((holding) =>
+    typeof holding === 'string' ? (
+      <CashHoldingRow
+        key={holding}
+        currency={holding}
+        language={props.language}
+        hidden={props.hidden}
+      />
+    ) : (
+      <HoldingRow key={holding.asset} {...props} holding={holding} />
+    ),
+  );
+}
+
+function CashHoldingRow({
+  currency,
+  language,
+  hidden,
+}: Pick<TableProps, 'currency' | 'language' | 'hidden'>) {
+  const labels = getLabels(language);
+  const action = language === 'ru' ? 'Задать остаток' : 'Set balance';
+  const balance = language === 'ru' ? 'Остаток' : 'Balance';
+  return (
+    <tr className="holding-row cash-holding-row" data-currency={currency}>
+      <td className="cash-holding-identity">
+        <div className="asset-name">
+          <AssetSymbol symbol={currency} />
+          <strong>{currency}</strong>
+        </div>
+        <button
+          type="button"
+          aria-label={`${action} · ${currency}`}
+          onClick={() => openOperation('opening', { asset: currency, currency })}
+        >
+          {action}
+        </button>
+      </td>
+      <td className="holding-quantity">
+        <span className="mobile-label">{labels.quantity}</span>
+        {hidden ? '••••' : number(0, language)}
+      </td>
+      <td>
+        <span className="mobile-label">
+          {balance} · {currency}
+        </span>
+        {hidden ? '••••' : money(0, currency, language)}
+      </td>
+      <td>
+        <span className="mobile-label">{labels.result}</span>—
+      </td>
+      <td className="holding-weight">—</td>
+    </tr>
   );
 }
 

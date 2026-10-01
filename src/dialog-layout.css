@@ -1,14 +1,18 @@
 dialog {
+  --dialog-inset: 24px;
   --dialog-limit: min(85dvh, calc(100dvh - 32px));
   --dialog-button-height: max(44px, calc(1lh + 18px));
   --dialog-footer-reserve: calc(var(--dialog-button-height) + 16px + 1px + 6px);
   max-height: var(--dialog-limit);
+  padding: var(--dialog-inset);
   margin-block: calc((100dvh - var(--dialog-limit)) / 2) auto;
   scroll-padding-bottom: var(--dialog-footer-reserve);
 }
 dialog :is(.form-actions, .dialog-actions) {
   position: sticky;
-  bottom: 0;
+  bottom: calc(-1 * var(--dialog-inset));
+  padding-bottom: var(--dialog-inset);
+  margin-bottom: calc(-1 * var(--dialog-inset));
   z-index: 1;
   background: var(--paper);
 }
@@ -34,6 +38,7 @@ dialog :is(.close-button, .icon-close) {
 }
 @media (max-width: 600px) {
   dialog {
+    --dialog-inset: 20px;
     --dialog-button-height: max(44px, calc(3lh + 18px));
   }
   dialog:has(.import-actions) {

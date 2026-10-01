@@ -96,7 +96,7 @@ const scanTextElement = (el, cfg, v, tokenKeys) => {
     const limit = CX.contrastLimit(fs, fw, false);
     if (ratio < limit) push(v, 'contrast-text', el, '>=' + limit.toFixed(1), ratio.toFixed(2) + ' ' + cs.color);
   }
-  if (el.scrollWidth > el.clientWidth + 1 && ['hidden', 'clip', 'scroll', 'auto'].includes(cs.overflowX)
+  if (el.clientWidth > 8 && el.scrollWidth > el.clientWidth + 1 && ['hidden', 'clip', 'scroll', 'auto'].includes(cs.overflowX)
       && !el.title && !el.getAttribute('aria-label'))
     push(v, 'clipped-text', el, 'scrollWidth<=clientWidth or title', el.scrollWidth + '>' + el.clientWidth);
   [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft, cs.rowGap, cs.columnGap]

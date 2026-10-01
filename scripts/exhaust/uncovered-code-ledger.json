@@ -2,10 +2,6 @@
   "version": 1,
   "exceptions": [
     {
-      "signature": "src/App.tsx|(anon)@128",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
       "signature": "src/DemoScreens.tsx|(anon)@18",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },

@@ -96,6 +96,21 @@ const trustedOne = (browser: Browser, env: Env, seq: number, pick: TrustPick): C
   return trustedRecord(pick.item, env, seq, pick.kind, before, after, Date.now() - started);
 };
 
+/** Один доверенный клик без падения прогона: перекрытый элемент пропускается. */
+const safeOne = (
+  browser: Browser,
+  env: Env,
+  seq: number,
+  pick: TrustPick,
+): readonly ClickRecord[] => {
+  if (!clickable(browser, pick.hit.path)) return [];
+  try {
+    return [trustedOne(browser, env, seq, pick)];
+  } catch {
+    return [];
+  }
+};
+
 /** Выборка настоящих кликов после обхода: stride-семпл подходящих сигнатур. */
 export const trustedSample = (
   browser: Browser,
@@ -104,6 +119,4 @@ export const trustedSample = (
   seen: readonly RegistryInput[],
   hits: readonly SweepHit[],
 ): readonly ClickRecord[] =>
-  candidates(seen, hits).flatMap((pick, index) =>
-    clickable(browser, pick.hit.path) ? [trustedOne(browser, env, start + index, pick)] : [],
-  );
+  candidates(seen, hits).flatMap((pick, index) => safeOne(browser, env, start + index, pick));

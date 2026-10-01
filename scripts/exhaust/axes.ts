@@ -121,3 +121,10 @@ export const layoutGrid = (): readonly Env[] =>
     demoState: ['ready'],
     reducedMotion: ['off'],
   });
+
+/** Оси части (b): 8 варьируемых, demoState/reducedMotion зафиксированы. */
+export const partBAxes = (): Axes => ({
+  ...axisValues,
+  demoState: ['ready'],
+  reducedMotion: ['off'],
+});

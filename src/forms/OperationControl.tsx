@@ -106,14 +106,12 @@ function OperationInputControl({ field, id, value, update, error }: ControlProps
 }
 function errorText(error: string, field: Field, language: Language) {
   const labels = getFormCopy(language);
+  const positive = field === 'quantity' ? labels.quantityError : labels.priceError;
   const messages = {
-    positive:
-      new Map([
-        ['quantity', labels.quantityError],
-        ['price', labels.priceError],
-      ]).get(field) ?? labels.positive,
+    positive: ['quantity', 'price'].includes(field) ? positive : labels.positive,
     fee: labels.positive,
-    total: labels.positive,
+    range: labels.rangeError,
+    total: labels.rangeError,
     date: labels.dateError,
     asset: labels.selectionError,
     portfolio: labels.selectionError,

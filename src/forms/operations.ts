@@ -212,7 +212,8 @@ function numericError(field: Field, value: string, type: OperationType) {
       ['quantity', 1e6],
       ['fee', 1e7],
     ]).get(field) ?? 1e9;
-  return validNumber(value, field === 'fee' || type === 'opening', max) ? undefined : 'positive';
+  if (validNumber(value, field === 'fee' || type === 'opening', max)) return undefined;
+  return Number(value.trim().replace(',', '.')) > max ? 'range' : 'positive';
 }
 export function validateOperation(input: OperationInput, state: State): OperationErrors {
   const errors = Object.fromEntries(
@@ -228,8 +229,8 @@ export function validateOperation(input: OperationInput, state: State): Operatio
         )
       : {};
   return {
-    ...errors,
     ...buyErrors,
+    ...errors,
     ...(!state.portfolios.some((item) => item.id === input.portfolioId)
       ? { portfolioId: 'portfolio' }
       : {}),

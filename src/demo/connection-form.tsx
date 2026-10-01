@@ -68,6 +68,7 @@ function ConnectionFields({
 }>) {
   return (
     <fieldset className="demo-field-group">
+      <legend>{t.destination}</legend>
       <label>
         {t.destination}
         <select
@@ -224,12 +225,12 @@ function ConnectionTest({
 
 function ConnectionAccess({ t }: Readonly<{ t: ConnectionWords }>) {
   return (
-    <fieldset className="demo-field-group">
+    <div className="demo-field-group">
       <p className="demo-note">{t.rights}</p>
       <label>
         {t.token}
         <input readOnly value="demo-token-••••••••" />
       </label>
-    </fieldset>
+    </div>
   );
 }

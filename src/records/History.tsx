@@ -24,7 +24,7 @@ export function History(props: Props) {
   return (
     <section aria-labelledby={props.brief ? 'recent-history-title' : undefined}>
       {props.brief && <h2 id="recent-history-title">{labels.recentHistory}</h2>}
-      {props.brief && <p className="quiet history-note">{getLabels(props.language).historyNote}</p>}
+      {props.brief && <p className="quiet history-note">{labels.historyNote}</p>}
       {!props.brief && (
         <HistoryFilters
           filter={filter}

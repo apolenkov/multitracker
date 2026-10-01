@@ -42,7 +42,7 @@ function PrimaryFields(props: Props) {
   if (type === 'buy' || type === 'sell')
     return (
       <>
-        <OperationGroup {...props} title={copy.asset} fields={['asset']} />
+        <OperationGroup {...props} title={copy.asset} fields={['asset']} hideLegend />
         <OperationGroup
           {...props}
           title={copy.trade}
@@ -54,7 +54,7 @@ function PrimaryFields(props: Props) {
     return (
       <>
         <OperationGroup {...props} title={copy.asset} fields={['asset', 'quantity']} />
-        <OperationGroup {...props} title={copy.corporateNote} fields={['note']} />
+        <OperationGroup {...props} title={copy.corporateNote} fields={['note']} hideLegend />
       </>
     );
   if (type === 'transfer') return <TransferFields {...props} />;
@@ -72,7 +72,9 @@ function CashFields(props: Props) {
   const type = props.input.type;
   return (
     <>
-      {type === 'income' && <OperationGroup {...props} title={copy.asset} fields={['asset']} />}
+      {type === 'income' && (
+        <OperationGroup {...props} title={copy.asset} fields={['asset']} hideLegend />
+      )}
       {['deposit', 'withdrawal'].includes(type) && (
         <OperationGroup
           {...props}
@@ -106,17 +108,20 @@ function OperationGroup({
   title,
   fields,
   className = '',
+  hideLegend = false,
   ...props
-}: Props & Readonly<{ title: string; fields: readonly Field[]; className?: string }>) {
+}: Props &
+  Readonly<{ title: string; fields: readonly Field[]; className?: string; hideLegend?: boolean }>) {
+  const Group = hideLegend ? 'div' : 'fieldset';
   return (
-    <fieldset className={`operation-group ${className}`}>
-      {fields.length > 1 && <legend>{title}</legend>}
+    <Group className={`operation-group ${className}`}>
+      {!hideLegend && <legend>{title}</legend>}
       <div className="form-grid">
         {fields.map((field) => (
           <OperationField key={field} {...props} field={field} />
         ))}
       </div>
-    </fieldset>
+    </Group>
   );
 }
 function AdditionalFields({ fields, ...props }: Props & Readonly<{ fields: readonly Field[] }>) {

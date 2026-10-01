@@ -107,8 +107,13 @@ const safeOne = (
   try {
     return [trustedOne(browser, env, seq, pick)];
   } catch {
+    closeDialogs(browser);
     return [];
   }
+};
+
+const closeDialogs = (browser: Browser): void => {
+  evaluate(browser, "([...document.querySelectorAll('dialog[open]')].forEach((d) => d.close()), true)");
 };
 
 /** Выборка настоящих кликов после обхода: stride-семпл подходящих сигнатур. */
@@ -118,5 +123,10 @@ export const trustedSample = (
   start: number,
   seen: readonly RegistryInput[],
   hits: readonly SweepHit[],
-): readonly ClickRecord[] =>
-  candidates(seen, hits).flatMap((pick, index) => safeOne(browser, env, start + index, pick));
+): readonly ClickRecord[] => {
+  const clicks = candidates(seen, hits).flatMap((pick, index) =>
+    safeOne(browser, env, start + index, pick),
+  );
+  closeDialogs(browser);
+  return clicks;
+};

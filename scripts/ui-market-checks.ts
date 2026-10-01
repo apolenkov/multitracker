@@ -131,23 +131,33 @@ export function alertDraft(browser: Browser) {
   assert.match(saved, /Ниже/);
   assert.match(saved, /Повторять/);
   assert.ok(content(browser, '.demo-status'), 'Нет сообщения о сохранении');
-  browser.run('click', `${lastAlert} [data-market-action="pause"]`);
+  ruleAction(browser, 'pause');
   assert.match(content(browser, lastAlert), /Приостановлено/);
-  browser.run('click', `${lastAlert} [data-market-action="pause"]`);
+  ruleAction(browser, 'pause');
   assert.match(content(browser, lastAlert), /Пример включён/);
   deleteAlert(browser, before);
   assert.equal(alertCount(browser), before, 'Удаление не восстановило исходный список');
   return { saved, invalid: ['', 'abc', '0', '-1'], editedDraft: '999 → отмена → 910' };
 }
 
+function ruleAction(browser: Browser, action: 'pause' | 'delete') {
+  browser.run('click', `${lastAlert} button.rule-menu`);
+  browser.run('wait', '[role="menu"]');
+  browser.run(
+    'click',
+    `[role="menu"] [role="menuitem"]${action === 'delete' ? '.danger' : ':not(.danger)'}`,
+  );
+  browser.run('wait', '--fn', '!document.querySelector(\'[role="menu"]\')');
+}
+
 function deleteAlert(browser: Browser, before: number) {
-  browser.run('click', `${lastAlert} [data-market-action="delete"]`);
+  ruleAction(browser, 'delete');
   browser.run('wait', '#market-delete-alert-dialog[open]');
   assert.equal(alertCount(browser), before + 1, 'Открытие подтверждения удалило уведомление');
   browser.run('click', '#market-cancel-delete-alert');
   browser.run('wait', '--fn', '!document.querySelector("#market-delete-alert-dialog[open]")');
   assert.equal(alertCount(browser), before + 1, 'Отмена подтверждения удалила уведомление');
-  browser.run('click', `${lastAlert} [data-market-action="delete"]`);
+  ruleAction(browser, 'delete');
   browser.run('wait', '#market-delete-alert-dialog[open]');
   browser.run('click', '#market-confirm-delete-alert');
   browser.run('wait', '--fn', '!document.querySelector("#market-delete-alert-dialog[open]")');

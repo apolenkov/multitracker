@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ActionMenu } from '../ActionMenu.tsx';
 import { DemoModal } from '../demo/modal.tsx';
 import type { Language } from '../i18n.ts';
 import type { Currency } from '../model/portfolio.ts';
@@ -67,23 +68,23 @@ function AlertRow(props: Props & Readonly<{ alert: PriceAlert }>) {
         >
           {words.edit}
         </button>
-        <button
-          type="button"
-          data-market-action="pause"
-          aria-label={`${alert.paused ? words.resume : words.pause} · ${alert.symbol}`}
-          onClick={() => props.onPause(alert)}
-        >
-          {alert.paused ? words.resume : words.pause}
-        </button>
-        <button
-          type="button"
-          data-market-action="delete"
-          className="market-delete"
-          aria-label={`${words.deleteAlert} · ${alert.symbol}`}
-          onClick={() => props.onDelete(alert.id)}
-        >
-          {words.deleteAlert}
-        </button>
+        <ActionMenu
+          className="rule-menu"
+          label={`${words.actions} · ${alert.symbol}`}
+          items={[
+            {
+              label: alert.paused ? words.resume : words.pause,
+              ariaLabel: `${alert.paused ? words.resume : words.pause} · ${alert.symbol}`,
+              onSelect: () => props.onPause(alert),
+            },
+            {
+              label: words.deleteAlert,
+              ariaLabel: `${words.deleteAlert} · ${alert.symbol}`,
+              onSelect: () => props.onDelete(alert.id),
+              danger: true,
+            },
+          ]}
+        />
       </div>
     </li>
   );

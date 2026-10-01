@@ -20,50 +20,49 @@ export function HistoryRow(props: Props) {
     (item) => item.id === props.record.portfolioId,
   )?.name;
   const Heading = props.brief ? 'h3' : 'h2';
+  const copy = recordsCopy(props.language);
+  const title = `${operationLabel(props.record.type, props.language)} ${props.record.asset}`;
+  const text = `${operationLabel(props.record.type, props.language)} · ${props.record.asset}`;
   return (
     <article className="history-row">
       <div className="record-heading">
-        <time dateTime={props.record.date}>{date(props.record.date, props.language)}</time>
         <Heading>
           <AssetSymbol symbol={props.record.asset} />
           <RecordDirection type={props.record.type} />
-          {operationLabel(props.record.type, props.language)} · {props.record.asset}
+          {props.brief ? (
+            text
+          ) : (
+            <button
+              className="history-row-open"
+              aria-label={`${copy.details}: ${title}`}
+              onClick={props.onDetails}
+            >
+              {text}
+            </button>
+          )}
         </Heading>
         <p className="quiet">
+          <time dateTime={props.record.date}>{date(props.record.date, props.language)}</time> ·{' '}
           {portfolio} · {accountLabel(props.record.account, props.language).split(' · ').at(-1)}
         </p>
       </div>
       <RecordSummary {...props} />
-      {!props.brief && <RecordActions {...props} />}
+      {!props.brief && (
+        <ActionMenu
+          className="record-menu"
+          label={`${props.language === 'ru' ? 'Действия' : 'Actions'}: ${title}`}
+          items={[
+            { label: copy.edit, ariaLabel: `${copy.edit}: ${title}`, onSelect: props.onEdit },
+            {
+              label: copy.delete,
+              ariaLabel: `${copy.delete}: ${title}`,
+              onSelect: props.onDelete,
+              danger: true,
+            },
+          ]}
+        />
+      )}
     </article>
-  );
-}
-function RecordActions(props: Props) {
-  const copy = recordsCopy(props.language);
-  const title = `${operationLabel(props.record.type, props.language)} ${props.record.asset}`;
-  return (
-    <div className="record-actions">
-      <button
-        className="record-detail-button"
-        aria-label={`${copy.details}: ${title}`}
-        onClick={props.onDetails}
-      >
-        {copy.details}
-      </button>
-      <ActionMenu
-        className="record-menu"
-        label={`${props.language === 'ru' ? 'Действия' : 'Actions'}: ${title}`}
-        items={[
-          { label: copy.edit, ariaLabel: `${copy.edit}: ${title}`, onSelect: props.onEdit },
-          {
-            label: copy.delete,
-            ariaLabel: `${copy.delete}: ${title}`,
-            onSelect: props.onDelete,
-            danger: true,
-          },
-        ]}
-      />
-    </div>
   );
 }
 function RecordDirection({ type }: Readonly<{ type: Transaction['type'] }>) {
@@ -105,6 +104,7 @@ export function RecordSummary({
         label={units ? quantityName(record, language) : copy.amount}
         value={value}
         hidden={hidden}
+        className={units ? undefined : 'record-amount'}
       />
     </dl>
   );
@@ -150,9 +150,10 @@ function RecordValue({
   label,
   value,
   hidden,
-}: Readonly<{ label: string; value: string; hidden: boolean }>) {
+  className,
+}: Readonly<{ label: string; value: string; hidden: boolean; className?: string | undefined }>) {
   return (
-    <div>
+    <div className={className}>
       <dt>{label}</dt>
       <dd>{hidden ? '••••' : value}</dd>
     </div>

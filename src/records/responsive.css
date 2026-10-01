@@ -1,11 +1,4 @@
 @media (max-width: 900px) {
-  .history-list .history-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-  .history-list .history-row > .record-actions {
-    grid-column: 1 / -1;
-    justify-content: start;
-  }
   .workspace .history-filter-panel {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -29,24 +22,38 @@
     grid-column: 3;
     grid-row: 1 / 3;
   }
+  .portfolio-list .portfolio-record > .portfolio-manage {
+    align-self: start;
+    margin-top: 12px;
+    margin-right: 32px;
+  }
+  .portfolio-list .portfolio-name {
+    padding-right: 44px;
+  }
   .portfolio-record .account-list {
-    padding-left: 10px;
+    padding: 0 32px 0 54px;
   }
-  .portfolio-record .account-list li {
-    display: block;
+  .history-head {
+    display: none;
   }
-  .account-list .account-manage {
-    margin-left: 24px;
+  .history-list.with-head .history-row {
+    grid-template-columns: minmax(0, 1fr) 44px;
+    gap: 4px 8px;
   }
-  .history-list .history-row {
-    grid-template-columns: 1fr;
-    gap: 14px;
+  .with-head .record-menu {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
   }
   .history-list .record-summary {
+    grid-column: 1;
     text-align: left;
   }
-  .history-list .history-row > .record-actions {
-    grid-column: auto;
+  .history-list.with-head .record-amount dt {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
   }
   .history-filters .filter-grid {
     grid-template-columns: 1fr;

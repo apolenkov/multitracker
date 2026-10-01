@@ -14,7 +14,7 @@ function geometry(browser: Browser, index: number) {
         '.record-summary',
         '.record-summary dt',
         '.record-summary dd',
-        '.record-detail-button',
+        '.history-row-open',
         '.record-menu',
       ]
         .map(selector => {

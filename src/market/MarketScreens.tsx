@@ -172,7 +172,7 @@ function MarketEmpty(props: Props & Readonly<{ onClear: () => void }>) {
     <div className="market-empty">
       <p role="status">{props.screen === 'following' ? words.emptyFollowing : words.empty}</p>
       {props.screen === 'following' ? (
-        <a id="following-find" href="#markets">
+        <a id="following-find" className="primary" href="#markets">
           {words.find}
         </a>
       ) : (

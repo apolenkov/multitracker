@@ -64,9 +64,6 @@ details[open] > summary::before {
   align-items: center;
   gap: 8px;
 }
-.portfolio-record > .portfolio-manage {
-  margin-block: 0 8px;
-}
 .portfolio-assets,
 .portfolio-assets > span {
   display: flex;

@@ -25,11 +25,7 @@ export function AccountList({
         .filter((account) => account.portfolioId === id)
         .map((account) => (
           <li key={account.id}>
-            <div className="account-identity">
-              <span aria-hidden="true" className="account-branch" />
-              <strong>{accountLabel(account.id, language).split(' · ').at(-1)}</strong>
-              <small>{copy.account}</small>
-            </div>
+            <strong>{accountLabel(account.id, language).split(' · ').at(-1)}</strong>
             <ActionMenu
               className="account-manage"
               label={`${copy.manage}: ${accountLabel(account.id, language)}`}

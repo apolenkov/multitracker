@@ -184,14 +184,15 @@ function PortfolioValue({
       </span>
       <span className="portfolio-name">
         <strong>{name}</strong>
-        <small>
-          {language === 'ru' ? 'Счетов' : 'Accounts'}:{' '}
-          {accountSamples.filter((account) => account.portfolioId === id).length}
+        <small className="portfolio-meta">
+          <span>
+            {language === 'ru' ? 'Счетов' : 'Accounts'}:{' '}
+            {accountSamples.filter((account) => account.portfolioId === id).length}
+          </span>
+          <PortfolioAssets state={state} id={id} />
         </small>
-        <PortfolioAssets state={state} id={id} />
       </span>
       <span className="portfolio-value">
-        <small className="quiet">{labels.total}</small>
         {hidden ? '••••' : money(result.value, currency, language)}
         <small className={performance.profit >= 0 ? 'positive' : 'negative'}>
           {labels.result} · {baseCurrency}:{' '}

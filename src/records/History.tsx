@@ -82,19 +82,26 @@ function HistoryRows(
     }>,
 ) {
   return (
-    <div className="history-list">
-      {props.records.map((record) => (
-        <HistoryRow
-          key={record.id}
-          {...props}
-          record={record}
-          brief={props.brief ?? false}
-          onDetails={() => props.onRequest({ record, mode: 'details' })}
-          onEdit={() => props.onRequest({ record, mode: 'edit' })}
-          onDelete={() => props.onRequest({ record, mode: 'delete' })}
-        />
-      ))}
-    </div>
+    <>
+      {!props.brief && props.records.length > 0 && (
+        <div className="history-head" aria-hidden="true">
+          <span>{recordsCopy(props.language).amount}</span>
+        </div>
+      )}
+      <div className={props.brief ? 'history-list' : 'history-list with-head'}>
+        {props.records.map((record) => (
+          <HistoryRow
+            key={record.id}
+            {...props}
+            record={record}
+            brief={props.brief ?? false}
+            onDetails={() => props.onRequest({ record, mode: 'details' })}
+            onEdit={() => props.onRequest({ record, mode: 'edit' })}
+            onDelete={() => props.onRequest({ record, mode: 'delete' })}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 

@@ -45,3 +45,29 @@
 .market-change.negative {
   background: color-mix(in srgb, var(--red) 10%, var(--paper));
 }
+.portfolio-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  color: var(--muted);
+}
+.portfolio-meta .asset-symbol {
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+}
+.history-row .asset-symbol {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
+.history-row .record-summary {
+  flex-wrap: nowrap;
+}
+.history-row .record-summary dt {
+  line-height: 1.2;
+}
+.history-row .record-summary dd {
+  margin-top: 0;
+}

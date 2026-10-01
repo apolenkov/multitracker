@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import type { Browser } from './ui-driver.ts';
-import { content } from './ui-exploration.ts';
+import { content } from './ui-helpers.ts';
 
 export function mappingSamples(browser: Browser, scope: 'page', hidden = false) {
   const sample = (field: string) =>

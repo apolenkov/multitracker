@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { evaluate, type Browser } from './ui-driver.ts';
-import { reveal } from './ui-exploration.ts';
+import { reveal } from './ui-helpers.ts';
 
 function navigate(browser: Browser, screen: 'settings' | 'overview') {
   browser.run('click', `.desktop-links a[href="#${screen}"]`);

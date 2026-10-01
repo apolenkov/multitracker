@@ -51,10 +51,6 @@ export function prepareReset(browser: Browser, control: Control, state: State) {
       throw new Error('Reset precondition did not select buy filter');
     return;
   }
-  if (!control.path.endsWith('button#market-clear')) return;
-  browser.run('select', '#market-class', 'crypto');
-  const changed = query(browser, '#market-class', 'element?.value');
-  if (changed !== 'crypto') throw new Error('Reset precondition did not select crypto filter');
 }
 
 export function selectedChoice(browser: Browser, control: Control) {
@@ -63,7 +59,7 @@ export function selectedChoice(browser: Browser, control: Control) {
       browser,
       control.path,
       `Boolean(
-    (element?.getAttribute('aria-pressed')==='true' && element.closest('.events-view-switch,.holdings-sort') || element?.getAttribute('aria-selected')==='true' && element.closest('.period-controls,.events-filter')) ||
+    (element?.getAttribute('aria-pressed')==='true' && element.closest('.holdings-sort') || element?.getAttribute('aria-selected')==='true' && element.closest('.period-controls')) ||
     element?.matches('input[type=radio]:checked') ||
     element?.closest('.welcome-guide') && (
       element.textContent==='Открыть портфели' && location.hash==='#portfolios' ||

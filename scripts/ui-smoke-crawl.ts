@@ -142,8 +142,7 @@ function action(
   activate(browser, control, false);
   const after = semanticState(browser);
   const opened = snapshotDialogs(after).filter((id) => !originalDialogs.includes(id));
-  const reminderStep = /button#event-reminder-(open|back)$/.test(control.path);
-  const folds = changedDialogFold(browser, opened, reminderStep);
+  const folds = changedDialogFold(browser, opened, false);
   const retained =
     idempotent &&
     selectedChoice(browser, control) &&
@@ -152,7 +151,6 @@ function action(
   restoreNavigation(browser, state, before, after, opened, ancestorSummaries(control));
   const children = [
     ...opened.map((id) => auditDialog(browser, state, control, seen, id, crawl, activate)),
-    ...(reminderStep ? [crawl(browser, state, 'dialog#event-dialog', seen)] : []),
     manualStage(browser, state, control, seen, before, after, crawl),
   ];
   return {
@@ -204,13 +202,7 @@ export function crawl(
   existing?: ReturnType<typeof inspect>,
 ): Outcome {
   const report = existing ?? inspect(browser);
-  const items = report.controls
-    .filter((item) => item.path.includes(scope))
-    .toSorted(
-      (left, right) =>
-        Number(left.path.endsWith('button#event-reminder-back')) -
-        Number(right.path.endsWith('button#event-reminder-back')),
-    );
+  const items = report.controls.filter((item) => item.path.includes(scope));
   return items.reduce<Outcome>(
     (result, control) => {
       const checked = [

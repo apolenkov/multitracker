@@ -2,12 +2,10 @@ import assert from 'node:assert/strict';
 import { createBrowser, evaluate } from './ui-driver.ts';
 import type { Browser } from './ui-driver.ts';
 import { appearanceThemes, independentCurrencies, settingsPersist } from './ui-preferences.ts';
-import { analyticsChanges, analyticsPrivacy, widgetAppearance } from './ui-exploration.ts';
-import { alertDraft, marketFollowing, marketRouteClosure } from './ui-market-checks.ts';
-import { eventReminder, eventUpdates } from './ui-events-checks.ts';
+import { reveal, widgetAppearance } from './ui-helpers.ts';
+import { connectionLifecycle } from './ui-connection-checks.ts';
 import { createCheck, type Result } from './ui-results.ts';
 import { conflictRadioChoices, syncPostConflictDisclosure } from './ui-sync-checks.ts';
-import { reveal } from './ui-exploration.ts';
 import { operationExtras } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
 import { initialSkipFocus, maskedResultTones, narrowAllocation } from './ui-overview-checks.ts';
@@ -20,11 +18,7 @@ import { cashFlow } from './ui-cash-flow-checks.ts';
 const screens = [
   ['overview', 'Обзор', 'Overview'],
   ['portfolios', 'Портфели', 'Portfolios'],
-  ['markets', 'Рынки', 'Markets'],
-  ['following', 'Избранное', 'Favorites'],
   ['history', 'Операции', 'Transactions'],
-  ['analytics', 'Аналитика', 'Analytics'],
-  ['events', 'События', 'Events'],
   ['import', 'Импорт', 'Import'],
   ['connections', 'Подключения', 'Connections'],
   ['sync', 'Синхронизация', 'Sync'],
@@ -42,7 +36,7 @@ function truth(source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
 }
 function navigate(screen: string, width = 1440, language: Language = 'ru') {
-  const extra = !['overview', 'markets', 'history'].includes(screen);
+  const extra = !['overview', 'portfolios', 'history'].includes(screen);
   if (width === 375 && extra) {
     browser.run(
       'find',
@@ -221,18 +215,12 @@ function runChecks(driver: Browser): readonly Result[] {
     ['import:mapping-locale-invalid', importMapping],
     ['import:one-click-run-and-errors', cancelImport],
     ['settings:finance-roundtrip', () => settingsPersist(browser)],
-    ['markets:search-follow-roundtrip', () => marketFollowing(browser)],
-    ['alerts:invalid-save-edit-cancel', () => alertDraft(browser)],
-    ['markets:dialog-route-closure', () => marketRouteClosure(browser)],
-    ['analytics:sections-periods', () => analyticsChanges(browser)],
-    ['analytics:masked-samples', () => analyticsPrivacy(browser)],
-    ['events:reminder-invalid-save-cancel', () => eventReminder(browser)],
-    ['events:updates-transcripts', () => eventUpdates(browser)],
+    ['connections:configure-test-save-disconnect-undo', () => connectionLifecycle(browser)],
     ['preferences:widget-monochrome', () => widgetAppearance(browser)],
     ['sync:radio-labels-width-selection', () => conflictRadioChoices(browser)],
     ['operations:meaningful-extras-visible', () => operationExtras(browser)],
     ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
-    ['cash:direct-opening-and-market-catalog-focus', () => cashFlow(browser)],
+    ['cash:opening-balance-rows-and-sort', () => cashFlow(browser)],
     ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
     ['history:row-actions-focus-undo', () => recordRowActions(browser)],
     ['portfolios:archive-delete-undo', () => entityUndo(browser)],

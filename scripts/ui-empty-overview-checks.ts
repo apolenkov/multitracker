@@ -1,5 +1,5 @@
 import type { Browser } from './ui-driver.ts';
-import { go, prepare, reveal, truth } from './ui-exploration.ts';
+import { go, prepare, reveal, truth } from './ui-helpers.ts';
 
 function emptyAtWidth(browser: Browser, width: number) {
   browser.run('set', 'viewport', '1440', '900');

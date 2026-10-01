@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import type { Browser } from './ui-driver.ts';
-import { content, go, prepare, truth } from './ui-exploration.ts';
+import { content, go, prepare, truth } from './ui-helpers.ts';
 import { evaluate } from './ui-driver.ts';
 
 export function stableHeroDisclosure(browser: Browser) {
@@ -82,20 +82,18 @@ export function initialSkipFocus(browser: Browser, url: string) {
 
 // В режиме скрытия сумм знак результата не раскрывается цветом (DESIGN.md).
 export function maskedResultTones(browser: Browser) {
-  const tones = ['overview', 'portfolios', 'analytics'].map((screen) => {
+  const tones = ['overview', 'portfolios', 'history'].map((screen) => {
     browser.run('click', `.desktop-links a[href="#${screen}"]`);
     browser.run(
       'wait',
       '--fn',
       `location.hash === '#${screen}' && document.activeElement?.id === 'main'`,
     );
-    if (screen === 'analytics')
-      browser.run('select', '[data-testid="analytics-section"]', 'performance');
     return evaluate(
       browser,
       'Array.from(document.querySelectorAll("#main .positive, #main .negative")).filter((node) => !node.closest("[hidden]")).map((node) => node.textContent?.trim())',
     );
   });
   assert.deepEqual(tones, [[], [], []], 'Скрытый результат раскрывает знак цветом');
-  return 'Обзор, Портфели, Аналитика: нет .positive/.negative при скрытых суммах';
+  return 'Обзор, Портфели, Операции: нет .positive/.negative при скрытых суммах';
 }

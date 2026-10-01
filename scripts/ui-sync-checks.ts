@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { batch, evaluate, settleLayout, type Browser } from './ui-driver.ts';
-import { content, go, prepare, truth } from './ui-exploration.ts';
+import { content, go, prepare, truth } from './ui-helpers.ts';
 
 const labels = {
   ru: ['Локальная версия', 'Версия из облака'],

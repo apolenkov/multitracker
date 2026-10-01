@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { batch, evaluate, settleLayout, type Browser } from './ui-driver.ts';
-import { go, prepare } from './ui-exploration.ts';
+import { go, prepare } from './ui-helpers.ts';
 
 const opener = '.summary-result > button.primary';
 const submit = '#buy-dialog button[type="submit"]';

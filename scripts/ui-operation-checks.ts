@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { evaluate, type Browser } from './ui-driver.ts';
-import { content, go, prepare, reveal, truth } from './ui-exploration.ts';
+import { content, go, prepare, reveal, truth } from './ui-helpers.ts';
 
 const additional = '#buy-dialog .operation-additional';
 const summary = `${additional} > summary`;

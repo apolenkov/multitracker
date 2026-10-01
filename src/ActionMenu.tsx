@@ -20,9 +20,10 @@ type Props = Readonly<{
   className: string;
   label: string;
   items: ReadonlyArray<ActionItem>;
+  align?: 'start' | 'end';
 }>;
 
-export function ActionMenu({ className, label, items }: Props) {
+export function ActionMenu({ className, label, items, align = 'end' }: Props) {
   // Действие выполняется после закрытия меню: диалог, открытый из пункта,
   // иначе запомнил бы исчезающий пункт как место возврата фокуса.
   const [selected, setSelected] = useState<ActionItem | null>(null);
@@ -45,7 +46,7 @@ export function ActionMenu({ className, label, items }: Props) {
       <DropdownMenuContent
         className="record-menu-options"
         side="bottom"
-        align="end"
+        align={align}
         sideOffset={8}
         collisionPadding={{ bottom: 72, top: 8, left: 16, right: 16 }}
       >

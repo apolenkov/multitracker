@@ -51,6 +51,7 @@ function HistoryMenu({
   return (
     <ActionMenu
       className="import-menu"
+      align="start"
       label={importText(language, 'Действия: импорт', 'Actions: import')}
       items={[
         {

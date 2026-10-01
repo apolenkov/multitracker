@@ -134,7 +134,7 @@ export const copy = {
     descending: 'descending',
     chartTitle: 'Portfolio value: fictional history',
     chartPeriod: 'Period',
-    chartDate: 'Sample date',
+    chartDate: 'Date',
     chartContributions: 'Contributed',
     chartChange: 'Value change over the period',
     chartAdded: 'Contributed during the period',

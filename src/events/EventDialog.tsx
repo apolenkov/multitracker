@@ -29,7 +29,6 @@ export function EventDialog(props: Props) {
     >
       <div className="event-dialog-content">
         <p className="quiet">
-          {text('Учебный пример', 'Educational sample')} ·{' '}
           <time dateTime={props.event.date}>
             {eventDate(props.language, props.event.date)}&nbsp;UTC
           </time>

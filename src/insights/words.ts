@@ -82,7 +82,7 @@ const en = {
   realized: 'Realized result',
   income: 'Dividends and interest',
   export: 'Export report',
-  format: 'Sample format',
+  format: 'Format',
   exportNote: 'Preview only: no file is created.',
   exported: 'Sample export ready. No file was created.',
   cash: 'Cash and asset classes',

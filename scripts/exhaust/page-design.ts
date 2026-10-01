@@ -17,9 +17,7 @@ import {
 import type { DesignConfig } from './design.ts';
 import { lineDeltaMax, paintsBox } from './dom-rules.ts';
 
-const dom = [lineDeltaMax, paintsBox]
-  .map((fn) => `const ${fn.name} = ${fn.toString()};`)
-  .join('');
+const dom = [lineDeltaMax, paintsBox].map((fn) => `const ${fn.name} = ${fn.toString()};`).join('');
 
 const math =
   'const CX = (() => {' +
@@ -138,11 +136,15 @@ const covers = (t, c) => {
   const tr = rectOf(t);
   const cr = rectOf(c);
   if (!overlap(tr, cr) || t.contains(c) || c.contains(t)) return false;
+  // Текст для скринридера (1px, clip-path) никто не видит — закрытие им не считается.
+  const tcs = getComputedStyle(t);
+  if (Math.min(tr.w, tr.h) <= 1 || tcs.clipPath === 'inset(50%)') return false;
   const x = (Math.max(tr.l, cr.l) + Math.min(tr.r, cr.r)) / 2;
   const y = (Math.max(tr.t, cr.t) + Math.min(tr.b, cr.b)) / 2;
   const top = x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight ? document.elementFromPoint(x, y) : null;
   if (top === null) return true;
-  if (t === top || t.contains(top)) return false;
+  // Верхний слой — сам текст, его потомок или его контейнер: контрол ни ничего не закрывает.
+  if (t === top || t.contains(top) || top.contains(t)) return false;
   if (fixedNear(top) && !fixedNear(t)) return false;
   return !((top === c || c.contains(top) || top.contains(c)) && !paints(top) && !paints(c));
 };
@@ -169,8 +171,10 @@ const scanStructure = (els, cfg, v) => {
   all('ul, ol, [role="list"], .history-list').forEach((list) => {
     const rows = [...list.children].filter(shown);
     const hs = rows.map((r) => r.getBoundingClientRect().height).filter((h) => h > 4);
-    // Равная высота обязательна у компактных строк (<=72px); у контентных карточек она разная по дизайну.
-    if (hs.length >= 2 && Math.max(...hs) <= 72 && Math.max(...hs) - Math.min(...hs) > 2) push(v, 'row-height-uneven', list, 'equal row heights', Math.min(...hs) + '..' + Math.max(...hs));
+    // Равная высота обязательна у компактных строк-слотов (<=72px, в каждой есть контрол);
+    // у контентных карточек и многострочных текстовых пунктов она разная по дизайну.
+    const slots = rows.every((r) => r.querySelector('button, a[href], input, select, summary'));
+    if (hs.length >= 2 && slots && Math.max(...hs) <= 72 && Math.max(...hs) - Math.min(...hs) > 2) push(v, 'row-height-uneven', list, 'equal row heights', Math.min(...hs) + '..' + Math.max(...hs));
   });
   controls.forEach((el) => {
     const cs = getComputedStyle(el);

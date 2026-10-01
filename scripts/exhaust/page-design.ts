@@ -135,13 +135,14 @@ const covers = (t, c) => {
   if (!overlap(tr, cr) || t.contains(c) || c.contains(t)) return false;
   // Текст для скринридера (1px, clip-path) никто не видит — закрытие им не считается.
   if (Math.min(tr.w, tr.h) <= 1 || getComputedStyle(t).clipPath === 'inset(50%)') return false;
+  if (fixedNear(c) !== fixedNear(t)) return false; // прокрутка потока под fixed/sticky-панелью — не дефект
   const x = (Math.max(tr.l, cr.l) + Math.min(tr.r, cr.r)) / 2;
   const y = (Math.max(tr.t, cr.t) + Math.min(tr.b, cr.b)) / 2;
   const top = x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight ? document.elementFromPoint(x, y) : null;
-  if (top === null) return true;
+  // Пересечение вне вьюпорта: непрозрачный контрол считаем перекрытием, прозрачную зону клика — нет.
+  if (top === null) return paints(c);
   // Верхний слой — сам текст, его потомок или его контейнер: контрол ни ничего не закрывает.
   if (t === top || t.contains(top) || top.contains(t)) return false;
-  if (fixedNear(top) && !fixedNear(t)) return false;
   return !((top === c || c.contains(top) || top.contains(c)) && !paints(top) && !paints(c));
 };
 const scanStructure = (els, cfg, v) => {

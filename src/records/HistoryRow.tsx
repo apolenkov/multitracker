@@ -4,16 +4,18 @@ import { accountLabel } from '../forms/accounts.ts';
 import type { RecordsProps, Transaction } from './data.ts';
 import { recordsCopy } from './copy.ts';
 import { Icon } from '../Icon.tsx';
-import { RowAction } from '../RowActions.tsx';
+import { RowAction, RowNotice } from '../RowActions.tsx';
 import { AssetSymbol } from '../AssetSymbol.tsx';
 
 type Props = RecordsProps &
   Readonly<{
     record: Transaction;
     brief: boolean;
+    removed: boolean;
     onDetails: () => void;
     onEdit: () => void;
     onDelete: () => void;
+    onRestore: () => void;
   }>;
 export function HistoryRow(props: Props) {
   const portfolio = props.state.portfolios.find(
@@ -24,7 +26,7 @@ export function HistoryRow(props: Props) {
   const title = `${operationLabel(props.record.type, props.language)} ${props.record.asset}`;
   const text = `${operationLabel(props.record.type, props.language)} · ${props.record.asset}`;
   return (
-    <article className="history-row">
+    <article className={props.removed ? 'history-row row-removed' : 'history-row'}>
       <div className="record-heading">
         <Heading>
           <AssetSymbol symbol={props.record.asset} />
@@ -46,6 +48,9 @@ export function HistoryRow(props: Props) {
           <RowAction icon="edit" label={copy.edit} subject={title} onClick={props.onEdit} />
           <RowAction icon="trash" label={copy.delete} subject={title} onClick={props.onDelete} />
         </div>
+      )}
+      {props.removed && (
+        <RowNotice text={copy.rowRemoved} language={props.language} onUndo={props.onRestore} />
       )}
     </article>
   );

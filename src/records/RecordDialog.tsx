@@ -67,6 +67,7 @@ function RecordDetails(props: Props) {
       <div className="form-actions">
         <button
           className="destructive"
+          aria-label={`${copy.delete}: ${operationLabel(props.request.record.type, props.language)} ${props.request.record.asset}`}
           onClick={() => {
             closeDialog('record-dialog');
             props.onDelete();
@@ -93,7 +94,7 @@ function EditRecord(props: Props) {
       initial={{
         ...operationInput(props.request.record, props.hidden),
         note: props.request.record.note[props.language],
-        external: props.language === 'ru' ? 'Учебный банковский счёт' : 'Sample bank account',
+        external: props.language === 'ru' ? 'Банковский счёт' : 'Bank account',
       }}
       onSaved={props.onSaved}
       onClose={props.onClose}

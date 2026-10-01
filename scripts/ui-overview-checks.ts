@@ -80,9 +80,44 @@ export function initialSkipFocus(browser: Browser, url: string) {
   return 'Свежая загрузка → #overview без рамки; Tab → ссылка пропуска; Enter → видимый фокус main';
 }
 
+// Подпись разложения «Что дало результат · RUB» — одна строка на 1440 и 1100 в RU и EN.
+export function attributionLine(browser: Browser) {
+  prepare(browser);
+  go(browser, 'overview');
+  const observed = (['ru', 'en'] as const).flatMap((language) =>
+    [1440, 1100].map((width) => {
+      browser.run('select', '#topbar-language', language);
+      browser.run('set', 'viewport', String(width), '900');
+      const metrics = evaluate(
+        browser,
+        `(() => { const s = document.querySelector('.attribution > summary');
+          const box = s?.getBoundingClientRect();
+          const line = parseFloat(getComputedStyle(s).lineHeight) || 24;
+          return { text: s?.innerText, height: box?.height, line,
+            clipped: s && s.scrollWidth > s.clientWidth + 1 }; })()`,
+      );
+      assert.ok(
+        typeof metrics === 'object' &&
+          metrics !== null &&
+          'height' in metrics &&
+          typeof metrics.height === 'number' &&
+          'line' in metrics &&
+          typeof metrics.line === 'number' &&
+          'clipped' in metrics &&
+          metrics.clipped === false &&
+          metrics.height <= metrics.line * 2,
+        `Подпись должна оставаться одной строкой без обрезки: ${JSON.stringify(metrics)}`,
+      );
+      return { width, language, ...(typeof metrics === 'object' ? metrics : {}) };
+    }),
+  );
+  browser.run('select', '#topbar-language', 'ru');
+  return observed;
+}
+
 // В режиме скрытия сумм знак результата не раскрывается цветом (DESIGN.md).
 export function maskedResultTones(browser: Browser) {
-  const tones = ['overview', 'portfolios', 'history'].map((screen) => {
+  const tones = ['overview', 'portfolios', 'history', 'settings'].map((screen) => {
     browser.run('click', `.desktop-links a[href="#${screen}"]`);
     browser.run(
       'wait',
@@ -94,6 +129,11 @@ export function maskedResultTones(browser: Browser) {
       'Array.from(document.querySelectorAll("#main .positive, #main .negative")).filter((node) => !node.closest("[hidden]")).map((node) => node.textContent?.trim())',
     );
   });
-  assert.deepEqual(tones, [[], [], []], 'Скрытый результат раскрывает знак цветом');
-  return 'Обзор, Портфели, Операции: нет .positive/.negative при скрытых суммах';
+  assert.deepEqual(tones, [[], [], [], []], 'Скрытый результат раскрывает знак цветом');
+  truth(
+    browser,
+    '!/[▲▼]/.test(document.querySelector("#main")?.textContent ?? "")',
+    'Скрытые суммы не должны показывать стрелки знака',
+  );
+  return 'Обзор, Портфели, Операции, Настройки: нет .positive/.negative и стрелок при скрытых суммах';
 }

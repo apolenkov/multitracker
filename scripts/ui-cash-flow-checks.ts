@@ -66,11 +66,50 @@ function cashAtWidth(browser: Browser, width: number) {
   );
 }
 
+// Денежные строки той же высоты, что инвестиционные; карандаш — в конечной ячейке справа.
+function cashRowGeometry(browser: Browser, language: 'ru' | 'en', width: number) {
+  browser.run('select', '#topbar-language', language);
+  browser.run('wait', '--fn', `document.documentElement.lang === '${language}'`);
+  browser.run('set', 'viewport', String(width), '900');
+  const observed = evaluate(
+    browser,
+    `(() => {
+      const asset = document.querySelector('.holding-row:not(.cash-holding-row)');
+      const base = asset?.getBoundingClientRect().height ?? 0;
+      return [...document.querySelectorAll('.cash-holding-row')].map((row) => {
+        const box = row.getBoundingClientRect();
+        const cell = row.querySelector('.holding-actions');
+        const target = cell?.querySelector('.row-action')?.getBoundingClientRect();
+        const right = target ? Math.round(box.right - target.right) : -1;
+        const size = target ? Math.round(target.width) + 'x' + Math.round(target.height) : 'none';
+        return { currency: row.dataset.currency, right, size,
+          ok: Math.abs(box.height - base) <= 2 && cell === row.querySelector('td:last-child')
+            && right <= 24 && size === '44x44' };
+      });
+    })()`,
+  );
+  const list = Array.isArray(observed) ? observed : [];
+  assert.equal(list.length, 2, 'Нужны две денежные строки');
+  const valid = (row: unknown) =>
+    typeof row === 'object' && row !== null && 'ok' in row && row.ok === true;
+  assert.ok(
+    list.every(valid),
+    `Денежная строка ${width} ${language}: высота, конечная ячейка, 44×44: ${JSON.stringify(list)}`,
+  );
+  return { width, language, rows: list };
+}
+
 export function cashFlow(browser: Browser) {
   prepare(browser);
   go(browser, 'overview');
   const sorting = holdingsSort(browser);
   const cash = [375, 1440].flatMap((width) => cashAtWidth(browser, width));
+  const geometry = (['ru', 'en'] as const).flatMap((language) =>
+    (language === 'ru' ? [1440, 768, 375, 320] : [1440]).map((width) =>
+      cashRowGeometry(browser, language, width),
+    ),
+  );
   browser.run('set', 'viewport', '1440', '900');
-  return { sorting, cash };
+  browser.run('select', '#topbar-language', 'ru');
+  return { sorting, cash, geometry };
 }

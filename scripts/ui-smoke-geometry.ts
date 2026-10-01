@@ -125,7 +125,7 @@ function positions(selector: string, keys: readonly string[]) {
     if (pinned(item)) return false;
     const box = item.getBoundingClientRect();
     return (
-      item.checkVisibility() &&
+      item.checkVisibility({ checkVisibilityCSS: true }) &&
       !details?.contains(item) &&
       (box.bottom <= rect.top + 2 ||
         siblingContainers.some((container) => container.contains(item)))

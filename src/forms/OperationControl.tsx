@@ -5,7 +5,7 @@ import { getFormCopy } from './copy.ts';
 import { accountSamples, accountLabel } from './accounts.ts';
 import { feeCurrencies, operationAssets } from './operations.ts';
 import { subjectLabel } from './presentation.ts';
-import type { Field, OperationInput, OperationErrors } from './operations.ts';
+import type { Field, OperationInput, OperationErrors, OperationType } from './operations.ts';
 export type OperationFieldsProps = Readonly<{
   input: OperationInput;
   errors: OperationErrors;
@@ -80,7 +80,7 @@ export function OperationField({ field, ...props }: Props & Readonly<{ field: Fi
       )}
       {error && (
         <p id={`${id}-error`} className="field-error" role="alert">
-          {errorText(error, field, props.language)}
+          {errorText(error, field, props.input.type, props.language)}
         </p>
       )}
     </div>
@@ -104,17 +104,26 @@ function OperationInputControl({ field, id, value, update, error }: ControlProps
     />
   );
 }
-function errorText(error: string, field: Field, language: Language) {
+function errorText(error: string, field: Field, type: OperationType, language: Language) {
   const labels = getFormCopy(language);
-  const positive = field === 'quantity' ? labels.quantityError : labels.priceError;
+  const positive = new Map<Field, string>([
+    ['quantity', labels.quantityError],
+    ['price', labels.priceError],
+    ['amount', type === 'opening' ? labels.balanceError : labels.amountError],
+    ['receivedAmount', labels.receivedError],
+    ['fee', labels.feeError],
+    ['fx', labels.fxError],
+  ]);
   const messages = {
-    positive: ['quantity', 'price'].includes(field) ? positive : labels.positive,
-    fee: labels.positive,
+    positive: positive.get(field) ?? labels.positive,
+    fee: labels.feeError,
     range: labels.rangeError,
     total: labels.rangeError,
     date: labels.dateError,
     asset: labels.selectionError,
     portfolio: labels.selectionError,
+    selection: labels.selectionError,
+    account: labels.selectionError,
     destination: labels.destination,
     currency: labels.currencyError,
     cashCurrency: labels.selectionError,

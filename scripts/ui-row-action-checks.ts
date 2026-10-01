@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { evaluate, type Browser } from './ui-driver.ts';
+import { count, focused, layoutShift, reveal, undoFocused, waitTrue } from './ui-helpers.ts';
 
 const rows = '#main .history-list .history-row';
 const words = {
@@ -7,15 +8,6 @@ const words = {
   en: { edit: 'Edit', delete: 'Delete' },
 } as const;
 type Language = keyof typeof words;
-
-function waitTrue(browser: Browser, source: string, message: string) {
-  browser.run('wait', '--fn', source);
-  assert.equal(evaluate(browser, source), true, message);
-}
-const focused = (selector: string) =>
-  `document.activeElement === document.querySelector('${selector}')`;
-const undoFocused = `Array.from(document.querySelectorAll('.undo-action')).some(button => button === document.activeElement && button.checkVisibility())`;
-const count = (selector: string) => `document.querySelectorAll('${selector}').length`;
 
 // Оба значка строки: имя с объектом, подсказка, цель 44×44 и попадание в центр значка.
 function rowButtons(browser: Browser, index: number, language: Language) {
@@ -85,26 +77,53 @@ function editPaths(browser: Browser, index: number) {
   return { index, pencil: 'Escape → карандаш', details: 'Изменить → Escape → строка' };
 }
 
-// Удаление сразу убирает строку, ставит фокус на «Отменить»; отмена возвращает ту же операцию.
+// Удаление прячет строку под встроенное «Отменить» без сдвига; отмена возвращает ту же запись на место.
 function deleteUndo(browser: Browser, from: 'row' | 'details') {
-  const before = evaluate(browser, count(rows));
-  assert.ok(typeof before === 'number' && before > 1);
+  const total = evaluate(browser, count(rows));
+  assert.ok(typeof total === 'number' && total > 0, 'Нужны строки операций');
   const row = `${rows}:last-child`;
   const name = evaluate(browser, `document.querySelector('${row} .history-row-open').ariaLabel`);
   assert.ok(typeof name === 'string');
-  if (from === 'row') browser.run('click', `${row} .row-action.danger`);
-  else {
-    browser.run('click', `${row} .history-row-open`);
-    browser.run('wait', '#record-dialog[open]');
-    browser.run('click', '#record-dialog .form-actions button.destructive');
-  }
-  waitTrue(browser, `${count(rows)} === ${before - 1}`, 'Удаление убирает строку из списка');
-  waitTrue(browser, undoFocused, 'После удаления фокус на «Отменить»');
-  const present = `[...document.querySelectorAll('${rows} .history-row-open')].some(item => item.ariaLabel === ${JSON.stringify(name)})`;
-  assert.equal(evaluate(browser, present), false, 'Удалённая строка не должна оставаться');
-  browser.run('click', '.status-message .undo-action');
-  waitTrue(browser, `${count(rows)} === ${before} && ${present}`, 'Отмена возвращает операцию');
-  return { from, name, before, after: before - 1, restored: true };
+  const veiled = `document.querySelector('${row}')?.classList.contains('row-removed')`;
+  layoutShift(
+    browser,
+    () => {
+      if (from === 'row') browser.run('click', `${row} .row-action.danger`);
+      else {
+        browser.run('click', `${row} .history-row-open`);
+        browser.run('wait', '#record-dialog[open]');
+        browser.run('click', '#record-dialog .form-actions button.destructive');
+      }
+      waitTrue(browser, veiled, 'Строка остаётся на месте под уведомлением');
+      waitTrue(
+        browser,
+        `Boolean(document.querySelector('${row} .row-notice[role=status] .undo-action'))`,
+        'В строке нужно встроенное «Отменить»',
+      );
+      waitTrue(browser, undoFocused, 'После удаления фокус на «Отменить»');
+    },
+    `Удаление операции (${from})`,
+  );
+  waitTrue(
+    browser,
+    `${count(rows)} === ${total}`,
+    'Число строк не меняется: убранная строка остаётся под уведомлением',
+  );
+  layoutShift(
+    browser,
+    () => {
+      browser.run('click', `${row} .row-notice .undo-action`);
+      waitTrue(browser, `!${veiled}`, 'Отмена снимает уведомление со строки');
+    },
+    'Отмена удаления',
+  );
+  waitTrue(browser, focused('#main'), 'После отмены фокус на основном содержимом');
+  assert.equal(
+    evaluate(browser, `document.querySelector('${row} .history-row-open').ariaLabel`),
+    name,
+    'Отмена возвращает ту же операцию на прежнее место',
+  );
+  return { from, name, restored: true };
 }
 
 export function recordRowActions(browser: Browser) {
@@ -116,7 +135,7 @@ export function recordRowActions(browser: Browser) {
   assert.ok(typeof total === 'number' && total > 1, 'Нужны первая и последняя операции');
   const layout = (['ru', 'en'] as const).flatMap((language) => {
     browser.run('select', '#topbar-language', language);
-    return [1440, 375, 320].flatMap((width) => {
+    return [1440, 768, 375, 320].flatMap((width) => {
       browser.run('set', 'viewport', String(width), '900');
       return [0, total - 1].map((index) => {
         const buttons = rowButtons(browser, index, language);
@@ -134,32 +153,80 @@ export function recordRowActions(browser: Browser) {
   return { layout, removal };
 }
 
-// Архив и удаление портфеля, счёта и группы — из подвала правки, сразу, с «Отменить».
+const entities: readonly {
+  items: string;
+  veil: string;
+  opener: string;
+  action: string;
+  names: string;
+  inside?: string;
+}[] = [
+  {
+    items: '.portfolio-record',
+    veil: '.portfolio-record:first-child',
+    opener: '.portfolio-record:first-child .portfolio-manage .row-action',
+    action: 'В архив',
+    names:
+      '[...document.querySelectorAll(".portfolio-record .portfolio-name strong")].map(i => i.textContent)',
+  },
+  {
+    items: '.account-list li:has(.row-action)',
+    veil: '.account-list li:has(.row-action)',
+    opener: '.account-list li:first-child .row-action',
+    action: 'Удалить',
+    names: '[...document.querySelectorAll(".account-list li strong")].map(i => i.textContent)',
+  },
+  {
+    items: '.group-slot',
+    veil: '.group-slot',
+    opener: '.group-slot button[aria-label^="Изменить группу"]',
+    action: 'В архив',
+    names: '[...document.querySelectorAll(".group-slot button")].map(i => i.textContent)',
+    inside: '.portfolio-selection > summary',
+  },
+];
+
+// Архив и удаление портфеля, счёта и группы — из подвала правки, на месте, с «Отменить».
 export function entityUndo(browser: Browser) {
   browser.run('set', 'viewport', '1440', '900');
   browser.run('select', '#topbar-language', 'ru');
   browser.run('click', '.desktop-links a[href="#portfolios"]');
   browser.run('wait', '--fn', 'location.hash === "#portfolios"');
-  const cases = [
-    ['.portfolio-record', '.portfolio-record:first-child .portfolio-manage .row-action', 'В архив'],
-    ['.account-list li:has(.row-action)', '.account-list li:first-child .row-action', 'Удалить'],
-  ] as const;
-  return cases.map(([items, opener, action]) => {
-    const before = evaluate(browser, count(items));
-    assert.ok(typeof before === 'number' && before > 0);
+  return entities.map(({ items, veil, opener, action, names, inside }) => {
+    if (inside) {
+      reveal(browser, inside);
+      // details::details-content растёт с анимацией: ждём, пока цель перестанет быть перекрытой.
+      waitTrue(
+        browser,
+        `(() => { const b = document.querySelector('${opener}'); const r = b?.getBoundingClientRect(); return Boolean(r && r.width > 0) && b.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })()`,
+        'Кнопка группы должна быть доступна для клика',
+      );
+    }
+    const before = evaluate(browser, names);
+    const total = evaluate(browser, count(items));
+    assert.ok(typeof total === 'number' && total > 0, `Нужны пункты ${items}`);
     browser.run('click', opener);
     browser.run('wait', '#entity-dialog[open]');
-    browser.run('find', 'role', 'button', 'click', '--name', action, '--exact');
-    waitTrue(browser, `${count(items)} === ${before - 1}`, `${action}: строка убрана`);
+    browser.run('find', 'role', 'button', 'click', '--name', `${action}:`);
+    waitTrue(
+      browser,
+      `document.querySelector('${veil}')?.classList.contains('row-removed')`,
+      `${action}: строка остаётся на месте под уведомлением`,
+    );
     waitTrue(browser, undoFocused, `${action}: фокус на «Отменить»`);
-    browser.run('click', '.status-message .undo-action');
-    waitTrue(browser, `${count(items)} === ${before}`, `${action}: отмена вернула строку`);
+    browser.run('click', `${veil} .undo-action`);
+    waitTrue(
+      browser,
+      `!document.querySelector('${veil}')?.classList.contains('row-removed')`,
+      `${action}: отмена сняла уведомление`,
+    );
     waitTrue(browser, focused('#main'), `${action}: после отмены фокус на основном содержимом`);
-    return { items, action, before, restored: true };
+    assert.deepEqual(evaluate(browser, names), before, `${action}: тот же пункт на прежнем месте`);
+    return { items, action, restored: true };
   });
 }
 
-// Импорт: видимые «Подробности» и «Сверить остаток»; отмена импорта — сразу, с «Отменить».
+// Импорт: видимые «Подробности» и «Сверить остаток»; отмена импорта — встроенное «Отменить».
 // Синхронизация: видимая «Отозвать доступ» вместо меню из одного пункта.
 export function importAndSyncUndo(browser: Browser) {
   browser.run('set', 'viewport', '1440', '900');
@@ -168,13 +235,22 @@ export function importAndSyncUndo(browser: Browser) {
   browser.run('click', '#import-history-details');
   browser.run('wait', '#import-history[open]');
   browser.run('find', 'role', 'button', 'click', '--name', 'Отменить импорт', '--exact');
-  waitTrue(browser, '!document.querySelector("#import-history-details")', 'Импорт отменён');
-  waitTrue(browser, undoFocused, 'Отмена импорта: фокус на «Отменить»');
-  browser.run('click', '.demo-page > .demo-status .undo-action');
   waitTrue(
     browser,
-    'Boolean(document.querySelector("#import-history-details"))',
-    'Импорт возвращён',
+    'document.querySelector(".import-entry")?.classList.contains("row-removed")',
+    'Запись импорта остаётся под уведомлением',
+  );
+  waitTrue(
+    browser,
+    'document.querySelector("#import-history-details")?.checkVisibility({checkVisibilityCSS:true}) === false',
+    'Действия убранной записи скрыты',
+  );
+  waitTrue(browser, undoFocused, 'Отмена импорта: фокус на «Отменить»');
+  browser.run('click', '.import-entry .undo-action');
+  waitTrue(
+    browser,
+    'document.querySelector("#import-history-details")?.checkVisibility({checkVisibilityCSS:true}) === true',
+    'Отмена вернула запись импорта',
   );
   browser.run('click', '.desktop-links a[href="#sync"]');
   const revoke = '#sync-revoke-mobile';
@@ -183,10 +259,19 @@ export function importAndSyncUndo(browser: Browser) {
     evaluate(browser, `document.querySelector('${revoke}').getAttribute('aria-label')`),
     'Отозвать доступ: Телефон',
   );
+  browser.run('scrollintoview', revoke);
   browser.run('click', revoke);
-  waitTrue(browser, `!document.querySelector('${revoke}')`, 'Доступ отозван сразу');
+  waitTrue(
+    browser,
+    'Boolean(document.querySelector(".sync-devices article.row-removed"))',
+    'Устройство остаётся на месте под уведомлением',
+  );
   waitTrue(browser, undoFocused, 'Отзыв: фокус на «Отменить»');
-  browser.run('click', '.demo-page > .demo-status .undo-action');
-  waitTrue(browser, `Boolean(document.querySelector('${revoke}'))`, 'Отмена вернула доступ');
+  browser.run('click', '.sync-devices .undo-action');
+  waitTrue(
+    browser,
+    `document.querySelector('${revoke}')?.checkVisibility({checkVisibilityCSS:true}) === true`,
+    'Отмена вернула доступ устройства',
+  );
   return { import: 'Подробности → Отменить импорт → Отменить', sync: 'Отозвать → Отменить' };
 }

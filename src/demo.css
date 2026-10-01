@@ -236,17 +236,20 @@ label.checkbox-row {
   background: var(--surface);
 }
 .demo-status {
-  color: var(--ink);
-}
-.demo-status:has(span:not(:empty)) {
-  padding: 14px 16px;
-  margin-top: 20px;
-  border: 1px solid var(--line);
-  background: var(--surface);
   display: flex;
   align-items: center;
   gap: 12px;
+  /* Зарезервированный слот под три строки: сообщение не сдвигает нижний колонтитул. */
+  min-height: 94px;
+  padding: 14px 16px;
+  margin-top: 20px;
+  border: 1px solid transparent;
   border-radius: 8px;
+  color: var(--ink);
+}
+.demo-status:has(span:not(:empty)) {
+  border-color: var(--line);
+  background: var(--surface);
 }
 .demo-status > [role='status'] {
   min-width: 0;

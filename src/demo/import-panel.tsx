@@ -7,7 +7,7 @@ import { ImportHistory } from './import-history';
 type Props = Readonly<{
   language: ImportLanguage;
   hidden: boolean;
-  notify: (message: string, undo?: () => void) => void;
+  notify: (message: string) => void;
 }>;
 
 // Один экран: источник и назначение, предпросмотр строк с ошибкой и повтором, одна кнопка импорта.

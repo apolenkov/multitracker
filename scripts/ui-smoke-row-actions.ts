@@ -9,7 +9,7 @@ export function rowActionGeometry(browser: Browser, route: string): readonly Fin
   const observed = evaluate(
     browser,
     `(() => {
-      const buttons = [...document.querySelectorAll('#main .row-action')].filter(button => button.checkVisibility());
+      const buttons = [...document.querySelectorAll('#main .row-action')].filter(button => button.checkVisibility({checkVisibilityCSS:true}));
       return { count: buttons.length, bad: buttons.map(button => {
         button.scrollIntoView({ block: 'center' });
         const row = button.closest('.history-row, .portfolio-record, .holding-row, li');

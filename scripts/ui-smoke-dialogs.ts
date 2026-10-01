@@ -30,7 +30,7 @@ function fold() {
   const footer = [
     ...dialog.querySelectorAll<HTMLElement>('.form-actions button,.dialog-actions button'),
   ]
-    .filter((element) => element.checkVisibility())
+    .filter((element) => element.checkVisibility({ checkVisibilityCSS: true }))
     .at(-1);
   const primary =
     footer ?? dialog.querySelector<HTMLElement>('button[type="submit"],button.primary');

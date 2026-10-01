@@ -5,12 +5,10 @@ import { ConnectionsPanel, SyncPanel } from './demo/connection-sync.tsx';
 import { ImportPanel } from './demo/import-panel.tsx';
 import { SettingsPanel } from './demo/settings-panel.tsx';
 import { Icon } from './Icon.tsx';
-import { focusUndo, UndoButton, undoneText } from './RowActions.tsx';
-import { focusMain } from './navigation.ts';
 import { type Density, type Props as RouteProps } from './demo/words.ts';
 
 type Props = RouteProps & Readonly<{ density: Density; onDensity: (v: Density) => void }>;
-type Notice = Readonly<{ text: string; count: number; screen: string; undo?: () => void }>;
+type Notice = Readonly<{ text: string; count: number; screen: string }>;
 
 export function DemoScreens(props: Props) {
   const page = useRef<HTMLElement>(null);
@@ -20,14 +18,8 @@ export function DemoScreens(props: Props) {
       .forEach((dialog) => dialog.close());
   }, [props.screen]);
   const [notice, setNotice] = useState<Notice>({ text: '', count: 0, screen: props.screen });
-  const notify = (text: string, undo?: () => void) => {
-    setNotice((previous) => ({
-      text,
-      count: previous.count + 1,
-      screen: props.screen,
-      ...(undo ? { undo } : {}),
-    }));
-    if (undo) focusUndo();
+  const notify = (text: string) => {
+    setNotice((previous) => ({ text, count: previous.count + 1, screen: props.screen }));
   };
   return (
     <section ref={page} className="demo-page">
@@ -38,14 +30,9 @@ export function DemoScreens(props: Props) {
         text={notice.screen === props.screen ? notice.text : ''}
         count={notice.count}
         language={props.language}
-        undo={notice.undo}
         dismiss={() =>
           setNotice((previous) => ({ text: '', count: previous.count, screen: previous.screen }))
         }
-        onUndone={(text) => {
-          setNotice((previous) => ({ text, count: previous.count + 1, screen: previous.screen }));
-          focusMain({ preventScroll: true });
-        }}
       />
     </section>
   );
@@ -75,33 +62,19 @@ function DemoNotice({
   text,
   count,
   language,
-  undo,
   dismiss,
-  onUndone,
 }: Readonly<{
   text: string;
   count: number;
   language: 'ru' | 'en';
-  undo: (() => void) | undefined;
   dismiss: () => void;
-  onUndone: (text: string) => void;
 }>) {
-  // Сообщение остаётся в потоке страницы и объявляется live-регионом; страницу к нему
-  // не прокручиваем: прыжок уводил открыватель с фокусом за верхний край окна.
+  // Слот сообщения зарезервирован всегда: появление и закрытие не сдвигают страницу.
   return (
     <div className="demo-status">
       <div role="status" aria-live="polite" aria-atomic="true">
         <span key={count}>{text}</span>
       </div>
-      {text && undo && (
-        <UndoButton
-          language={language}
-          onUndo={() => {
-            undo();
-            onUndone(undoneText(language));
-          }}
-        />
-      )}
       {text && (
         <button
           type="button"

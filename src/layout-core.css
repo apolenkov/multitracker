@@ -162,20 +162,20 @@ main {
   display: flex;
   align-items: center;
   gap: 12px;
+  /* Слот зарезервирован под две строки: появление и скрытие текста не двигают страницу. */
+  min-height: 56px;
   padding: 8px 8px 8px 16px;
   margin-bottom: 16px;
   border-radius: var(--radius);
-  background: var(--surface);
   color: var(--green);
   font-size: 14px;
+}
+.status-message:has(p) {
+  background: var(--surface);
 }
 .status-message > [role='status'] {
   flex: 1;
   min-width: 0;
-}
-.status-message:not(:has(p)) {
-  padding: 0;
-  margin: 0;
 }
 main:focus-visible {
   outline: none;

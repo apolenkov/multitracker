@@ -43,7 +43,7 @@ export function EntityDialog(props: Props) {
     </dialog>
   );
 }
-// Архив и удаление выполняются сразу; сообщение результата предлагает «Отменить».
+// Архив и удаление выполняются сразу; убранная строка показывает «Отменить».
 function RemoveActions(props: Props) {
   const copy = getFormCopy(props.language);
   const onRemove = props.onRemove;
@@ -53,6 +53,7 @@ function RemoveActions(props: Props) {
       key={action}
       type="button"
       className={action === 'delete' ? 'danger' : undefined}
+      aria-label={`${action === 'archive' ? copy.remove.archive : copy.remove.delete}: ${props.name}`}
       onClick={() => {
         closeDialog(props.id);
         onRemove(action);

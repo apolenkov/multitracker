@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Icon } from './Icon.tsx';
 import type { Language } from './i18n.ts';
 
@@ -34,12 +35,24 @@ export function UndoButton({
   );
 }
 
-// Удалённая строка уносит с собой открыватель: фокус переходит на «Отменить» видимого сообщения.
-export function focusUndo() {
-  requestAnimationFrame(() =>
-    Array.from(document.querySelectorAll<HTMLElement>('.undo-action'))
-      .find((button) => button.checkVisibility())
-      ?.focus(),
+// Встроенное уведомление вместо убранной строки: та же высота, фокус на «Отменить».
+export function RowNotice({
+  text,
+  language,
+  onUndo,
+}: Readonly<{ text: string; language: Language; onUndo: () => void }>) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() =>
+      ref.current?.querySelector<HTMLElement>('.undo-action')?.focus(),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  return (
+    <div ref={ref} className="row-notice" role="status" aria-atomic="true">
+      <span>{text}</span>
+      <UndoButton language={language} onUndo={onUndo} />
+    </div>
   );
 }
 

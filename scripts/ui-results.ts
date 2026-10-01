@@ -22,7 +22,7 @@ function failureContext(browser: Browser) {
         const box=element.getBoundingClientRect();
         const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);
         return {text:element.getAttribute('aria-label') ?? element.innerText,open:element.closest('details').open,
-          visible:element.checkVisibility(),rect:box.toJSON(),centerVisible:element.contains(hit),
+          visible:element.checkVisibility({checkVisibilityCSS:true}),rect:box.toJSON(),centerVisible:element.contains(hit),
           hit:hit?{tag:hit.tagName,id:hit.id,text:hit.innerText?.slice(0,100)}:null};
       })})`,
   );
@@ -43,10 +43,20 @@ export function createCheck(browser: Browser) {
     try {
       return { id, status: 'PASS', observed: action() };
     } catch (error: unknown) {
+      const observed = diagnostics ? failureEvidence(browser, error) : errorText(error);
+      // Упавшая проверка может оставить открытый диалог, перекрывающий навигацию следующим шагам.
+      try {
+        evaluate(
+          browser,
+          `document.querySelectorAll('dialog[open]').forEach((dialog) => dialog.close()); true`,
+        );
+      } catch {
+        // Восстановление — лучшая попытка: ошибки закрытия игнорируем.
+      }
       return {
         id,
         status: error instanceof AssertionError ? 'FAIL' : 'NOT VERIFIED',
-        observed: diagnostics ? failureEvidence(browser, error) : errorText(error),
+        observed,
       };
     }
   };

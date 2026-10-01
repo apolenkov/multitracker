@@ -184,9 +184,6 @@ function CashHoldingRow({
           <AssetSymbol symbol={currency} />
           <strong>{currency}</strong>
         </div>
-        <div className="row-actions">
-          <RowAction icon="edit" label={action} subject={currency} onClick={open} />
-        </div>
       </td>
       <td className="holding-quantity">
         <span className="mobile-label">{labels.quantity}</span>
@@ -201,7 +198,9 @@ function CashHoldingRow({
       <td>
         <span className="mobile-label">{labels.result}</span>—
       </td>
-      <td className="holding-weight">—</td>
+      <td className="holding-actions">
+        <RowAction icon="edit" label={action} subject={currency} onClick={open} />
+      </td>
     </tr>
   );
 }

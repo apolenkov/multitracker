@@ -4,6 +4,8 @@ import { ConnectionForm } from './connection-form';
 import { demoState } from '../model/portfolio';
 import { accountLabel } from '../forms/accounts';
 import { Icon } from '../Icon.tsx';
+import { RowNotice, undoneText } from '../RowActions.tsx';
+import { focusMain } from '../navigation.ts';
 import {
   connectionText,
   providerLabel,
@@ -17,18 +19,11 @@ export { SyncPanel } from './sync-panel';
 export function ConnectionsPanel({ language, notify }: ConnectionProps) {
   const t = language === 'ru' ? connectionText.ru : connectionText.en;
   const localeProps = { language, t };
-  const [configured, setConfigured] = useState<readonly Connection[]>([]);
-  const [editing, setEditing] = useState<string | null>(null);
-  const save = (value: Connection) => {
-    setConfigured([...configured.filter((item) => item.provider !== value.provider), value]);
-    setEditing(null);
-    notify(t.saved);
-  };
-  // Отключение сразу; «Отменить» в сообщении возвращает прежние настройки источника.
-  const disconnect = (value: Connection) => {
-    setConfigured((current) => current.filter((item) => item.provider !== value.provider));
-    notify(t.removed, () => setConfigured((current) => [...current, value]));
-  };
+  const { configured, dropped, editing, setEditing, save, disconnect, restore } = useConnections(
+    language,
+    t,
+    notify,
+  );
   return (
     <div className="demo-panel connection-list">
       {providers.map((provider) => (
@@ -36,9 +31,11 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
           key={provider}
           provider={provider}
           {...localeProps}
-          value={configured.find((item) => item.provider === provider)}
+          value={dropped.get(provider) ?? configured.find((item) => item.provider === provider)}
+          dropped={dropped.has(provider)}
           edit={() => setEditing(provider)}
           remove={disconnect}
+          restore={() => restore(provider)}
         />
       ))}
       <ConnectionPrivacy language={language} t={t} />
@@ -53,6 +50,35 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
       )}
     </div>
   );
+}
+
+function useConnections(
+  language: 'ru' | 'en',
+  t: ConnectionWords,
+  notify: (message: string) => void,
+) {
+  const [configured, setConfigured] = useState<readonly Connection[]>([]);
+  const [dropped, setDropped] = useState<ReadonlyMap<string, Connection>>(new Map());
+  const [editing, setEditing] = useState<string | null>(null);
+  const save = (value: Connection) => {
+    setConfigured([...configured.filter((item) => item.provider !== value.provider), value]);
+    setEditing(null);
+    notify(t.saved);
+  };
+  // Отключение сразу: строка остаётся под встроенным «Отменить», которое возвращает настройки.
+  const disconnect = (value: Connection) => {
+    setConfigured((current) => current.filter((item) => item.provider !== value.provider));
+    setDropped((current) => new Map([...current, [value.provider, value]]));
+    notify(t.removed);
+  };
+  const restore = (provider: string) => {
+    const value = dropped.get(provider);
+    if (value) setConfigured((current) => [...current, value]);
+    setDropped((current) => new Map([...current].filter(([key]) => key !== provider)));
+    notify(undoneText(language));
+    focusMain({ preventScroll: true });
+  };
+  return { configured, dropped, editing, setEditing, save, disconnect, restore };
 }
 function ConnectionPrivacy({
   language,
@@ -72,20 +98,24 @@ function ConnectionCard({
   provider,
   language,
   value,
+  dropped,
   t,
   edit,
   remove,
+  restore,
 }: Readonly<{
   provider: string;
   language: 'ru' | 'en';
   value: Connection | undefined;
+  dropped: boolean;
   t: ConnectionWords;
   edit: () => void;
   remove: (value: Connection) => void;
+  restore: () => void;
 }>) {
   const portfolio = demoState.portfolios.find((item) => item.id === value?.portfolio);
   return (
-    <article className="connection-row">
+    <article className={dropped ? 'connection-row row-removed' : 'connection-row'}>
       <ProviderLogo provider={provider} />
       <div className="connection-summary">
         <h2>{providerLabel(provider, t)}</h2>
@@ -109,6 +139,7 @@ function ConnectionCard({
           </button>
         )}
       </div>
+      {dropped && <RowNotice text={t.removedRow} language={language} onUndo={restore} />}
     </article>
   );
 }

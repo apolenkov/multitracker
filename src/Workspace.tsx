@@ -10,8 +10,7 @@ import { DemoScreens } from './DemoScreens.tsx';
 import { openDialog } from './Forms.tsx';
 import { Topbar } from './Topbar.tsx';
 import { StaticStates } from './StaticStates.tsx';
-import { focusMain, isDemoScreen } from './navigation.ts';
-import { UndoButton, undoneText } from './RowActions.tsx';
+import { isDemoScreen } from './navigation.ts';
 import { Welcome } from './Welcome.tsx';
 
 export function Workspace({ view }: Readonly<{ view: AppView }>) {
@@ -33,22 +32,11 @@ export function Workspace({ view }: Readonly<{ view: AppView }>) {
   );
 }
 function StatusMessage({ view }: Readonly<{ view: AppView }>) {
-  const undo = view.notice.undo;
   return (
     <div className="status-message">
       <div role="status" aria-atomic="true">
         {view.notice.message && <p key={view.notice.sequence}>{view.notice.message}</p>}
       </div>
-      {undo && view.notice.message && (
-        <UndoButton
-          language={view.language}
-          onUndo={() => {
-            undo();
-            view.onSaved(undoneText(view.language));
-            focusMain({ preventScroll: true });
-          }}
-        />
-      )}
     </div>
   );
 }

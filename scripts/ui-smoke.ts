@@ -55,11 +55,12 @@ function stateCheck(state: State, shared: readonly string[]): Outcome {
   browser.run('wait', '#main h1');
   settleLayout(browser);
   const initial = capture(browser, state, 'before');
+  // Геометрия действий — до обхода: клики «Удалить» накрывают строки уведомлением.
+  const actions = { entries: [], findings: rowActionGeometry(browser, state.route) };
   const content = merge([
     crawl(browser, state, 'main#main', shared, initial),
     ...(state.route === 'overview' ? [crawl(browser, state, 'footer', shared)] : []),
   ]);
-  const actions = { entries: [], findings: rowActionGeometry(browser, state.route) };
   const result = merge([content, actions]);
   capture(browser, state, 'after');
   save(`${state.id}-coverage`, { ...result, durationSeconds: (Date.now() - start) / 1000 });

@@ -52,8 +52,11 @@ export function disclosure(
       )
     : { entries: [], findings: [] };
   if (
-    query(browser, control.path, 'element?.checkVisibility() && element?.parentElement?.open') ===
-      true &&
+    query(
+      browser,
+      control.path,
+      'element?.checkVisibility({checkVisibilityCSS:true}) && element?.parentElement?.open',
+    ) === true &&
     initial === false
   )
     toggle(browser, control, false);

@@ -88,6 +88,9 @@ export function syncPostConflictDisclosure(browser: Browser) {
     browser.run('click', welcome);
     settleLayout(browser);
   }
+  // Кнопка ниже сгиба: клик без предварительной прокрутки может молча промахнуться.
+  browser.run('scrollintoview', '.sync-panel > .sync-actions:last-child > button');
+  settleLayout(browser);
   browser.run('click', '.sync-panel > .sync-actions:last-child > button');
   browser.run('wait', '#sync-conflict[open]');
   browser.run('click', '#sync-conflict input[value="remote"]');

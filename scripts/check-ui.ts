@@ -8,9 +8,15 @@ import { createCheck, type Result } from './ui-results.ts';
 import { conflictRadioChoices, syncPostConflictDisclosure } from './ui-sync-checks.ts';
 import { operationExtras } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
-import { initialSkipFocus, maskedResultTones, narrowAllocation } from './ui-overview-checks.ts';
+import {
+  attributionLine,
+  initialSkipFocus,
+  maskedResultTones,
+  narrowAllocation,
+} from './ui-overview-checks.ts';
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
 import { recordRowActions, entityUndo, importAndSyncUndo } from './ui-row-action-checks.ts';
+import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
@@ -222,9 +228,12 @@ function runChecks(driver: Browser): readonly Result[] {
     ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
     ['cash:opening-balance-rows-and-sort', () => cashFlow(browser)],
     ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
+    ['overview:attribution-one-line', () => attributionLine(browser)],
     ['history:row-actions-focus-undo', () => recordRowActions(browser)],
     ['portfolios:archive-delete-undo', () => entityUndo(browser)],
     ['import-sync:visible-actions-undo', () => importAndSyncUndo(browser)],
+    ['destructive:visible-targets-named', () => destructiveTargets(browser)],
+    ['settings:delete-focus-return', () => settingsDeleteFocus(browser)],
     ['overview:empty-state-restores-example', () => emptyOverview(browser)],
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
     ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],

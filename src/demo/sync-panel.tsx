@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { SyncConflict } from './sync-conflict';
 import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
+import { RowNotice, undoneText } from '../RowActions.tsx';
+import { focusMain } from '../navigation.ts';
 
 type ConflictState = Readonly<{ open: boolean; selected: Version | null }>;
 
@@ -40,7 +42,7 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
         status={status}
         run={run}
       />
-      <SyncDevices t={t} notify={notify} />
+      <SyncDevices t={t} language={language} notify={notify} />
       <SyncConflictArea
         language={language}
         t={t}
@@ -98,16 +100,23 @@ function SyncActions({
 }
 function SyncDevices({
   t,
+  language,
   notify,
 }: Readonly<{
   t: SyncWords;
-  notify: (message: string, undo?: () => void) => void;
+  language: 'ru' | 'en';
+  notify: (message: string) => void;
 }>) {
   const [revoked, setRevoked] = useState(false);
-  // Отзыв выполняется сразу; «Отменить» в сообщении возвращает доступ.
+  // Отзыв выполняется сразу: строка остаётся под встроенным «Отменить», которое возвращает доступ.
   const revoke = () => {
     setRevoked(true);
-    notify(t.revoked, () => setRevoked(false));
+    notify(t.revoked);
+  };
+  const restore = () => {
+    setRevoked(false);
+    notify(undoneText(language));
+    focusMain({ preventScroll: true });
   };
   return (
     <section className="sync-devices">
@@ -117,20 +126,19 @@ function SyncDevices({
         <p>{t.current}</p>
         <p>{t.activity}</p>
       </article>
-      <article>
+      <article className={revoked ? 'row-removed' : undefined}>
         <h3>{t.mobile}</h3>
-        <p>{revoked ? t.revoked : t.activity}</p>
-        {!revoked && (
-          <button
-            type="button"
-            className="danger"
-            id="sync-revoke-mobile"
-            aria-label={`${t.revoke}: ${t.mobile}`}
-            onClick={revoke}
-          >
-            {t.revoke}
-          </button>
-        )}
+        <p>{t.activity}</p>
+        <button
+          type="button"
+          className="danger"
+          id="sync-revoke-mobile"
+          aria-label={`${t.revoke}: ${t.mobile}`}
+          onClick={revoke}
+        >
+          {t.revoke}
+        </button>
+        {revoked && <RowNotice text={t.revoked} language={language} onUndo={restore} />}
       </article>
     </section>
   );

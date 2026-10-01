@@ -42,13 +42,24 @@ const copy = {
     source: 'Источник записи',
     externalSource: 'Внешний источник',
     externalDestination: 'Внешнее назначение',
-    bank: 'Учебный банковский счёт',
+    bank: 'Банковский счёт',
     destination: 'Получатель',
     comment: 'Заметка',
     example: 'Вымышленный пример',
     removed: 'Операция убрана из списка. Расчёт не изменён.',
     archived: 'Перенесено в архив. История сохранена.',
     entityRemoved: 'Удалено из списка. Расчёт не изменён.',
+    rowRemoved: 'Операция удалена',
+    rowArchived: {
+      portfolio: 'Портфель в архиве',
+      account: 'Счёт в архиве',
+      group: 'Группа в архиве',
+    },
+    rowDeleted: {
+      portfolio: 'Портфель удалён',
+      account: 'Счёт удалён',
+      group: 'Группа удалена',
+    },
     displayed: 'Показаны фиксированные примеры',
     accounts: 'Счета и группы',
     groupName: 'Криптовалюты',
@@ -94,13 +105,24 @@ const copy = {
     source: 'Record source',
     externalSource: 'External source',
     externalDestination: 'External destination',
-    bank: 'Sample bank account',
+    bank: 'Bank account',
     destination: 'Destination',
     comment: 'Note',
     example: 'Fictional example',
     removed: 'Transaction removed from the list. The calculation is unchanged.',
     archived: 'Moved to the archive. History is kept.',
     entityRemoved: 'Removed from the list. The calculation is unchanged.',
+    rowRemoved: 'Transaction deleted',
+    rowArchived: {
+      portfolio: 'Portfolio archived',
+      account: 'Account archived',
+      group: 'Group archived',
+    },
+    rowDeleted: {
+      portfolio: 'Portfolio deleted',
+      account: 'Account deleted',
+      group: 'Group deleted',
+    },
     displayed: 'Fixed samples are displayed',
     accounts: 'Accounts and groups',
     groupName: 'Crypto',
@@ -108,3 +130,12 @@ const copy = {
 } as const;
 
 export const recordsCopy = (language: Language) => (language === 'ru' ? copy.ru : copy.en);
+export const rowNoticeText = (
+  texts: ReturnType<typeof recordsCopy>,
+  entity: 'portfolio' | 'account' | 'group',
+  action: 'archive' | 'delete',
+) => {
+  const rows = action === 'archive' ? texts.rowArchived : texts.rowDeleted;
+  if (entity === 'portfolio') return rows.portfolio;
+  return entity === 'account' ? rows.account : rows.group;
+};

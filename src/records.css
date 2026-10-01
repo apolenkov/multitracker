@@ -210,6 +210,12 @@
   gap: 10px;
   margin-block: 12px;
 }
+/* Кнопки группы — один гибкий элемент: «Отменить» накрывает их на месте. */
+.group-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
 .history-filter-panel {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) 2fr;

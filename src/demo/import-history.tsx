@@ -4,18 +4,20 @@ import { importText } from './import-model';
 import { ImportSample } from './import-fields';
 import { DemoModal } from './modal';
 import { closeDialog } from '../Dialog';
+import { RowNotice, undoneText } from '../RowActions.tsx';
+import { focusMain } from '../navigation.ts';
 
 type HistoryProps = Readonly<{
   language: ImportLanguage;
   hidden: boolean;
-  notify: (message: string, undo?: () => void) => void;
+  notify: (message: string) => void;
 }>;
 type HistoryDialog = 'details' | 'reconcile' | null;
 export function ImportHistory({ language, hidden, notify }: HistoryProps) {
   const [dialog, setDialog] = useState<HistoryDialog>(null);
   const [undone, setUndone] = useState(false);
   const title = importText(language, 'История импорта', 'Import history');
-  // Отмена импорта выполняется сразу; сообщение предлагает вернуть запись.
+  // Отмена импорта выполняется сразу; запись остаётся под встроенным «Отменить» на месте.
   const undoImport = () => {
     closeDialog('import-history');
     setUndone(true);
@@ -25,13 +27,22 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
         'Импорт отменён. Учебные операции и остатки не изменены.',
         'Import undone. Sample activity and balances are unchanged.',
       ),
-      () => setUndone(false),
     );
+  };
+  const restoreImport = () => {
+    setUndone(false);
+    notify(undoneText(language));
+    focusMain({ preventScroll: true });
   };
   return (
     <section className="import-history" aria-label={title}>
       <h2>{title}</h2>
-      <HistoryEntry language={language} undone={undone} open={setDialog} />
+      <HistoryEntry
+        language={language}
+        undone={undone}
+        open={setDialog}
+        onRestore={restoreImport}
+      />
       {dialog && (
         <DemoModal
           id="import-history"
@@ -53,34 +64,39 @@ function HistoryEntry({
   language,
   undone,
   open,
+  onRestore,
 }: Readonly<{
   language: ImportLanguage;
   undone: boolean;
   open: (dialog: HistoryDialog) => void;
+  onRestore: () => void;
 }>) {
   return (
-    <>
+    <div className={undone ? 'import-entry row-removed' : 'import-entry'}>
       <p>2026-09-04 · Binance → Binance · sample-transactions.csv</p>
       <p>
-        {undone
-          ? importText(language, 'Импорт отменён', 'Import undone')
-          : importText(
-              language,
-              'К добавлению: 2 · К пропуску: 2 (1 ошибка актива, 1 повтор)',
-              'To add: 2 · To skip: 2 (1 unknown asset, 1 duplicate)',
-            )}
+        {importText(
+          language,
+          'К добавлению: 2 · К пропуску: 2 (1 ошибка актива, 1 повтор)',
+          'To add: 2 · To skip: 2 (1 unknown asset, 1 duplicate)',
+        )}
       </p>
-      {!undone && (
-        <div className="record-actions">
-          <button type="button" id="import-history-details" onClick={() => open('details')}>
-            {importText(language, 'Подробности', 'Details')}
-          </button>
-          <button type="button" id="import-reconcile" onClick={() => open('reconcile')}>
-            {importText(language, 'Сверить остаток', 'Reconcile balance')}
-          </button>
-        </div>
+      <div className="record-actions">
+        <button type="button" id="import-history-details" onClick={() => open('details')}>
+          {importText(language, 'Подробности', 'Details')}
+        </button>
+        <button type="button" id="import-reconcile" onClick={() => open('reconcile')}>
+          {importText(language, 'Сверить остаток', 'Reconcile balance')}
+        </button>
+      </div>
+      {undone && (
+        <RowNotice
+          text={importText(language, 'Импорт отменён', 'Import undone')}
+          language={language}
+          onUndo={onRestore}
+        />
       )}
-    </>
+    </div>
   );
 }
 function HistoryDetails({

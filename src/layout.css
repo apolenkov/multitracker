@@ -146,11 +146,33 @@
 .row-action.danger:is(:hover, :focus-visible) {
   color: var(--red);
 }
-.demo-status .undo-action,
 .undo-action {
   flex: none;
   min-height: 44px;
   border: 1px solid var(--control-border);
   background: var(--paper);
   color: var(--ink);
+}
+/* Убранная строка остаётся на месте: её содержимое скрыто и недоступно с клавиатуры,
+   а встроенное уведомление «Отменить» закрывает её целиком без сдвига соседей. */
+.row-removed {
+  position: relative;
+}
+.row-removed > :not(.row-notice) {
+  visibility: hidden;
+}
+.row-notice {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-inline: inherit;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 400;
+}
+.row-notice > span {
+  flex: 1;
+  min-width: 0;
 }

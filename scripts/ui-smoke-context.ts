@@ -6,7 +6,7 @@ export function currentControl(browser: Browser, control: Control): Control {
     browser,
     control.path,
     `element ? {
-    visible:element.checkVisibility() && !Array.from(document.querySelectorAll('details:not([open])')).some(d=>d.contains(element)&&!d.querySelector(':scope > summary')?.contains(element)),
+    visible:element.checkVisibility({checkVisibilityCSS:true}) && !Array.from(document.querySelectorAll('details:not([open])')).some(d=>d.contains(element)&&!d.querySelector(':scope > summary')?.contains(element)),
     disabled:element.matches(':disabled') || element.getAttribute('aria-disabled')==='true'
   } : {visible:false,disabled:false}`,
   );

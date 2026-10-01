@@ -18,7 +18,7 @@ type SettingsProps = Props &
   Readonly<{
     density: Density;
     onDensity: (value: Density) => void;
-    notify: (message: string, undo?: () => void) => void;
+    notify: (message: string) => void;
   }>;
 export type ModalProps = SettingsProps &
   Readonly<{

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import type { Browser } from './ui-driver.ts';
+import { evaluate, type Browser } from './ui-driver.ts';
 import { content, go, prepare, reveal, truth } from './ui-helpers.ts';
 
 const card = '.connection-list .connection-row:nth-of-type(1)';
@@ -52,27 +52,41 @@ export function connectionLifecycle(browser: Browser) {
     /Настроено/,
     'Сохранение должно настроить источник',
   );
-  browser.run('click', `${card} button.danger`);
+  disconnectUndo(browser);
+  return { tested, saved: 'Карточка «Настроено» после Save', restored: 'Undo вернул настройку' };
+}
+
+// Отключение накрывает карточку встроенным «Отменить»; отмена возвращает настройку.
+function disconnectUndo(browser: Browser) {
+  const disconnect = `${card} button.danger`;
+  assert.equal(
+    evaluate(
+      browser,
+      `document.querySelector(${JSON.stringify(disconnect)})?.getAttribute('aria-label')`,
+    ),
+    'Отключить: Tradernet',
+    'Отключение источника называет провайдера',
+  );
+  browser.run('click', disconnect);
   browser.run(
     'wait',
     '--fn',
-    `document.querySelector('${status}')?.textContent === 'Источник отключён в примере. Никакие ключи и операции не удалялись.' && Boolean(document.querySelector('.demo-status .undo-action'))`,
+    `document.querySelector('${status}')?.textContent === 'Источник отключён в примере. Никакие ключи и операции не удалялись.' && document.querySelector('${card}')?.classList.contains('row-removed')`,
   );
-  assert.match(
-    content(browser, `${card} .connection-summary > p`),
-    /Не настроено/,
-    'Отключение должно убрать настройку',
+  truth(
+    browser,
+    `document.querySelector('${card} .undo-action') === document.activeElement`,
+    'Отключение переводит фокус на встроенное «Отменить»',
   );
-  browser.run('click', '.demo-status .undo-action');
+  browser.run('click', `${card} .undo-action`);
   browser.run(
     'wait',
     '--fn',
-    `document.querySelector('${status}')?.textContent === 'Действие отменено.'`,
+    `document.querySelector('${status}')?.textContent === 'Действие отменено.' && !document.querySelector('${card}')?.classList.contains('row-removed')`,
   );
   truth(
     browser,
     `document.querySelector('${card} .connection-summary > p')?.textContent === 'Настроено'`,
     'Отмена должна вернуть настройку источника',
   );
-  return { tested, saved: 'Карточка «Настроено» после Save', restored: 'Undo вернул настройку' };
 }

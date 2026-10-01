@@ -194,7 +194,12 @@
     display: none;
   }
   .cash-holding-row {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) 44px;
+  }
+  .cash-holding-row > .holding-actions {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    align-self: center;
   }
   .holding-group {
     grid-template-columns: minmax(0, 1fr) auto auto;
@@ -205,9 +210,6 @@
   }
   .holding-group > td:empty {
     display: none;
-  }
-  .cash-holding-row > td:nth-child(3) .mobile-label {
-    display: block;
   }
   .asset-symbol {
     width: 30px;

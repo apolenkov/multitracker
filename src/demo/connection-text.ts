@@ -28,6 +28,7 @@ export const connectionText = {
     wallet: 'Криптокошелёк',
     saved: 'Учебная конфигурация сохранена только в памяти вкладки.',
     removed: 'Источник отключён в примере. Никакие ключи и операции не удалялись.',
+    removedRow: 'Источник отключён',
     history: 'История с',
   },
   en: {
@@ -59,6 +60,7 @@ export const connectionText = {
     wallet: 'Crypto wallet',
     saved: 'Sample configuration retained only in this tab’s memory.',
     removed: 'Source disconnected in the sample. No credentials or activity were deleted.',
+    removedRow: 'Source disconnected',
     history: 'History since',
   },
 };
@@ -71,7 +73,7 @@ export type Connection = Readonly<{
 }>;
 export type ConnectionProps = Readonly<{
   language: 'ru' | 'en';
-  notify: (message: string, undo?: () => void) => void;
+  notify: (message: string) => void;
 }>;
 export const providers = ['Tradernet', 'Binance', 'Bybit', 'wallet', 'bank'];
 export function providerLabel(provider: string, t: ConnectionWords) {

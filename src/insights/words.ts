@@ -2,7 +2,7 @@ import type { Language } from '../i18n.ts';
 
 export const insightWords = (language: Language) => (language === 'ru' ? ru : en);
 const ru = {
-  reasons: 'Откуда взялся результат',
+  reasons: 'Что дало результат',
   reasonsNote:
     'Выбранные покупки: начальная цена и курс, совместный эффект отдельно. Не доходность всех денежных потоков.',
   price: 'Изменение цены',
@@ -48,7 +48,7 @@ const ru = {
   sourceExample: 'Учебная котировка MultiTracker',
 };
 const en = {
-  reasons: 'What contributed to the result',
+  reasons: 'What drove the result',
   reasonsNote:
     'Selected purchases: initial price and exchange rate, with the combined effect separate. This is not a return on all cash flows.',
   price: 'Price change',

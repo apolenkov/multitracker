@@ -9,7 +9,7 @@ export type RecordsProps = Readonly<{
   currency: Currency;
   baseCurrency: Currency;
   hidden: boolean;
-  onSaved?: (message: string, undo?: () => void) => void;
+  onSaved?: (message: string) => void;
 }>;
 export type Transaction = Readonly<{
   id: string;
@@ -158,7 +158,7 @@ export function operationInput(record: Transaction, hidden = false): Partial<Ope
     amount: amount(record.amount),
     fee: amount(record.fee),
     fx: String(record.fx),
-    external: 'Учебный банковский счёт',
+    external: 'Банковский счёт',
     currency: record.currency,
     account: record.account,
     targetPortfolio: record.targetPortfolio ?? 'bybit',

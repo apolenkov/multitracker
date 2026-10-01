@@ -2,11 +2,10 @@
   background: var(--surface);
   color: var(--ink);
 }
-.cash-holding-identity {
+.holding-actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
 }
 .holding-allocation {
   display: block;

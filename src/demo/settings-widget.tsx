@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Language } from './words';
 import { MoneyAmount } from '../MoneyAmount.tsx';
+import { resultTone } from '../i18n.ts';
 import { widgetNumber } from './widget-format.ts';
 import './widget.css';
 
@@ -76,7 +77,7 @@ function PortfolioWidget(props: PreviewProps) {
         <>
           <p>
             {text('Изменение за день', 'Daily change')}:{' '}
-            <span className="positive">
+            <span className={resultTone(180, props.hidden)}>
               {masked(
                 props.hidden,
                 `${widgetNumber(props.language, 180, true)} USD (${widgetNumber(props.language, 1.46, true)}%)`,
@@ -85,7 +86,7 @@ function PortfolioWidget(props: PreviewProps) {
           </p>
           <p>
             {text('Изменение за неделю', 'Weekly change')}:{' '}
-            <span className="negative">
+            <span className={resultTone(-320, props.hidden)}>
               {masked(
                 props.hidden,
                 `${widgetNumber(props.language, -320, true)} USD (${widgetNumber(props.language, -2.5, true)}%)`,

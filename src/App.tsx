@@ -9,9 +9,8 @@ import { Workspace } from './Workspace.tsx';
 import type { DemoState, Density, Theme } from './demo/words.ts';
 import { focusMain, useNavigation } from './navigation.ts';
 import { useDialogPointerGuard } from './dialog-pointer-guard.ts';
-import { focusUndo } from './RowActions.tsx';
 
-export type Notice = Readonly<{ sequence: number; message: string; undo?: () => void }>;
+export type Notice = Readonly<{ sequence: number; message: string }>;
 import './base.css';
 import './appearance.css';
 import './layout.css';
@@ -65,13 +64,8 @@ function useAppView() {
     setPortfolioId(id);
     navigate('overview');
   };
-  const onSaved = (message: string, undo?: () => void) => {
-    setNotice((current) => ({
-      sequence: current.sequence + 1,
-      message,
-      ...(undo ? { undo } : {}),
-    }));
-    if (undo) focusUndo();
+  const onSaved = (message: string) => {
+    setNotice((current) => ({ sequence: current.sequence + 1, message }));
   };
   return {
     ...demo,

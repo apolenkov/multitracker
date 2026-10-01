@@ -161,13 +161,15 @@ function validDate(value: string) {
 }
 function selectionError(field: Field, input: OperationInput, state: State, value: string) {
   if (field === 'targetPortfolio')
-    return state.portfolios.some((item) => item.id === value) ? undefined : 'destination';
+    return state.portfolios.some((item) => item.id === value) ? undefined : 'selection';
   if (field === 'account') return validAccount(value, input.portfolioId) ? undefined : 'account';
-  if (field === 'targetAccount')
-    return validAccount(value, input.targetPortfolio) && value !== input.account
-      ? undefined
-      : 'destination';
+  if (field === 'targetAccount') return targetError(input, value);
   return currencyError(field, input, value);
+}
+// Совпадение получателя с источником проверяется только когда оба выбраны.
+function targetError(input: OperationInput, value: string) {
+  if (!validAccount(value, input.targetPortfolio)) return 'selection';
+  return input.account !== '' && value === input.account ? 'destination' : undefined;
 }
 export const feeCurrencies = (input: OperationInput): readonly string[] =>
   input.type === 'transfer' && ['BTC', 'TWT'].includes(input.asset)

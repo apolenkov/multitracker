@@ -13,11 +13,17 @@ const headings = new Map([
 const hiddenControl = '#settings-hidden';
 
 export function go(browser: Browser, screen: string) {
+  // Если предыдущий шаг оставил диалог открытым, он закрывает навигацию — как пользователь, жмём Escape.
+  if (evaluate(browser, 'Boolean(document.querySelector("dialog[open]"))') === true) {
+    browser.run('press', 'Escape');
+    browser.run('wait', '--fn', '!document.querySelector("dialog[open]")');
+  }
   browser.run('click', `.desktop-links a[href="#${screen}"]`);
+  // h1 «Портфели» несёт счётчик («Портфели 3»), поэтому сравниваем начало заголовка.
   browser.run(
     'wait',
     '--fn',
-    `location.hash === '#${screen}' && document.activeElement?.id === 'main' && document.querySelector('#main h1')?.textContent === ${JSON.stringify(headings.get(screen))}`,
+    `location.hash === '#${screen}' && document.activeElement?.id === 'main' && document.querySelector('#main h1')?.textContent.startsWith(${JSON.stringify(headings.get(screen))})`,
   );
 }
 
@@ -25,9 +31,92 @@ export function truth(browser: Browser, source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
 }
 
+export function waitTrue(browser: Browser, source: string, message: string) {
+  browser.run('wait', '--fn', source);
+  assert.equal(evaluate(browser, source), true, message);
+}
+
+export const focused = (selector: string) =>
+  `document.activeElement === document.querySelector('${selector}')`;
+export const undoFocused = `Array.from(document.querySelectorAll('.undo-action')).some(button => button === document.activeElement && button.checkVisibility({checkVisibilityCSS:true}))`;
+export const count = (selector: string) => `document.querySelectorAll('${selector}').length`;
+
+// Снимок положений всех элементов #main в координатах документа; ключ — путь по индексам детей.
+// Внутренности зарезервированных слотов уведомлений — часть самого уведомления, они не считаются.
+const layoutMap = `(() => {
+  const path = (node) => {
+    const steps = [];
+    for (let item = node; item && item !== document.body; item = item.parentElement)
+      steps.unshift(Array.prototype.indexOf.call(item.parentElement?.children ?? [], item));
+    return steps.join('/');
+  };
+  return [...document.querySelectorAll('#main *')].map((element) => {
+    const box = element.getBoundingClientRect();
+    // Нулевой прямоугольник (display:none, display:contents, option) позиции не имеет:
+    // top+scrollY для него — просто scrollY, ложное «движение» при любой прокрутке.
+    const inside =
+      element.parentElement?.closest('.status-message, .demo-status, .row-notice') ||
+      (box.width === 0 && box.height === 0)
+        ? 1
+        : 0;
+    const desc = element.tagName.toLowerCase() + (element.className ? '.' + String(element.className).trim().split(/\\s+/).join('.') : '');
+    return [path(element), Math.round(box.top + scrollY), Math.round(box.left), inside, desc];
+  });
+})()`;
+
+type Slot = Readonly<{ top: number; left: number; inside: boolean; desc: string }>;
+type Boxes = ReadonlyMap<string, Slot>;
+
+function boxes(browser: Browser): Boxes {
+  const raw = evaluate(browser, layoutMap);
+  assert.ok(Array.isArray(raw), 'layoutMap: нужен список позиций');
+  const entries = raw.map((entry: unknown) => {
+    assert.ok(Array.isArray(entry) && entry.length === 5, 'layoutMap: неверная запись');
+    const [path, top, left, inside, desc] = entry as readonly unknown[];
+    assert.ok(
+      typeof path === 'string' &&
+        typeof top === 'number' &&
+        typeof left === 'number' &&
+        (inside === 0 || inside === 1) &&
+        typeof desc === 'string',
+      'layoutMap: неверные типы',
+    );
+    return [path, { top, left, inside: inside === 1, desc }] as const;
+  });
+  return new Map(entries);
+}
+
+// Действие не должно сдвигать ни один существующий элемент больше чем на 2 px.
+export function layoutShift(browser: Browser, act: () => void, label: string) {
+  const before = boxes(browser);
+  const scroll = evaluate(browser, 'scrollY');
+  assert.ok(typeof scroll === 'number', `${label}: scrollY не прочитан`);
+  act();
+  // Клик по строке ниже сгиба прокручивает страницу — поведение указателя, а не сдвиг
+  // содержимого. Возвращаем прокрутку и сравниваем положения в координатах документа.
+  evaluate(browser, `scrollTo(0, ${scroll}); true`);
+  waitTrue(browser, `scrollY === ${scroll}`, `${label}: прокрутка не вернулась`);
+  settleLayout(browser);
+  const after = boxes(browser);
+  const moved = [...before]
+    .filter(([path, box]) => {
+      const next = after.get(path);
+      return (
+        next &&
+        !box.inside &&
+        (Math.abs(box.top - next.top) > 2 || Math.abs(box.left - next.left) > 2)
+      );
+    })
+    .map(([path, box]) => `${box.desc} @ ${path}`);
+  assert.deepEqual(moved, [], `${label}: содержимое сдвинулось больше 2 px`);
+}
+
 export function content(browser: Browser, selector: string) {
   const target = `document.querySelector(${JSON.stringify(selector)})`;
-  const value = evaluate(browser, `${target}?.checkVisibility() ? ${target}.innerText : undefined`);
+  const value = evaluate(
+    browser,
+    `${target}?.checkVisibility({checkVisibilityCSS:true}) ? ${target}.innerText : undefined`,
+  );
   assert.ok(typeof value === 'string' && value.trim(), `Нет видимого содержимого: ${selector}`);
   return value;
 }
@@ -42,7 +131,7 @@ export function reveal(browser: Browser, summary: string) {
     browser.run(
       'wait',
       '--fn',
-      `(() => { const element = document.querySelector(${selector}); const box = element?.getBoundingClientRect(); return element?.checkVisibility() === true && box?.width > 0 && box?.height > 0 && element.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)); })()`,
+      `(() => { const element = document.querySelector(${selector}); const box = element?.getBoundingClientRect(); return element?.checkVisibility({checkVisibilityCSS:true}) === true && box?.width > 0 && box?.height > 0 && element.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)); })()`,
     );
     browser.run('click', summary);
     browser.run(
@@ -54,7 +143,7 @@ export function reveal(browser: Browser, summary: string) {
   settleLayout(browser);
   truth(
     browser,
-    `document.querySelector(${selector})?.checkVisibility() === true && document.querySelector(${selector})?.closest('details')?.open === true`,
+    `document.querySelector(${selector})?.checkVisibility({checkVisibilityCSS:true}) === true && document.querySelector(${selector})?.closest('details')?.open === true`,
     'Раскрывающийся блок должен быть открыт и доступен',
   );
 }

@@ -234,6 +234,9 @@
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
+.attribution > summary {
+  white-space: nowrap;
+}
 .insight-controls,
 .report-toolbar {
   display: flex;

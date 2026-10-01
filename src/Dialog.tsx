@@ -1,7 +1,7 @@
 import { Icon } from './Icon.tsx';
 import { getLabels } from './i18n.ts';
 import type { Language, Labels } from './i18n.ts';
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 
 export function keepDialogFocus(event: KeyboardEvent<HTMLDialogElement>) {
   if (event.key !== 'Tab' || event.ctrlKey || event.metaKey || event.altKey) return;
@@ -69,19 +69,20 @@ export function FormActions({
   dialog,
   labels,
   submitLabel,
-  destructive = false,
+  extra,
 }: Readonly<{
   dialog: string;
   labels: Labels;
   submitLabel?: string;
-  destructive?: boolean;
+  extra?: ReactNode;
 }>) {
   return (
     <div className="form-actions">
+      {extra}
       <button type="button" onClick={() => closeDialog(dialog)}>
         {labels.cancel}
       </button>
-      <button type="submit" className={destructive ? 'destructive' : 'primary'}>
+      <button type="submit" className="primary">
         {submitLabel ?? labels.save}
       </button>
     </div>

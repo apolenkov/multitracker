@@ -9,9 +9,6 @@
     margin-left: 216px;
     padding-inline: 24px;
   }
-  .brand-note {
-    font-size: 13px;
-  }
 }
 @media (max-width: 900px) {
   .sidebar {
@@ -120,4 +117,40 @@
   main {
     padding-top: 16px;
   }
+}
+.row-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: end;
+}
+.row-action {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+.row-action:hover {
+  background: var(--surface);
+}
+.row-action.danger {
+  color: var(--muted);
+}
+.row-action.danger:is(:hover, :focus-visible) {
+  color: var(--red);
+}
+.demo-status .undo-action,
+.undo-action {
+  flex: none;
+  min-height: 44px;
+  border: 1px solid var(--control-border);
+  background: var(--paper);
+  color: var(--ink);
 }

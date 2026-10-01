@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
-import { closeDialog, DialogHeading, keepDialogFocus } from '../Dialog.tsx';
+import { DialogHeading, keepDialogFocus } from '../Dialog.tsx';
 import { date, demoAccount, getLabels, money, number, percentage, type Language } from '../i18n.ts';
 import {
   assessmentDate,
@@ -13,6 +13,7 @@ import {
   type State,
 } from '../model/portfolio.ts';
 import { insightWords } from './words.ts';
+import { openOperation } from '../Forms.tsx';
 import { ManualValuation } from './ManualValuation.tsx';
 
 type Props = Readonly<{
@@ -86,7 +87,7 @@ function AssetContent(
   return (
     <>
       <PositionValues {...props} />
-      <details className="asset-quote">
+      <details className="asset-quote" open>
         <summary>{words.quote}</summary>
         <Quote {...props} />
       </details>
@@ -98,11 +99,15 @@ function AssetContent(
         </p>
       )}
       <div className="form-actions">
-        <button type="button" onClick={() => closeDialog('asset-dialog')}>
-          {getLabels(props.language).close}
-        </button>
-        <button type="button" className="primary" ref={props.trigger} onClick={props.onEdit}>
+        <button type="button" ref={props.trigger} onClick={props.onEdit}>
           {words.valuation}
+        </button>
+        <button
+          type="button"
+          className="primary"
+          onClick={() => openOperation('buy', { asset: props.asset, currency: 'USD' })}
+        >
+          {props.language === 'ru' ? 'Купить' : 'Buy'} {props.asset}
         </button>
       </div>
     </>
@@ -187,7 +192,7 @@ function PositionHistory({ buys, language, hidden }: ValuesProps) {
   const labels = getLabels(language);
   const words = insightWords(language);
   return (
-    <details className="asset-timeline">
+    <details className="asset-timeline" open>
       <summary>{words.history}</summary>
       <table>
         <caption className="visually-hidden">{words.history}</caption>

@@ -4,127 +4,112 @@ import { importText } from './import-model';
 import { ImportSample } from './import-fields';
 import { DemoModal } from './modal';
 import { closeDialog } from '../Dialog';
-import { ActionMenu } from '../ActionMenu';
 
 type HistoryProps = Readonly<{
   language: ImportLanguage;
   hidden: boolean;
-  notify: (message: string) => void;
+  notify: (message: string, undo?: () => void) => void;
 }>;
-type HistoryDialog = 'details' | 'undo' | 'reconcile' | null;
+type HistoryDialog = 'details' | 'reconcile' | null;
 export function ImportHistory({ language, hidden, notify }: HistoryProps) {
   const [dialog, setDialog] = useState<HistoryDialog>(null);
+  const [undone, setUndone] = useState(false);
   const title = importText(language, 'История импорта', 'Import history');
+  // Отмена импорта выполняется сразу; сообщение предлагает вернуть запись.
+  const undoImport = () => {
+    closeDialog('import-history');
+    setUndone(true);
+    notify(
+      importText(
+        language,
+        'Импорт отменён. Учебные операции и остатки не изменены.',
+        'Import undone. Sample activity and balances are unchanged.',
+      ),
+      () => setUndone(false),
+    );
+  };
   return (
     <section className="import-history" aria-label={title}>
       <h2>{title}</h2>
-      <p>2026-09-04 · Binance → Binance · sample-transactions.csv</p>
-      <p>
-        {importText(
-          language,
-          'К добавлению: 2 · К пропуску: 2 (1 ошибка актива, 1 повтор)',
-          'To add: 2 · To skip: 2 (1 unknown asset, 1 duplicate)',
-        )}
-      </p>
-      <HistoryMenu language={language} open={setDialog} />
+      <HistoryEntry language={language} undone={undone} open={setDialog} />
       {dialog && (
         <DemoModal
           id="import-history"
-          title={
-            dialog === 'undo'
-              ? importText(language, 'Отменить этот импорт?', 'Undo this import?')
-              : title
-          }
+          title={title}
           language={language}
           onClose={() => setDialog(null)}
         >
-          <HistoryDetails kind={dialog} language={language} hidden={hidden} notify={notify} />
+          {dialog === 'details' ? (
+            <HistoryDetails language={language} hidden={hidden} onUndo={undoImport} />
+          ) : (
+            <Reconciliation language={language} hidden={hidden} notify={notify} />
+          )}
         </DemoModal>
       )}
     </section>
   );
 }
-function HistoryMenu({
+function HistoryEntry({
   language,
+  undone,
   open,
-}: Readonly<{ language: ImportLanguage; open: (dialog: HistoryDialog) => void }>) {
+}: Readonly<{
+  language: ImportLanguage;
+  undone: boolean;
+  open: (dialog: HistoryDialog) => void;
+}>) {
   return (
-    <ActionMenu
-      className="import-menu"
-      align="start"
-      label={importText(language, 'Действия: импорт', 'Actions: import')}
-      items={[
-        {
-          label: importText(language, 'Подробности импорта', 'Import details'),
-          ariaLabel: importText(language, 'Подробности импорта', 'Import details'),
-          onSelect: () => open('details'),
-        },
-        {
-          label: importText(language, 'Сверить остаток', 'Reconcile balance'),
-          ariaLabel: importText(language, 'Сверить остаток', 'Reconcile balance'),
-          onSelect: () => open('reconcile'),
-        },
-        {
-          label: importText(language, 'Отменить импорт', 'Undo import'),
-          ariaLabel: importText(language, 'Отменить импорт', 'Undo import'),
-          onSelect: () => open('undo'),
-          danger: true,
-        },
-      ]}
-    />
+    <>
+      <p>2026-09-04 · Binance → Binance · sample-transactions.csv</p>
+      <p>
+        {undone
+          ? importText(language, 'Импорт отменён', 'Import undone')
+          : importText(
+              language,
+              'К добавлению: 2 · К пропуску: 2 (1 ошибка актива, 1 повтор)',
+              'To add: 2 · To skip: 2 (1 unknown asset, 1 duplicate)',
+            )}
+      </p>
+      {!undone && (
+        <div className="record-actions">
+          <button type="button" id="import-history-details" onClick={() => open('details')}>
+            {importText(language, 'Подробности', 'Details')}
+          </button>
+          <button type="button" id="import-reconcile" onClick={() => open('reconcile')}>
+            {importText(language, 'Сверить остаток', 'Reconcile balance')}
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 function HistoryDetails({
-  kind,
   language,
   hidden,
-  notify,
-}: HistoryProps & Readonly<{ kind: Exclude<HistoryDialog, null> }>) {
-  if (kind === 'details')
-    return (
-      <div>
-        <p>
-          <strong>sample-transactions.csv</strong> · 2026-09-04
-        </p>
-        <p className="import-result">
-          {importText(language, '2 готовы · 2 исключены', '2 ready · 2 excluded')}
-        </p>
-        <ImportSample language={language} hidden={hidden} />
-        <button type="button" onClick={() => closeDialog('import-history')}>
-          {importText(language, 'Закрыть', 'Close')}
-        </button>
-      </div>
-    );
-  if (kind === 'reconcile')
-    return <Reconciliation language={language} hidden={hidden} notify={notify} />;
-  return <UndoImport language={language} hidden={hidden} notify={notify} />;
-}
-function UndoImport({ language, notify }: HistoryProps) {
-  function confirm() {
-    notify(
-      importText(
-        language,
-        'Отмена импорта показана. Учебные операции и остатки не изменены.',
-        'Import undo previewed. Sample activity and balances are unchanged.',
-      ),
-    );
-    closeDialog('import-history');
-  }
+  onUndo,
+}: Readonly<{ language: ImportLanguage; hidden: boolean; onUndo: () => void }>) {
   return (
     <div>
       <p>
+        <strong>sample-transactions.csv</strong> · 2026-09-04
+      </p>
+      <p className="import-result">
+        {importText(language, '2 готовы · 2 исключены', '2 ready · 2 excluded')}
+      </p>
+      <ImportSample language={language} hidden={hidden} />
+      <p>
         {importText(
           language,
-          'В продукте отмена удалит только 2 операции этого импорта. Ручные операции и другие импорты останутся. В макете данные не изменяются.',
-          'In the product, undo removes only these 2 imported transactions. Manual activity and other imports remain. Mockup data stays unchanged.',
+          'Отмена удалит только 2 операции этого импорта; ручные операции и другие импорты останутся.',
+          'Undo removes only these 2 imported transactions; manual activity and other imports remain.',
         )}
       </p>
-      <div className="form-actions">
-        <button type="button" onClick={() => closeDialog('import-history')}>
-          {importText(language, 'Отмена', 'Cancel')}
-        </button>
-        <button type="button" className="danger" onClick={confirm}>
+      <div className="dialog-actions">
+        <button type="button" className="danger" onClick={onUndo}>
           {importText(language, 'Отменить импорт', 'Undo import')}
+        </button>
+        <button type="button" onClick={() => closeDialog('import-history')}>
+          {importText(language, 'Закрыть', 'Close')}
         </button>
       </div>
     </div>

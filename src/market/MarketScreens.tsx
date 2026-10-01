@@ -18,6 +18,8 @@ import { MarketFilters, MarketIndices, MarketList } from './MarketList.tsx';
 import { NotificationPreview } from './NotificationPreview.tsx';
 import { marketWords } from './words.ts';
 import { Catalog } from '../insights/Catalog.tsx';
+import { focusUndo, UndoButton, undoneText } from '../RowActions.tsx';
+import { focusMain } from '../navigation.ts';
 import './market.css';
 
 type Props = Readonly<{
@@ -26,7 +28,12 @@ type Props = Readonly<{
   currency: Currency;
   hidden: boolean;
 }>;
-type Status = Readonly<{ kind: 'saved' | 'updated' | 'removed'; symbol: string; revision: number }>;
+type Status = Readonly<{
+  kind: 'saved' | 'updated' | 'removed' | 'undone';
+  symbol: string;
+  revision: number;
+  undo?: () => void;
+}>;
 type Dialog =
   | Readonly<{ kind: 'asset'; asset: MarketAsset }>
   | Readonly<{ kind: 'alert'; symbol: string; value: PriceAlert | undefined }>;
@@ -61,13 +68,23 @@ function useMarketState() {
       revision: (previous?.revision ?? 0) + 1,
     }));
   };
-  const onDelete = (id: number) => {
-    setAlerts((previous) => previous.filter((item) => item.id !== id));
+  const onDelete = (alert: PriceAlert) => {
+    setAlerts((previous) => previous.filter((item) => item.id !== alert.id));
+    setDialog(undefined);
     setStatus((previous) => ({
       kind: 'removed',
-      symbol: alerts.find((item) => item.id === id)?.symbol ?? '',
+      symbol: alert.symbol,
       revision: (previous?.revision ?? 0) + 1,
+      undo: () => {
+        setAlerts((current) => [...current, alert].toSorted((left, right) => left.id - right.id));
+        setStatus((current) => ({
+          kind: 'undone',
+          symbol: alert.symbol,
+          revision: (current?.revision ?? 0) + 1,
+        }));
+      },
     }));
+    focusUndo();
   };
   return { followed, alerts, dialog, status, onFollow, onSave, onPause, onDelete, setDialog };
 }
@@ -91,6 +108,7 @@ export function MarketScreens(props: Props) {
         {...props}
         {...model}
         assets={assets}
+        heading={props.screen === 'following' ? 'h3' : 'h2'}
         onOpen={(asset) => model.setDialog({ kind: 'asset', asset })}
         onFollow={(symbol) => {
           model.onFollow(symbol);
@@ -127,6 +145,7 @@ function MarketDialog(props: Props & Readonly<{ model: ReturnType<typeof useMark
         value={dialog.value}
         onClose={onClose}
         onSave={model.onSave}
+        onDelete={model.onDelete}
       />
     );
   return (
@@ -199,17 +218,29 @@ function MarketStatus({
   status,
 }: Readonly<{ language: Language; status: Status | undefined }>) {
   const words = marketWords(language);
-  const message =
-    status?.kind === 'saved'
-      ? words.saved
-      : status?.kind === 'updated'
-        ? words.updated
-        : status?.kind === 'removed'
-          ? words.removed
-          : '';
+  const messages = new Map([
+    ['saved', words.saved],
+    ['updated', words.updated],
+    ['removed', words.removed],
+    ['undone', undoneText(language)],
+  ]);
+  const undo = status?.undo;
   return (
-    <p className="demo-status" role="status">
-      <span key={status?.revision}>{status ? `${status.symbol} · ${message}` : ''}</span>
-    </p>
+    <div className="demo-status">
+      <p role="status">
+        <span key={status?.revision}>
+          {status ? `${status.symbol} · ${messages.get(status.kind) ?? ''}` : ''}
+        </span>
+      </p>
+      {undo && (
+        <UndoButton
+          language={language}
+          onUndo={() => {
+            undo();
+            focusMain({ preventScroll: true });
+          }}
+        />
+      )}
+    </div>
   );
 }

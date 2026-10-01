@@ -12,7 +12,7 @@ import { operationExtras } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
 import { initialSkipFocus, maskedResultTones, narrowAllocation } from './ui-overview-checks.ts';
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
-import { recordMenuStability } from './ui-record-menu-checks.ts';
+import { recordRowActions, entityUndo, importAndSyncUndo } from './ui-row-action-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
@@ -42,7 +42,7 @@ function truth(source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
 }
 function navigate(screen: string, width = 1440, language: Language = 'ru') {
-  const extra = !['overview', 'markets', 'following'].includes(screen);
+  const extra = !['overview', 'markets', 'history'].includes(screen);
   if (width === 375 && extra) {
     browser.run(
       'find',
@@ -142,65 +142,48 @@ function repeatSave() {
   );
   return 'Два Save: непустой результат, второй DOM-узел отличается';
 }
-function startImport() {
-  browser.run('find', 'role', 'button', 'click', '--name', 'Начать импорт', '--exact');
-  browser.run('wait', '#import-wizard[open]');
-}
 function importMapping() {
   navigate('import');
-  reveal(browser, '#import-source-options > summary');
   browser.run('select', '#import-page-source', 'Binance');
-  reveal(browser, 'details:has(#import-page-map-date) > summary');
+  reveal(browser, '#import-mapping-options > summary');
   mappingSamples(browser, 'page');
   browser.run('select', '#import-page-map-date', 'skip');
   language('en');
   assert.equal(evaluate(browser, 'document.querySelector("#import-page-map-date")?.value'), 'skip');
   language('ru');
-  startImport();
-  browser.run('click', '#import-next');
-  browser.run('click', '#import-sample-file');
-  browser.run('click', '#import-next');
-  mappingSamples(browser, 'wizard');
-  assert.equal(
-    evaluate(browser, 'document.querySelector("#import-wizard-map-date")?.value'),
-    'skip',
-  );
-  browser.run('click', '#import-next');
+  browser.run('click', '#import-run');
   truth(
-    'Boolean(document.querySelector("#import-error")?.textContent?.trim()) && document.querySelector("#import-wizard-map-date")?.getAttribute("aria-invalid") === "true"',
-    'Неверное обязательное сопоставление должно блокировать следующий шаг',
+    'Boolean(document.querySelector("#import-error")?.textContent?.trim()) && document.querySelector("#import-page-map-date")?.getAttribute("aria-invalid") === "true" && document.activeElement?.id === "import-page-map-date"',
+    'Неверное сопоставление блокирует импорт и получает фокус',
   );
-  browser.run('press', 'Escape');
-  browser.run('wait', '--fn', '!document.querySelector("#import-wizard[open]")');
-  return 'skip сохранён RU→EN→RU и в wizard; ошибка блокирует переход';
+  browser.run('select', '#import-page-map-date', 'date');
+  return 'skip сохранён RU→EN→RU; ошибка блокирует импорт и ставит фокус в поле';
 }
+// Один экран: значения по умолчанию верны, импорт — одно нажатие; снятый пропуск даёт ошибку.
 function cancelImport() {
-  startImport();
-  browser.run('select', '#import-wizard-source', 'Bybit');
-  browser.run('find', 'role', 'button', 'click', '--name', 'Отмена', '--exact');
-  browser.run('wait', '--fn', '!document.querySelector("#import-wizard[open]")');
-  assert.equal(
-    evaluate(browser, 'document.querySelector("#import-page-source")?.value'),
-    'Binance',
+  browser.run('find', 'label', 'Пропустить повтор (строка 4)', 'click', '--exact');
+  browser.run('click', '#import-run');
+  truth(
+    'Boolean(document.querySelector("#import-error")) && document.activeElement?.getAttribute("aria-invalid") === "true"',
+    'Повтор без пропуска блокирует импорт',
   );
-  return 'Bybit в черновике → Cancel → page Binance';
+  browser.run('find', 'label', 'Пропустить повтор (строка 4)', 'click', '--exact');
+  browser.run('click', '#import-run');
+  browser.run('wait', '--fn', '!document.querySelector("#import-error")');
+  assert.match(
+    String(evaluate(browser, 'document.querySelector(".demo-page > .demo-status")?.innerText')),
+    /Добавлено 2, пропущено 2/,
+  );
+  return 'Ошибка повтора → пропуск → одно нажатие «Импортировать 2 операции»';
 }
 function hiddenReconciliation() {
   language('ru');
   navigate('settings');
   browser.run('find', 'label', 'Скрыть суммы', 'check', '--exact');
   navigate('import');
-  reveal(browser, 'details:has(#import-page-map-date) > summary');
+  reveal(browser, '#import-mapping-options > summary');
   mappingSamples(browser, 'page', true);
-  startImport();
-  browser.run('click', '#import-next');
-  browser.run('click', '#import-sample-file');
-  browser.run('click', '#import-next');
-  mappingSamples(browser, 'wizard', true);
-  browser.run('press', 'Escape');
-  browser.run('wait', '--fn', '!document.querySelector("#import-wizard[open]")');
-  browser.run('click', '.import-history button.action-menu-trigger');
-  browser.run('find', 'role', 'menuitem', 'click', '--name', 'Сверить остаток', '--exact');
+  browser.run('click', '#import-reconcile');
   browser.run('wait', '#import-history[open]');
   assert.deepEqual(
     evaluate(
@@ -217,7 +200,7 @@ function hiddenReconciliation() {
   browser.run(
     'wait',
     '--fn',
-    '!document.querySelector("#import-history[open]") && document.activeElement === document.querySelector(".import-history button.action-menu-trigger")',
+    '!document.querySelector("#import-history[open]") && document.activeElement === document.querySelector("#import-reconcile")',
   );
   return [
     maskedResultTones(browser),
@@ -236,7 +219,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ['navigation:back-main-focus', backFocus],
     ['feedback:repeat-save', repeatSave],
     ['import:mapping-locale-invalid', importMapping],
-    ['import:cancel-source', cancelImport],
+    ['import:one-click-run-and-errors', cancelImport],
     ['settings:finance-roundtrip', () => settingsPersist(browser)],
     ['markets:search-follow-roundtrip', () => marketFollowing(browser)],
     ['alerts:invalid-save-edit-cancel', () => alertDraft(browser)],
@@ -251,7 +234,9 @@ function runChecks(driver: Browser): readonly Result[] {
     ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
     ['cash:direct-opening-and-market-catalog-focus', () => cashFlow(browser)],
     ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
-    ['history:record-menu-stable-row', () => recordMenuStability(browser)],
+    ['history:row-actions-focus-undo', () => recordRowActions(browser)],
+    ['portfolios:archive-delete-undo', () => entityUndo(browser)],
+    ['import-sync:visible-actions-undo', () => importAndSyncUndo(browser)],
     ['overview:empty-state-restores-example', () => emptyOverview(browser)],
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
     ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],

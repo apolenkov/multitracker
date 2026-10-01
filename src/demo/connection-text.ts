@@ -8,7 +8,6 @@ export const connectionText = {
     disconnect: 'Отключить',
     destination: 'Портфель назначения',
     account: 'Счёт назначения',
-    more: 'Отключение',
     start: 'Начало истории',
     dateError: 'Выберите дату с 01.01.2000 по 30.09.2026.',
     token: 'Ключ, только чтение',
@@ -28,11 +27,7 @@ export const connectionText = {
     bank: 'Банковский счёт',
     wallet: 'Криптокошелёк',
     saved: 'Учебная конфигурация сохранена только в памяти вкладки.',
-    disconnectTitle: 'Отключить источник?',
-    disconnectInfo:
-      'В примере источник перестанет быть настроенным. Операции портфеля остаются без изменений.',
     removed: 'Источник отключён в примере. Никакие ключи и операции не удалялись.',
-    required: 'Сначала выполните успешную проверку.',
     history: 'История с',
   },
   en: {
@@ -44,7 +39,6 @@ export const connectionText = {
     disconnect: 'Disconnect',
     destination: 'Destination portfolio',
     account: 'Destination account',
-    more: 'Disconnection',
     start: 'History starts on',
     dateError: 'Choose a date from 2000-01-01 to 2026-09-30.',
     token: 'Read-only key',
@@ -64,11 +58,7 @@ export const connectionText = {
     bank: 'Bank account',
     wallet: 'Crypto wallet',
     saved: 'Sample configuration retained only in this tab’s memory.',
-    disconnectTitle: 'Disconnect source?',
-    disconnectInfo:
-      'The sample source will become unconfigured. Portfolio activity stays unchanged.',
     removed: 'Source disconnected in the sample. No credentials or activity were deleted.',
-    required: 'Complete a successful test first.',
     history: 'History since',
   },
 };
@@ -81,7 +71,7 @@ export type Connection = Readonly<{
 }>;
 export type ConnectionProps = Readonly<{
   language: 'ru' | 'en';
-  notify: (message: string) => void;
+  notify: (message: string, undo?: () => void) => void;
 }>;
 export const providers = ['Tradernet', 'Binance', 'Bybit', 'wallet', 'bank'];
 export function providerLabel(provider: string, t: ConnectionWords) {

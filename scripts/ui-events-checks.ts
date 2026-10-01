@@ -92,6 +92,8 @@ function invalidReminder(browser: Browser) {
   });
 }
 
+const ready15 =
+  '!document.querySelector("#event-dialog[open]") && document.activeElement?.id === "event-luma-report"';
 export function eventReminder(browser: Browser) {
   prepare(browser);
   go(browser, 'events');
@@ -99,10 +101,10 @@ export function eventReminder(browser: Browser) {
   reminderBackFocus(browser);
   cancelReminder(browser);
   invalidReminder(browser);
-  browser.run('fill', '#event-reminder-minutes', '15');
+  browser.run('fill', '#event-reminder-minutes', '30');
   browser.run('click', '#event-reminder-save');
   browser.run('wait', '--fn', '!document.querySelector("#event-dialog[open]")');
-  assert.match(content(browser, '.events-confirm'), /сохранён/);
+  assert.match(content(browser, '.events-confirm'), /сохранён: напоминание за 30 мин/);
   openReminder(browser);
   assert.equal(evaluate(browser, 'document.querySelector("#event-reminder-minutes")?.value'), '15');
   browser.run('press', 'Escape');
@@ -111,7 +113,14 @@ export function eventReminder(browser: Browser) {
     '--fn',
     '!document.querySelector("#event-dialog[open]") && document.activeElement?.id === "event-luma-report"',
   );
-  return 'Срок по умолчанию 15 → сброс; отмена не сохраняет; неверный срок блокирован; 15 минут → результат';
+  // Одно действие: «Напомнить за 15 мин» сохраняет сразу и возвращает фокус событию.
+  openEvent(browser);
+  assert.equal(evaluate(browser, 'document.querySelector(".events-confirm")?.innerText'), '');
+  browser.run('click', '#event-reminder-quick');
+  browser.run('wait', '--fn', ready15);
+  truth(browser, ready15, 'Быстрое напоминание закрывает окно и возвращает фокус событию');
+  assert.match(content(browser, '.events-confirm'), /сохранён: напоминание за 15 мин/);
+  return 'Срок по умолчанию 15 → сброс; отмена не сохраняет; неверный срок блокирован; 30 минут → результат; одно нажатие → 15 минут';
 }
 
 function updateDetail(browser: Browser, category: string) {

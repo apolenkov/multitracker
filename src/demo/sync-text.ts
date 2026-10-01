@@ -19,9 +19,6 @@ export const syncText = {
     activity: 'Последняя активность: 30.09.2026 10:25 UTC',
     revoke: 'Отозвать доступ',
     revoked: 'Доступ отозван в примере',
-    revokeTitle: 'Отозвать доступ телефона?',
-    revokeInfo:
-      'Учебный телефон перестанет отображаться активным. Реальных устройств и сеансов нет.',
     cancel: 'Отмена',
     conflict: 'Сравнение конфликтующих версий',
     local: 'Локальная версия',
@@ -42,7 +39,6 @@ export const syncText = {
     resolved: 'Конфликт разрешён в примере.',
     warning: 'Предпросмотр сравнивает только название и метку. Активы и операции не меняются.',
     mode: 'Режим синхронизации',
-    deviceActions: 'Действия',
   },
   en: {
     onlyDemo: 'Sample devices and versions. No data is transferred to the cloud.',
@@ -64,8 +60,6 @@ export const syncText = {
     activity: 'Last activity: 2026-09-30 10:25 UTC',
     revoke: 'Revoke access',
     revoked: 'Access revoked in the sample',
-    revokeTitle: 'Revoke phone access?',
-    revokeInfo: 'The sample phone will become inactive. There are no real devices or sessions.',
     cancel: 'Cancel',
     conflict: 'Conflicting version comparison',
     local: 'Local version',
@@ -86,7 +80,6 @@ export const syncText = {
     resolved: 'Conflict resolved in the sample.',
     warning: 'The preview compares name and label only. Holdings and activity stay unchanged.',
     mode: 'Sync mode',
-    deviceActions: 'Actions',
   },
 };
 export type SyncWords = (typeof syncText)['ru'];

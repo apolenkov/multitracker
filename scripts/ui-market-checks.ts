@@ -99,17 +99,17 @@ function invalidAlert(browser: Browser) {
 
 function cancelAlertEdit(browser: Browser) {
   const saved = content(browser, lastAlert);
-  browser.run('click', `${lastAlert} [data-market-action="edit"]`);
+  browser.run('click', `${lastAlert} .row-action`);
   browser.run('wait', `${alertDialog}[open]`);
   assert.equal(evaluate(browser, 'document.querySelector("#market-threshold")?.value'), '910');
   browser.run('fill', '#market-threshold', '999');
   browser.run('click', '#market-cancel-alert');
   browser.run('wait', '--fn', '!document.querySelector("#market-alert-dialog[open]")');
   assert.equal(content(browser, lastAlert), saved, 'Отмена изменила сохранённый порог');
-  browser.run('click', `${lastAlert} [data-market-action="edit"]`);
+  browser.run('click', `${lastAlert} .row-action`);
   browser.run('wait', `${alertDialog}[open]`);
   assert.equal(evaluate(browser, 'document.querySelector("#market-threshold")?.value'), '910');
-  escapeFocus(browser, alertDialog, `${lastAlert} [data-market-action="edit"]`);
+  escapeFocus(browser, alertDialog, `${lastAlert} .row-action`);
   return saved;
 }
 
@@ -136,36 +136,40 @@ export function alertDraft(browser: Browser) {
   assert.match(saved, /Ниже/);
   assert.match(saved, /Повторять/);
   assert.ok(content(browser, '.demo-status'), 'Нет сообщения о сохранении');
-  ruleAction(browser, 'pause');
+  ruleAction(browser);
   assert.match(content(browser, lastAlert), /Приостановлено/);
-  ruleAction(browser, 'pause');
+  ruleAction(browser);
   assert.match(content(browser, lastAlert), /Включено/);
   deleteAlert(browser, before);
   assert.equal(alertCount(browser), before, 'Удаление не восстановило исходный список');
   return { saved, invalid: ['', 'abc', '0', '-1'], editedDraft: '999 → отмена → 910' };
 }
 
-function ruleAction(browser: Browser, action: 'pause' | 'delete') {
-  browser.run('click', `${lastAlert} button.rule-menu`);
-  browser.run('wait', '[role="menu"]');
-  browser.run(
-    'click',
-    `[role="menu"] [role="menuitem"]${action === 'delete' ? '.danger' : ':not(.danger)'}`,
-  );
-  browser.run('wait', '--fn', '!document.querySelector(\'[role="menu"]\')');
+function ruleAction(browser: Browser) {
+  browser.run('click', `${lastAlert} [data-market-action="pause"]`);
 }
 
+// Удаление — в подвале «Изменить уведомление», сразу и с «Отменить» в сообщении.
 function deleteAlert(browser: Browser, before: number) {
-  ruleAction(browser, 'delete');
-  browser.run('wait', '#market-delete-alert-dialog[open]');
-  assert.equal(alertCount(browser), before + 1, 'Открытие подтверждения удалило уведомление');
-  browser.run('click', '#market-cancel-delete-alert');
-  browser.run('wait', '--fn', '!document.querySelector("#market-delete-alert-dialog[open]")');
-  assert.equal(alertCount(browser), before + 1, 'Отмена подтверждения удалила уведомление');
-  ruleAction(browser, 'delete');
-  browser.run('wait', '#market-delete-alert-dialog[open]');
-  browser.run('click', '#market-confirm-delete-alert');
-  browser.run('wait', '--fn', '!document.querySelector("#market-delete-alert-dialog[open]")');
+  const remove = () => {
+    browser.run('click', `${lastAlert} .row-action`);
+    browser.run('wait', `${alertDialog}[open]`);
+    browser.run('click', '#market-delete-alert');
+    browser.run('wait', '--fn', '!document.querySelector("#market-alert-dialog[open]")');
+  };
+  remove();
+  assert.equal(alertCount(browser), before, 'Удаление не убрало уведомление');
+  const undo = 'document.activeElement === document.querySelector(".demo-status .undo-action")';
+  browser.run('wait', '--fn', undo);
+  truth(browser, undo, 'После удаления фокус должен стоять на «Отменить»');
+  browser.run('click', '.demo-status .undo-action');
+  browser.run(
+    'wait',
+    '--fn',
+    `document.querySelectorAll(".market-alert-list > li").length === ${before + 1}`,
+  );
+  assert.match(content(browser, lastAlert), /910,00/, 'Отмена должна вернуть то же уведомление');
+  remove();
 }
 
 export function marketRouteClosure(browser: Browser) {

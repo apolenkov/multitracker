@@ -9,7 +9,7 @@ export type RecordsProps = Readonly<{
   currency: Currency;
   baseCurrency: Currency;
   hidden: boolean;
-  onSaved?: (message: string) => void;
+  onSaved?: (message: string, undo?: () => void) => void;
 }>;
 export type Transaction = Readonly<{
   id: string;

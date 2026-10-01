@@ -7,7 +7,7 @@ function navigate(browser: Browser, screen: 'settings' | 'overview') {
   const ready =
     screen === 'overview'
       ? 'Boolean(document.querySelector(".summary, .summary-result"))'
-      : 'document.querySelector("#settings-display-currency")?.checkVisibility() === true';
+      : 'document.querySelector("#settings-base-currency")?.checkVisibility() === true';
   browser.run(
     'wait',
     '--fn',
@@ -26,14 +26,14 @@ function summary(browser: Browser) {
 export function independentCurrencies(browser: Browser) {
   navigate(browser, 'settings');
   browser.run('select', '#settings-base-currency', 'RUB');
-  browser.run('select', '#settings-display-currency', 'USD');
+  browser.run('select', '#topbar-currency', 'USD');
   navigate(browser, 'overview');
   const dollarValue = String(summary(browser)).replaceAll(/\s/g, '');
   assert.match(dollarValue, /3440[,.]00/);
   assert.match(dollarValue, /\+86420[,.]00/);
   navigate(browser, 'settings');
   browser.run('select', '#settings-base-currency', 'USD');
-  browser.run('select', '#settings-display-currency', 'RUB');
+  browser.run('select', '#topbar-currency', 'RUB');
   navigate(browser, 'overview');
   const rubleValue = String(summary(browser)).replaceAll(/\s/g, '');
   assert.match(rubleValue, /412800[,.]00/);
@@ -91,8 +91,16 @@ export function appearanceThemes(browser: Browser) {
   browser.run('set', 'media', 'light');
   assertAppearance(browser, light, 'light');
   navigate(browser, 'settings');
-  assert.equal(evaluate(browser, 'document.querySelector("#settings-theme")?.value'), 'system');
-  browser.run('select', '#settings-theme', 'dark');
+  // Тема и язык — только в верхней панели: в настройках второй копии нет.
+  assert.equal(
+    evaluate(
+      browser,
+      '!document.querySelector("#settings-theme, #settings-display-currency") && document.querySelector("#topbar-theme")?.checkVisibility() === true && document.querySelector("#topbar-theme")?.value === "system"',
+    ),
+    true,
+    'В настройках нет второй копии темы; верхняя панель хранит выбор',
+  );
+  browser.run('select', '#topbar-theme', 'dark');
   navigate(browser, 'overview');
   assert.equal(evaluate(browser, 'document.querySelector("#topbar-theme")?.value'), 'dark');
   assertAppearance(browser, dark, 'dark');

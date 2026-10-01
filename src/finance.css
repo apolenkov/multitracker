@@ -199,6 +199,24 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+.holding-group {
+  display: grid;
+  grid-template-columns: 1.1fr 0.75fr 1fr 1fr 0.5fr;
+  gap: 16px;
+  align-items: baseline;
+  padding: 20px 0 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.holding-group > th {
+  grid-column: 1 / 3;
+  text-align: left;
+  font-weight: 600;
+  color: var(--ink);
+}
+.holding-group > td {
+  text-align: right;
+}
 .attribution,
 .portfolio-report,
 .allocation-list {

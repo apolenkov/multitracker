@@ -38,7 +38,7 @@ export function stableHeroDisclosure(browser: Browser) {
 
 export function narrowAllocation(browser: Browser) {
   prepare(browser);
-  browser.run('select', '#settings-display-currency', 'RUB');
+  browser.run('select', '#topbar-currency', 'RUB');
   go(browser, 'overview');
   browser.run('set', 'viewport', '320', '480');
   browser.run('select', '#topbar-language', 'en');

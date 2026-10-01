@@ -2,10 +2,10 @@ import { text } from './i18n.ts';
 import { Icon } from './Icon.tsx';
 import { useEffect, useState, type MouseEvent } from 'react';
 import type { Labels, Screen } from './i18n.ts';
-const mainScreens = ['overview', 'markets', 'following'] as const;
+const mainScreens = ['overview', 'markets', 'history'] as const;
 const extraScreens = [
   'portfolios',
-  'history',
+  'following',
   'analytics',
   'events',
   'import',

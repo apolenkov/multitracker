@@ -7,8 +7,7 @@ import type { Notifications, SettingText } from './settings-display';
 import { SettingsModalBody } from './settings-dialogs';
 import type { Density, Props } from './words';
 
-export type Kind =
-  'display' | 'notifications' | 'privacy' | 'recovery' | 'backup' | 'export' | 'delete';
+export type Kind = 'notifications' | 'recovery' | 'backup' | 'export' | 'delete';
 export type Preferences = Readonly<{
   notifications: Notifications;
   locked: boolean;
@@ -19,7 +18,7 @@ type SettingsProps = Props &
   Readonly<{
     density: Density;
     onDensity: (value: Density) => void;
-    notify: (message: string) => void;
+    notify: (message: string, undo?: () => void) => void;
   }>;
 export type ModalProps = SettingsProps &
   Readonly<{
@@ -41,12 +40,14 @@ export function SettingsPanel(props: SettingsProps) {
         {...props}
         text={text}
         open={setKind}
+        locked={value.locked}
+        onLock={(locked) => update({ locked })}
         lockStatus={
           <LockStatus
             locked={value.locked}
             text={text}
             unlock={() => {
-              document.getElementById('settings-open-privacy')?.focus();
+              document.getElementById('settings-lock')?.focus();
               update({ locked: false });
               props.notify(
                 text(

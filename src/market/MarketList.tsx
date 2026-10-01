@@ -88,49 +88,75 @@ function ClassFilter(props: FilterProps) {
   );
 }
 
-export function MarketList(
-  props: Display &
-    Readonly<{
-      assets: readonly MarketAsset[];
-      followed: readonly string[];
-      onOpen: (asset: MarketAsset) => void;
-      onFollow: (symbol: string) => void;
-    }>,
-) {
+type ListProps = Display &
+  Readonly<{
+    assets: readonly MarketAsset[];
+    followed: readonly string[];
+    heading: 'h2' | 'h3';
+    onOpen: (asset: MarketAsset) => void;
+    onFollow: (symbol: string) => void;
+  }>;
+const sections: readonly Exclude<AssetClass, 'all'>[] = [
+  'crypto',
+  'stock',
+  'fund',
+  'bond',
+  'commodity',
+  'forex',
+  'index',
+];
+
+// Разделы по классам активов в порядке обзора; раздел без найденных активов не выводится.
+export function MarketList(props: ListProps) {
+  const Heading = props.heading;
+  return sections.map((kind) => {
+    const assets = props.assets.filter((asset) => asset.kind === kind);
+    if (assets.length === 0) return null;
+    return (
+      <section key={kind} className="market-section" aria-labelledby={`market-class-${kind}`}>
+        <Heading id={`market-class-${kind}`}>{className(kind, props.language)}</Heading>
+        <ul className="market-list">
+          {assets.map((asset) => (
+            <MarketRow key={asset.symbol} {...props} asset={asset} />
+          ))}
+        </ul>
+      </section>
+    );
+  });
+}
+
+function MarketRow(props: ListProps & Readonly<{ asset: MarketAsset }>) {
   const words = marketWords(props.language);
+  const asset = props.asset;
+  const followed = props.followed.includes(asset.symbol);
   return (
-    <ul className="market-list">
-      {props.assets.map((asset) => (
-        <li key={asset.symbol} data-market-symbol={asset.symbol}>
-          <button type="button" className="market-open" onClick={() => props.onOpen(asset)}>
-            <span className="market-asset-identity">
-              <AssetSymbol symbol={asset.symbol} />
-              <span className="market-identity">
-                <strong>{asset.symbol}</strong>
-                <span>
-                  {assetName(asset, props.language)} · {className(asset.kind, props.language)}
-                </span>
-              </span>
-            </span>
-            <span className="market-quote">
-              <strong>
-                {assetPrice(asset, asset.price, props.currency, props.language, props.hidden)}
-              </strong>
-              <PriceChange change={asset.change} language={props.language} hidden={props.hidden} />
-            </span>
-          </button>
-          <button
-            type="button"
-            className="market-follow"
-            aria-pressed={props.followed.includes(asset.symbol)}
-            aria-label={`${props.followed.includes(asset.symbol) ? words.unfollow : words.follow} · ${asset.symbol}`}
-            onClick={() => props.onFollow(asset.symbol)}
-          >
-            <Icon name="following" />
-          </button>
-        </li>
-      ))}
-    </ul>
+    <li data-market-symbol={asset.symbol}>
+      <button type="button" className="market-open" onClick={() => props.onOpen(asset)}>
+        <span className="market-asset-identity">
+          <AssetSymbol symbol={asset.symbol} />
+          <span className="market-identity">
+            <strong>{asset.symbol}</strong>
+            <span>{assetName(asset, props.language)}</span>
+          </span>
+        </span>
+        <span className="market-quote">
+          <strong>
+            {assetPrice(asset, asset.price, props.currency, props.language, props.hidden)}
+          </strong>
+          <PriceChange change={asset.change} language={props.language} hidden={props.hidden} />
+        </span>
+      </button>
+      <button
+        type="button"
+        className="market-follow"
+        aria-pressed={followed}
+        aria-label={`${followed ? words.unfollow : words.follow} · ${asset.symbol}`}
+        title={followed ? words.unfollow : words.follow}
+        onClick={() => props.onFollow(asset.symbol)}
+      >
+        <Icon name="following" />
+      </button>
+    </li>
   );
 }
 

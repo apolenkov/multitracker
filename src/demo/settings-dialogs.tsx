@@ -1,6 +1,6 @@
 import { BackupSettings, DeleteSettings, ExportSettings } from './settings-data';
-import { DisplaySettings, NotificationSettings } from './settings-display';
-import { PrivacySettings, RecoverySettings } from './settings-privacy';
+import { NotificationSettings } from './settings-display';
+import { RecoverySettings } from './settings-privacy';
 import type { ModalProps } from './settings-panel';
 
 export function SettingsModalBody(props: ModalProps) {
@@ -15,60 +15,29 @@ export function SettingsModalBody(props: ModalProps) {
         'Sample preferences applied in this tab.',
       ),
     );
-  if (props.kind === 'display' || props.kind === 'notifications')
-    return <AppearanceBody {...props} saved={saved} />;
-  if (props.kind === 'privacy' || props.kind === 'recovery')
-    return <PrivacyBody {...props} saved={saved} />;
+  if (props.kind === 'notifications')
+    return (
+      <NotificationSettings
+        {...props}
+        value={props.value.notifications}
+        onSave={(notifications) => {
+          props.update({ notifications });
+          saved();
+        }}
+      />
+    );
+  if (props.kind === 'recovery')
+    return (
+      <RecoverySettings
+        {...props}
+        recorded={props.value.recorded}
+        onRecord={(recorded) => {
+          props.update({ recorded });
+          saved();
+        }}
+      />
+    );
   return <DataBody {...props} complete={complete} />;
-}
-
-function AppearanceBody(props: ModalProps & Readonly<{ saved: () => void }>) {
-  const saved = props.saved;
-  if (props.kind === 'display')
-    return (
-      <DisplaySettings
-        {...props}
-        onSave={(density) => {
-          props.onDensity(density);
-          saved();
-        }}
-      />
-    );
-  return (
-    <NotificationSettings
-      {...props}
-      value={props.value.notifications}
-      onSave={(notifications) => {
-        props.update({ notifications });
-        saved();
-      }}
-    />
-  );
-}
-
-function PrivacyBody(props: ModalProps & Readonly<{ saved: () => void }>) {
-  const saved = props.saved;
-  if (props.kind === 'privacy')
-    return (
-      <PrivacySettings
-        {...props}
-        locked={props.value.locked}
-        onLock={(locked) => {
-          props.update({ locked });
-          saved();
-        }}
-      />
-    );
-  return (
-    <RecoverySettings
-      {...props}
-      recorded={props.value.recorded}
-      onRecord={(recorded) => {
-        props.update({ recorded });
-        saved();
-      }}
-    />
-  );
 }
 
 function DataBody(props: ModalProps & Readonly<{ complete: (message: string) => void }>) {

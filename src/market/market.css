@@ -44,8 +44,8 @@
   padding: 0;
   margin: 0;
 }
-.market-list:empty {
-  display: none;
+.market-section > :is(h2, h3) {
+  margin: 24px 0 4px;
 }
 .market-list > li {
   display: flex;

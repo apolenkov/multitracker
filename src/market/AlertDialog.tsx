@@ -13,6 +13,7 @@ type Props = Readonly<{
   value: PriceAlert | undefined;
   onClose: () => void;
   onSave: (alert: PriceAlert) => void;
+  onDelete: (alert: PriceAlert) => void;
 }>;
 type FieldsProps = Props &
   Readonly<{
@@ -50,6 +51,16 @@ export function AlertDialog(props: Props) {
           {words.alertNote} {model.repeat && words.repeatingNote}
         </p>
         <div className="dialog-actions">
+          {props.value && (
+            <button
+              id="market-delete-alert"
+              type="button"
+              className="danger"
+              onClick={() => props.value && props.onDelete(props.value)}
+            >
+              {words.deleteAlert}
+            </button>
+          )}
           <button id="market-cancel-alert" type="button" onClick={props.onClose}>
             {words.cancel}
           </button>

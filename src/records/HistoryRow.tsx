@@ -4,7 +4,7 @@ import { accountLabel } from '../forms/accounts.ts';
 import type { RecordsProps, Transaction } from './data.ts';
 import { recordsCopy } from './copy.ts';
 import { Icon } from '../Icon.tsx';
-import { ActionMenu } from '../ActionMenu.tsx';
+import { RowAction } from '../RowActions.tsx';
 import { AssetSymbol } from '../AssetSymbol.tsx';
 
 type Props = RecordsProps &
@@ -42,19 +42,10 @@ export function HistoryRow(props: Props) {
       </div>
       <RecordSummary {...props} />
       {!props.brief && (
-        <ActionMenu
-          className="record-menu"
-          label={`${props.language === 'ru' ? 'Действия' : 'Actions'}: ${title}`}
-          items={[
-            { label: copy.edit, ariaLabel: `${copy.edit}: ${title}`, onSelect: props.onEdit },
-            {
-              label: copy.delete,
-              ariaLabel: `${copy.delete}: ${title}`,
-              onSelect: props.onDelete,
-              danger: true,
-            },
-          ]}
-        />
+        <div className="row-actions">
+          <RowAction icon="edit" label={copy.edit} subject={title} onClick={props.onEdit} />
+          <RowAction icon="trash" label={copy.delete} subject={title} onClick={props.onDelete} />
+        </div>
       )}
     </article>
   );

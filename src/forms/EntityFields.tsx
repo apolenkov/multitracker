@@ -8,11 +8,12 @@ export type EntityProps = Readonly<{
   id: string;
   language: Language;
   entity: 'portfolio' | 'account' | 'group';
-  action: 'create' | 'edit' | 'archive' | 'delete';
+  action: 'create' | 'edit';
   name: string;
   portfolioId?: string;
   onSaved: (message: string) => void;
   onClose?: () => void;
+  onRemove?: (action: 'archive' | 'delete') => void;
   state?: State;
   members?: readonly string[];
 }>;
@@ -71,7 +72,7 @@ function NameField({ props, name, setName, error }: Props) {
     </div>
   );
 }
-export function EntityError({ id, error }: Readonly<{ id: string; error: string }>) {
+function EntityError({ id, error }: Readonly<{ id: string; error: string }>) {
   return (
     <p className="field-error" id={`${id}-error`} role="alert">
       {error}

@@ -10,7 +10,7 @@ type Props = Readonly<{
   event: CalendarEvent;
   language: Language;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (minutes: number) => void;
 }>;
 
 export function EventDialog(props: Props) {
@@ -46,17 +46,17 @@ function EventDetails(props: Props & Readonly<{ onRemind: () => void }>) {
         {text('Источник: вымышленные данные макета.', 'Source: fictional prototype data.')}
       </p>
       <div className="dialog-actions">
-        <button type="button" onClick={props.onClose}>
-          {text('Закрыть', 'Close')}
+        <button type="button" id="event-reminder-open" onClick={props.onRemind}>
+          {text('Другое время', 'Other time')}
         </button>
         <button
           type="button"
-          id="event-reminder-open"
+          id="event-reminder-quick"
           className="primary"
-          onClick={props.onRemind}
-          aria-label={`${text('Напомнить', 'Set reminder')}: ${local(props.language, props.event.title)}`}
+          onClick={() => props.onSave(15)}
+          aria-label={`${text('Напомнить за 15 мин', 'Remind 15 min before')}: ${local(props.language, props.event.title)}`}
         >
-          {text('Напомнить', 'Set reminder')}
+          {text('Напомнить за 15 мин', 'Remind 15 min before')}
         </button>
       </div>
     </>
@@ -79,7 +79,7 @@ function ReminderForm(props: Props & Readonly<{ onBack: () => void }>) {
           field.current?.focus();
           return;
         }
-        props.onSave();
+        props.onSave(Number(minutes));
       }}
     >
       <button type="button" id="event-reminder-back" className="link-back" onClick={props.onBack}>

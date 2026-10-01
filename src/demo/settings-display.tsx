@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { DemoState, Density, Props } from './words';
+import type { DemoState, Props } from './words';
 
 export type SettingText = (ru: string, en: string) => string;
 export type SettingFormProps = Readonly<{ text: SettingText; onClose: () => void }>;
@@ -25,44 +25,6 @@ export function SettingsActions({
         {action ?? text('Применить', 'Apply')}
       </button>
     </div>
-  );
-}
-
-export function DisplaySettings(
-  props: SettingFormProps &
-    Readonly<{
-      density: Density;
-      onSave: (density: Density) => void;
-    }>,
-) {
-  const [draft, setDraft] = useState(props.density);
-  return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        props.onSave(draft);
-      }}
-    >
-      <label>
-        {props.text('Плотность', 'Density')}
-        <select
-          id="settings-density"
-          value={draft}
-          onChange={(event) =>
-            setDraft(event.target.value === 'compact' ? 'compact' : 'comfortable')
-          }
-        >
-          <option value="comfortable">{props.text('Свободно', 'Comfortable')}</option>
-          <option value="compact">{props.text('Компактно', 'Compact')}</option>
-        </select>
-      </label>
-      <div className={`density-preview density-preview-${draft}`} aria-hidden="true">
-        <span>BTC</span>
-        <span>Microsoft</span>
-      </div>
-      <p className="demo-note">{props.text('До закрытия вкладки.', 'Until this tab closes.')}</p>
-      <SettingsActions {...props} />
-    </form>
   );
 }
 
@@ -119,20 +81,16 @@ function notificationLabel(text: SettingText, key: keyof Omit<Notifications, 'ch
   return text('Напоминание о резервной копии', 'Backup reminder');
 }
 
-export function LocaleSettings(props: Props & Readonly<{ text: SettingText }>) {
+// Язык, тема и валюта показа — только в верхней панели; здесь монохром и плотность.
+export function AppearanceSettings(props: Props & Readonly<{ text: SettingText }>) {
   return (
     <div className="settings-fields">
-      <label>
-        {props.text('Язык интерфейса', 'Interface language')}
-        <select
-          value={props.language}
-          onChange={(event) => props.onLanguage(event.target.value === 'en' ? 'en' : 'ru')}
-        >
-          <option value="ru">Русский</option>
-          <option value="en">English</option>
-        </select>
-      </label>
-      <ThemeSettings {...props} />
+      <p className="demo-note">
+        {props.text(
+          'Язык, тема и валюта показа — в верхней панели.',
+          'Language, theme and display currency are in the top bar.',
+        )}
+      </p>
       <label className="check-row">
         <input
           id="settings-monochrome"
@@ -143,26 +101,6 @@ export function LocaleSettings(props: Props & Readonly<{ text: SettingText }>) {
         {props.text('Монохромное представление', 'Monochrome appearance')}
       </label>
     </div>
-  );
-}
-
-function ThemeSettings(props: Props & Readonly<{ text: SettingText }>) {
-  return (
-    <label>
-      {props.text('Тема оформления', 'Appearance theme')}
-      <select
-        id="settings-theme"
-        value={props.theme}
-        onChange={(event) => {
-          const value = event.target.value;
-          props.onTheme(value === 'light' || value === 'system' ? value : 'dark');
-        }}
-      >
-        <option value="dark">{props.text('Тёмная', 'Dark')}</option>
-        <option value="light">{props.text('Светлая', 'Light')}</option>
-        <option value="system">{props.text('Как в системе', 'System preference')}</option>
-      </select>
-    </label>
   );
 }
 
@@ -183,23 +121,6 @@ export function CurrencySettings(props: Props & Readonly<{ text: SettingText }>)
           {props.text(
             'В этой валюте сравниваются вложения и финансовый результат.',
             'Invested amounts and investment returns are compared in this currency.',
-          )}
-        </small>
-      </label>
-      <label>
-        {props.text('Валюта отображения', 'Display currency')}
-        <select
-          id="settings-display-currency"
-          value={props.currency}
-          onChange={(event) => props.onCurrency(event.target.value === 'USD' ? 'USD' : 'RUB')}
-        >
-          <option value="RUB">RUB ₽</option>
-          <option value="USD">USD $</option>
-        </select>
-        <small>
-          {props.text(
-            'Текущая стоимость активов показывается в этой валюте.',
-            'Current holdings value is shown in this currency.',
           )}
         </small>
       </label>

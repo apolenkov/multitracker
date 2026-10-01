@@ -6,7 +6,7 @@ import type { Outcome, State } from './ui-smoke-dom.ts';
 import { operationExtras } from './ui-operation-checks.ts';
 import { createCheck } from './ui-results.ts';
 import { negativeControls } from './ui-smoke-negative.ts';
-import { menus } from './ui-smoke-menus.ts';
+import { rowActionGeometry } from './ui-smoke-row-actions.ts';
 import { eventSurfaces } from './ui-smoke-surfaces.ts';
 import { merge } from './ui-smoke-dom.ts';
 import { initialSkipFocus } from './ui-overview-checks.ts';
@@ -47,7 +47,7 @@ assert.equal(base.username + base.password, '');
 const browser = createBrowser();
 
 function navigate(state: State) {
-  const extraRoute = !['overview', 'markets', 'following'].includes(state.route);
+  const extraRoute = !['overview', 'markets', 'history'].includes(state.route);
   if (state.width < 768 && extraRoute)
     browser.run('find', 'role', 'button', 'click', '--name', 'Ещё', '--exact');
   const scope = state.width >= 768 ? '.desktop-links' : extraRoute ? '.more-menu' : '.mobile-links';
@@ -73,8 +73,8 @@ function stateCheck(state: State, shared: readonly string[]): Outcome {
     ...(state.route === 'overview' ? [crawl(browser, state, 'footer', shared)] : []),
   ]);
   const surfaces = eventSurfaces(browser, state, content, shared);
-  const menu = state.route === 'history' ? menus(browser, state) : { entries: [], findings: [] };
-  const result = merge([content, surfaces, menu]);
+  const actions = { entries: [], findings: rowActionGeometry(browser, state.route) };
+  const result = merge([content, surfaces, actions]);
   capture(browser, state, 'after');
   save(`${state.id}-coverage`, { ...result, durationSeconds: (Date.now() - start) / 1000 });
   console.log(`${state.id}: ${result.entries.length} controls; ${result.findings.length} findings`);

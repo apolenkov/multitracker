@@ -17,22 +17,15 @@ export type ImportFieldsProps = Readonly<{
   draft: ImportDraft;
   update: (draft: ImportDraft) => void;
   error?: string;
-  scope?: 'page' | 'wizard';
 }>;
-export function ImportSource({
-  language,
-  draft,
-  update,
-  error,
-  scope = 'page',
-}: ImportFieldsProps) {
+export function ImportSource({ language, draft, update, error }: ImportFieldsProps) {
   return (
     <div className="form-grid">
       <label>
         {importText(language, 'Источник', 'Source')}
         <select
           required
-          id={`import-${scope}-source`}
+          id="import-page-source"
           value={draft.source}
           aria-invalid={!!error && !draft.source}
           aria-describedby={error && !draft.source ? 'import-error' : undefined}
@@ -90,7 +83,6 @@ export function ImportMapping({
   draft,
   update,
   error,
-  scope = 'page',
 }: ImportFieldsProps & Readonly<{ hidden: boolean }>) {
   return (
     <fieldset className="mapping-list">
@@ -101,7 +93,7 @@ export function ImportMapping({
             {fieldName(field, language)} <small>{mappingExample(field, language, hidden)}</small>
           </span>
           <select
-            id={`import-${scope}-map-${field}`}
+            id={`import-page-map-${field}`}
             value={importColumn(draft, field)}
             aria-invalid={!!error && importColumn(draft, field) !== field}
             aria-describedby={
@@ -121,37 +113,6 @@ export function ImportMapping({
         </label>
       ))}
     </fieldset>
-  );
-}
-export function ImportFile({ language, draft, update, error }: ImportFieldsProps) {
-  return (
-    <div>
-      <p>
-        {importText(
-          language,
-          'CSV: sample-transactions.csv · 4 строки · UTF-8',
-          'CSV: sample-transactions.csv · 4 rows · UTF-8',
-        )}
-      </p>
-      <p>
-        {importText(
-          language,
-          'Используется встроенный пример. Настоящие файлы не читаются и не отправляются.',
-          'Uses a built-in sample. Real files are neither read nor uploaded.',
-        )}
-      </p>
-      <button
-        type="button"
-        id="import-sample-file"
-        aria-pressed={draft.fileSelected}
-        aria-describedby={error && !draft.fileSelected ? 'import-error' : undefined}
-        onClick={() => update({ ...draft, fileSelected: true })}
-      >
-        {draft.fileSelected
-          ? importText(language, 'Файл выбран', 'File selected')
-          : importText(language, 'Выбрать файл', 'Select file')}
-      </button>
-    </div>
   );
 }
 export function ImportReview({

@@ -6,16 +6,16 @@ import { recordsCopy } from './copy.ts';
 import type { RecordsProps } from './data.ts';
 import { accountSamples } from '../forms/accounts.ts';
 import { Icon } from '../Icon.tsx';
-import { ActionMenu } from '../ActionMenu.tsx';
+import { RowAction } from '../RowActions.tsx';
 import { AssetSymbol } from '../AssetSymbol.tsx';
 
-import { AccountList, EntityActionButtons, entityActions } from './PortfolioAccounts.tsx';
+import { AccountList, GroupButtons } from './PortfolioAccounts.tsx';
 import type { EntityRequest } from './PortfolioAccounts.tsx';
 type Props = RecordsProps & Readonly<{ onSelect: (id: string) => void; onCreate: () => void }>;
 export function PortfolioList(props: Props) {
   const labels = getLabels(props.language);
   const copy = recordsCopy(props.language);
-  const { request, setRequest, saved, save } = useEntities(props);
+  const { request, setRequest, saved, save, removed, remove } = useEntities(props);
   return (
     <section>
       <div className="section-top">
@@ -23,11 +23,19 @@ export function PortfolioList(props: Props) {
           + {labels.create}
         </button>
       </div>
-      <PortfolioSelection {...props} onManage={setRequest} />
+      <PortfolioSelection {...props} removed={removed} onManage={setRequest} />
       <div className="portfolio-list">
-        {props.state.portfolios.map((portfolio) => (
-          <PortfolioRow key={portfolio.id} {...props} id={portfolio.id} onManage={setRequest} />
-        ))}
+        {props.state.portfolios
+          .filter((portfolio) => !removed.includes(`portfolio:${portfolio.id}`))
+          .map((portfolio) => (
+            <PortfolioRow
+              key={portfolio.id}
+              {...props}
+              id={portfolio.id}
+              removed={removed}
+              onManage={setRequest}
+            />
+          ))}
       </div>
       <p className="quiet">
         {copy.displayed}. {labels.memory}
@@ -45,18 +53,22 @@ export function PortfolioList(props: Props) {
           {...request}
           onSaved={save}
           onClose={() => setRequest(null)}
+          onRemove={(action) => remove(request, action)}
         />
       )}
     </section>
   );
 }
+type ManageProps = Props &
+  Readonly<{ removed: readonly string[]; onManage: (request: EntityRequest) => void }>;
 function PortfolioSelection({
   state,
   portfolioId,
   language,
+  removed,
   onSelect,
   onManage,
-}: Props & Readonly<{ onManage: (request: EntityRequest) => void }>) {
+}: ManageProps) {
   const copy = recordsCopy(language);
   const [selected, setSelected] = useState<readonly string[]>(
     portfolioId === 'all'
@@ -74,19 +86,13 @@ function PortfolioSelection({
         <span className="selection-count">{selected.length}</span>
       </summary>
       <SelectionFields state={state} selected={selected} language={language} onToggle={toggle} />
-      <p className="quiet">{copy.selectionHelp}</p>
+      {selected.length === 0 && <p className="quiet">{copy.selectionHelp}</p>}
       <SelectionActions
         selected={selected}
         language={language}
+        group={!removed.includes('group:crypto')}
         onSelect={onSelect}
         onManage={onManage}
-      />
-      <EntityActionButtons
-        entity="group"
-        members={['binance', 'bybit']}
-        name={copy.groupName}
-        onManage={onManage}
-        language={language}
       />
     </details>
   );
@@ -94,11 +100,13 @@ function PortfolioSelection({
 function SelectionActions({
   selected,
   language,
+  group,
   onSelect,
   onManage,
 }: Readonly<{
   selected: readonly string[];
   language: RecordsProps['language'];
+  group: boolean;
   onSelect: Props['onSelect'];
   onManage: (request: EntityRequest) => void;
 }>) {
@@ -112,9 +120,7 @@ function SelectionActions({
       >
         {copy.showSelection}
       </button>
-      <button onClick={() => onSelect('binance,bybit')}>
-        {copy.group}: {copy.crypto}
-      </button>
+      {group && <GroupButtons language={language} onSelect={onSelect} onManage={onManage} />}
       <button
         onClick={() => onManage({ entity: 'group', action: 'create', name: '', members: selected })}
       >
@@ -123,44 +129,36 @@ function SelectionActions({
     </div>
   );
 }
-function PortfolioRow(
-  props: Props & Readonly<{ id: string; onManage: (request: EntityRequest) => void }>,
-) {
+function PortfolioRow(props: ManageProps & Readonly<{ id: string }>) {
   const portfolio = props.state.portfolios.find((item) => item.id === props.id);
   if (!portfolio) return null;
   const copy = recordsCopy(props.language);
-  const actions = entityActions({
-    entity: 'portfolio',
-    name: portfolio.name,
-    portfolioId: portfolio.id,
-    language: props.language,
-    onManage: props.onManage,
-  });
-  const edit = actions.slice(0, -1);
-  const remove = actions.slice(-1);
   return (
     <article className="portfolio-record">
       <PortfolioValue {...props} name={portfolio.name} />
-      <ActionMenu
-        className="portfolio-manage"
-        label={`${copy.manage}: ${portfolio.name}`}
-        items={[
-          ...edit,
-          {
-            label: copy.addAccount,
-            ariaLabel: `${copy.addAccount}: ${portfolio.name}`,
-            onSelect: () =>
-              props.onManage({
-                entity: 'account',
-                action: 'create',
-                name: '',
-                portfolioId: portfolio.id,
-              }),
-          },
-          ...remove,
-        ]}
+      <div className="row-actions portfolio-manage">
+        <RowAction
+          icon="edit"
+          label={copy.edit}
+          subject={portfolio.name}
+          onClick={() =>
+            props.onManage({
+              entity: 'portfolio',
+              action: 'edit',
+              name: portfolio.name,
+              target: `portfolio:${portfolio.id}`,
+              portfolioId: portfolio.id,
+            })
+          }
+        />
+      </div>
+      <AccountList
+        id={portfolio.id}
+        name={portfolio.name}
+        language={props.language}
+        removed={props.removed}
+        onManage={props.onManage}
       />
-      <AccountList {...props} />
     </article>
   );
 }
@@ -222,18 +220,28 @@ function PortfolioAssets({ state, id }: Readonly<{ state: RecordsProps['state'];
 
 function useEntities(props: Props) {
   const [request, setRequest] = useState<EntityRequest | null>(null);
+  const [removed, setRemoved] = useState<readonly string[]>([]);
   const [saved, setSaved] = useState<Readonly<{ count: number; message: string }>>({
     count: 0,
     message: '',
   });
-  const save = (message: string) => {
+  const save = (message: string, undo?: () => void) => {
     setSaved((current) => ({ count: current.count + 1, message }));
-    props.onSaved?.(message);
+    props.onSaved?.(message, undo);
+  };
+  // Архив и удаление убирают строку только из списка вкладки; набор и расчёт не меняются.
+  const remove = (target: EntityRequest, action: 'archive' | 'delete') => {
+    const key = target.target ?? '';
+    const copy = recordsCopy(props.language);
+    setRemoved((current) => [...current, key]);
+    save(action === 'archive' ? copy.archived : copy.entityRemoved, () =>
+      setRemoved((current) => current.filter((item) => item !== key)),
+    );
   };
   useEffect(() => {
     if (request) openDialog('entity-dialog');
   }, [request]);
-  return { request, setRequest, saved, save };
+  return { request, setRequest, saved, save, removed, remove };
 }
 
 function SelectionFields({

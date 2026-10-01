@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import { evaluate, type Browser } from './ui-driver.ts';
 
-type Row = Readonly<{ asset: string; value: number }>;
+type Row = Readonly<{ group: string; asset: string; value: number }>;
 function isRow(row: unknown): row is Row {
   return (
     row !== null &&
     typeof row === 'object' &&
+    'group' in row &&
+    typeof row.group === 'string' &&
     'asset' in row &&
     typeof row.asset === 'string' &&
     'value' in row &&
@@ -16,10 +18,10 @@ function isRow(row: unknown): row is Row {
 function rows(browser: Browser): readonly Row[] {
   const observed = evaluate(
     browser,
-    `Array.from(document.querySelectorAll('.holdings-table tbody > tr'), row => {
+    `Array.from(document.querySelectorAll('.holdings-table tbody > tr.holding-row'), row => {
       const cell = row.querySelector('td:nth-child(3)');
       const text = cell?.querySelector('.money-amount > .visually-hidden')?.textContent ?? Array.from(cell?.childNodes ?? []).filter(node => node.nodeType === Node.TEXT_NODE).map(node => node.textContent).join('');
-      return {asset:row.dataset.currency ?? row.querySelector('.asset-name strong')?.textContent, value:Number(text.replace(/[^0-9,-]/g,'').replace(',','.'))};
+      return {group:row.closest('tbody')?.dataset.holdingGroup ?? '', asset:row.dataset.currency ?? row.querySelector('.asset-name strong')?.textContent, value:Number(text.replace(/[^0-9,-]/g,'').replace(',','.'))};
     })`,
   );
   assert.ok(Array.isArray(observed) && observed.length === 5);
@@ -27,6 +29,7 @@ function rows(browser: Browser): readonly Row[] {
   return observed;
 }
 
+const groups = ['crypto', 'stock', 'fund', 'bond', 'cash'];
 const names = new Map([
   ['asset', 'Актив'],
   ['value', 'Стоимость'],
@@ -56,14 +59,21 @@ export function holdingsSort(browser: Browser) {
         'Нажатая кнопка сортировки и направление в доступном имени',
       );
       const actual = rows(browser);
-      const sorted = actual.toSorted((left, right) =>
-        column === 'asset' ? left.asset.localeCompare(right.asset) : left.value - right.value,
+      assert.deepEqual(
+        [...new Set(actual.map((row) => row.group))],
+        ['crypto', 'stock', 'cash'],
+        'Группы идут в постоянном порядке: криптовалюты, акции, деньги',
       );
-      const expected = direction === 'ascending' ? sorted : sorted.toReversed();
+      const sorted = actual.toSorted(
+        (left, right) =>
+          groups.indexOf(left.group) - groups.indexOf(right.group) ||
+          (direction === 'ascending' ? 1 : -1) *
+            (column === 'asset' ? left.asset.localeCompare(right.asset) : left.value - right.value),
+      );
       assert.deepEqual(
         actual.map((row) => (column === 'asset' ? row.asset : row.value)),
-        expected.map((row) => (column === 'asset' ? row.asset : row.value)),
-        `Все пять строк, включая RUB/USD, должны сортироваться: ${column} ${direction}`,
+        sorted.map((row) => (column === 'asset' ? row.asset : row.value)),
+        `Пять строк, включая RUB/USD, сортируются внутри групп: ${column} ${direction}`,
       );
       return { column, direction, rows: actual };
     }),

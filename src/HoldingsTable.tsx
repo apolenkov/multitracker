@@ -5,6 +5,7 @@ import { AssetSymbol } from './AssetSymbol.tsx';
 import { openDialog, openOperation } from './Forms.tsx';
 import { totals, type Asset, type Buy, type Currency } from './model/portfolio.ts';
 import { getLabels, money, number, percentage, resultTone, type Language } from './i18n.ts';
+import { groupHoldings, holdingClassName, type HoldingGroup } from './holding-groups.ts';
 
 type Holding = Readonly<{ asset: Asset; buys: readonly Buy[] }>;
 type SortColumn = 'asset' | 'value';
@@ -30,14 +31,11 @@ export function HoldingsTable(props: TableProps) {
         sort.column === column && sort.direction === 'ascending' ? 'descending' : 'ascending',
     });
   const cashRows = ['RUB', 'USD'] as const;
-  const assetName = (row: TableRow) => (typeof row === 'string' ? row : row.asset);
-  const assetValue = (row: TableRow) =>
-    typeof row === 'string' ? 0 : totals(row.buys, props.currency).value;
   const rows = [...props.rows, ...cashRows].toSorted((left, right) => {
     const difference =
       sort.column === 'asset'
-        ? assetName(left).localeCompare(assetName(right))
-        : assetValue(left) - assetValue(right);
+        ? rowSymbol(left).localeCompare(rowSymbol(right))
+        : rowValue(left, props.currency) - rowValue(right, props.currency);
     return sort.direction === 'ascending' ? difference : -difference;
   });
   return (
@@ -45,6 +43,35 @@ export function HoldingsTable(props: TableProps) {
       <SortControls sort={sort} language={props.language} toggle={toggle} />
       <AssetTable {...props} rows={rows} sort={sort} />
     </>
+  );
+}
+
+const rowSymbol = (row: TableRow) => (typeof row === 'string' ? row : row.asset);
+const rowValue = (row: TableRow, currency: Currency) =>
+  typeof row === 'string' ? 0 : totals(row.buys, currency).value;
+
+// Заголовок группы: класс, сумма и доля группы; при скрытии сумм — «••••».
+function GroupRow({
+  group,
+  currency,
+  language,
+  hidden,
+}: Readonly<{
+  group: HoldingGroup<TableRow>;
+  currency: Currency;
+  language: Language;
+  hidden: boolean;
+}>) {
+  const share = group.value > 0 ? percentage(group.share, language) : '—';
+  return (
+    <tr className="holding-group">
+      <th scope="rowgroup" colSpan={2}>
+        {holdingClassName(group.kind, language)}
+      </th>
+      <td>{hidden ? '••••' : money(group.value, currency, language)}</td>
+      <td />
+      <td>{hidden ? '••••' : share}</td>
+    </tr>
   );
 }
 
@@ -112,9 +139,15 @@ function AssetTable({
           <th scope="col">{labels.weight}</th>
         </tr>
       </thead>
-      <tbody>
-        <HoldingRows {...{ rows, value, currency, baseCurrency, language, hidden, onSelect }} />
-      </tbody>
+      {groupHoldings(rows, rowSymbol, (row) => rowValue(row, currency), value).map((group) => (
+        <tbody key={group.kind} data-holding-group={group.kind}>
+          <GroupRow group={group} currency={currency} language={language} hidden={hidden} />
+          <HoldingRows
+            {...{ value, currency, baseCurrency, language, hidden, onSelect }}
+            rows={group.rows}
+          />
+        </tbody>
+      ))}
     </table>
   );
 }

@@ -1,15 +1,54 @@
 import { accountSamples, accountLabel } from '../forms/accounts.ts';
-import { ActionMenu, type ActionItem } from '../ActionMenu.tsx';
+import { RowAction } from '../RowActions.tsx';
 import { recordsCopy } from './copy.ts';
 import type { RecordsProps } from './data.ts';
 export type EntityRequest = Readonly<{
   entity: 'portfolio' | 'account' | 'group';
-  action: 'create' | 'edit' | 'archive' | 'delete';
+  action: 'create' | 'edit';
   name: string;
+  // Ключ строки, которую архив или удаление убирают из списка вкладки.
+  target?: string;
   portfolioId?: string;
   members?: readonly string[];
 }>;
 export function AccountList({
+  id,
+  name,
+  language,
+  removed,
+  onManage,
+}: Readonly<{
+  id: string;
+  name: string;
+  language: RecordsProps['language'];
+  removed: readonly string[];
+  onManage: (request: EntityRequest) => void;
+}>) {
+  return (
+    <ul className="account-list">
+      {accountSamples
+        .filter(
+          (account) => account.portfolioId === id && !removed.includes(`account:${account.id}`),
+        )
+        .map((account) => (
+          <AccountRow key={account.id} id={account.id} language={language} onManage={onManage} />
+        ))}
+      <li>
+        <button
+          type="button"
+          className="add-account"
+          aria-label={`${recordsCopy(language).addAccount}: ${name}`}
+          onClick={() =>
+            onManage({ entity: 'account', action: 'create', name: '', portfolioId: id })
+          }
+        >
+          + {recordsCopy(language).addAccount}
+        </button>
+      </li>
+    </ul>
+  );
+}
+function AccountRow({
   id,
   language,
   onManage,
@@ -18,76 +57,58 @@ export function AccountList({
   language: RecordsProps['language'];
   onManage: (request: EntityRequest) => void;
 }>) {
-  const copy = recordsCopy(language);
+  const account = accountSamples.find((item) => item.id === id);
+  const label = accountLabel(id, language);
   return (
-    <ul className="account-list">
-      {accountSamples
-        .filter((account) => account.portfolioId === id)
-        .map((account) => (
-          <li key={account.id}>
-            <strong>{accountLabel(account.id, language).split(' · ').at(-1)}</strong>
-            <ActionMenu
-              className="account-manage"
-              label={`${copy.manage}: ${accountLabel(account.id, language)}`}
-              items={entityActions({
-                entity: 'account',
-                name: accountLabel(account.id, language),
-                portfolioId: id,
-                language,
-                onManage,
-              })}
-            />
-          </li>
-        ))}
-    </ul>
+    <li>
+      <strong>{label.split(' · ').at(-1)}</strong>
+      <RowAction
+        icon="edit"
+        label={recordsCopy(language).edit}
+        subject={label}
+        onClick={() =>
+          onManage({
+            entity: 'account',
+            action: 'edit',
+            name: label,
+            target: `account:${id}`,
+            ...(account ? { portfolioId: account.portfolioId } : {}),
+          })
+        }
+      />
+    </li>
   );
 }
-type EntityActionParams = Readonly<
-  Omit<EntityRequest, 'action'> & {
-    language: RecordsProps['language'];
-    onManage: (request: EntityRequest) => void;
-  }
->;
-export function entityActions({
-  entity,
-  name,
-  portfolioId,
-  members,
+export function GroupButtons({
   language,
+  onSelect,
   onManage,
-}: EntityActionParams): ReadonlyArray<ActionItem> {
+}: Readonly<{
+  language: RecordsProps['language'];
+  onSelect: (id: string) => void;
+  onManage: (request: EntityRequest) => void;
+}>) {
   const copy = recordsCopy(language);
-  const actions = [
-    ['edit', copy.edit],
-    ['archive', copy.archive],
-    ['delete', copy.delete],
-  ] as const;
-  return actions.map(([action, label]) => ({
-    label,
-    ariaLabel: `${label}: ${name}`,
-    danger: action === 'delete',
-    onSelect: () =>
-      onManage({
-        entity,
-        action,
-        name,
-        ...(portfolioId ? { portfolioId } : {}),
-        ...(members ? { members } : {}),
-      }),
-  }));
-}
-export function EntityActionButtons(params: EntityActionParams) {
+  const members = ['binance', 'bybit'];
   return (
-    <div className="record-actions">
-      {entityActions(params).map((item) => (
-        <button
-          key={item.label}
-          className={item.danger ? 'danger' : undefined}
-          onClick={item.onSelect}
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
+    <>
+      <button onClick={() => onSelect(members.join(','))}>
+        {copy.group}: {copy.crypto}
+      </button>
+      <button
+        aria-label={`${copy.editGroup}: ${copy.groupName}`}
+        onClick={() =>
+          onManage({
+            entity: 'group',
+            action: 'edit',
+            name: copy.groupName,
+            target: 'group:crypto',
+            members,
+          })
+        }
+      >
+        {copy.editGroup}
+      </button>
+    </>
   );
 }

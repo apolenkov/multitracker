@@ -1,13 +1,17 @@
 import type { ReactNode } from 'react';
 import { Icon } from '../Icon.tsx';
-import { CurrencySettings, LocaleSettings, type SettingText } from './settings-display';
+import { AppearanceSettings, CurrencySettings, type SettingText } from './settings-display';
 import type { Kind } from './settings-panel';
-import type { Props } from './words';
+import type { Density, Props } from './words';
 
 type GroupProps = Props &
   Readonly<{
     text: SettingText;
     open: (kind: Kind) => void;
+    density: Density;
+    onDensity: (value: Density) => void;
+    locked: boolean;
+    onLock: (locked: boolean) => void;
     lockStatus: ReactNode;
     recoveryStatus: ReactNode;
   }>;
@@ -17,8 +21,8 @@ export function SettingsGroups(props: GroupProps) {
     <div className="settings-groups">
       <section className="settings-group">
         <h2>{props.text('Оформление', 'Appearance')}</h2>
-        <LocaleSettings {...props} />
-        <SettingLink kind="display" {...props} />
+        <AppearanceSettings {...props} />
+        <DensitySetting {...props} />
       </section>
       <section className="settings-group">
         <h2>{props.text('Валюты', 'Currencies')}</h2>
@@ -36,9 +40,18 @@ export function SettingsGroups(props: GroupProps) {
       <section className="settings-group">
         <h2>{props.text('Приватность', 'Privacy')}</h2>
         <HiddenSetting {...props} />
-        <SettingLink kind="privacy" {...props}>
+        <div className="setting-row">
+          <label className="check-row">
+            <input
+              id="settings-lock"
+              type="checkbox"
+              checked={props.locked}
+              onChange={(event) => props.onLock(event.target.checked)}
+            />
+            {props.text('Заблокировать экран (пример)', 'Lock the screen (sample)')}
+          </label>
           {props.lockStatus}
-        </SettingLink>
+        </div>
         <SettingLink kind="recovery" {...props}>
           {props.recoveryStatus}
         </SettingLink>
@@ -79,10 +92,27 @@ function HiddenSetting(props: Props & Readonly<{ text: SettingText }>) {
   );
 }
 
+// Плотность применяется сразу, без диалога и «Применить».
+function DensitySetting(props: GroupProps) {
+  return (
+    <label className="setting-select">
+      {props.text('Плотность интерфейса', 'Interface density')}
+      <select
+        id="settings-density"
+        value={props.density}
+        onChange={(event) =>
+          props.onDensity(event.target.value === 'compact' ? 'compact' : 'comfortable')
+        }
+      >
+        <option value="comfortable">{props.text('Свободно', 'Comfortable')}</option>
+        <option value="compact">{props.text('Компактно', 'Compact')}</option>
+      </select>
+    </label>
+  );
+}
+
 export function settingName(text: SettingText, kind: Kind) {
-  if (kind === 'display') return text('Плотность интерфейса', 'Interface density');
   if (kind === 'notifications') return text('Уведомления', 'Notifications');
-  if (kind === 'privacy') return text('Блокировка', 'Lock');
   if (kind === 'recovery') return text('Ключ восстановления', 'Recovery key');
   if (kind === 'backup') return text('Резервная копия и восстановление', 'Backup and restore');
   if (kind === 'export') return text('Экспорт данных', 'Export data');

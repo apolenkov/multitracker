@@ -21,37 +21,35 @@ export function ConnectionForm({ provider, language, initial, t, onSave, onCance
     },
   );
   const [result, setResult] = useState<'idle' | 'passed' | 'failed'>('idle');
+  const [testError, setTestError] = useState(false);
   const update = (value: Connection) => {
     setDraft(value);
     setResult('idle');
   };
+  // «Сохранить» сама выполняет проверку: при успехе сохраняет, при ошибке показывает её у кнопки.
   const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (result === 'passed') onSave(draft);
+    const outcome = result === 'passed' || !testError ? 'passed' : 'failed';
+    setResult(outcome);
+    if (outcome === 'passed') onSave(draft);
   };
   return (
     <form onSubmit={save}>
       <ConnectionFields draft={draft} update={update} t={t} language={language} />
       <ConnectionAccess t={t} />
-      <ConnectionTest t={t} result={result} setResult={setResult} />
+      <ConnectionTest
+        t={t}
+        result={result}
+        setResult={setResult}
+        testError={testError}
+        setTestError={setTestError}
+      />
       <p className="demo-note">{t.onlyDemo}</p>
       <div className="dialog-actions">
-        {/* Kept in place when hidden so the footer buttons do not move after the check. */}
-        <p
-          id="connection-save-hint"
-          className="demo-note"
-          style={result === 'passed' ? { visibility: 'hidden' } : undefined}
-        >
-          {t.required}
-        </p>
         <button type="button" className="quiet" onClick={onCancel}>
           {t.cancel}
         </button>
-        <button
-          type="submit"
-          disabled={result !== 'passed'}
-          aria-describedby={result === 'passed' ? undefined : 'connection-save-hint'}
-        >
+        <button type="submit" className="primary">
           {t.save}
         </button>
       </div>
@@ -181,14 +179,31 @@ function ConnectionTest({
   t,
   result,
   setResult,
+  testError,
+  setTestError,
 }: Readonly<{
   t: ConnectionWords;
   result: 'idle' | 'passed' | 'failed';
   setResult: (value: 'idle' | 'passed' | 'failed') => void;
+  testError: boolean;
+  setTestError: (value: boolean) => void;
 }>) {
-  const [testError, setTestError] = useState(false);
+  const retry = () => {
+    setTestError(false);
+    setResult('passed');
+    document.getElementById('connection-test')?.focus();
+  };
   return (
     <>
+      <button
+        id="connection-test"
+        type="button"
+        className="quiet"
+        onClick={() => setResult(testError ? 'failed' : 'passed')}
+      >
+        {t.test}
+      </button>
+      <ConnectionResult result={result} t={t} retry={retry} />
       <details className="demo-scenarios">
         <summary>{t.result}</summary>
         <label>
@@ -205,23 +220,6 @@ function ConnectionTest({
           </select>
         </label>
       </details>
-      <button
-        id="connection-test"
-        type="button"
-        className={result === 'passed' ? 'quiet' : 'primary'}
-        onClick={() => setResult(testError ? 'failed' : 'passed')}
-      >
-        {t.test}
-      </button>
-      <ConnectionResult
-        result={result}
-        t={t}
-        retry={() => {
-          setTestError(false);
-          setResult('passed');
-          document.getElementById('connection-test')?.focus();
-        }}
-      />
     </>
   );
 }

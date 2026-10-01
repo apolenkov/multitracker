@@ -9,6 +9,9 @@ import { Workspace } from './Workspace.tsx';
 import type { DemoState, Density, Theme } from './demo/words.ts';
 import { focusMain, useNavigation } from './navigation.ts';
 import { useDialogPointerGuard } from './dialog-pointer-guard.ts';
+import { focusUndo } from './RowActions.tsx';
+
+export type Notice = Readonly<{ sequence: number; message: string; undo?: () => void }>;
 import './base.css';
 import './appearance.css';
 import './layout.css';
@@ -50,20 +53,26 @@ function useAppView() {
   const preferences = usePreferences();
   const navigation = useNavigation();
   const [portfolioId, setPortfolioId] = useState('all');
-  const [notice, setNotice] = useState({ sequence: 0, message: '' });
+  const [notice, setNotice] = useState<Notice>({ sequence: 0, message: '' });
   const demo = useDemoView();
   useDocumentMetadata(preferences.language, navigation.screen);
   useDocumentTheme(preferences.theme);
   const navigate = (next: Screen) => {
     navigation.navigate(next);
-    setNotice((current) => ({ ...current, message: '' }));
+    setNotice((current) => ({ sequence: current.sequence, message: '' }));
   };
   const selectPortfolio = (id: string) => {
     setPortfolioId(id);
     navigate('overview');
   };
-  const onSaved = (message: string) =>
-    setNotice((current) => ({ sequence: current.sequence + 1, message }));
+  const onSaved = (message: string, undo?: () => void) => {
+    setNotice((current) => ({
+      sequence: current.sequence + 1,
+      message,
+      ...(undo ? { undo } : {}),
+    }));
+    if (undo) focusUndo();
+  };
   return {
     ...demo,
     ...preferences,

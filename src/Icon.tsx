@@ -16,7 +16,8 @@ const paths = {
   search: 'M10.5 17a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13ZM15 15l6 6',
   check: 'M4 12l5 5L20 6',
   chevron: 'm9 5 7 7-7 7',
-  more: 'M4 12h1M11.5 12h1M19 12h1',
+  edit: 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',
+  trash: 'M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3',
   menu: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
   incoming: 'M12 4v16m-6-6 6 6 6-6',
   outgoing: 'M12 20V4m-6 6 6-6 6 6',
@@ -27,7 +28,8 @@ const pathByName = new Map(Object.entries(paths));
 
 type Name =
   | Screen
-  | 'more'
+  | 'edit'
+  | 'trash'
   | 'menu'
   | 'brand'
   | 'close'

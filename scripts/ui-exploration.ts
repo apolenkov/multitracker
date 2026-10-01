@@ -79,9 +79,9 @@ export function prepare(browser: Browser) {
   );
   browser.run('uncheck', hiddenControl);
   browser.run('uncheck', '#settings-monochrome');
-  browser.run('select', '#settings-display-currency', 'USD');
+  browser.run('select', '#topbar-currency', 'USD');
   browser.run('select', '#settings-base-currency', 'RUB');
-  browser.run('select', '#settings-theme', 'light');
+  browser.run('select', '#topbar-theme', 'light');
 }
 
 function analyticsValues(browser: Browser) {
@@ -202,7 +202,7 @@ function analyticsCurrency(browser: Browser) {
   assert.equal(content(browser, '.analytics-answer dd'), '270,00\u00a0$');
   assert.match(content(browser, '.analytics-answer-context'), /USD/);
   go(browser, 'settings');
-  browser.run('select', '#settings-display-currency', 'RUB');
+  browser.run('select', '#topbar-currency', 'RUB');
   go(browser, 'analytics');
   const rubles = analyticsValues(browser);
   assert.equal(content(browser, '.analytics-answer dd'), '32\u00a0400,00\u00a0₽');
@@ -213,7 +213,7 @@ function analyticsCurrency(browser: Browser) {
     'Валюта должна менять числа',
   );
   go(browser, 'settings');
-  browser.run('select', '#settings-display-currency', 'USD');
+  browser.run('select', '#topbar-currency', 'USD');
   return { dollars, rubles };
 }
 

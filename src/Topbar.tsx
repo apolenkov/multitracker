@@ -21,6 +21,7 @@ function LanguageControl({ view }: Props) {
       <span className="visually-hidden">{getLabels(view.language).language}</span>
       <select
         id="topbar-language"
+        title={getLabels(view.language).language}
         value={view.language}
         onChange={(event) => {
           const next = event.target.value;
@@ -40,6 +41,7 @@ function ThemeControl({ view }: Props) {
       <span className="visually-hidden">{view.language === 'ru' ? 'Оформление' : 'Theme'}</span>
       <select
         id="topbar-theme"
+        title={view.language === 'ru' ? 'Оформление' : 'Theme'}
         value={view.theme}
         onChange={(event) => {
           const next = event.target.value;
@@ -58,10 +60,11 @@ function DisplayCurrencyControl({ view }: Props) {
   return (
     <label htmlFor="topbar-currency">
       <span className="visually-hidden">
-        {view.language === 'ru' ? 'Валюта отображения' : 'Display currency'}
+        {view.language === 'ru' ? 'Валюта показа' : 'Display currency'}
       </span>
       <select
         id="topbar-currency"
+        title={view.language === 'ru' ? 'Валюта показа' : 'Display currency'}
         value={view.currency}
         onChange={(event) => {
           const next = event.target.value;

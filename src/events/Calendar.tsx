@@ -11,7 +11,7 @@ type Props = Readonly<{ language: Language }>;
 export function Calendar({ language }: Props) {
   const [kind, setKind] = useState<CalendarKind>('all');
   const [selected, setSelected] = useState<CalendarEvent | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState<number | null>(null);
   const [selection, setSelection] = useState({ date: '', asset: '' });
   const text = copy(language);
   const clear = () => {
@@ -33,7 +33,7 @@ export function Calendar({ language }: Props) {
         items={items}
         onReset={clear}
         onOpen={(item) => {
-          setSaved(false);
+          setSaved(null);
           setSelected(item);
         }}
       />
@@ -49,8 +49,8 @@ export function Calendar({ language }: Props) {
           event={selected}
           language={language}
           onClose={() => setSelected(null)}
-          onSave={() => {
-            setSaved(true);
+          onSave={(minutes) => {
+            setSaved(minutes);
             setSelected(null);
           }}
         />
@@ -186,13 +186,13 @@ function CalendarSelection(
   );
 }
 
-function CalendarNotice({ language, saved }: Props & Readonly<{ saved: boolean }>) {
+function CalendarNotice({ language, saved }: Props & Readonly<{ saved: number | null }>) {
   return (
     <p className="events-confirm" role="status">
-      {saved &&
+      {saved !== null &&
         copy(language)(
-          'Учебный пример сохранён. Напоминание не отправляется.',
-          'Sample saved. No reminder is sent.',
+          `Учебный пример сохранён: напоминание за ${saved} мин. Оно не отправляется.`,
+          `Sample saved: reminder ${saved} min before. Nothing is sent.`,
         )}
     </p>
   );

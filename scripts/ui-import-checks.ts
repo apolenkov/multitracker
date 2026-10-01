@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import type { Browser } from './ui-driver.ts';
 import { content } from './ui-exploration.ts';
 
-export function mappingSamples(browser: Browser, scope: 'page' | 'wizard', hidden = false) {
+export function mappingSamples(browser: Browser, scope: 'page', hidden = false) {
   const sample = (field: string) =>
     content(browser, `label:has(#import-${scope}-map-${field}) small`).trim();
   const quantity = sample('quantity');

@@ -109,9 +109,7 @@ export function operationExtras(browser: Browser) {
 function editedExtras(browser: Browser) {
   browser.run('click', '.desktop-links a[href="#history"]');
   browser.run('wait', '--fn', 'document.querySelector("#main h1")?.textContent === "Операции"');
-  browser.run('find', 'first', '.history-row button.action-menu-trigger', 'click');
-  browser.run('wait', '[role="menu"]');
-  browser.run('find', 'first', '[role="menu"] [role="menuitem"]', 'click');
+  browser.run('click', '.history-row:first-child .row-action:not(.danger)');
   browser.run('wait', '#record-edit-dialog[open]');
   truth(
     browser,

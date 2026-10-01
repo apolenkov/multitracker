@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { DemoModal } from './modal';
-import { ActionMenu } from '../ActionMenu';
 import { SyncConflict } from './sync-conflict';
 import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
@@ -42,7 +40,7 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
         status={status}
         run={run}
       />
-      <SyncDevices language={language} t={t} notify={notify} />
+      <SyncDevices t={t} notify={notify} />
       <SyncConflictArea
         language={language}
         t={t}
@@ -99,20 +97,17 @@ function SyncActions({
   );
 }
 function SyncDevices({
-  language,
   t,
   notify,
 }: Readonly<{
-  language: 'ru' | 'en';
   t: SyncWords;
-  notify: (message: string) => void;
+  notify: (message: string, undo?: () => void) => void;
 }>) {
   const [revoked, setRevoked] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  // Отзыв выполняется сразу; «Отменить» в сообщении возвращает доступ.
   const revoke = () => {
     setRevoked(true);
-    setConfirmOpen(false);
-    notify(t.revoked);
+    notify(t.revoked, () => setRevoked(false));
   };
   return (
     <section className="sync-devices">
@@ -125,34 +120,19 @@ function SyncDevices({
       <article>
         <h3>{t.mobile}</h3>
         <p>{revoked ? t.revoked : t.activity}</p>
-        {!revoked && <DeviceMenu t={t} revoke={() => setConfirmOpen(true)} />}
+        {!revoked && (
+          <button
+            type="button"
+            className="danger"
+            id="sync-revoke-mobile"
+            aria-label={`${t.revoke}: ${t.mobile}`}
+            onClick={revoke}
+          >
+            {t.revoke}
+          </button>
+        )}
       </article>
-      {confirmOpen && (
-        <RevokeDevice
-          language={language}
-          t={t}
-          close={() => setConfirmOpen(false)}
-          revoke={revoke}
-        />
-      )}
     </section>
-  );
-}
-
-function DeviceMenu({ t, revoke }: Readonly<{ t: SyncWords; revoke: () => void }>) {
-  return (
-    <ActionMenu
-      className="device-menu"
-      label={`${t.deviceActions}: ${t.mobile}`}
-      items={[
-        {
-          label: t.revoke,
-          ariaLabel: `${t.revoke}: ${t.mobile}`,
-          onSelect: revoke,
-          danger: true,
-        },
-      ]}
-    />
   );
 }
 function SyncStatus({
@@ -211,32 +191,6 @@ function ConflictSummary({
     </section>
   );
 }
-function RevokeDevice({
-  language,
-  t,
-  close,
-  revoke,
-}: Readonly<{
-  language: 'ru' | 'en';
-  t: SyncWords;
-  close: () => void;
-  revoke: () => void;
-}>) {
-  return (
-    <DemoModal id="sync-revoke" title={t.revokeTitle} language={language} onClose={close}>
-      <p>{t.revokeInfo}</p>
-      <div className="dialog-actions">
-        <button className="quiet" onClick={close}>
-          {t.cancel}
-        </button>
-        <button className="danger" onClick={revoke}>
-          {t.revoke}
-        </button>
-      </div>
-    </DemoModal>
-  );
-}
-
 function SyncConflictArea({
   language,
   t,

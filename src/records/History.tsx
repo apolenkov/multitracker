@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getLabels } from '../i18n.ts';
 import { openDialog } from '../Dialog.tsx';
 import { transactions } from './data.ts';
-import type { RecordsProps } from './data.ts';
+import type { RecordsProps, Transaction } from './data.ts';
 import { initialFilters, filterTransactions } from './filters.ts';
 import type { HistoryFilter } from './filters.ts';
 import { HistoryFilters } from './HistoryFilters.tsx';
@@ -13,8 +13,8 @@ import { recordsCopy } from './copy.ts';
 
 type Props = RecordsProps & Readonly<{ brief?: boolean }>;
 export function History(props: Props) {
-  const { filter, setFilter, request, setRequest, saved, save } = useHistory(props);
-  const records = transactions(props.state, !props.brief);
+  const { filter, setFilter, request, setRequest, saved, save, remove, close, records } =
+    useHistory(props);
   const filtered = filterTransactions(records, props.portfolioId, filter).slice(
     0,
     props.brief ? 3 : undefined,
@@ -38,7 +38,7 @@ export function History(props: Props) {
           {copy.count}: {filtered.length}
         </p>
       )}
-      <HistoryRows {...props} records={filtered} onRequest={setRequest} />
+      <HistoryRows {...props} records={filtered} onRequest={setRequest} onRemove={remove} />
       {filtered.length === 0 && <p className="empty-state">{copy.empty}</p>}
       {!props.onSaved && (
         <p key={saved.count} role="status">
@@ -49,8 +49,13 @@ export function History(props: Props) {
         <RecordDialog
           {...props}
           request={request}
-          onClose={() => setRequest(null)}
+          onClose={close}
           onSaved={save}
+          onEdit={() => setRequest({ ...request, mode: 'edit' })}
+          onDelete={() => {
+            setRequest(null);
+            remove(request.record);
+          }}
         />
       )}
     </section>
@@ -60,25 +65,51 @@ export function History(props: Props) {
 function useHistory(props: Props) {
   const [filter, setFilter] = useState<HistoryFilter>(initialFilters);
   const [request, setRequest] = useState<RecordRequest | null>(null);
+  const [removed, setRemoved] = useState<readonly string[]>([]);
+  const [opener, setOpener] = useState<HTMLElement | null>(null);
   const [saved, setSaved] = useState<Readonly<{ count: number; message: string }>>({
     count: 0,
     message: '',
   });
-  const save = (message: string) => {
+  const save = (message: string, undo?: () => void) => {
     setSaved((current) => ({ count: current.count + 1, message }));
-    props.onSaved?.(message);
+    props.onSaved?.(message, undo);
+  };
+  const remove = (record: Transaction) => {
+    setRemoved((current) => [...current, record.id]);
+    save(recordsCopy(props.language).removed, () =>
+      setRemoved((current) => current.filter((id) => id !== record.id)),
+    );
+  };
+  const open = (next: RecordRequest | null) => {
+    if (next && !request && document.activeElement instanceof HTMLElement)
+      setOpener(document.activeElement);
+    setRequest(next);
+  };
+  // Подробности → «Изменить» сменяют диалог: после закрытия правки фокус возвращается к строке.
+  const close = () => {
+    setRequest(null);
+    requestAnimationFrame(() => {
+      const active = document.activeElement;
+      const lost = !active || active === document.body || active.id === 'main';
+      if (lost && opener?.isConnected) opener.focus();
+    });
   };
   useEffect(() => {
     if (request) openDialog(request.mode === 'edit' ? 'record-edit-dialog' : 'record-dialog');
   }, [request]);
-  return { filter, setFilter, request, setRequest, saved, save };
+  const records = transactions(props.state, !props.brief).filter(
+    (record) => !removed.includes(record.id),
+  );
+  return { filter, setFilter, request, setRequest: open, saved, save, remove, close, records };
 }
 
 function HistoryRows(
   props: Props &
     Readonly<{
-      records: readonly import('./data.ts').Transaction[];
+      records: readonly Transaction[];
       onRequest: (request: RecordRequest) => void;
+      onRemove: (record: Transaction) => void;
     }>,
 ) {
   return (
@@ -97,7 +128,7 @@ function HistoryRows(
             brief={props.brief ?? false}
             onDetails={() => props.onRequest({ record, mode: 'details' })}
             onEdit={() => props.onRequest({ record, mode: 'edit' })}
-            onDelete={() => props.onRequest({ record, mode: 'delete' })}
+            onDelete={() => props.onRemove(record)}
           />
         ))}
       </div>

@@ -19,16 +19,15 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
   const localeProps = { language, t };
   const [configured, setConfigured] = useState<readonly Connection[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
-  const [removing, setRemoving] = useState<string | null>(null);
   const save = (value: Connection) => {
     setConfigured([...configured.filter((item) => item.provider !== value.provider), value]);
     setEditing(null);
     notify(t.saved);
   };
-  const disconnect = () => {
-    setConfigured(configured.filter((item) => item.provider !== removing));
-    setRemoving(null);
-    notify(t.removed);
+  // Отключение сразу; «Отменить» в сообщении возвращает прежние настройки источника.
+  const disconnect = (value: Connection) => {
+    setConfigured((current) => current.filter((item) => item.provider !== value.provider));
+    notify(t.removed, () => setConfigured((current) => [...current, value]));
   };
   return (
     <div className="demo-panel connection-list">
@@ -39,7 +38,7 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
           {...localeProps}
           value={configured.find((item) => item.provider === provider)}
           edit={() => setEditing(provider)}
-          remove={() => setRemoving(provider)}
+          remove={disconnect}
         />
       ))}
       <ConnectionPrivacy language={language} t={t} />
@@ -50,14 +49,6 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
           initial={configured.find((item) => item.provider === editing)}
           save={save}
           close={() => setEditing(null)}
-        />
-      )}
-      {removing !== null && (
-        <RemoveConnection
-          {...localeProps}
-          provider={removing}
-          disconnect={disconnect}
-          close={() => setRemoving(null)}
         />
       )}
     </div>
@@ -90,7 +81,7 @@ function ConnectionCard({
   value: Connection | undefined;
   t: ConnectionWords;
   edit: () => void;
-  remove: () => void;
+  remove: (value: Connection) => void;
 }>) {
   const portfolio = demoState.portfolios.find((item) => item.id === value?.portfolio);
   return (
@@ -109,12 +100,13 @@ function ConnectionCard({
       <div className="connection-actions">
         <button onClick={edit}>{value ? t.edit : t.configure}</button>
         {value && (
-          <details>
-            <summary>{t.more}</summary>
-            <button className="quiet" onClick={remove}>
-              {t.disconnect}
-            </button>
-          </details>
+          <button
+            className="danger"
+            aria-label={`${t.disconnect}: ${providerLabel(provider, t)}`}
+            onClick={() => remove(value)}
+          >
+            {t.disconnect}
+          </button>
         )}
       </div>
     </article>
@@ -157,38 +149,6 @@ function EditConnection({
     </DemoModal>
   );
 }
-function RemoveConnection({
-  language,
-  t,
-  provider,
-  close,
-  disconnect,
-}: ModalProps &
-  Readonly<{
-    disconnect: () => void;
-  }>) {
-  return (
-    <DemoModal
-      id="connection-remove"
-      language={language}
-      title={`${t.disconnectTitle} ${providerLabel(provider, t)}`}
-      onClose={close}
-    >
-      <p>
-        {providerLabel(provider, t)} — {t.disconnectInfo}
-      </p>
-      <div className="dialog-actions">
-        <button className="quiet" onClick={close}>
-          {t.cancel}
-        </button>
-        <button className="danger" onClick={disconnect}>
-          {t.disconnect}
-        </button>
-      </div>
-    </DemoModal>
-  );
-}
-
 function ProviderLogo({ provider }: Readonly<{ provider: string }>) {
   const mark = new Map([
     ['Tradernet', 'T'],

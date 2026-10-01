@@ -10,7 +10,8 @@ import { DemoScreens } from './DemoScreens.tsx';
 import { openDialog } from './Forms.tsx';
 import { Topbar } from './Topbar.tsx';
 import { StaticStates } from './StaticStates.tsx';
-import { isDemoScreen } from './navigation.ts';
+import { focusMain, isDemoScreen } from './navigation.ts';
+import { UndoButton, undoneText } from './RowActions.tsx';
 import { Welcome } from './Welcome.tsx';
 
 export function Workspace({ view }: Readonly<{ view: AppView }>) {
@@ -20,9 +21,7 @@ export function Workspace({ view }: Readonly<{ view: AppView }>) {
       <Topbar view={view} />
       <main id="main" tabIndex={-1}>
         <PageHeading view={view} />
-        <div role="status" aria-atomic="true" className="status-message">
-          {view.notice.message && <p key={view.notice.sequence}>{view.notice.message}</p>}
-        </div>
+        <StatusMessage view={view} />
         <PageContent view={view} />
       </main>
       <footer className="footer">
@@ -30,6 +29,26 @@ export function Workspace({ view }: Readonly<{ view: AppView }>) {
         <button onClick={() => openDialog('privacy-dialog')}>{labels.privacy}</button>
         <span>{labels.memory}</span>
       </footer>
+    </div>
+  );
+}
+function StatusMessage({ view }: Readonly<{ view: AppView }>) {
+  const undo = view.notice.undo;
+  return (
+    <div className="status-message">
+      <div role="status" aria-atomic="true">
+        {view.notice.message && <p key={view.notice.sequence}>{view.notice.message}</p>}
+      </div>
+      {undo && view.notice.message && (
+        <UndoButton
+          language={view.language}
+          onUndo={() => {
+            undo();
+            view.onSaved(undoneText(view.language));
+            focusMain({ preventScroll: true });
+          }}
+        />
+      )}
     </div>
   );
 }

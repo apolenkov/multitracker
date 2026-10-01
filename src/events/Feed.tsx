@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Language } from '../demo/words';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { Recap } from './Recap';
 import { DemoModal } from '../demo/modal';
 import { copy, feed, feedKinds, followedAnnouncement, local } from './data';
@@ -14,22 +15,21 @@ export function Feed({ language, hidden }: Props) {
   return (
     <section className="events-feed" aria-labelledby="events-feed-title">
       <h2 id="events-feed-title">{text('Обновления', 'Updates')}</h2>
-      <div
-        className="events-filter events-feed-filter"
-        aria-label={text('Категория обновления', 'Update category')}
+      <Tabs
+        value={kind}
+        onValueChange={(id) => setKind(feedKinds.find((item) => item.id === id)?.id ?? kind)}
       >
-        {feedKinds.map((category) => (
-          <button
-            type="button"
-            id={`feed-${category.id}`}
-            key={category.id}
-            aria-pressed={kind === category.id}
-            onClick={() => setKind(category.id)}
-          >
-            {local(language, category.label)}
-          </button>
-        ))}
-      </div>
+        <TabsList
+          className="events-filter events-feed-filter"
+          aria-label={text('Категория обновления', 'Update category')}
+        >
+          {feedKinds.map((category) => (
+            <TabsTrigger id={`feed-${category.id}`} key={category.id} value={category.id}>
+              {local(language, category.label)}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
       {kind === 'announcement' && (
         <AnnouncementScope language={language} followed={followed} onChange={setFollowed} />
       )}

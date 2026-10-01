@@ -115,18 +115,6 @@
   font-size: 14px;
   color: var(--muted);
 }
-.holdings-sort button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  background: transparent;
-}
-.holdings-sort button[aria-pressed='true'] {
-  background: var(--selected-bg);
-  color: var(--selected-ink);
-}
 .sort-marker {
   display: inline-flex;
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import type { Language } from '../demo/words';
 import { copy } from './data';
 type Props = Readonly<{ language: Language }>;
@@ -80,14 +81,16 @@ function RecapPeriod({
 }: Props & Readonly<{ weekly: boolean; onChange: (weekly: boolean) => void }>) {
   const text = copy(language);
   return (
-    <div className="events-filter" aria-label={text('Период сводки', 'Recap period')}>
-      <button type="button" id="recap-daily" aria-pressed={!weekly} onClick={() => onChange(false)}>
-        {text('За день', 'Daily')}
-      </button>
-      <button type="button" id="recap-weekly" aria-pressed={weekly} onClick={() => onChange(true)}>
-        {text('За неделю', 'Weekly')}
-      </button>
-    </div>
+    <Tabs value={weekly ? 'weekly' : 'daily'} onValueChange={(id) => onChange(id === 'weekly')}>
+      <TabsList className="events-filter" aria-label={text('Период сводки', 'Recap period')}>
+        <TabsTrigger id="recap-daily" value="daily">
+          {text('За день', 'Daily')}
+        </TabsTrigger>
+        <TabsTrigger id="recap-weekly" value="weekly">
+          {text('За неделю', 'Weekly')}
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
   );
 }
 

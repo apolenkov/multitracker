@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import type { Language } from '../demo/words';
 import { calendar, calendarKinds, copy, eventDate, local } from './data';
 import type { CalendarEvent, CalendarKind } from './data';
@@ -62,22 +63,23 @@ function CalendarFilters(
   props: Props & Readonly<{ kind: CalendarKind; onChange: (kind: CalendarKind) => void }>,
 ) {
   return (
-    <div
-      className="events-filter"
-      aria-label={copy(props.language)('Категория события', 'Event category')}
+    <Tabs
+      value={props.kind}
+      onValueChange={(id) =>
+        props.onChange(calendarKinds.find((item) => item.id === id)?.id ?? props.kind)
+      }
     >
-      {calendarKinds.map((kind) => (
-        <button
-          type="button"
-          id={`events-filter-${kind.id}`}
-          key={kind.id}
-          aria-pressed={props.kind === kind.id}
-          onClick={() => props.onChange(kind.id)}
-        >
-          {local(props.language, kind.label)}
-        </button>
-      ))}
-    </div>
+      <TabsList
+        className="events-filter"
+        aria-label={copy(props.language)('Категория события', 'Event category')}
+      >
+        {calendarKinds.map((kind) => (
+          <TabsTrigger id={`events-filter-${kind.id}`} key={kind.id} value={kind.id}>
+            {local(props.language, kind.label)}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   );
 }
 

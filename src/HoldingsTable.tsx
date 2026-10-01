@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { Icon } from './Icon.tsx';
 import { AssetSymbol } from './AssetSymbol.tsx';
 import { openDialog } from './Forms.tsx';
@@ -51,22 +52,26 @@ function SortControls({
   return (
     <div className="holdings-sort">
       <span>{labels.sortBy}:</span>
-      {(['asset', 'value'] as const).map((column) => (
-        <button
-          type="button"
-          key={column}
-          aria-pressed={sort.column === column}
-          aria-label={`${column === 'asset' ? labels.asset : labels.value}${sort.column === column ? ` · ${direction}` : ''}`}
-          onClick={() => toggle(column)}
-        >
-          {column === 'asset' ? labels.asset : labels.value}
-          {sort.column === column && (
-            <span className={`sort-marker ${sort.direction}`}>
-              <Icon name="chevron" />
-            </span>
-          )}
-        </button>
-      ))}
+      {/* Повторный клик по активной вкладке меняет направление, поэтому выбор — через onClick. */}
+      <Tabs value={sort.column} activationMode="manual">
+        <TabsList aria-label={labels.sortBy}>
+          {(['asset', 'value'] as const).map((column) => (
+            <TabsTrigger
+              key={column}
+              value={column}
+              aria-label={`${column === 'asset' ? labels.asset : labels.value}${sort.column === column ? ` · ${direction}` : ''}`}
+              onClick={() => toggle(column)}
+            >
+              {column === 'asset' ? labels.asset : labels.value}
+              {sort.column === column && (
+                <span className={`sort-marker ${sort.direction}`}>
+                  <Icon name="chevron" />
+                </span>
+              )}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
     </div>
   );
 }

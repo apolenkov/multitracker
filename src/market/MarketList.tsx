@@ -51,7 +51,7 @@ export function MarketFilters(props: FilterProps) {
       <details id="market-filter-disclosure" className="market-filter-disclosure">
         <summary>
           {words.filters}
-          <span className="count">{active}</span>
+          {active > 0 && <span className="count">{active}</span>}
         </summary>
         <div className="market-filters">
           <ClassFilter {...props} />

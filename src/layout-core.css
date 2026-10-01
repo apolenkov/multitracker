@@ -131,8 +131,12 @@ main {
   flex-wrap: wrap;
   margin-bottom: 20px;
 }
+.page-heading-actions .primary {
+  white-space: nowrap;
+}
 .page-heading-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
 }

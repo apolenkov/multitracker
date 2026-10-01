@@ -27,20 +27,7 @@
   gap: 8px 16px;
 }
 .events-filter {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   margin-block: 20px;
-}
-.events-filter button {
-  border-color: var(--control-border);
-  background: transparent;
-  font-size: 14px;
-}
-.events-filter button[aria-pressed='true'] {
-  background: var(--selected-bg);
-  color: var(--selected-ink);
-  border-color: var(--accent);
 }
 .events-timeline {
   list-style: none;
@@ -160,10 +147,16 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
+  .events-view-switch button {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted);
+  }
   .events-view-switch button[aria-pressed='true'] {
-    background: var(--selected-bg);
-    color: var(--selected-ink);
-    border-color: var(--accent);
+    color: var(--ink);
+    border-bottom-color: var(--primary);
   }
   .events-screen[data-events-view='calendar'] #events-updates-panel,
   .events-screen[data-events-view='updates'] #events-calendar-panel {

@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { date, getLabels, money, type Language } from './i18n.ts';
 import type { Currency } from './model/portfolio.ts';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import './charts.css';
 
 const periods = [
@@ -208,19 +209,22 @@ function PeriodControls({
   onSelect: (period: Period) => void;
 }>) {
   return (
-    <div className="period-controls" role="group" aria-label={getLabels(language).chartPeriod}>
-      {periods.map((item) => (
-        <button
-          type="button"
-          key={item.id}
-          aria-pressed={item.id === period.id}
-          aria-label={`${language === 'ru' ? item.ru : item.en}: ${language === 'ru' ? item.ruName : item.enName}`}
-          onClick={() => onSelect(item)}
-        >
-          {language === 'ru' ? item.ru : item.en}
-        </button>
-      ))}
-    </div>
+    <Tabs
+      value={period.id}
+      onValueChange={(id) => onSelect(periods.find((item) => item.id === id) ?? period)}
+    >
+      <TabsList className="period-controls" aria-label={getLabels(language).chartPeriod}>
+        {periods.map((item) => (
+          <TabsTrigger
+            key={item.id}
+            value={item.id}
+            aria-label={`${language === 'ru' ? item.ru : item.en}: ${language === 'ru' ? item.ruName : item.enName}`}
+          >
+            {language === 'ru' ? item.ru : item.en}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   );
 }
 

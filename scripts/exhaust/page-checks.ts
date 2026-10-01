@@ -1,4 +1,5 @@
 /** Страничные инварианты: быстрые после каждого клика и полные для новых состояний. */
+import { amountLike, visiblePoint } from './dom-rules.ts';
 
 export const invariantBase = String.raw`
 const find = (sel) => document.querySelector(sel);
@@ -9,7 +10,9 @@ const smallTarget = (el) => {
   const r = el.getBoundingClientRect();
   if (r.width >= 44 && r.height >= 44) return false;
   if (el.tagName === 'A' && el.closest('p, li, dd, dt, td, .footer-line')) return false;
-  if (['checkbox', 'radio'].includes(el.getAttribute('role') ?? '')) {
+  // Нативный флажок 22 px (DESIGN.md) получает цель 44 px от обёртки-label.
+  const role = el instanceof HTMLInputElement ? el.type : el.getAttribute('role') ?? '';
+  if (['checkbox', 'radio'].includes(role)) {
     const lab = [...(el.labels ?? [])].some((l) => { const b = l.getBoundingClientRect(); return b.width >= 44 && b.height >= 44; });
     return !lab;
   }
@@ -44,6 +47,8 @@ const fastInv = () => {
 
 /** Полные инварианты состояния: имена, размеры, маскировка сумм, i18n, липкие панели. */
 export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastInvariants};
+  const amountLike = ${amountLike.toString()};
+  const visiblePoint = ${visiblePoint.toString()};
   const v = fastInv();
   const controls = all('button, a[href], input, select, textarea, summary, [role="tab"], [role="checkbox"], [role="switch"], [role="radio"], [role="button"], label').filter(shown);
   const accName = (el) => {
@@ -65,7 +70,7 @@ export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastIn
     const leakSel = '.amount, .money, .value, .price, .total, .result, dd, td, .summary, .balance';
     all(leakSel).filter(shown).forEach((el) => {
       const t = el.textContent ?? '';
-      if (/\\d/.test(t) && !/[0-9]{2}[:./-][0-9]{2}/.test(t.replace(/\\d/g, '')) && /\\d/.test(t.replace(/20\\d\\d/g, '')))
+      if (amountLike(t))
         push(v, 'hidden-amount-digit', el.tagName.toLowerCase() + '.' + (el.className || ''), 'no digits in masked amounts', t.slice(0, 60));
     });
     all('.positive, .negative, [class*=positive], [class*=negative]').filter(shown)
@@ -85,8 +90,9 @@ export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastIn
   const active = document.activeElement;
   if (active && active !== document.body) {
     const r = active.getBoundingClientRect();
-    const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-    if (top && !active.contains(top) && !top.closest('dialog')?.contains(active))
+    const p = visiblePoint(r.left, r.top, r.right, r.bottom, innerWidth, innerHeight);
+    const top = p && document.elementFromPoint(p[0], p[1]);
+    if (top && top !== active && !active.contains(top) && !top.closest('dialog')?.contains(active))
       push(v, 'sticky-covers-focus', 'document.activeElement', 'focus target not covered', top.tagName + '.' + String(top.className).slice(0, 40));
   }
   return v;

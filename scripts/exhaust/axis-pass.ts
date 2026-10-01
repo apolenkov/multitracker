@@ -33,6 +33,8 @@ const pageFindings = (browser: Browser, env: Env, config: DesignConfig): readonl
   });
 };
 
+const SETTLED = 'document.getAnimations({subtree:true}).every((a)=>a.playState!=="running")';
+
 const checkRoute = (
   browser: Browser,
   env: Env,
@@ -41,6 +43,12 @@ const checkRoute = (
 ): AxisDetail => {
   applyEnv(browser, env, route);
   browser.run('wait', '--fn', "!!document.querySelector('#main h1')");
+  // Цвета и контраст меряем после CSS-переходов: снятие посреди transition даёт ложные значения.
+  try {
+    browser.run('wait', '--fn', SETTLED);
+  } catch {
+    /* ожидание истекло — сканируем как есть, а не теряем точку осей */
+  }
   return { env, route, findings: pageFindings(browser, env, config) };
 };
 

@@ -15,6 +15,11 @@ import {
   contrastLimit,
 } from './contrast.ts';
 import type { DesignConfig } from './design.ts';
+import { lineDeltaMax, paintsBox } from './dom-rules.ts';
+
+const dom = [lineDeltaMax, paintsBox]
+  .map((fn) => `const ${fn.name} = ${fn.toString()};`)
+  .join('');
 
 const math =
   'const CX = (() => {' +
@@ -83,7 +88,10 @@ const scanTextElement = (el, cfg, v, tokenKeys) => {
   const cs = getComputedStyle(el);
   const fs = Number.parseFloat(cs.fontSize);
   const fw = Number.parseFloat(cs.fontWeight) || 400;
-  if (!cfg.fontSizes.some((s) => Math.abs(s - fs) < 0.6)) push(v, 'font-scale-off', el, cfg.fontSizes.join(','), cs.fontSize);
+  const parentFs = el.parentElement ? Number.parseFloat(getComputedStyle(el.parentElement).fontSize) : 0;
+  const emOk = parentFs > 0 && cfg.fontEm.some((e) => Math.abs(fs / parentFs - e) < 0.02);
+  if (!cfg.fontSizes.some((s) => Math.abs(s - fs) < 0.6) && !emOk)
+    push(v, 'font-scale-off', el, cfg.fontSizes.join(','), cs.fontSize);
   if (!cfg.fontWeights.includes(fw)) push(v, 'weight-off-scale', el, cfg.fontWeights.join(','), cs.fontWeight);
   const lh = cs.lineHeight === 'normal' ? fs * 1.2 : Number.parseFloat(cs.lineHeight);
   if (Number.isFinite(lh) && (lh < fs * 0.98 || lh > fs * 2.3)) push(v, 'line-height-suspect', el, '1x..2.3x fontSize', cs.lineHeight);
@@ -99,10 +107,11 @@ const scanTextElement = (el, cfg, v, tokenKeys) => {
   if (el.clientWidth > 8 && el.scrollWidth > el.clientWidth + 1 && ['hidden', 'clip', 'scroll', 'auto'].includes(cs.overflowX)
       && !el.title && !el.getAttribute('aria-label'))
     push(v, 'clipped-text', el, 'scrollWidth<=clientWidth or title', el.scrollWidth + '>' + el.clientWidth);
+  const inlineDecor = cs.display.startsWith('inline') && !isInteractive(el);
   [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft, cs.rowGap, cs.columnGap]
     .map((p) => Number.parseFloat(p))
     .filter((p) => Number.isFinite(p) && p > 0.5)
-    .forEach((p) => { if (!cfg.spacings.some((s) => Math.abs(s - p) < 0.6)) push(v, 'spacing-off-scale', el, cfg.spacings.join(','), p + 'px'); });
+    .forEach((p) => { if (!inlineDecor && !cfg.spacings.some((s) => Math.abs(s - p) < 0.6)) push(v, 'spacing-off-scale', el, cfg.spacings.join(','), p + 'px'); });
   const rad = cs.borderTopLeftRadius;
   const radPx = rad.endsWith('%') ? '50%' : rad;
   if (rad !== '0px' && radPx !== '0px' && !cfg.radii.includes(rad) && !cfg.radii.includes(radPx))
@@ -111,37 +120,61 @@ const scanTextElement = (el, cfg, v, tokenKeys) => {
 `;
 
 const structural = String.raw`
+const paints = (el) => {
+  const cs = getComputedStyle(el);
+  const bg = CX.parseColor(cs.backgroundColor);
+  const sides = ['Top', 'Right', 'Bottom', 'Left'];
+  const bw = Math.max(...sides.map((s) => Number.parseFloat(cs['border' + s + 'Width']) || 0));
+  const ba = Math.max(...sides.map((s) => CX.parseColor(cs['border' + s + 'Color'])?.a ?? 0));
+  return paintsBox(bg?.a ?? 0, bw, ba, cs.backgroundImage !== 'none');
+};
+const fixedNear = (el) => {
+  for (let n = el; n; n = n.parentElement) {
+    if (['fixed', 'sticky'].includes(getComputedStyle(n).position)) return true;
+  }
+  return false;
+};
+const covers = (t, c) => {
+  const tr = rectOf(t);
+  const cr = rectOf(c);
+  if (!overlap(tr, cr) || t.contains(c) || c.contains(t)) return false;
+  const x = (Math.max(tr.l, cr.l) + Math.min(tr.r, cr.r)) / 2;
+  const y = (Math.max(tr.t, cr.t) + Math.min(tr.b, cr.b)) / 2;
+  const top = x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight ? document.elementFromPoint(x, y) : null;
+  if (top === null) return true;
+  if (t === top || t.contains(top)) return false;
+  if (fixedNear(top) && !fixedNear(t)) return false;
+  return !((top === c || c.contains(top) || top.contains(c)) && !paints(top) && !paints(c));
+};
 const scanStructure = (els, cfg, v) => {
   const textEls = els.filter(ownText);
   const controls = els.filter(isInteractive);
   for (const t of textEls.slice(0, 500)) {
     const tr = rectOf(t);
     for (const c of controls) {
-      const cr = rectOf(c);
-      if (overlap(tr, cr) && !t.contains(c) && !c.contains(t)) {
+      if (covers(t, c)) {
         push(v, 'overlap', c, 'no text/control overlap', shortPath(t));
         break;
       }
     }
     if ((tr.l < -1 || tr.r > innerWidth + 1) && !scrollableX(t)) push(v, 'outside-viewport', t, '0..innerWidth', Math.round(tr.l) + '..' + Math.round(tr.r));
   }
-  els.filter((el) => getComputedStyle(el).display === 'flex' && getComputedStyle(el).flexDirection.startsWith('row') && el.children.length >= 2)
+  els.filter((el) => { const cs = getComputedStyle(el); return cs.display === 'flex' && cs.flexDirection.startsWith('row') && el.children.length >= 2 && cs.alignItems === 'center'; })
     .forEach((row) => {
-      const cs = getComputedStyle(row);
       const kids = [...row.children].filter(shown);
-      const centers = kids.map((k) => { const r = k.getBoundingClientRect(); return r.top + r.height / 2; });
-      const delta = Math.max(...centers) - Math.min(...centers);
-      if (['center', 'baseline'].includes(cs.alignItems) && delta > 2)
-        push(v, 'row-misaligned', row, 'siblings aligned within 2px', 'delta ' + delta.toFixed(1) + 'px');
+      const delta = lineDeltaMax(kids.map((k) => { const r = k.getBoundingClientRect(); return [r.top, r.bottom]; }));
+      if (delta > 2)
+        push(v, 'row-misaligned', row, 'same-line siblings aligned within 2px', 'delta ' + delta.toFixed(1) + 'px');
     });
   all('ul, ol, [role="list"], .history-list').forEach((list) => {
     const rows = [...list.children].filter(shown);
     const hs = rows.map((r) => r.getBoundingClientRect().height).filter((h) => h > 4);
-    if (hs.length >= 2 && Math.max(...hs) - Math.min(...hs) > 2) push(v, 'row-height-uneven', list, 'equal row heights', Math.min(...hs) + '..' + Math.max(...hs));
+    // Равная высота обязательна у компактных строк (<=72px); у контентных карточек она разная по дизайну.
+    if (hs.length >= 2 && Math.max(...hs) <= 72 && Math.max(...hs) - Math.min(...hs) > 2) push(v, 'row-height-uneven', list, 'equal row heights', Math.min(...hs) + '..' + Math.max(...hs));
   });
   controls.forEach((el) => {
     const cs = getComputedStyle(el);
-    if (['auto', 'default'].includes(cs.cursor) && !(el instanceof HTMLInputElement && ['text', 'date', 'number'].includes(el.type)))
+    if (['auto', 'default'].includes(cs.cursor) && !(el instanceof HTMLInputElement && ['text', 'date', 'number', 'checkbox', 'radio'].includes(el.type)))
       push(v, 'cursor-default', el, 'pointer/not-allowed affordance', cs.cursor);
     if ((el.matches(':disabled') || el.getAttribute('aria-disabled') === 'true') && cs.opacity === '1' && cs.cursor !== 'not-allowed')
       push(v, 'disabled-indistinct', el, 'dimmed or not-allowed cursor', cs.cursor + '/' + cs.opacity);
@@ -167,11 +200,17 @@ const scanHeadings = (v) => {
     return { level };
   }, { level: 0 });
   hs.forEach((el) => {
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    const rects = [...range.getClientRects()].filter((r) => r.width > 1);
+    // Бейджи-счётчики (.count) — оформление заголовка, а не слова последней строки.
+    const parts = [...el.childNodes].filter(
+      (n) => n.nodeType === 3 || (n instanceof Element && !n.matches('.count, [class*=count]')),
+    );
+    const rects = parts.flatMap((n) => {
+      const range = document.createRange();
+      range.selectNodeContents(n);
+      return [...range.getClientRects()].filter((r) => r.width > 1);
+    });
     if (rects.length < 2) return;
-    const words = (el.textContent ?? '').trim().split(/\s+/);
+    const words = parts.map((n) => n.textContent ?? '').join(' ').trim().split(/\s+/).filter(Boolean);
     const last = words.at(-1) ?? '';
     if (words.length > 2 && last.length === 1) push(v, 'single-char-line', el, 'no 1-char last line', JSON.stringify(last));
     else if (words.length > 3 && rects.at(-1).width < rects.at(-2).width * 0.25) push(v, 'orphan-word', el, 'balanced last line', 'last=' + last);
@@ -183,7 +222,7 @@ const scanHeadings = (v) => {
 };
 `;
 
-export const designScanSource = `async (cfg) => { ${helpers}; ${math};
+export const designScanSource = `async (cfg) => { ${helpers}; ${math}; ${dom};
   ${perElement}; ${structural}; ${headings};
   const v = [];
   const shell = document.querySelector('.app-shell') ?? document.documentElement;

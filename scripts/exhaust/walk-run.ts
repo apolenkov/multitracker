@@ -29,11 +29,12 @@ const SETTLED = 'document.getAnimations({subtree:true}).every((a)=>a.playState!=
 export const walkPool = (seen: readonly RegistryInput[]): readonly string[] =>
   seen.filter((item) => item.skip === '').map((item) => item.path);
 
+/** Пробник: элемент виден и не за модальным диалогом (фон под dialog[open] инертен). */
+export const clickableProbe = (path: string): string =>
+  `(() => { const el = document.querySelector(${JSON.stringify(path)}); const dlg = document.querySelector('dialog[open]'); return !!el && el.checkVisibility() && (!dlg || dlg.contains(el)); })()`;
+
 const clickable = (browser: Browser, path: string): boolean =>
-  evaluate(
-    browser,
-    `(() => { const el = document.querySelector(${JSON.stringify(path)}); return !!el && el.checkVisibility(); })()`,
-  ) === true;
+  evaluate(browser, clickableProbe(path)) === true;
 
 const stepFindings = (browser: Browser, env: Env): readonly Finding[] => {
   const cfg = JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });

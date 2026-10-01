@@ -2,6 +2,7 @@
 
 export type Scales = Readonly<{
   fontSizes: readonly number[];
+  fontEm: readonly number[];
   fontWeights: readonly number[];
   spacings: readonly number[];
   radii: readonly string[];
@@ -27,7 +28,14 @@ const valuesAfter = (lines: readonly string[], key: string): readonly string[] =
     .map((line) => line.slice(line.indexOf(key) + key.length).trim());
 
 const fontSizesOf = (typography: readonly string[]) =>
-  valuesAfter(typography, 'fontSize:').map((value) => Number.parseFloat(value));
+  valuesAfter(typography, 'fontSize:')
+    .filter((value) => !value.endsWith('em'))
+    .map((value) => Number.parseFloat(value));
+
+const fontEmOf = (typography: readonly string[]) =>
+  valuesAfter(typography, 'fontSize:')
+    .filter((value) => value.endsWith('em'))
+    .map((value) => Number.parseFloat(value));
 
 const fontWeightsOf = (typography: readonly string[]) =>
   valuesAfter(typography, 'fontWeight:').map((value) => Number.parseInt(value, 10));
@@ -50,6 +58,7 @@ export const designScales = (designMd: string): Scales => {
   const typography = sectionLines(frontmatter, 'typography');
   return {
     fontSizes: unique(fontSizesOf(typography)),
+    fontEm: unique(fontEmOf(typography)),
     fontWeights: unique(fontWeightsOf(typography)),
     spacings: unique([
       ...pxNumbers(sectionLines(frontmatter, 'spacing')),
@@ -59,6 +68,8 @@ export const designScales = (designMd: string): Scales => {
       2,
       4,
       6,
+      // DESIGN.md «Components»: отступ заголовка группы до полей — 14 px.
+      14,
       40,
       44,
       48,

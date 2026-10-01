@@ -5,6 +5,7 @@ import type { Finding } from './records.ts';
 
 export type DesignConfig = Readonly<{
   fontSizes: readonly number[];
+  fontEm: readonly number[];
   fontWeights: readonly number[];
   spacings: readonly number[];
   radii: readonly string[];
@@ -23,6 +24,7 @@ export const designConfig = (): DesignConfig => {
   const css = cssFiles.join('\n');
   return {
     fontSizes: scales.fontSizes,
+    fontEm: scales.fontEm,
     fontWeights: scales.fontWeights,
     spacings: scales.spacings,
     radii: [...new Set([...scales.radii, ...cssRadii(css)])],

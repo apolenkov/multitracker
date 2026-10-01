@@ -37,22 +37,28 @@ export function SettingsPanel(props: SettingsProps) {
   const update = (patch: Partial<Preferences>) => setValue((current) => ({ ...current, ...patch }));
   return (
     <div className="demo-panel settings-panel">
-      <SettingsGroups {...props} text={text} open={setKind}>
-        <PrivacyStatus
-          value={value}
-          text={text}
-          unlock={() => {
-            document.getElementById('settings-open-privacy')?.focus();
-            update({ locked: false });
-            props.notify(
-              text(
-                'Учебный экран разблокирован без проверки личности.',
-                'Sample screen unlocked without an identity check.',
-              ),
-            );
-          }}
-        />
-      </SettingsGroups>
+      <SettingsGroups
+        {...props}
+        text={text}
+        open={setKind}
+        lockStatus={
+          <LockStatus
+            locked={value.locked}
+            text={text}
+            unlock={() => {
+              document.getElementById('settings-open-privacy')?.focus();
+              update({ locked: false });
+              props.notify(
+                text(
+                  'Учебный экран разблокирован без проверки личности.',
+                  'Sample screen unlocked without an identity check.',
+                ),
+              );
+            }}
+          />
+        }
+        recoveryStatus={<RecoveryStatus recorded={value.recorded} text={text} />}
+      />
       <details className="demo-scenarios">
         <summary>{text('Сценарии макета', 'Mockup scenarios')}</summary>
         <DemoStateSettings {...props} text={text} />
@@ -85,32 +91,33 @@ function SettingsDialog(props: ModalProps) {
   );
 }
 
-function PrivacyStatus({
-  value,
+function LockStatus({
+  locked,
   text,
   unlock,
-}: Readonly<{ value: Preferences; text: SettingText; unlock: () => void }>) {
+}: Readonly<{ locked: boolean; text: SettingText; unlock: () => void }>) {
+  return locked ? (
+    <LockExample text={text} unlock={unlock} />
+  ) : (
+    <p className="demo-note">
+      {text('Пример открыт · защиты нет.', 'Sample unlocked · no protection.')}
+    </p>
+  );
+}
+
+function RecoveryStatus({ recorded, text }: Readonly<{ recorded: boolean; text: SettingText }>) {
   return (
-    <section>
-      {value.locked ? (
-        <LockExample text={text} unlock={unlock} />
-      ) : (
-        <p className="demo-note">
-          {text('Пример открыт · защиты нет.', 'Sample unlocked · no protection.')}
-        </p>
-      )}
-      <p>
-        {value.recorded
-          ? text(
-              'Запись ключа подтверждена в примере.',
-              'Recording the key is confirmed in this sample.',
-            )
-          : text(
-              'Ключ восстановления ещё не отмечен как записанный.',
-              'The recovery key is not marked as recorded.',
-            )}
-      </p>
-    </section>
+    <p className="demo-note">
+      {recorded
+        ? text(
+            'Запись ключа подтверждена в примере.',
+            'Recording the key is confirmed in this sample.',
+          )
+        : text(
+            'Ключ восстановления ещё не отмечен как записанный.',
+            'The recovery key is not marked as recorded.',
+          )}
+    </p>
   );
 }
 

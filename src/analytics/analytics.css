@@ -1,7 +1,6 @@
 .analytics-screen {
   display: grid;
   gap: 12px;
-  max-width: 1060px;
   min-width: 0;
 }
 .analytics-controls {
@@ -23,9 +22,8 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   min-width: 0;
-  padding: 24px;
-  background: var(--paper);
-  border-radius: 12px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
 }
 .analytics-answer dt {
   font-size: 14px;
@@ -139,17 +137,16 @@
   color: var(--muted);
   text-align: center;
 }
-.analytics-data,
-.analytics-explanation {
+.analytics-data {
   border-top: 1px solid var(--line);
   padding-top: 8px;
 }
-.analytics-explanation p {
-  margin-top: 8px;
+.analytics-about h3 {
+  margin: 16px 0 4px;
+  font-size: 16px;
 }
-.analytics-units summary {
-  font-size: 14px;
-  color: var(--muted);
+.analytics-about p {
+  margin: 0;
 }
 .analytics-table-scroll {
   overflow-x: auto;

@@ -36,13 +36,12 @@ export function AnalyticsScreen(props: AnalyticsProps) {
       <div className="analytics-panel" data-analysis={section}>
         <h2>{analyticsLabel(props.language, `${section}Question`)}</h2>
         <AnalysisView {...props} section={section} period={period} />
-        <details className="analytics-explanation" key={section}>
-          <summary>{words.explanation}</summary>
-          <p className="quiet">{analyticsLabel(props.language, `${section}Help`)}</p>
-        </details>
       </div>
-      <details className="analytics-units">
-        <summary>{words.unitsHelp}</summary>
+      <details className="analytics-about" key={section}>
+        <summary>{words.about}</summary>
+        <h3>{words.explanation}</h3>
+        <p className="quiet">{analyticsLabel(props.language, `${section}Help`)}</p>
+        <h3>{words.unitsHelp}</h3>
         <p className="quiet">
           {words.baseNote}: {props.baseCurrency}. {words.displayNote}: {props.currency}.{' '}
           {words.conversion}: {sampleNumber(currentFX, props)}.

@@ -27,9 +27,6 @@ function LanguageControl({ view }: Props) {
   return (
     <label htmlFor="topbar-language">
       <span className="visually-hidden">{getLabels(view.language).language}</span>
-      <span className="utility-caption" aria-hidden="true">
-        {view.language === 'ru' ? 'Язык' : 'Language'}
-      </span>
       <select
         id="topbar-language"
         value={view.language}
@@ -49,9 +46,6 @@ function ThemeControl({ view }: Props) {
   return (
     <label htmlFor="topbar-theme">
       <span className="visually-hidden">{view.language === 'ru' ? 'Оформление' : 'Theme'}</span>
-      <span className="utility-caption" aria-hidden="true">
-        {view.language === 'ru' ? 'Тема' : 'Theme'}
-      </span>
       <select
         id="topbar-theme"
         value={view.theme}
@@ -73,9 +67,6 @@ function DisplayCurrencyControl({ view }: Props) {
     <label htmlFor="topbar-currency">
       <span className="visually-hidden">
         {view.language === 'ru' ? 'Валюта отображения' : 'Display currency'}
-      </span>
-      <span className="utility-caption" aria-hidden="true">
-        {view.language === 'ru' ? 'Показ в' : 'Display in'}
       </span>
       <select
         id="topbar-currency"

@@ -97,16 +97,7 @@ function FinancePage({ view }: Readonly<{ view: AppView }>) {
       />
     );
   }
-  return (
-    <>
-      <div className="history-action">
-        <button className="primary" onClick={() => openDialog('buy-dialog')}>
-          + {getLabels(view.language).add}
-        </button>
-      </div>
-      <History {...shared} onSaved={view.onSaved} />
-    </>
-  );
+  return <History {...shared} onSaved={view.onSaved} />;
 }
 function EmptyOverview({ view }: Readonly<{ view: AppView }>) {
   const emptyState = { ...demoState, buys: [] };
@@ -152,28 +143,35 @@ function PageHeading({ view }: Readonly<{ view: AppView }>) {
         )}
       </h1>
       {(view.screen === 'overview' || view.screen === 'history') && (
-        <label className="portfolio-filter">
-          <span className="visually-hidden">{labels.portfolio}</span>
-          <select
-            value={view.portfolioId}
-            onChange={(event) => view.setPortfolioId(event.target.value)}
-          >
-            <option value="all">{labels.all}</option>
-            {view.portfolioId.includes(',') && (
-              <option value={view.portfolioId}>
-                {demoState.portfolios
-                  .filter((portfolio) => view.portfolioId.split(',').includes(portfolio.id))
-                  .map((portfolio) => portfolio.name)
-                  .join(' + ')}
-              </option>
-            )}
-            {demoState.portfolios.map((portfolio) => (
-              <option value={portfolio.id} key={portfolio.id}>
-                {portfolio.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="page-heading-actions">
+          <label className="portfolio-filter">
+            <span className="visually-hidden">{labels.portfolio}</span>
+            <select
+              value={view.portfolioId}
+              onChange={(event) => view.setPortfolioId(event.target.value)}
+            >
+              <option value="all">{labels.all}</option>
+              {view.portfolioId.includes(',') && (
+                <option value={view.portfolioId}>
+                  {demoState.portfolios
+                    .filter((portfolio) => view.portfolioId.split(',').includes(portfolio.id))
+                    .map((portfolio) => portfolio.name)
+                    .join(' + ')}
+                </option>
+              )}
+              {demoState.portfolios.map((portfolio) => (
+                <option value={portfolio.id} key={portfolio.id}>
+                  {portfolio.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {view.screen === 'history' && (
+            <button className="primary" onClick={() => openDialog('buy-dialog')}>
+              + {labels.add}
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

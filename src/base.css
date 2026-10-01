@@ -72,6 +72,9 @@ button.primary:hover {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
+.topbar :focus-visible {
+  outline-offset: 1px;
+}
 input,
 select,
 textarea {

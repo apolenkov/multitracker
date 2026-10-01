@@ -16,6 +16,7 @@ const words = {
     risk: 'Риск и P/E',
     decisions: 'После сделки',
     comparison: 'Цены активов',
+    about: 'О данных',
     explanation: 'Как читать этот пример',
     performanceHelp:
       'Стоимость меняется из-за результата и чистых взносов. Чистые потоки — взносы минус выводы; в этой сцене они приходят в конце периода. Доходность исключает эти потоки. Эталон — вымышленный широкий индекс, без комиссий. Это не точный расчёт доходности реальных операций.',
@@ -147,6 +148,7 @@ const words = {
     risk: 'Risk and P/E',
     decisions: 'After a trade',
     comparison: 'Asset prices',
+    about: 'About the data',
     explanation: 'How to read this example',
     performanceHelp:
       'Value changes through returns and net contributions. Net flows are deposits minus withdrawals; in this scene they arrive at period end. Returns exclude these flows. The benchmark is a fictional broad index, without fees. This is not an accurate return calculation for real transactions.',

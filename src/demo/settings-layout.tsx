@@ -8,7 +8,8 @@ type GroupProps = Props &
   Readonly<{
     text: SettingText;
     open: (kind: Kind) => void;
-    children: ReactNode;
+    lockStatus: ReactNode;
+    recoveryStatus: ReactNode;
   }>;
 
 export function SettingsGroups(props: GroupProps) {
@@ -35,10 +36,13 @@ export function SettingsGroups(props: GroupProps) {
       <section className="settings-group">
         <h2>{props.text('Приватность', 'Privacy')}</h2>
         <HiddenSetting {...props} />
-        {(['privacy', 'recovery', 'delete'] as const).map((kind) => (
-          <SettingLink key={kind} kind={kind} {...props} />
-        ))}
-        {props.children}
+        <SettingLink kind="privacy" {...props}>
+          {props.lockStatus}
+        </SettingLink>
+        <SettingLink kind="recovery" {...props}>
+          {props.recoveryStatus}
+        </SettingLink>
+        <SettingLink kind="delete" {...props} />
       </section>
     </div>
   );
@@ -48,12 +52,16 @@ function SettingLink({
   kind,
   text,
   open,
-}: Pick<GroupProps, 'text' | 'open'> & Readonly<{ kind: Kind }>) {
+  children,
+}: Pick<GroupProps, 'text' | 'open'> & Readonly<{ kind: Kind; children?: ReactNode }>) {
   return (
-    <button id={`settings-open-${kind}`} className="setting-link" onClick={() => open(kind)}>
-      <span>{settingName(text, kind)}</span>
-      <Icon name="chevron" />
-    </button>
+    <div className="setting-row">
+      <button id={`settings-open-${kind}`} className="setting-link" onClick={() => open(kind)}>
+        <span>{settingName(text, kind)}</span>
+        <Icon name="chevron" />
+      </button>
+      {children}
+    </div>
   );
 }
 

@@ -168,13 +168,9 @@
     width: auto;
     padding-bottom: 0;
   }
-  .settings-groups,
   .mapping-list,
   .form-row {
     grid-template-columns: 1fr;
-  }
-  .settings-groups {
-    gap: 28px;
   }
   .connection-row {
     grid-template-columns: 44px minmax(0, 1fr);

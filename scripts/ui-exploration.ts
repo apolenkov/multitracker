@@ -103,10 +103,10 @@ function analysisPeriod(browser: Browser, section: string) {
   browser.run('select', '[data-testid="analytics-period"]', 'year');
   const year = analyticsValues(browser);
   assert.notEqual(year, month, `${heading}: период должен менять сами значения`);
-  reveal(browser, '.analytics-explanation summary');
+  reveal(browser, '.analytics-about summary');
   truth(
     browser,
-    'document.querySelector(".analytics-explanation")?.open === true && Boolean(document.querySelector(".analytics-explanation p")?.innerText.trim())',
+    'document.querySelector(".analytics-about")?.open === true && Boolean(document.querySelector(".analytics-about p")?.innerText.trim())',
     `${heading}: пояснение должно раскрыться`,
   );
   return { section, heading, month, year };

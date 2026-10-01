@@ -101,14 +101,9 @@
   .workspace {
     padding-inline: 16px;
   }
-  .utility-controls {
-    grid-template-columns: 72px 120px 88px;
-    gap: 4px;
-  }
   .topbar {
     flex-wrap: wrap;
     justify-content: flex-end;
-    padding-block: 8px;
   }
   .demo-badge {
     position: absolute;

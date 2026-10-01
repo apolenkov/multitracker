@@ -92,7 +92,7 @@
   justify-content: space-between;
   gap: 8px;
   min-height: 64px;
-  padding-block: 8px;
+  padding-block: 10px 9px;
   border-bottom: 1px solid var(--line);
 }
 .demo-badge {
@@ -104,23 +104,15 @@
   white-space: nowrap;
 }
 .utility-controls {
-  display: grid;
-  grid-template-columns: 72px 128px 88px;
+  display: flex;
   gap: 8px;
 }
 .utility-controls label {
-  display: grid;
-  gap: 4px;
   min-width: 0;
-}
-.utility-caption {
-  color: var(--muted);
-  line-height: 20px;
-  white-space: nowrap;
 }
 .utility-controls select {
-  width: 100%;
-  min-width: 0;
+  width: auto;
+  min-width: 72px;
   padding-block: 8px;
   color: var(--ink);
   background-color: var(--paper);
@@ -138,6 +130,11 @@ main {
   gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 20px;
+}
+.page-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .portfolio-filter select {
   min-width: 180px;
@@ -178,11 +175,6 @@ main:focus-visible {
 main:focus-visible > .page-heading h1 {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
-}
-.history-action {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 16px;
 }
 .welcome-guide {
   margin-top: 24px;

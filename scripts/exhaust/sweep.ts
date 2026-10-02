@@ -3,7 +3,7 @@ import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
 import type { Env } from './axes.ts';
 import { record } from './records.ts';
-import type { ClickRecord, Finding } from './records.ts';
+import type { ClickRecord, ClickSkip, Finding } from './records.ts';
 import { enumerateSource } from './page-dom.ts';
 import { sweepSource } from './page-sweep.ts';
 import { fullInvariantsSource } from './page-checks.ts';
@@ -157,6 +157,8 @@ export type Visit = Readonly<{
   clicks: readonly ClickRecord[];
   seen: readonly RegistryInput[];
   errors: readonly string[];
+  skips: readonly ClickSkip[];
+  attempts: number;
 }>;
 
 /** Навигация, перечисление, обход и донабор: всё наблюдаемое за один визит. */
@@ -171,8 +173,10 @@ export const visitRoute = (browser: Browser, route: string, seq: number, env: En
   const count = hits.filter((hit) => hit.skipped === '').length;
   const verified = trustedSample(browser, env, seq + 1 + count, seen, hits);
   return {
-    clicks: [nav, ...hitClicks(route, env, seq + 1, seen, hits), ...verified],
+    clicks: [nav, ...hitClicks(route, env, seq + 1, seen, hits), ...verified.clicks],
     seen,
+    skips: verified.skips,
+    attempts: verified.clicks.length + verified.skips.length,
     errors: [...sweep.errors, ...extra.errors, ...hits.flatMap((hit) => hit.errors)],
   };
 };
@@ -183,6 +187,8 @@ export type SectionResult = Readonly<{
   seen: readonly RegistryInput[];
   findings: readonly Finding[];
   consoleErrors: readonly string[];
+  skips: readonly ClickSkip[];
+  attempts: number;
   durationMs: number;
 }>;
 
@@ -210,6 +216,8 @@ export const visitSection = (
     seen: visit.seen,
     findings: invariantFindings(browser, env),
     consoleErrors: visit.errors,
+    skips: visit.skips,
+    attempts: visit.attempts,
     durationMs: Date.now() - started,
   };
 };

@@ -3,7 +3,7 @@ import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
 import type { Env } from './axes.ts';
 import { record } from './records.ts';
-import type { ClickRecord } from './records.ts';
+import type { ClickRecord, ClickSkip } from './records.ts';
 import { domHelpers } from './page-dom.ts';
 import type { PageState } from './probe.ts';
 import { stateOf } from './probe.ts';
@@ -96,21 +96,45 @@ const trustedOne = (browser: Browser, env: Env, seq: number, pick: TrustPick): C
   return trustedRecord(pick.item, env, seq, pick.kind, before, after, Date.now() - started);
 };
 
+export type ClickOutcome = Readonly<{
+  clicks: readonly ClickRecord[];
+  skips: readonly ClickSkip[];
+}>;
+
+/**
+ * Ветвление одного доверенного клика: недостижимый элемент или падение клика —
+ * пропуск с причиной (виден в отчёте), успех — запись. Пропуск не роняет прогон,
+ * но молчать ему запрещено: счётчик идёт в summary, сверх порога роняет ratchet.
+ */
+export const attemptClick = (
+  path: string,
+  reachable: boolean,
+  click: () => ClickRecord,
+  cleanup: () => void,
+): ClickOutcome => {
+  if (!reachable)
+    return { clicks: [], skips: [{ path, stage: 'trusted', reason: 'unreachable' }] };
+  try {
+    return { clicks: [click()], skips: [] };
+  } catch {
+    cleanup();
+    return { clicks: [], skips: [{ path, stage: 'trusted', reason: 'click-threw' }] };
+  }
+};
+
 /** Один доверенный клик без падения прогона: перекрытый элемент пропускается. */
 const safeOne = (
   browser: Browser,
   env: Env,
   seq: number,
   pick: TrustPick,
-): readonly ClickRecord[] => {
-  if (!clickable(browser, pick.hit.path)) return [];
-  try {
-    return [trustedOne(browser, env, seq, pick)];
-  } catch {
-    closeDialogs(browser);
-    return [];
-  }
-};
+): ClickOutcome =>
+  attemptClick(
+    pick.hit.path,
+    clickable(browser, pick.hit.path),
+    () => trustedOne(browser, env, seq, pick),
+    () => closeDialogs(browser),
+  );
 
 const closeDialogs = (browser: Browser): void => {
   evaluate(
@@ -119,6 +143,8 @@ const closeDialogs = (browser: Browser): void => {
   );
 };
 
+export type TrustedResult = ClickOutcome;
+
 /** Выборка настоящих кликов после обхода: stride-семпл подходящих сигнатур. */
 export const trustedSample = (
   browser: Browser,
@@ -126,10 +152,13 @@ export const trustedSample = (
   start: number,
   seen: readonly RegistryInput[],
   hits: readonly SweepHit[],
-): readonly ClickRecord[] => {
-  const clicks = candidates(seen, hits).flatMap((pick, index) =>
+): TrustedResult => {
+  const outcomes = candidates(seen, hits).map((pick, index) =>
     safeOne(browser, env, start + index, pick),
   );
   closeDialogs(browser);
-  return clicks;
+  return {
+    clicks: outcomes.flatMap((outcome) => outcome.clicks),
+    skips: outcomes.flatMap((outcome) => outcome.skips),
+  };
 };

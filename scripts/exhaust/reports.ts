@@ -1,7 +1,7 @@
 /** Отчёты прогона: реестр элементов, покрытие кода, сводка и проверки ratchet. */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import type { Finding, RunLog } from './records.ts';
+import type { ClickSkip, Finding, RunLog } from './records.ts';
 import { buildRegistry, coveragePercent, elementMarkdown, sectionCoverage } from './registry.ts';
 import type { RegistryInput, SectionCoverage } from './registry.ts';
 import { checkLedger, parseLedger } from './ledger.ts';
@@ -30,12 +30,26 @@ export type Acc = Readonly<{
   findings: readonly Finding[];
   scripts: readonly ScriptCoverage[];
   prev: readonly FileReport[];
+  skips: readonly ClickSkip[];
+  attempts: number;
+}>;
+
+/** Доля пропущенных проверочных кликов, выше которой прогон падает. */
+export const SKIP_SHARE_LIMIT = 0.2;
+
+export type SkipReport = Readonly<{
+  attempted: number;
+  skipped: number;
+  share: number;
+  limit: number;
+  reasons: Readonly<Record<string, number>>;
 }>;
 
 export type Checks = Readonly<{
   element: LedgerCheck;
   code: LedgerCheck;
   errors: readonly string[];
+  skips: SkipReport;
 }>;
 
 const ledgerChecks = (
@@ -66,30 +80,47 @@ const writeCodeReports = (log: RunLog, acc: Acc, finalReports: readonly FileRepo
 const totals = (reports: readonly FileReport[], pick: (report: FileReport) => number) =>
   reports.reduce((sum, report) => sum + pick(report), 0);
 
-const summaryOf = (
-  acc: Acc,
-  sections: readonly SectionCoverage[],
-  finalReports: readonly FileReport[],
-  checks: Readonly<{ element: LedgerCheck; code: LedgerCheck }>,
-) => ({
+/** Сводка пропусков кликов: счётчик, доля от попыток и причины по этапам. */
+export const skipReport = (skips: readonly ClickSkip[], attempted: number): SkipReport => {
+  const reasons = skips.reduce<Readonly<Record<string, number>>>(
+    (acc, skip) => ({
+      ...acc,
+      [`${skip.stage}:${skip.reason}`]: (acc[`${skip.stage}:${skip.reason}`] ?? 0) + 1,
+    }),
+    {},
+  );
+  return {
+    attempted,
+    skipped: skips.length,
+    share: attempted === 0 ? 0 : Math.round((skips.length / attempted) * 1000) / 1000,
+    limit: SKIP_SHARE_LIMIT,
+    reasons,
+  };
+};
+
+const coverageSummary = (acc: Acc, sections: readonly SectionCoverage[], reports: readonly FileReport[]) => ({
   routes: routes.length,
   clicks: acc.seq - 1,
   element: sections.map((section) => ({
     route: section.route,
     pct: coveragePercent(section.clicked, section.seen),
   })),
-  functions: [
-    totals(finalReports, (report) => report.functionsCovered),
-    totals(finalReports, (report) => report.functionsTotal),
-  ],
-  branches: [
-    totals(finalReports, (report) => report.branchesCovered),
-    totals(finalReports, (report) => report.branchesTotal),
-  ],
+  functions: [totals(reports, (report) => report.functionsCovered), totals(reports, (r) => r.functionsTotal)],
+  branches: [totals(reports, (report) => report.branchesCovered), totals(reports, (r) => r.branchesTotal)],
+});
+
+const summaryOf = (
+  acc: Acc,
+  sections: readonly SectionCoverage[],
+  finalReports: readonly FileReport[],
+  checks: Readonly<{ element: LedgerCheck; code: LedgerCheck; skips: SkipReport }>,
+) => ({
+  ...coverageSummary(acc, sections, finalReports),
   consoleErrors: acc.errors.length,
   findings: acc.findings.length,
   elementLedger: checks.element,
   codeLedger: checks.code,
+  skippedClicks: checks.skips,
 });
 
 /** Реестр, покрытие кода, находки и сводка: всё в каталог запуска. */
@@ -102,7 +133,10 @@ export const writeReports = (
   const sections = sectionCoverage(entries);
   log.saveText('element-coverage.md', elementMarkdown(sections, entries));
   log.saveJson('element-coverage.json', { sections, entries });
-  const checks = ledgerChecks(sections, finalReports);
+  const checks = {
+    ...ledgerChecks(sections, finalReports),
+    skips: skipReport(acc.skips, acc.attempts),
+  };
   writeCodeReports(log, acc, finalReports);
   log.saveJson('findings.json', acc.findings);
   const summary = summaryOf(acc, sections, finalReports, checks);
@@ -115,4 +149,9 @@ export const reportChecks = (checks: Checks): void => {
   assert.equal(checks.errors.length, 0, `console errors: ${checks.errors.slice(0, 3).join(' | ')}`);
   assert.ok(checks.element.ok, `element ledger: ${JSON.stringify(checks.element)}`);
   assert.ok(checks.code.ok, `code ledger: ${JSON.stringify(checks.code)}`);
+  assert.ok(
+    checks.skips.share <= checks.skips.limit,
+    `skipped clicks ${checks.skips.skipped}/${checks.skips.attempted} ` +
+      `over limit ${checks.skips.limit}: ${JSON.stringify(checks.skips.reasons)}`,
+  );
 };

@@ -12,7 +12,13 @@ import {
 import { designScales } from '../scripts/exhaust/tokens.ts';
 import { fullInvariantsSource } from '../scripts/exhaust/page-checks.ts';
 import { designScanSource } from '../scripts/exhaust/page-design.ts';
-import { clickableProbe } from '../scripts/exhaust/walk-run.ts';
+import { clickableProbe, execSteps } from '../scripts/exhaust/walk-run.ts';
+import type { StepAcc, WalkDriver } from '../scripts/exhaust/walk-run.ts';
+import { attemptClick } from '../scripts/exhaust/trusted.ts';
+import { record } from '../scripts/exhaust/records.ts';
+import type { ClickSkip } from '../scripts/exhaust/records.ts';
+import { baseEnv } from '../scripts/exhaust/axes.ts';
+import { reportChecks, skipReport } from '../scripts/exhaust/reports.ts';
 
 await test('amountLike flags real sums but spares dates, ordinals and masked marks', () => {
   assert.equal(amountLike('Стоимость сейчас••••30 сент. 2026 г.'), false);
@@ -138,4 +144,110 @@ await test('walk probe skips background controls while a modal dialog is open', 
   const probe = clickableProbe('header > button');
   assert.ok(probe.includes('dialog[open]'));
   assert.ok(probe.includes('dlg.contains(el)'));
+});
+
+const clickRecord = record(1, baseEnv, 'overview', { b: 'x', a: 'x', dur: 0 }, 'sig|x', {
+  role: 'button',
+  name: 'Go',
+  tag: 'button',
+  trusted: true,
+  purpose: 'verify-nav',
+});
+
+await test('attemptClick turns unreachable and throwing clicks into counted skips', () => {
+  const unreachable = attemptClick('p1', false, () => clickRecord, () => undefined);
+  assert.equal(unreachable.clicks.length, 0);
+  assert.deepEqual(unreachable.skips, [{ path: 'p1', stage: 'trusted', reason: 'unreachable' }]);
+  const threw = attemptClick(
+    'p2',
+    true,
+    () => {
+      throw new Error('click refused');
+    },
+    () => undefined,
+  );
+  assert.equal(threw.clicks.length, 0);
+  assert.deepEqual(threw.skips, [{ path: 'p2', stage: 'trusted', reason: 'click-threw' }]);
+  // Уборка после падения обязательна: её ошибка пробрасывается и доказывает вызов.
+  assert.throws(
+    () =>
+      attemptClick(
+        'p3',
+        true,
+        () => {
+          throw new Error('click refused');
+        },
+        () => {
+          throw new Error('cleanup-ran');
+        },
+      ),
+    /cleanup-ran/,
+  );
+  const ok = attemptClick('p4', true, () => clickRecord, () => undefined);
+  assert.equal(ok.clicks.length, 1);
+  assert.equal(ok.skips.length, 0);
+});
+
+const quietDriver: WalkDriver = {
+  clickable: () => true,
+  click: () => undefined,
+  settle: () => undefined,
+  findings: () => [],
+};
+
+const stepInit: StepAcc = { findings: [], skips: [], failed: false };
+
+await test('walk steps count every skipped click with its reason', () => {
+  const blocked = execSteps(
+    { ...quietDriver, clickable: (path) => path !== 'behind-dialog' },
+    ['ok', 'behind-dialog', 'ok2'],
+    stepInit,
+  );
+  assert.deepEqual(blocked.skips, [
+    { path: 'behind-dialog', stage: 'walk', reason: 'unreachable' },
+  ]);
+  const unsettled = execSteps(
+    {
+      ...quietDriver,
+      settle: () => {
+        throw new Error('timeout');
+      },
+    },
+    ['slow'],
+    stepInit,
+  );
+  assert.deepEqual(unsettled.skips, [{ path: 'slow', stage: 'walk', reason: 'settle-timeout' }]);
+  const refused = execSteps(
+    {
+      ...quietDriver,
+      click: () => {
+        throw new Error('refused');
+      },
+    },
+    ['x'],
+    stepInit,
+  );
+  assert.equal(refused.skips.length, 0);
+  assert.ok(refused.findings.some((f) => f.rule === 'walk-click-fail'));
+  assert.equal(refused.failed, true);
+});
+
+await test('skipReport shares reasons and the ratchet fails over the share limit', () => {
+  const skips: readonly ClickSkip[] = [
+    { path: 'a', stage: 'walk', reason: 'unreachable' },
+    { path: 'b', stage: 'walk', reason: 'unreachable' },
+    { path: 'c', stage: 'trusted', reason: 'click-threw' },
+  ];
+  const report = skipReport(skips, 10);
+  assert.equal(report.skipped, 3);
+  assert.equal(report.share, 0.3);
+  assert.equal(report.limit, 0.2);
+  assert.deepEqual(report.reasons, { 'walk:unreachable': 2, 'trusted:click-threw': 1 });
+  const base = {
+    element: { missing: [], stale: [], ok: true },
+    code: { missing: [], stale: [], ok: true },
+    errors: [],
+  };
+  assert.throws(() => reportChecks({ ...base, skips: report }), /skipped clicks/);
+  assert.doesNotThrow(() => reportChecks({ ...base, skips: skipReport(skips.slice(0, 1), 10) }));
 });

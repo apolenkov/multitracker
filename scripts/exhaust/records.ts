@@ -32,6 +32,16 @@ export type ClickRecord = Readonly<{
   shot: string;
 }>;
 
+/**
+ * Пропущенный проверочный клик: доверенная выборка или шаг блуждания.
+ * Пропуск — не падение, но обязан быть видимым в отчёте и посчитанным.
+ */
+export type ClickSkip = Readonly<{
+  path: string;
+  stage: 'trusted' | 'walk';
+  reason: 'unreachable' | 'click-threw' | 'settle-timeout';
+}>;
+
 export type RunLog = Readonly<{
   dir: string;
   appendClicks: (rows: readonly ClickRecord[]) => void;

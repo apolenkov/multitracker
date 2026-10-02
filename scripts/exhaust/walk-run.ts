@@ -6,7 +6,7 @@ import { ddmin } from './shrink.ts';
 import { fullInvariantsSource } from './page-checks.ts';
 import { asFinding } from './page-rows.ts';
 import { asArray } from './guards.ts';
-import type { Finding } from './records.ts';
+import type { ClickSkip, Finding } from './records.ts';
 import type { RegistryInput } from './registry.ts';
 import { walkDepth, walkSeeds, walkSequences } from './walk-plan.ts';
 
@@ -21,6 +21,7 @@ export type WalkResult = Readonly<{
   path: readonly string[];
   findings: readonly Finding[];
   repro: readonly string[];
+  skips: readonly ClickSkip[];
 }>;
 
 const SETTLED = 'document.getAnimations({subtree:true}).every((a)=>a.playState!=="running")';
@@ -52,39 +53,73 @@ const closeDialogs = (browser: Browser): void => {
   );
 };
 
-type StepAcc = Readonly<{ findings: readonly Finding[]; failed: boolean }>;
+/** Шаги блуждания через узкий интерфейс: единственная точка, знающая о Browser. */
+export type WalkDriver = Readonly<{
+  clickable: (path: string) => boolean;
+  click: (path: string) => void;
+  settle: () => void;
+  findings: () => readonly Finding[];
+}>;
 
-const stepOne = (browser: Browser, env: Env, path: string, acc: StepAcc): StepAcc => {
-  if (!clickable(browser, path)) return acc;
-  try {
+const browserDriver = (browser: Browser, env: Env): WalkDriver => ({
+  clickable: (path) => clickable(browser, path),
+  click: (path) => {
     browser.run('click', path);
+  },
+  settle: () => {
+    browser.run('wait', '--fn', SETTLED);
+  },
+  findings: () => stepFindings(browser, env),
+});
+
+export type StepAcc = Readonly<{
+  findings: readonly Finding[];
+  skips: readonly ClickSkip[];
+  failed: boolean;
+}>;
+
+const emptyAcc: StepAcc = { findings: [], skips: [], failed: false };
+
+const withSkip = (acc: StepAcc, path: string, reason: ClickSkip['reason']): StepAcc => ({
+  ...acc,
+  skips: [...acc.skips, { path, stage: 'walk' as const, reason }],
+});
+
+const withFail = (acc: StepAcc, path: string): StepAcc => ({
+  ...acc,
+  findings: [
+    ...acc.findings,
+    { rule: 'walk-click-fail', selector: path, expected: 'click', actual: 'throw' },
+  ],
+  failed: true,
+});
+
+const stepOne = (drv: WalkDriver, path: string, acc: StepAcc): StepAcc => {
+  if (!drv.clickable(path)) return withSkip(acc, path, 'unreachable');
+  try {
+    drv.click(path);
   } catch {
-    return {
-      findings: [
-        ...acc.findings,
-        { rule: 'walk-click-fail', selector: path, expected: 'click', actual: 'throw' },
-      ],
-      failed: true,
-    };
+    return withFail(acc, path);
   }
   try {
-    browser.run('wait', '--fn', SETTLED);
+    drv.settle();
   } catch {
-    return acc;
+    // Клик был, усадка не дождалась — инварианты шага не сняты: пропуск с причиной.
+    return withSkip(acc, path, 'settle-timeout');
   }
-  const fresh = stepFindings(browser, env);
-  return { findings: [...acc.findings, ...fresh], failed: acc.failed || fresh.length > 0 };
+  const fresh = drv.findings();
+  return { ...acc, findings: [...acc.findings, ...fresh], failed: acc.failed || fresh.length > 0 };
 };
 
-const execSteps = (browser: Browser, env: Env, paths: readonly string[], acc: StepAcc): StepAcc =>
+export const execSteps = (drv: WalkDriver, paths: readonly string[], acc: StepAcc): StepAcc =>
   paths.length === 0
     ? acc
-    : execSteps(browser, env, paths.slice(1), stepOne(browser, env, paths.at(0) ?? '', acc));
+    : execSteps(drv, paths.slice(1), stepOne(drv, paths.at(0) ?? '', acc));
 
 const replays = (browser: Browser, env: Env, candidate: readonly string[]): Promise<boolean> =>
   Promise.resolve().then(() => {
     closeDialogs(browser);
-    const acc: StepAcc = execSteps(browser, env, candidate, { findings: [], failed: false });
+    const acc: StepAcc = execSteps(browserDriver(browser, env), candidate, emptyAcc);
     closeDialogs(browser);
     return acc.findings.length > 0;
   });
@@ -108,10 +143,10 @@ const runOne = async (
 ): Promise<WalkResult> => {
   const seq = walkSequences(paths, seed, 1, walkDepth).at(0) ?? [];
   const ordered = walkSequences(paths, seed + index, 1, walkDepth).at(0) ?? seq;
-  const acc = execSteps(browser, env, ordered, { findings: [], failed: false });
+  const acc = execSteps(browserDriver(browser, env), ordered, emptyAcc);
   const repro = await shrinkIfFailed(browser, env, ordered, acc.findings);
   closeDialogs(browser);
-  return { seed: seed + index, path: ordered, findings: acc.findings, repro };
+  return { seed: seed + index, path: ordered, findings: acc.findings, repro, skips: acc.skips };
 };
 
 const runSeed = (

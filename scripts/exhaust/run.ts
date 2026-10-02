@@ -17,6 +17,7 @@ import type { FileReport, ScriptSource } from './coverage.ts';
 import { reportChecks, routes, writeReports } from './reports.ts';
 import type { Acc } from './reports.ts';
 import { runPartB } from './part-b.ts';
+import type { PartB } from './part-b.ts';
 
 const seedAcc = (scripts: readonly ScriptCoverage[], sources: readonly ScriptSource[]): Acc => ({
   seq: 1,
@@ -27,6 +28,8 @@ const seedAcc = (scripts: readonly ScriptCoverage[], sources: readonly ScriptSou
   findings: [],
   scripts,
   prev: fileReports(scripts, sources),
+  skips: [],
+  attempts: 0,
 });
 
 const nextAcc = (
@@ -47,6 +50,8 @@ const nextAcc = (
   findings: [...prev.findings, ...result.findings],
   scripts,
   prev: reports,
+  skips: [...prev.skips, ...result.skips],
+  attempts: prev.attempts + result.attempts,
 });
 
 const collectOne = async (
@@ -85,6 +90,15 @@ const bundleSources = async (
   return sources.flatMap((source) => (source === null ? [] : [source]));
 };
 
+const savePartB = (log: RunLog, partB: PartB): void => {
+  log.saveJson('part-b.json', {
+    axisTuples: partB.axisTuples,
+    formCases: partB.formCases,
+    walks: partB.walks,
+    findings: partB.findings.length,
+  });
+};
+
 const finishRun = async (
   browser: Browser,
   log: RunLog,
@@ -94,13 +108,13 @@ const finishRun = async (
   started: number,
 ): Promise<void> => {
   const partB = await runPartB(browser, log, acc.seen);
-  const full: Acc = { ...acc, findings: [...acc.findings, ...partB.findings] };
-  log.saveJson('part-b.json', {
-    axisTuples: partB.axisTuples,
-    formCases: partB.formCases,
-    walks: partB.walks,
-    findings: partB.findings.length,
-  });
+  const full: Acc = {
+    ...acc,
+    findings: [...acc.findings, ...partB.findings],
+    skips: [...acc.skips, ...partB.skips],
+    attempts: acc.attempts + partB.walkSteps,
+  };
+  savePartB(log, partB);
   const merged = mergeScripts(full.scripts, await takeCoverage(send));
   const finalReports = fileReports(merged, sources);
   log.saveText('timings.txt', `totalMs=${Date.now() - started}\n`);

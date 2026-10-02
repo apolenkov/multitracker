@@ -10,7 +10,7 @@ import { runWalks } from './walk-run.ts';
 import type { WalkResult } from './walk-run.ts';
 import { findingsMarkdown } from './findings.ts';
 import type { ReproFinding } from './findings.ts';
-import type { Finding, RunLog } from './records.ts';
+import type { ClickSkip, Finding, RunLog } from './records.ts';
 import type { RegistryInput } from './registry.ts';
 
 export type PartB = Readonly<{
@@ -18,6 +18,8 @@ export type PartB = Readonly<{
   axisTuples: number;
   formCases: number;
   walks: number;
+  walkSteps: number;
+  skips: readonly ClickSkip[];
 }>;
 
 const axisRepro = (details: readonly AxisDetail[]): readonly ReproFinding[] =>
@@ -76,6 +78,7 @@ const runWalkSave = async (
     seeds: walks.map((item) => item.seed),
     count: walks.length,
     repros: walks.map((item) => item.repro),
+    skips: walks.flatMap((item) => item.skips),
   });
   return walks;
 };
@@ -100,5 +103,7 @@ export const runPartB = async (
     axisTuples: coveringArray(partBAxes()).length,
     formCases: formCases().length,
     walks: walks.length,
+    walkSteps: walks.reduce((steps, item) => steps + item.path.length, 0),
+    skips: walks.flatMap((item) => item.skips),
   };
 };

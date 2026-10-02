@@ -17,10 +17,22 @@ export const amountLike = (text: string): boolean => {
 /**
  * Не-денежные числа внутри денежного слота: годы и даты, время, счётчики
  * «N из M», доли в процентах и разряды вида «3/7». Год и дата не раскрывают
- * сумму, поэтому остаются видимыми при скрытии значений.
+ * сумму, поэтому остаются видимыми при скрытии значений. Маленькие шаблоны
+ * применяются по очереди: одна большая альтернатива ловится как небезопасная.
  */
-export const notAmount =
-  /\b(?:19|20)\d{2}\b|\d{1,2},?\s*(?=(?:19|20)\d{2}\b)|\d{1,2}\s+[а-яёa-z]{3,9}\.?,?(?=\s*(?:19|20)\d{2})|\d{1,4}[-./:]\d{1,2}|\d+\s*\/\s*\d+|\d+\s*(?:из|of)\s*\d+|\d+\s*(?:%|шт\.?\b|pcs\b|items?\b|строк[аи]?\b|rows?\b)/g;
+export const notAmount: readonly RegExp[] = [
+  /\d{1,2}\s+[а-яёa-z]{3,9}\.?,?\s*(?:19|20)\d{2}\b/g,
+  /\d{1,2},?\s+(?:19|20)\d{2}\b/g,
+  /\b(?:19|20)\d{2}\b/g,
+  /\d{1,4}[-./:]\d{1,2}/g,
+  /\d+\s*\/\s*\d+/g,
+  /\d+\s*(?:из|of)\s*\d+/g,
+  /\d+\s*(?:%|шт\.?\b|pcs\b|items?\b|строк[аи]?\b|rows?\b)/g,
+];
+
+/** Текст без не-денежных чисел: остаток проверяется на голые цифры. */
+export const stripNotAmount = (text: string): string =>
+  notAmount.reduce((rest, pattern) => rest.replace(pattern, ''), text);
 
 /**
  * Утечка суммы в скрытом состоянии: либо текст похож на сумму (amountLike —
@@ -30,7 +42,7 @@ export const notAmount =
  * вне денежного слота не считаются: курс, дата и счётчик легально видимы.
  */
 export const amountLeak = (text: string, moneySlot: boolean): boolean =>
-  amountLike(text) || (moneySlot && /\d/.test(text.replace(notAmount, '')));
+  amountLike(text) || (moneySlot && /\d/.test(stripNotAmount(text)));
 
 /**
  * Центр видимой части прямоугольника: пересечение рамки с вьюпортом.

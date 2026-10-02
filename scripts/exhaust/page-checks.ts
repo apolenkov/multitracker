@@ -1,5 +1,5 @@
 /** Страничные инварианты: быстрые после каждого клика и полные для новых состояний. */
-import { amountLeak, amountLike, notAmount, visiblePoint } from './dom-rules.ts';
+import { amountLeak, amountLike, notAmount, stripNotAmount, visiblePoint } from './dom-rules.ts';
 
 export const invariantBase = String.raw`
 const find = (sel) => document.querySelector(sel);
@@ -48,7 +48,8 @@ const fastInv = () => {
 /** Полные инварианты состояния: имена, размеры, маскировка сумм, i18n, липкие панели. */
 export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastInvariants};
   const amountLike = ${amountLike.toString()};
-  const notAmount = ${notAmount.toString()};
+  const notAmount = [${notAmount.map((pattern) => pattern.toString()).join(',')}];
+  const stripNotAmount = ${stripNotAmount.toString()};
   const amountLeak = ${amountLeak.toString()};
   const visiblePoint = ${visiblePoint.toString()};
   const v = fastInv();

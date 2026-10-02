@@ -30,15 +30,15 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/Navigation.tsx|(anon)@89",
+      "signature": "src/Navigation.tsx|(anon)@95",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/Navigation.tsx|n@84",
+      "signature": "src/Navigation.tsx|n@90",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/Navigation.tsx|toggle@27",
+      "signature": "src/Navigation.tsx|toggle@33",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -183,10 +183,6 @@
     },
     {
       "signature": "src/demo/sync-panel.tsx|close@226",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/demo/sync-panel.tsx|onClick@77",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {

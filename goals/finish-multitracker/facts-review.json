@@ -1,0 +1,143 @@
+{
+  "stage": "facts",
+  "title": "Доделать макет MultiTracker",
+  "goalSlug": "finish-multitracker",
+  "facts": [
+    {
+      "id": "fact-1",
+      "text": "Макет содержит ровно семь разделов: Обзор, Портфели, Операции, Импорт, Подключения, Синхронизация, Настройки; нижняя панель телефона: Обзор, Портфели, Операции, Ещё.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-2",
+      "text": "В обзоре у строк RUB и USD карандаш «Изменить остаток» стоит в конце строки, высота строк равна остальным строкам активов.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-3",
+      "text": "Подпись «Откуда взялся результат · RUB» не переносится на вторую строку на ширинах 320, 375, 768 и 1440.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-4",
+      "text": "Сообщение «Отменить» не сдвигает список больше чем на 2 px; нажатие возвращает тот же элемент.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-5",
+      "text": "Пустая форма показывает короткую ошибку у каждого поля (количество, цена, сумма, комиссия), без длинной общей фразы и без слова «учебное»; «Получатель должен отличаться от источника» не показывается на пустой форме.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-6",
+      "text": "Кнопки «Удалить», «Отключить», «Отозвать доступ» оформлены как видимые действия строки 44×44 px с именем предмета; «⋯» и действий только по наведению нет.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-7",
+      "text": "При скрытых суммах результат, строки активов и причины результата нейтральны: нет классов positive/negative, стрелок и цветового знака.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-8",
+      "text": "После «Удаление данных» фокус остаётся на кнопке-открывателе (как в DESIGN.md); подтверждение требуется только у этого действия.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-9",
+      "text": "Полный перебор кликов пишет журнал JSONL: подпись элемента, действие, сдвиги, ошибки консоли; реестр незатронутых элементов не растёт (храповик).",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-10",
+      "text": "Полный перебор измеряет покрытие кода (V8 и карты исходников) и долю нажатых элементов DOM по разделам; пороги записаны и не снижаются.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-11",
+      "text": "Перебор покрывает пары осей: язык, тема, валюта показа и расчёта, скрытие сумм, плотность, монохром, ширины 320/375/768/1440; формы десяти типов операций проверены на классах значений.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-12",
+      "text": "Ревью дизайна идёт при каждом клике: контраст, цель 44 px, перенос текста, сдвиг, переполнение, токены из DESIGN.md; любой видимый дефект блокирует PASS.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-13",
+      "text": "Все клавиатурные проверки и перебор выполняются в Linux-контейнере multitracker-layout-runtime; `npm run test:ui:docker` проходит без FAIL и NOT VERIFIED.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-14",
+      "text": "Правила репозитория: TS7 для tsc и TS6 для typescript-eslint (если совместимы, иначе ADR), прежние пороги 300/50/10 не ослаблены, для нового кода действуют 250/25/8; eslint, oxlint, tsconfig и gitleaks не ослаблены, подавлений и пропущенных тестов нет.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-15",
+      "text": "ADR фиксирует профиль F+P1 и таблицу adopt/optional/reject (Knip, dependency-cruiser и другие) по эталону v2.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": false,
+      "automatedVerification": false
+    },
+    {
+      "id": "fact-16",
+      "text": "`npm run check` завершается с кодом 0, DESIGN.md проходит lint без ошибок, русские тексты прошли ru-check и logika.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    },
+    {
+      "id": "fact-17",
+      "text": "Итоговый коммит прошёл независимое ревью другой моделью (Pi) и зелёный CI на этом SHA; ветка отправлена в GitHub без слияния в main.",
+      "accepted": true,
+      "removed": false,
+      "recommendedAutomatedVerification": true,
+      "automatedVerification": true
+    }
+  ]
+}

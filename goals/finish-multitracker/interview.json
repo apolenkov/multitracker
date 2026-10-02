@@ -1,0 +1,61 @@
+{
+  "stage": "interview",
+  "title": "Доделать макет MultiTracker",
+  "goalSlug": "finish-multitracker",
+  "questions": [
+    {
+      "id": "github",
+      "prompt": "Отправлять ветку в GitHub для проверки CI?",
+      "description": "Без CI «готово» по правилам не объявить. Ветка сейчас на 6 коммитов впереди origin, ничего не отправлялось.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Отправить ветку fix/prototype-design (не main), без слияния.",
+      "recommendedOptionIds": ["push-branch"],
+      "options": [
+        { "id": "push-branch", "label": "Отправить ветку для CI, без слияния" },
+        { "id": "ask-later", "label": "Спросить в конце, когда всё готово" },
+        { "id": "no-push", "label": "Не отправлять, проверка только локально" }
+      ],
+      "required": true
+    },
+    {
+      "id": "standard",
+      "prompt": "Как глубоко применить эталон v2 сейчас?",
+      "description": "Профиль F+P1 по ADR; P2/P3 откладываются до реального домена.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Профиль F+P1: TS7 для tsc и TS6 для typescript-eslint, erasableSyntaxOnly, пороги файл ≤ 250, функция ≤ 25, ветвления ≤ 8, ADR и таблица adopt/optional/reject. Только добавлять строгость.",
+      "recommendedOptionIds": ["f-p1"],
+      "options": [
+        { "id": "f-p1", "label": "F+P1 сейчас, P2/P3 позже" },
+        { "id": "adr-only", "label": "Только ADR и таблица, правила не менять" },
+        { "id": "full", "label": "Всё сразу, включая P2/P3" }
+      ],
+      "required": true
+    },
+    {
+      "id": "budget",
+      "prompt": "Какой размер полного перебора кликов?",
+      "description": "Журнал кликов, покрытие DOM и кода, пары осей, формы, случайные обходы.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Полный: пары осей (язык, тема, валюта, скрытие сумм, плотность, монохром, 4 ширины), все формы, случайные обходы с сжатием; прогон до 30 минут в контейнере.",
+      "recommendedOptionIds": ["full-crawl"],
+      "options": [
+        { "id": "full-crawl", "label": "Полный, до 30 минут за прогон" },
+        { "id": "medium", "label": "Средний: все элементы по разу на 4 ширинах, до 10 минут" }
+      ],
+      "required": true
+    },
+    {
+      "id": "settings",
+      "prompt": "Подтвердить решения по оформлению?",
+      "description": "В настройках нет языка, темы и валюты показа (только верхняя панель). Остаются зелёная панель стоимости и шрифт Inter.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Подтверждаю без изменений.",
+      "recommendedOptionIds": ["confirm"],
+      "options": [
+        { "id": "confirm", "label": "Подтверждаю без изменений" },
+        { "id": "change", "label": "Хочу поправить (напишу)" }
+      ],
+      "required": true
+    }
+  ]
+}

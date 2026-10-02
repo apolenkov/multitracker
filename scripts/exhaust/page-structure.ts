@@ -21,8 +21,8 @@ const covers = (t, c) => {
   if (!overlap(rectOf(t), rectOf(c)) || t.contains(c) || c.contains(t)) return false;
   const tr = rectOf(t); // текст для скринридера (1px, clip-path) никто не видит
   if (Math.min(tr.w, tr.h) <= 1 || getComputedStyle(t).clipPath === 'inset(50%)') return false;
-  // Поток под нижней навигационной панелью .mobile-links — не дефект; прочие слои — находка.
-  if (overlapExempt(fixedNear(c), fixedNear(t), c.closest('.mobile-links') !== null)) return false;
+  // Поток под нижней навигацией (панель и её меню «Ещё») — не дефект; прочие слои — находка.
+  if (overlapExempt(fixedNear(c), fixedNear(t), c.closest('.mobile-links, .more-menu') !== null)) return false;
   let stack = stackAbove(tr, rectOf(c));
   if (stack.length === 0) {
     // Пересечение вне вьюпорта: мгновенно подводим текст, меряем стек, возвращаем прокрутку.

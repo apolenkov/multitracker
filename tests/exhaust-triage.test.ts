@@ -103,7 +103,7 @@ await test('overlap exemption spares only the bottom mobile nav, other fixed lay
   assert.equal(overlapExempt(true, true, true), false);
   assert.equal(overlapExempt(false, false, false), false);
   assert.ok(designScanSource.includes('overlapExempt'));
-  assert.ok(designScanSource.includes('.mobile-links'));
+  assert.ok(designScanSource.includes('.mobile-links, .more-menu'));
 });
 
 await test('overlap scan uses the hit stack, not a single top element', () => {

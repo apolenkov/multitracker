@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import {
+  amountLeak,
   amountLike,
   lineDeltaMax,
   overlapExempt,
@@ -34,6 +35,28 @@ await test('amountLike replaces the regex that misread a date next to •••�
   const leaked = 'Стоимость сейчас••••30 сент. 2026 г.';
   assert.equal(oldCheck(leaked), true);
   assert.equal(amountLike(leaked), false);
+});
+
+await test('amountLeak flags bare digits only inside money slots', () => {
+  // Позитивы: голая сумма в денежном слоте и прежние amountLike-случаи везде.
+  assert.equal(amountLeak('5000', true), true);
+  assert.equal(amountLeak('Итого 42000', true), true);
+  assert.equal(amountLeak('1 234,56 ₽', false), true);
+  assert.equal(amountLeak('0.05 BTC', false), true);
+  // Негативы: голые цифры вне денежного слота — курс («Исторический USD/RUB»),
+  // счётчики, проценты и даты остаются легально видимыми при скрытых суммах.
+  assert.equal(amountLeak('100', false), false);
+  assert.equal(amountLeak('5000', false), false);
+  assert.equal(amountLeak('2026-09-02', true), false);
+  assert.equal(amountLeak('30 сент. 2026 г.', true), false);
+  assert.equal(amountLeak('Sep 30, 2026', true), false);
+  assert.equal(amountLeak('4 из 12', true), false);
+  assert.equal(amountLeak('3 of 7', true), false);
+  assert.equal(amountLeak('42 %', true), false);
+  assert.equal(amountLeak('3/7', true), false);
+  assert.equal(amountLeak('••••', true), false);
+  // Старое поведение (только amountLike) голую цифру в денежном слоте не ловило.
+  assert.equal(amountLike('5000'), false);
 });
 
 await test('visiblePoint returns the centre of the on-screen part, null off-screen', () => {

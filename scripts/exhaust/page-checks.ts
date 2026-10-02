@@ -1,5 +1,5 @@
 /** Страничные инварианты: быстрые после каждого клика и полные для новых состояний. */
-import { amountLike, visiblePoint } from './dom-rules.ts';
+import { amountLeak, amountLike, notAmount, visiblePoint } from './dom-rules.ts';
 
 export const invariantBase = String.raw`
 const find = (sel) => document.querySelector(sel);
@@ -48,6 +48,8 @@ const fastInv = () => {
 /** Полные инварианты состояния: имена, размеры, маскировка сумм, i18n, липкие панели. */
 export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastInvariants};
   const amountLike = ${amountLike.toString()};
+  const notAmount = ${notAmount.toString()};
+  const amountLeak = ${amountLeak.toString()};
   const visiblePoint = ${visiblePoint.toString()};
   const v = fastInv();
   const controls = all('button, a[href], input, select, textarea, summary, [role="tab"], [role="checkbox"], [role="switch"], [role="radio"], [role="button"], label').filter(shown);
@@ -67,10 +69,13 @@ export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastIn
     }
   }
   if (cfg.hideAmounts === 'on') {
-    const leakSel = '.amount, .money, .value, .price, .total, .result, dd, td, .summary, .balance';
+    // Денежные слоты — классы с amount/money; голая цифра ловится только в них,
+    // иначе курс/дата/счётчик в обычных dd/td давали бы ложные находки.
+    const leakSel = '.amount, .money, .value, .price, .total, .result, dd, td, .summary, .balance, [class*=amount], [class*=money]';
+    const moneySel = '[class*=amount], [class*=money]';
     all(leakSel).filter(shown).forEach((el) => {
       const t = el.textContent ?? '';
-      if (amountLike(t))
+      if (amountLeak(t, el.closest(moneySel) !== null))
         push(v, 'hidden-amount-digit', el.tagName.toLowerCase() + '.' + (el.className || ''), 'no digits in masked amounts', t.slice(0, 60));
     });
     all('.positive, .negative, [class*=positive], [class*=negative]').filter(shown)

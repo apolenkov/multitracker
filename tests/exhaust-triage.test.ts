@@ -87,6 +87,12 @@ await test('page probes embed the corrected helpers and checks', () => {
   assert.ok(designScanSource.includes('cfg.fontEm'));
 });
 
+await test('overlap scan uses the hit stack, not a single top element', () => {
+  assert.ok(designScanSource.includes('elementsFromPoint'));
+  assert.ok(designScanSource.includes('fixedNear(c) !== fixedNear(t)'));
+  assert.ok(designScanSource.includes('scrollIntoView'));
+});
+
 await test('walk probe skips background controls while a modal dialog is open', () => {
   const probe = clickableProbe('header > button');
   assert.ok(probe.includes('dialog[open]'));

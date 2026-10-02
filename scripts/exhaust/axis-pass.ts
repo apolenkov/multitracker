@@ -49,6 +49,15 @@ const checkRoute = (
   } catch {
     /* ожидание истекло — сканируем как есть, а не теряем точку осей */
   }
+  // Раскладка по JS (collapse навигации и пр.) не покрывается getAnimations: ждём два кадра.
+  try {
+    evaluate(
+      browser,
+      '(async()=>{await new Promise((r)=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(0))))})()',
+    );
+  } catch {
+    /* тот же принцип: сканируем как есть */
+  }
   return { env, route, findings: pageFindings(browser, env, config) };
 };
 

@@ -48,6 +48,11 @@
     text-align: center;
     white-space: nowrap;
   }
+  .mobile-links :is(button, a) > span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .navigation [aria-current='page'] {
     background: var(--selected-bg);
     color: var(--selected-ink);

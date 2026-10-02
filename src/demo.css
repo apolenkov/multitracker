@@ -14,7 +14,7 @@
 .demo-panel label,
 .demo-dialog label {
   display: grid;
-  gap: 7px;
+  gap: 8px;
   margin: 0 0 18px;
   font-weight: 500;
 }

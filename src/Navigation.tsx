@@ -19,7 +19,13 @@ export function Navigation({ screen, onScreen, labels }: Props) {
           <NavigationGroups labels={labels} screen={screen} onChoose={choose} />
         </div>
         <div className="mobile-links">
-          <ScreenButtons items={mainScreens} labels={labels} screen={screen} onChoose={choose} />
+          <ScreenButtons
+            items={mainScreens}
+            labels={labels}
+            screen={screen}
+            onChoose={choose}
+            spanTitles
+          />
           <MoreButton
             screen={screen}
             labels={labels}
@@ -97,6 +103,7 @@ type ScreenButtonsProps = Readonly<{
   labels: Labels;
   screen: Screen;
   onChoose: (screen: Screen) => void;
+  spanTitles?: boolean;
 }>;
 
 function Brand({ labels, onChoose }: Pick<ScreenButtonsProps, 'labels' | 'onChoose'>) {
@@ -121,7 +128,7 @@ function Brand({ labels, onChoose }: Pick<ScreenButtonsProps, 'labels' | 'onChoo
   );
 }
 
-function ScreenButtons({ items, labels, screen, onChoose }: ScreenButtonsProps) {
+function ScreenButtons({ items, labels, screen, onChoose, spanTitles }: ScreenButtonsProps) {
   return items.map((item) => (
     <a
       key={item}
@@ -134,7 +141,9 @@ function ScreenButtons({ items, labels, screen, onChoose }: ScreenButtonsProps) 
       }}
     >
       <Icon name={item} />
-      <span>{text(labels, item)}</span>
+      <span {...(spanTitles === true ? { title: text(labels, item) } : {})}>
+        {text(labels, item)}
+      </span>
     </a>
   ));
 }

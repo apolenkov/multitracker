@@ -946,98 +946,6 @@
       "reason": "not visible"
     },
     {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > aside:nth-of-type(1) > details:nth-of-type(1) > details:nth-of-type(1) > summary:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > aside:nth-of-type(1) > details:nth-of-type(1) > summary:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(1) > section:nth-of-type(2) > button:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(1) > section:nth-of-type(3) > details:nth-of-type(1) > summary:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(2) > details:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > button:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(2) > details:nth-of-type(1) > summary:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > button:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > button:nth-of-type(2)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > button#import-run",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > summary:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > button#import-history-details",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > button#import-reconcile",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > article:nth-of-type(1) > div:nth-of-type(2) > button:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > article:nth-of-type(2) > div:nth-of-type(2) > button:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > article:nth-of-type(3) > div:nth-of-type(2) > button:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > article:nth-of-type(4) > div:nth-of-type(2) > button:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > article:nth-of-type(5) > div:nth-of-type(2) > button:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > details:nth-of-type(1) > summary:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > button#sync-run",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > details:nth-of-type(1) > summary:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > section:nth-of-type(1) > article:nth-of-type(2) > button#sync-revoke-mobile",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > section:nth-of-type(2) > button:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > table:nth-of-type(1) > tbody:nth-of-type(1) > tr:nth-of-type(2) > td:nth-of-type(1) > button:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
       "signature": "overview|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > table:nth-of-type(1) > tbody:nth-of-type(1) > tr:nth-of-type(3) > td:nth-of-type(1) > button:nth-of-type(1)",
       "reason": "not-visited"
     },
@@ -1138,22 +1046,6 @@
       "reason": "not visible"
     },
     {
-      "signature": "overview|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > label:nth-of-type(1) > input:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > label:nth-of-type(2) > input:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1) > input:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > details:nth-of-type(1) > label:nth-of-type(1) > input:nth-of-type(1)",
-      "reason": "inside closed details"
-    },
-    {
       "signature": "overview|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(4) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > label:nth-of-type(1) > input:nth-of-type(1)",
       "reason": "not visible"
     },
@@ -1183,54 +1075,6 @@
     },
     {
       "signature": "overview|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(4) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1) > input#widget-changes",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1) > select:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(2) > details:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1) > select:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(2) > details:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1) > select:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(1) > select#import-page-map-date",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(2) > select#import-page-map-asset",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(3) > select#import-page-map-action",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(4) > select#import-page-map-quantity",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(5) > select#import-page-map-price",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(6) > select#import-page-map-currency",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > label:nth-of-type(1) > select#import-page-source",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > label:nth-of-type(2) > select:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > label:nth-of-type(3) > select:nth-of-type(1)",
       "reason": "not visible"
     },
     {
@@ -1284,70 +1128,6 @@
     {
       "signature": "overview|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(4) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1) > select#widget-layout",
       "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(2) > details:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(2) > details:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(1)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(2)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(3)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(4)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(5)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(6)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > label:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > label:nth-of-type(2)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > label:nth-of-type(3)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > label:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > label:nth-of-type(2)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1)",
-      "reason": "not visible"
-    },
-    {
-      "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > details:nth-of-type(1) > label:nth-of-type(1)",
-      "reason": "inside closed details"
     },
     {
       "signature": "overview|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(4) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(1)",
@@ -1459,26 +1239,6 @@
     },
     {
       "signature": "overview|-|tab|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > div:nth-of-type(1) > section:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > button#radix-_r_0_-trigger-year",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|asset-dialog|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > dialog#asset-dialog > details:nth-of-type(1) > summary:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|asset-dialog|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > dialog#asset-dialog > details:nth-of-type(2) > summary:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|asset-dialog|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > dialog#asset-dialog > details:nth-of-type(3) > summary:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|asset-dialog|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > dialog#asset-dialog > div:nth-of-type(1) > button:nth-of-type(1)",
-      "reason": "not-visited"
-    },
-    {
-      "signature": "overview|asset-dialog|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > dialog#asset-dialog > div:nth-of-type(3) > button:nth-of-type(1)",
       "reason": "not-visited"
     },
     {
@@ -2010,10 +1770,6 @@
       "reason": "not visible"
     },
     {
-      "signature": "settings|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1) > details:nth-of-type(1) > section:nth-of-type(1) > button:nth-of-type(1)",
-      "reason": "inside closed details"
-    },
-    {
       "signature": "settings|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > label:nth-of-type(1) > input:nth-of-type(1)",
       "reason": "not visible"
     },
@@ -2066,10 +1822,6 @@
       "reason": "not visible"
     },
     {
-      "signature": "settings|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1) > details:nth-of-type(1) > section:nth-of-type(1) > label:nth-of-type(1) > select:nth-of-type(1)",
-      "reason": "inside closed details"
-    },
-    {
       "signature": "settings|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(1)",
       "reason": "not visible"
     },
@@ -2120,10 +1872,6 @@
     {
       "signature": "settings|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > details:nth-of-type(1) > label:nth-of-type(1)",
       "reason": "not visible"
-    },
-    {
-      "signature": "settings|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1) > details:nth-of-type(1) > section:nth-of-type(1) > label:nth-of-type(1)",
-      "reason": "inside closed details"
     },
     {
       "signature": "settings|-|link|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > aside:nth-of-type(1) > nav:nth-of-type(1) > div:nth-of-type(2) > a:nth-of-type(1)",
@@ -2570,5 +2318,5 @@
       "reason": "dialog-unreachable"
     }
   ],
-  "seal": "ebc6ff7e97e1ee1d429f9e4f4f652fa999a658f5428829203d1497f641d95d5e"
+  "seal": "4593c85312a989c3b8e049553df5dda001812be5b2206067ba290ab9b64080b7"
 }

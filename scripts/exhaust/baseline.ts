@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { asArray, isRecord } from './guards.ts';
-import { dumpLedger, ledgerEntry, parseLedger } from './ledger.ts';
+import { dumpLedger, ledgerEntry } from './ledger.ts';
 import type { LedgerEntry } from './ledger.ts';
 
 const CODE_REASON = 'baseline: not exercised by the layers 1-3 sweep, may only shrink';
@@ -54,40 +54,28 @@ export const assertLocalRun = (env: Readonly<Record<string, string | undefined>>
 };
 
 /**
- * Пересборка — объединение: свежие непокрытые сигнатуры добавляются к книге,
- * старые записи сохраняются (элемент мог не попасть в скан этого прогона, а не
- * стать покрытым). Книга растёт монотонно и никогда не откатывает подтверждённое.
+ * Пересборка — полная замена: книга становится точным снимком непокрытого
+ * набора последнего прогона. Старых записей генератор не читает — записи
+ * покрывшихся и не встретившихся элементов сжимаются, а не копятся вечно.
+ * Любое сжатие видно в диффе коммита и подлежит ревью (см. N2 из
+ * docs/audits/2026-10-01-claude-crawl-final/rereview-pi.md).
  */
-export const unionEntries = (
-  fresh: readonly LedgerEntry[],
-  existing: readonly LedgerEntry[],
-): readonly LedgerEntry[] => {
-  const known = new Set(fresh.map((entry) => entry.signature));
-  return [...fresh, ...existing.filter((entry) => !known.has(entry.signature))].toSorted(
-    bySignature,
-  );
-};
-
-const readExceptions = (path: string): readonly LedgerEntry[] => {
-  try {
-    return parseLedger(execFileSync('cat', [resolve(path)], { encoding: 'utf8' })).exceptions;
-  } catch {
-    return [];
-  }
-};
+export const baselineText = (
+  elementDoc: unknown,
+  codeDoc: unknown,
+): Readonly<{ elements: string; code: string }> => ({
+  elements: dumpLedger(elementExceptions(elementDoc)),
+  code: dumpLedger(codeExceptions(codeDoc)),
+});
 
 export const rebuild = (dir: string, env: Readonly<Record<string, string | undefined>>): void => {
   assertLocalRun(env);
-  const elements = unionEntries(
-    elementExceptions(loadJson(dir, 'element-coverage.json')),
-    readExceptions('scripts/exhaust/uncovered-ledger.json'),
+  const ledgers = baselineText(
+    loadJson(dir, 'element-coverage.json'),
+    loadJson(dir, 'code-coverage.json'),
   );
-  writeFileSync('scripts/exhaust/uncovered-ledger.json', dumpLedger(elements));
-  const code = unionEntries(
-    codeExceptions(loadJson(dir, 'code-coverage.json')),
-    readExceptions('scripts/exhaust/uncovered-code-ledger.json'),
-  );
-  writeFileSync('scripts/exhaust/uncovered-code-ledger.json', dumpLedger(code));
+  writeFileSync('scripts/exhaust/uncovered-ledger.json', ledgers.elements);
+  writeFileSync('scripts/exhaust/uncovered-code-ledger.json', ledgers.code);
 };
 
 const script = process.argv.at(1) ?? '';

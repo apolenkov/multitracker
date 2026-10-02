@@ -3,35 +3,39 @@ import { test } from 'node:test';
 import { checkLedger, dumpLedger, ledgerSeal, parseLedger } from '../scripts/exhaust/ledger.ts';
 import {
   assertLocalRun,
+  baselineText,
   codeExceptions,
   elementExceptions,
-  unionEntries,
 } from '../scripts/exhaust/baseline.ts';
 import type { ClickSkip } from '../scripts/exhaust/records.ts';
 import { reportChecks, skipReport } from '../scripts/exhaust/reports.ts';
 
-await test('ledger ratchet: sealed only — missing fails, stale is reported only', () => {
-  const entries = [{ signature: 'a|b', reason: 'disabled' }];
+await test('ledger ratchet: missing fails and stale fails until baseline regeneration', () => {
+  const entries = [
+    { signature: 'a|b', reason: 'disabled' },
+    { signature: 'c|d', reason: 'not visible' },
+  ];
   const ledger = parseLedger(dumpLedger(entries));
-  assert.equal(checkLedger(['a|b'], ledger).ok, true);
-  const grown = checkLedger(['a|b', 'x|y'], ledger);
+  assert.equal(checkLedger(['a|b', 'c|d'], ledger).ok, true);
+  const grown = checkLedger(['a|b', 'c|d', 'x|y'], ledger);
   assert.deepEqual(grown.missing, ['x|y']);
   assert.equal(grown.ok, false);
-  const shrunk = checkLedger([], ledger);
-  assert.deepEqual(shrunk.stale, ['a|b']);
-  assert.equal(shrunk.ok, true);
+  // Запись c|d стала лишней (элемент кликнут или не встретился сканеру) —
+  // книга расходится с замером, прогон падает до явной пересборки (N1).
+  const shrunk = checkLedger(['a|b'], ledger);
+  assert.deepEqual(shrunk.stale, ['c|d']);
+  assert.equal(shrunk.ok, false);
   assert.equal(parseLedger('{"version":2,"exceptions":[]}').version, 2);
 });
 
-await test('code ledger reuses the ratchet: unknown functions fail, covered reported', () => {
+await test('code ledger reuses the ratchet: unknown functions fail, stale fails too', () => {
   const ledger = parseLedger(
     dumpLedger([{ signature: 'src/a.ts|dead@9', reason: 'not reachable' }]),
   );
   assert.equal(checkLedger(['src/a.ts|dead@9'], ledger).ok, true);
   assert.equal(checkLedger(['src/a.ts|dead@9', 'src/a.ts|new@1'], ledger).ok, false);
-  const shrunk = checkLedger([], ledger);
-  assert.deepEqual(shrunk.stale, ['src/a.ts|dead@9']);
-  assert.equal(shrunk.ok, true);
+  assert.deepEqual(checkLedger([], ledger).stale, ['src/a.ts|dead@9']);
+  assert.equal(checkLedger([], ledger).ok, false);
 });
 
 await test('ledger seal: hand edits and forged seals fail the ratchet', () => {
@@ -54,25 +58,7 @@ await test('baseline generator refuses to run inside CI', () => {
   assert.doesNotThrow(() => assertLocalRun({ CI: 'false' }));
 });
 
-await test('baseline union keeps acknowledged entries and adds fresh uncovered', () => {
-  const merged = unionEntries(
-    [
-      { signature: 'b', reason: 'disabled' },
-      { signature: 'c', reason: 'not visible' },
-    ],
-    [
-      { signature: 'a', reason: 'inside closed details' },
-      { signature: 'b', reason: 'old reason' },
-    ],
-  );
-  assert.deepEqual(
-    merged.map((entry) => entry.signature),
-    ['a', 'b', 'c'],
-  );
-  assert.equal(merged.find((entry) => entry.signature === 'b')?.reason, 'disabled');
-});
-
-await test('baseline rebuilds ledgers from run artifacts, sorted and keyed', () => {
+await test('baseline extracts uncovered entries from run artifacts, sorted and keyed', () => {
   const elements = elementExceptions({
     entries: [
       { signature: 'b', clicked: false, reason: 'disabled' },
@@ -97,6 +83,48 @@ await test('baseline rebuilds ledgers from run artifacts, sorted and keyed', () 
   assert.deepEqual(codeExceptions(null), []);
 });
 
+const elementDoc = (entries: readonly { signature: string; clicked: boolean }[]) => ({
+  entries: entries.map((entry) => ({ ...entry, reason: 'disabled' })),
+});
+
+await test('regeneration replaces the book: covered entries shrink away, run passes', () => {
+  const book = parseLedger(
+    dumpLedger([
+      { signature: 'a', reason: 'disabled' },
+      { signature: 'gone', reason: 'inside closed details' },
+    ]),
+  );
+  // Покрывшийся gone → stale → прогон падает до пересборки генератором.
+  assert.equal(checkLedger(['a'], book).ok, false);
+  const ledgers = baselineText(
+    elementDoc([
+      { signature: 'a', clicked: false },
+      { signature: 'gone', clicked: true },
+    ]),
+    { reports: [] },
+  );
+  const regen = parseLedger(ledgers.elements);
+  assert.deepEqual(
+    regen.exceptions.map((entry) => entry.signature),
+    ['a'],
+  );
+  assert.equal(checkLedger(['a'], regen).ok, true);
+  // Новый непокрытый после пересборки всё ещё роняет прогон.
+  assert.equal(checkLedger(['a', 'n|e|w'], regen).ok, false);
+});
+
+const good = {
+  element: { missing: [], stale: [], sealed: true, ok: true },
+  code: { missing: [], stale: [], sealed: true, ok: true },
+  errors: [],
+  skips: skipReport([], 0),
+};
+
+await test('reportChecks lets a stale-only ledger fail the run', () => {
+  const staleElement = { missing: [], stale: ['gone|y'], sealed: true, ok: false };
+  assert.throws(() => reportChecks({ ...good, element: staleElement }), /element ledger/);
+});
+
 await test('skipReport shares reasons and the ratchet fails over the share limit', () => {
   const skips: readonly ClickSkip[] = [
     { path: 'a', stage: 'walk', reason: 'unreachable' },
@@ -115,11 +143,6 @@ await test('skipReport shares reasons and the ratchet fails over the share limit
     'walk:settle-timeout': 1,
     'trusted:click-threw': 1,
   });
-  const base = {
-    element: { missing: [], stale: [], sealed: true, ok: true },
-    code: { missing: [], stale: [], sealed: true, ok: true },
-    errors: [],
-  };
-  assert.throws(() => reportChecks({ ...base, skips: report }), /skipped clicks/);
-  assert.doesNotThrow(() => reportChecks({ ...base, skips: skipReport(skips.slice(0, 2), 10) }));
+  assert.throws(() => reportChecks({ ...good, skips: report }), /skipped clicks/);
+  assert.doesNotThrow(() => reportChecks({ ...good, skips: skipReport(skips.slice(0, 2), 10) }));
 });

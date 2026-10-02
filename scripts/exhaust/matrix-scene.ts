@@ -104,3 +104,19 @@ export const quietScene = (browser: Browser): void => {
   evaluate(browser, 'scrollTo(0, 0); true');
   settleLayout(browser);
 };
+
+/** Клик с восстановлением: при перекрытии чужой слой убирается и клик повторяется. */
+export const clickWithRecovery = (browser: Browser, selector: string): void => {
+  browser.run('scrollintoview', selector);
+  try {
+    browser.run('click', selector);
+  } catch {
+    closeDialogs(browser, 1);
+    closeMenu(browser);
+    evaluate(browser, 'scrollTo(0, 0); true');
+    settleLayout(browser);
+    browser.run('scrollintoview', selector);
+    browser.run('click', selector);
+  }
+  settleLayout(browser);
+};

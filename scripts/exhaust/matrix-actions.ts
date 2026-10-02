@@ -4,7 +4,7 @@ import { evaluate, settleLayout, type Browser } from '../ui-driver.ts';
 import type { Env } from './axes.ts';
 import { localize } from './matrix-labels.ts';
 import { clickSource } from './matrix-click.ts';
-import { closeDialogs } from './matrix-scene.ts';
+import { clickWithRecovery, closeDialogs } from './matrix-scene.ts';
 import type { MatrixStep } from './matrix-dsl.ts';
 import { fullInvariantsSource } from './page-checks.ts';
 import { designScan } from './page-design.ts';
@@ -60,7 +60,7 @@ const clickText = (
     '--fn',
     `(() => { const el = document.querySelector(${JSON.stringify(marker)}); if (!el) return false; const box = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)); })()`,
   );
-  browser.run('click', marker);
+  clickWithRecovery(browser, marker);
   evaluate(
     browser,
     `document.querySelector(${JSON.stringify(marker)})?.removeAttribute('data-matrix-target'); true`,
@@ -80,15 +80,10 @@ const stepClick = (browser: Browser, step: Extract<MatrixStep, { k: 'click' }>, 
   const alreadyOpen =
     evaluate(
       browser,
-      `(() => { const el = document.querySelector(${JSON.stringify(selector)}); const d = el?.closest('details'); return !!d && d.open === true; })()`,
+      `(() => { const el = document.querySelector(${JSON.stringify(selector)}); if (!el || el.tagName !== 'SUMMARY') return false; const d = el.closest('details'); return !!d && d.open === true; })()`,
     ) === true;
-  if (alreadyOpen) {
-    browser.run('click', selector);
-    settleLayout(browser);
-  }
-  browser.run('scrollintoview', selector);
-  browser.run('click', selector);
-  settleLayout(browser);
+  if (alreadyOpen) clickWithRecovery(browser, selector);
+  clickWithRecovery(browser, selector);
 };
 
 const stepText = (browser: Browser, step: Extract<MatrixStep, { k: 'text' }>, env: Env): void => {

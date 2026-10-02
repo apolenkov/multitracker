@@ -55,7 +55,7 @@ function RecordDetails(props: Props) {
       {['deposit', 'withdrawal'].includes(props.request.record.type) && (
         <p>
           {props.request.record.type === 'deposit' ? copy.externalSource : copy.externalDestination}
-          : {copy.bank}
+          : {copy.bankName}
         </p>
       )}
       {props.request.record.targetPortfolio && (

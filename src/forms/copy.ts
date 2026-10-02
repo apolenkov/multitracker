@@ -10,7 +10,7 @@ export const formCopy = {
     externalSource: 'Внешний источник',
     externalDestination: 'Внешнее назначение',
     externalError:
-      'Введите название от 1 до 120 символов. Не вводите настоящие адреса и реквизиты.',
+      'Введите учебное название от 1 до 120 символов. Не вводите настоящие адреса и реквизиты.',
     type: 'Тип операции',
     portfolioId: 'Портфель / счёт',
     asset: 'Актив',
@@ -65,7 +65,7 @@ export const formCopy = {
     externalSource: 'External source',
     externalDestination: 'External destination',
     externalError:
-      'Enter a name from 1 to 120 characters. Do not enter real addresses or account details.',
+      'Enter a sample name from 1 to 120 characters. Do not enter real addresses or account details.',
     type: 'Transaction type',
     portfolioId: 'Portfolio / account',
     asset: 'Asset',

@@ -158,7 +158,10 @@ agent-browser 0.38.1); он же служит раннером гейта
 OrbStack ([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md)):
 сборка и запуск — `scripts/runner/runner.sh build|start`, состояние и занятость —
 `scripts/runner/runner.sh status`. Пока контейнер выключен, проверки и слияния
-в `main` ждут; состав проверок в `check.yml` не менялся.
+в `main` ждут. После UI-шага гейт исполняет строгую матрицу 135×8
+(`scripts/exhaust/matrix.ts`) и полный перебор покрытия (`scripts/exhaust/run.ts`)
+с проверкой реестров; журналы, отчёты и покрытие сохраняются артефактом
+`matrix-evidence`.
 
 `test:ui` использует agent-browser **0.38.1**, создаёт собственную сессию и
 читает `MULTITRACKER_UI_URL` (по умолчанию `http://127.0.0.1:5173`). Эта отдельная

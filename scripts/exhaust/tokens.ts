@@ -68,8 +68,6 @@ export const designScales = (designMd: string): Scales => {
       2,
       4,
       6,
-      // DESIGN.md «Components»: отступ заголовка группы до полей — 14 px.
-      14,
       40,
       44,
       48,

@@ -2,43 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { amountLeak } from '../scripts/exhaust/dom-rules.ts';
 import { leakSelectors, moneySelectors } from '../scripts/exhaust/page-checks.ts';
-
-/** Упрощённый элемент: тег и список классов — достаточно для селекторов проверки. */
-type FakeEl = Readonly<{ tag: string; classes: readonly string[] }>;
-const fake = (tag: string, ...classes: readonly string[]): FakeEl => ({ tag, classes });
-
-/** Простой селектор: необязательный тег плюс .классы и [class*=подстрока]. */
-const selMatch = (el: FakeEl, simple: string): boolean => {
-  const tag = /^[a-z]+/.exec(simple)?.[0];
-  const cls = [...simple.matchAll(/\.([\w-]+)/g)].map((m) => m[1] ?? '');
-  const sub = [...simple.matchAll(/\[class\*=([\w-]+)\]/g)].map((m) => m[1] ?? '');
-  const okTag = tag === undefined || el.tag === tag;
-  return (
-    okTag &&
-    cls.every((c) => el.classes.includes(c)) &&
-    sub.every((s) => el.classes.some((c) => c.includes(s)))
-  );
-};
-
-/** Части селектора левее найденного: каждая совпадает с предком выше предыдущей. */
-const descMatch = (els: readonly FakeEl[], parts: readonly string[]): boolean => {
-  const [part, ...rest] = parts;
-  const [el, ...above] = els;
-  if (part === undefined) return true;
-  if (el === undefined) return false;
-  return (selMatch(el, part) && descMatch(above, rest)) || descMatch(above, parts);
-};
-
-/** Семантика el.closest: элемент или предок совпадает с правым компонентом селектора. */
-const closestMatch = (chain: readonly FakeEl[], sel: string): boolean =>
-  sel.split(',').some((single) => {
-    const parts = single.trim().split(/\s+/);
-    return chain.some(
-      (_, from) =>
-        selMatch(chain.slice(from)[0] ?? fake('x'), parts.at(-1) ?? '') &&
-        descMatch(chain.slice(from + 1), parts.slice(0, -1).toReversed()),
-    );
-  });
+import { closestMatch, fake, queried, type FakeEl } from './dom-match.ts';
 
 /** Именованные денежные слоты из разметки (N4): цепочка «элемент → предки». */
 const moneySlots: readonly (readonly [string, readonly FakeEl[]])[] = [
@@ -51,7 +15,7 @@ const moneySlots: readonly (readonly [string, readonly FakeEl[]])[] = [
 
 await test('named money slots: bare digits caught when hidden, allowed when shown', () => {
   moneySlots.forEach(([name, chain]) => {
-    assert.ok(closestMatch(chain.slice(0, 1), leakSelectors), `${name}: не сканируется`);
+    assert.ok(queried(chain, leakSelectors), `${name}: не сканируется`);
     const inSlot = closestMatch(chain, moneySelectors);
     assert.ok(inSlot, `${name}: не денежный слот`);
     // Скрытие вкл: голая сумма — находка; дата в слоте по-прежнему легальна.

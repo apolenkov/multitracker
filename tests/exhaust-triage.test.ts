@@ -18,6 +18,7 @@ import { clickableProbe } from '../scripts/exhaust/walk-run.ts';
 import { attemptClick } from '../scripts/exhaust/trusted.ts';
 import { record } from '../scripts/exhaust/records.ts';
 import { baseEnv } from '../scripts/exhaust/axes.ts';
+import { closestMatch, fake } from './dom-match.ts';
 
 await test('amountLike flags real sums but spares dates, ordinals and masked marks', () => {
   assert.equal(amountLike('Стоимость сейчас••••30 сент. 2026 г.'), false);
@@ -116,7 +117,8 @@ await test('page probes embed the corrected helpers (smoke)', () => {
   assert.ok(fullInvariantsSource.includes('amountLeak'));
   assert.ok(fullInvariantsSource.includes('visiblePoint'));
   assert.ok(designScanSource.includes('stackCoversText'));
-  assert.ok(designScanSource.includes('.mobile-links, .more-menu'));
+  assert.ok(designScanSource.includes('.mobile-links'));
+  assert.ok(!designScanSource.includes('mobile-links, .more-menu'));
   assert.ok(clickableProbe('x').includes('clickableNow'));
 });
 
@@ -129,6 +131,23 @@ await test('overlap exemption spares only the bottom mobile nav, other fixed lay
   assert.equal(overlapExempt(false, true, false), false);
   assert.equal(overlapExempt(true, true, true), false);
   assert.equal(overlapExempt(false, false, false), false);
+});
+
+await test('open more-menu loses the overlap exemption; closed bottom nav keeps it', () => {
+  // Разметка Navigation.tsx: .more-menu — сосед .mobile-links и есть в DOM только
+  // при expanded; его контролы не попадают под освобождение нижней панели (N5).
+  const navSel = '.mobile-links';
+  const navButton = [fake('a'), fake('div', 'mobile-links'), fake('nav', 'navigation')];
+  const menuButton = [fake('a'), fake('div', 'more-menu'), fake('nav', 'navigation')];
+  const navInBar = closestMatch(navButton, navSel);
+  const menuInBar = closestMatch(menuButton, navSel);
+  assert.equal(navInBar, true);
+  assert.equal(menuInBar, false);
+  // Одно и то же геометрическое перекрытие: закрытая панель освобождена, открытое меню — находка.
+  assert.equal(overlapExempt(true, false, navInBar), true);
+  assert.equal(overlapExempt(true, false, menuInBar), false);
+  // Старое освобождение пропускало меню: проверка селектора — из изменённого источника.
+  assert.ok(designScanSource.includes("closest('.mobile-links')"));
 });
 
 const hit = (control: boolean, text: boolean, opaque: boolean) => ({ control, text, opaque });

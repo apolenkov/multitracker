@@ -1,9 +1,11 @@
-# Self-hosted CI-раннер MultiTracker в контейнере OrbStack (arm64).
-# Гейт «check» исполняется здесь; браузер — Chromium из Debian, как в decision-092.
-# Google Chrome доступен только под amd64, поэтому система — Debian и Chromium.
-FROM debian:bookworm-slim
+# Общий CI-образ MultiTracker: self-hosted раннер гейта и локальные контейнерные
+# прогоны (`test:ui:docker`, перебор). Node — из .nvmrc, Chromium — как в
+# проверенной среде decision-092; agent-browser запечён.
+# Google Chrome существует только под amd64, поэтому система — Debian и Chromium (arm64).
+FROM node:26.10.0-bookworm-slim
 
 ARG RUNNER_VERSION=2.337.0
+ARG AGENT_BROWSER_VERSION=0.38.1
 
 RUN apt-get update \
   && apt-get install --yes --no-install-recommends \
@@ -14,7 +16,12 @@ RUN apt-get update \
     git \
     tar \
     xz-utils \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && npm install --global "agent-browser@${AGENT_BROWSER_VERSION}" \
+  && agent-browser --version
+
+ENV AGENT_BROWSER_EXECUTABLE_PATH=/usr/bin/chromium \
+  AGENT_BROWSER_ARGS=--no-sandbox
 
 RUN useradd --create-home --shell /bin/bash runner
 

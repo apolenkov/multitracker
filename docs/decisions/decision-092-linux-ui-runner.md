@@ -36,3 +36,11 @@ Escape даёт ровно одно событие.
   клавиатуры, но результат с Escape на macOS не считается проверенным.
 - Когда агент или Chrome исправят поток событий, решение можно отменить и
   вернуть прямой запуск.
+
+## Обновление 2026-10-02
+
+Образ заменён общим `multitracker-ci-runner` (Node из `.nvmrc`, Chromium,
+agent-browser 0.38.1); он же служит self-hosted раннером гейта
+([decision-095](decision-095-self-hosted-container-runner.md)). Команды
+`npm run test:ui:docker` и `scripts/exhaust-docker.sh` переведены на него,
+старое имя `multitracker-layout-runtime:20260930` не используется.

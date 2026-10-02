@@ -33,8 +33,11 @@ const covers = (t, c) => {
     window.scrollTo({ left: sx, top: sy, behavior: 'instant' });
   }
   if (stack.length === 0) return paints(c); // вьюпорт недостижим: только непрозрачный контрол считаем
-  const ti = stack.findIndex((el) => el === t || t.contains(el));
-  return (ti === -1 ? stack : stack.slice(0, ti)).some((el) => cSide(el, c) && paints(el));
+  return stackCoversText(stack.map((el) => ({
+    control: cSide(el, c),
+    text: el === t || t.contains(el),
+    opaque: paints(el),
+  })));
 };
 const scanStructure = (els, cfg, v) => {
   const textEls = els.filter(ownText);

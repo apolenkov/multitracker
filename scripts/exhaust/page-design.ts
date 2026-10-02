@@ -15,10 +15,10 @@ import {
   contrastLimit,
 } from './contrast.ts';
 import type { DesignConfig } from './design.ts';
-import { lineDeltaMax, overlapExempt, paintsBox } from './dom-rules.ts';
+import { lineDeltaMax, overlapExempt, paintsBox, stackCoversText } from './dom-rules.ts';
 import { structural } from './page-structure.ts';
 
-const dom = [lineDeltaMax, overlapExempt, paintsBox]
+const dom = [lineDeltaMax, overlapExempt, paintsBox, stackCoversText]
   .map((fn) => `const ${fn.name} = ${fn.toString()};`)
   .join('');
 

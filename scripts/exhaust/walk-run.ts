@@ -4,6 +4,7 @@ import { evaluate } from '../ui-driver.ts';
 import type { Env } from './axes.ts';
 import { ddmin } from './shrink.ts';
 import { fullInvariantsSource } from './page-checks.ts';
+import { clickableNow } from './dom-rules.ts';
 import { asFinding } from './page-rows.ts';
 import { asArray } from './guards.ts';
 import type { ClickSkip, Finding } from './records.ts';
@@ -32,7 +33,7 @@ export const walkPool = (seen: readonly RegistryInput[]): readonly string[] =>
 
 /** Пробник: элемент виден и не за модальным диалогом (фон под dialog[open] инертен). */
 export const clickableProbe = (path: string): string =>
-  `(() => { const el = document.querySelector(${JSON.stringify(path)}); const dlg = document.querySelector('dialog[open]'); return !!el && el.checkVisibility() && (!dlg || dlg.contains(el)); })()`;
+  `(() => { const clickableNow = ${clickableNow.toString()}; const el = document.querySelector(${JSON.stringify(path)}); const dlg = document.querySelector('dialog[open]'); return clickableNow(!!el, !!el && el.checkVisibility(), dlg !== null, dlg !== null && el !== null && dlg.contains(el)); })()`;
 
 const clickable = (browser: Browser, path: string): boolean =>
   evaluate(browser, clickableProbe(path)) === true;

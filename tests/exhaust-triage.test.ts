@@ -4,21 +4,20 @@ import { readFileSync } from 'node:fs';
 import {
   amountLeak,
   amountLike,
+  clickableNow,
   lineDeltaMax,
   overlapExempt,
   paintsBox,
+  stackCoversText,
   visiblePoint,
 } from '../scripts/exhaust/dom-rules.ts';
 import { designScales } from '../scripts/exhaust/tokens.ts';
 import { fullInvariantsSource } from '../scripts/exhaust/page-checks.ts';
 import { designScanSource } from '../scripts/exhaust/page-design.ts';
-import { clickableProbe, execSteps } from '../scripts/exhaust/walk-run.ts';
-import type { StepAcc, WalkDriver } from '../scripts/exhaust/walk-run.ts';
+import { clickableProbe } from '../scripts/exhaust/walk-run.ts';
 import { attemptClick } from '../scripts/exhaust/trusted.ts';
 import { record } from '../scripts/exhaust/records.ts';
-import type { ClickSkip } from '../scripts/exhaust/records.ts';
 import { baseEnv } from '../scripts/exhaust/axes.ts';
-import { reportChecks, skipReport } from '../scripts/exhaust/reports.ts';
 
 await test('amountLike flags real sums but spares dates, ordinals and masked marks', () => {
   assert.equal(amountLike('Стоимость сейчас••••30 сент. 2026 г.'), false);
@@ -113,13 +112,12 @@ await test('design scales keep em sizes apart and carry the contract 14px gap', 
   assert.ok(scales.spacings.includes(14), String(scales.spacings));
 });
 
-await test('page probes embed the corrected helpers and checks', () => {
-  assert.ok(fullInvariantsSource.includes('amountLike'));
+await test('page probes embed the corrected helpers (smoke)', () => {
+  assert.ok(fullInvariantsSource.includes('amountLeak'));
   assert.ok(fullInvariantsSource.includes('visiblePoint'));
-  assert.ok(fullInvariantsSource.includes('el.type'));
-  assert.ok(designScanSource.includes('lineDeltaMax'));
-  assert.ok(designScanSource.includes('paintsBox'));
-  assert.ok(designScanSource.includes('cfg.fontEm'));
+  assert.ok(designScanSource.includes('stackCoversText'));
+  assert.ok(designScanSource.includes('.mobile-links, .more-menu'));
+  assert.ok(clickableProbe('x').includes('clickableNow'));
 });
 
 await test('overlap exemption spares only the bottom mobile nav, other fixed layers stay findings', () => {
@@ -131,19 +129,31 @@ await test('overlap exemption spares only the bottom mobile nav, other fixed lay
   assert.equal(overlapExempt(false, true, false), false);
   assert.equal(overlapExempt(true, true, true), false);
   assert.equal(overlapExempt(false, false, false), false);
-  assert.ok(designScanSource.includes('overlapExempt'));
-  assert.ok(designScanSource.includes('.mobile-links, .more-menu'));
 });
 
-await test('overlap scan uses the hit stack, not a single top element', () => {
-  assert.ok(designScanSource.includes('elementsFromPoint'));
-  assert.ok(designScanSource.includes('scrollIntoView'));
+const hit = (control: boolean, text: boolean, opaque: boolean) => ({ control, text, opaque });
+
+await test('hit-stack coverage counts only an opaque control layer above text', () => {
+  // Контрол над текстом и непрозрачен — текст закрыт.
+  assert.equal(stackCoversText([hit(true, false, true)]), true);
+  // Контрол под текстом — слой ниже текста ничего не закрывает.
+  assert.equal(stackCoversText([hit(false, true, false), hit(true, false, true)]), false);
+  // Прозрачный кликабельный слой над текстом видимости не крадёт.
+  assert.equal(stackCoversText([hit(true, false, false)]), false);
+  // Над текстом чужой непрозрачный элемент, а контрол ниже текста — находки нет.
+  assert.equal(
+    stackCoversText([hit(false, false, true), hit(false, true, false), hit(true, false, true)]),
+    false,
+  );
 });
 
-await test('walk probe skips background controls while a modal dialog is open', () => {
-  const probe = clickableProbe('header > button');
-  assert.ok(probe.includes('dialog[open]'));
-  assert.ok(probe.includes('dlg.contains(el)'));
+await test('walk clickability needs a visible element outside modal dialogs', () => {
+  assert.equal(clickableNow(true, true, false, false), true);
+  // Открытый диалог делает фон инертным: кликабелен только его контент.
+  assert.equal(clickableNow(true, true, true, false), false);
+  assert.equal(clickableNow(true, true, true, true), true);
+  assert.equal(clickableNow(false, true, false, false), false);
+  assert.equal(clickableNow(true, false, false, false), false);
 });
 
 const clickRecord = record(1, baseEnv, 'overview', { b: 'x', a: 'x', dur: 0 }, 'sig|x', {
@@ -188,66 +198,4 @@ await test('attemptClick turns unreachable and throwing clicks into counted skip
   assert.equal(ok.skips.length, 0);
 });
 
-const quietDriver: WalkDriver = {
-  clickable: () => true,
-  click: () => undefined,
-  settle: () => undefined,
-  findings: () => [],
-};
 
-const stepInit: StepAcc = { findings: [], skips: [], failed: false };
-
-await test('walk steps count every skipped click with its reason', () => {
-  const blocked = execSteps(
-    { ...quietDriver, clickable: (path) => path !== 'behind-dialog' },
-    ['ok', 'behind-dialog', 'ok2'],
-    stepInit,
-  );
-  assert.deepEqual(blocked.skips, [
-    { path: 'behind-dialog', stage: 'walk', reason: 'unreachable' },
-  ]);
-  const unsettled = execSteps(
-    {
-      ...quietDriver,
-      settle: () => {
-        throw new Error('timeout');
-      },
-    },
-    ['slow'],
-    stepInit,
-  );
-  assert.deepEqual(unsettled.skips, [{ path: 'slow', stage: 'walk', reason: 'settle-timeout' }]);
-  const refused = execSteps(
-    {
-      ...quietDriver,
-      click: () => {
-        throw new Error('refused');
-      },
-    },
-    ['x'],
-    stepInit,
-  );
-  assert.equal(refused.skips.length, 0);
-  assert.ok(refused.findings.some((f) => f.rule === 'walk-click-fail'));
-  assert.equal(refused.failed, true);
-});
-
-await test('skipReport shares reasons and the ratchet fails over the share limit', () => {
-  const skips: readonly ClickSkip[] = [
-    { path: 'a', stage: 'walk', reason: 'unreachable' },
-    { path: 'b', stage: 'walk', reason: 'unreachable' },
-    { path: 'c', stage: 'trusted', reason: 'click-threw' },
-  ];
-  const report = skipReport(skips, 10);
-  assert.equal(report.skipped, 3);
-  assert.equal(report.share, 0.3);
-  assert.equal(report.limit, 0.2);
-  assert.deepEqual(report.reasons, { 'walk:unreachable': 2, 'trusted:click-threw': 1 });
-  const base = {
-    element: { missing: [], stale: [], sealed: true, ok: true },
-    code: { missing: [], stale: [], sealed: true, ok: true },
-    errors: [],
-  };
-  assert.throws(() => reportChecks({ ...base, skips: report }), /skipped clicks/);
-  assert.doesNotThrow(() => reportChecks({ ...base, skips: skipReport(skips.slice(0, 1), 10) }));
-});

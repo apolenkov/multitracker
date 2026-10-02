@@ -45,6 +45,27 @@ export const amountLeak = (text: string, moneySlot: boolean): boolean =>
   amountLike(text) || (moneySlot && /\d/.test(stripNotAmount(text)));
 
 /**
+ * Решение по стеку elementsFromPoint: контрол закрывает текст, только если
+ * над текстом в стеке лежит непрозрачный элемент, принадлежащий контролу.
+ * Пустой стек — пересечение вне вьюпорта — сюда не доходит: caller сам решает.
+ */
+export const stackCoversText = (
+  stack: readonly Readonly<{ control: boolean; text: boolean; opaque: boolean }>[],
+): boolean => {
+  const textIndex = stack.findIndex((entry) => entry.text);
+  const above = textIndex === -1 ? stack : stack.slice(0, textIndex);
+  return above.some((entry) => entry.control && entry.opaque);
+};
+
+/** Кликабельность шага блуждания: элемент есть, виден и не за модальным диалогом. */
+export const clickableNow = (
+  exists: boolean,
+  visible: boolean,
+  dialogOpen: boolean,
+  insideDialog: boolean,
+): boolean => exists && visible && (!dialogOpen || insideDialog);
+
+/**
  * Центр видимой части прямоугольника: пересечение рамки с вьюпортом.
  * У огромных контейнеров вроде main геометрический центр может уходить за экран или
  * под липкую панель — проверять нужно видимую часть, иначе ложные срабатывания.

@@ -7,6 +7,10 @@ import { shrinkWalk } from '../scripts/exhaust/walk-run.ts';
 import { findingsMarkdown, verdictOf } from '../scripts/exhaust/findings.ts';
 import { checkLedger, dumpLedger, ledgerSeal, parseLedger } from '../scripts/exhaust/ledger.ts';
 import { assertLocalRun } from '../scripts/exhaust/baseline.ts';
+import { execSteps } from '../scripts/exhaust/walk-run.ts';
+import type { StepAcc, WalkDriver } from '../scripts/exhaust/walk-run.ts';
+import type { ClickSkip } from '../scripts/exhaust/records.ts';
+import { reportChecks, skipReport } from '../scripts/exhaust/reports.ts';
 
 await test('probe inputs derive one field from schema per case', () => {
   const first = formCases().at(0);
@@ -59,4 +63,68 @@ await test('baseline generator refuses to run inside CI', () => {
   assert.throws(() => assertLocalRun({ CI: '1' }), /manual-only/);
   assert.doesNotThrow(() => assertLocalRun({}));
   assert.doesNotThrow(() => assertLocalRun({ CI: 'false' }));
+});
+
+const quietDriver: WalkDriver = {
+  clickable: () => true,
+  click: () => undefined,
+  settle: () => undefined,
+  findings: () => [],
+};
+
+const stepInit: StepAcc = { findings: [], skips: [], failed: false };
+
+await test('walk steps count every skipped click with its reason', () => {
+  const blocked = execSteps(
+    { ...quietDriver, clickable: (path) => path !== 'behind-dialog' },
+    ['ok', 'behind-dialog', 'ok2'],
+    stepInit,
+  );
+  assert.deepEqual(blocked.skips, [
+    { path: 'behind-dialog', stage: 'walk', reason: 'unreachable' },
+  ]);
+  const unsettled = execSteps(
+    {
+      ...quietDriver,
+      settle: () => {
+        throw new Error('timeout');
+      },
+    },
+    ['slow'],
+    stepInit,
+  );
+  assert.deepEqual(unsettled.skips, [{ path: 'slow', stage: 'walk', reason: 'settle-timeout' }]);
+  const refused = execSteps(
+    {
+      ...quietDriver,
+      click: () => {
+        throw new Error('refused');
+      },
+    },
+    ['x'],
+    stepInit,
+  );
+  assert.equal(refused.skips.length, 0);
+  assert.ok(refused.findings.some((f) => f.rule === 'walk-click-fail'));
+  assert.equal(refused.failed, true);
+});
+
+await test('skipReport shares reasons and the ratchet fails over the share limit', () => {
+  const skips: readonly ClickSkip[] = [
+    { path: 'a', stage: 'walk', reason: 'unreachable' },
+    { path: 'b', stage: 'walk', reason: 'unreachable' },
+    { path: 'c', stage: 'trusted', reason: 'click-threw' },
+  ];
+  const report = skipReport(skips, 10);
+  assert.equal(report.skipped, 3);
+  assert.equal(report.share, 0.3);
+  assert.equal(report.limit, 0.2);
+  assert.deepEqual(report.reasons, { 'walk:unreachable': 2, 'trusted:click-threw': 1 });
+  const base = {
+    element: { missing: [], stale: [], sealed: true, ok: true },
+    code: { missing: [], stale: [], sealed: true, ok: true },
+    errors: [],
+  };
+  assert.throws(() => reportChecks({ ...base, skips: report }), /skipped clicks/);
+  assert.doesNotThrow(() => reportChecks({ ...base, skips: skipReport(skips.slice(0, 1), 10) }));
 });

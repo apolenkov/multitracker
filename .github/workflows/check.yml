@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, mt-container]
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -17,24 +17,29 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
-          cache: npm
       - name: Установить Gitleaks из официального выпуска
         shell: bash
         run: |
+          case "$(uname -m)" in
+            x86_64) multitracker_arch=x64 multitracker_sha=551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb ;;
+            aarch64 | arm64) multitracker_arch=arm64 multitracker_sha=e4a487ee7ccd7d3a7f7ec08657610aa3606637dab924210b3aee62570fb4b080 ;;
+            *) echo "Неизвестная архитектура: $(uname -m)" >&2; exit 1 ;;
+          esac
+          multitracker_archive="gitleaks_8.30.1_linux_${multitracker_arch}.tar.gz"
           curl --fail --silent --show-error --location \
-            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
-            --output "$RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz"
+            "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/$multitracker_archive" \
+            --output "$RUNNER_TEMP/$multitracker_archive"
           cd "$RUNNER_TEMP"
-          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks_8.30.1_linux_x64.tar.gz' | sha256sum --check
-          tar --extract --gzip --file gitleaks_8.30.1_linux_x64.tar.gz gitleaks
+          echo "$multitracker_sha  $multitracker_archive" | sha256sum --check
+          tar --extract --gzip --file "$multitracker_archive" gitleaks
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - run: npm ci
       - run: npm run check
-      - name: Установить agent-browser и выбрать системный Chrome
+      - name: Установить agent-browser и выбрать системный Chrome или Chromium
         shell: bash
         run: |
           npm install --global agent-browser@0.38.1
-          multitracker_chrome_path="$(command -v google-chrome)"
+          multitracker_chrome_path="$(command -v google-chrome || command -v chromium)"
           "$multitracker_chrome_path" --version
           printf 'AGENT_BROWSER_EXECUTABLE_PATH=%s\n' "$multitracker_chrome_path" >> "$GITHUB_ENV"
       - name: Проверить действия интерфейса

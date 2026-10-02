@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { evaluate, type Browser } from './ui-driver.ts';
+import { evaluate, settleLayout, type Browser } from './ui-driver.ts';
 import { reveal } from './ui-helpers.ts';
 
 function navigate(browser: Browser, screen: 'settings' | 'overview') {
@@ -14,6 +14,7 @@ function navigate(browser: Browser, screen: 'settings' | 'overview') {
     `location.hash === '#${screen}' && document.activeElement?.id === 'main' && ${ready}`,
   );
   if (screen === 'overview') reveal(browser, '.chart-disclosure > summary');
+  settleLayout(browser);
 }
 
 function summary(browser: Browser) {

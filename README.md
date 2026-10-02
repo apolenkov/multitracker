@@ -151,6 +151,12 @@ Linux-контейнере: `npm run test:ui:docker` собирает `dist`, п
 `test:smoke` запускается так же (`scripts/ui-docker.sh`, см.
 [decision-092](docs/decisions/decision-092-linux-ui-runner.md)).
 
+Гейт «check» GitHub Actions исполняется на self-hosted раннере в контейнере
+OrbStack ([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md)):
+сборка и запуск — `scripts/runner/runner.sh build|start`, состояние и занятость —
+`scripts/runner/runner.sh status`. Пока контейнер выключен, проверки и слияния
+в `main` ждут; состав проверок в `check.yml` не менялся.
+
 `test:ui` использует agent-browser **0.38.1**, создаёт собственную сессию и
 читает `MULTITRACKER_UI_URL` (по умолчанию `http://127.0.0.1:5173`). Эта отдельная
 команда не входит в `check` и не заменяет матрицы R01–R21, D01–D07 и каталога.

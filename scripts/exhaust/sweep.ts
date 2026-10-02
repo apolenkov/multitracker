@@ -73,7 +73,7 @@ const runJob = (
   opts: Readonly<Record<string, unknown>>,
 ): unknown => {
   kick(browser, source, JSON.stringify(opts));
-  const result = awaitJob(browser, 4);
+  const result = awaitJob(browser, 10);
   if (isRecord(result) && typeof result.error === 'string')
     throw new Error(`page job: ${result.error}`);
   return result;

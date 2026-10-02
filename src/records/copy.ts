@@ -132,6 +132,21 @@ const copy = {
 } as const;
 
 export const recordsCopy = (language: Language) => (language === 'ru' ? copy.ru : copy.en);
+
+const accountForms = { one: 'Счёт', few: 'Счёта', many: 'Счетов' } as const;
+
+const accountForm = (count: number): string => {
+  const lastTwo = count % 100;
+  if (lastTwo >= 11 && lastTwo <= 14) return accountForms.many;
+  const last = count % 10;
+  if (last === 1) return accountForms.one;
+  if (last >= 2 && last <= 4) return accountForms.few;
+  return accountForms.many;
+};
+
+// «Счёт: 1», «Счёта: 3», «Счетов: 5»; в английском склонения нет.
+export const accountsCount = (language: Language, count: number): string =>
+  language === 'en' ? `Accounts: ${count}` : `${accountForm(count)}: ${count}`;
 export const rowNoticeText = (
   texts: ReturnType<typeof recordsCopy>,
   entity: 'portfolio' | 'account' | 'group',

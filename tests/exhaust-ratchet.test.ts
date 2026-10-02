@@ -157,14 +157,24 @@ await test('skipReport gates verification share at 0.4 and reports sweep share',
 });
 
 await test('skip gate: 0.4 boundary passes, one skip over fails', () => {
-  const ok = skipReport([skip('a', 'trusted'), skip('b', 'trusted'), skip('c', 'trusted'), skip('d', 'trusted')], 10, {
-    attempted: 0,
-    skipped: 0,
-  });
+  const ok = skipReport(
+    [skip('a', 'trusted'), skip('b', 'trusted'), skip('c', 'trusted'), skip('d', 'trusted')],
+    10,
+    {
+      attempted: 0,
+      skipped: 0,
+    },
+  );
   assert.equal(ok.share, 0.4);
   assert.doesNotThrow(() => reportChecks({ ...good, skips: ok }));
   const over = skipReport(
-    [skip('a', 'trusted'), skip('b', 'trusted'), skip('c', 'trusted'), skip('d', 'trusted'), skip('e', 'trusted')],
+    [
+      skip('a', 'trusted'),
+      skip('b', 'trusted'),
+      skip('c', 'trusted'),
+      skip('d', 'trusted'),
+      skip('e', 'trusted'),
+    ],
     10,
     { attempted: 0, skipped: 0 },
   );

@@ -1,0 +1,120 @@
+import type { ReactNode } from 'react';
+import { Icon } from '../Icon.tsx';
+import { AppearanceSettings, CurrencySettings, type SettingText } from './settings-display';
+import type { Kind } from './settings-panel';
+import type { Density, Props } from './words';
+
+type GroupProps = Props &
+  Readonly<{
+    text: SettingText;
+    open: (kind: Kind) => void;
+    density: Density;
+    onDensity: (value: Density) => void;
+    locked: boolean;
+    onLock: (locked: boolean) => void;
+    lockStatus: ReactNode;
+    recoveryStatus: ReactNode;
+  }>;
+
+export function SettingsGroups(props: GroupProps) {
+  return (
+    <div className="settings-groups">
+      <section className="settings-group">
+        <h2>{props.text('Оформление', 'Appearance')}</h2>
+        <AppearanceSettings {...props} />
+        <DensitySetting {...props} />
+      </section>
+      <section className="settings-group">
+        <h2>{props.text('Валюты', 'Currencies')}</h2>
+        <CurrencySettings {...props} />
+      </section>
+      <section className="settings-group">
+        <h2>{props.text('Данные и устройства', 'Data and devices')}</h2>
+        <p className="demo-note">
+          {props.text('Только примеры: файлы не создаются.', 'Samples only: no files are created.')}
+        </p>
+        {(['notifications', 'backup', 'export'] as const).map((kind) => (
+          <SettingLink key={kind} kind={kind} {...props} />
+        ))}
+      </section>
+      <section className="settings-group">
+        <h2>{props.text('Приватность', 'Privacy')}</h2>
+        <HiddenSetting {...props} />
+        <div className="setting-row">
+          <label className="check-row">
+            <input
+              id="settings-lock"
+              type="checkbox"
+              checked={props.locked}
+              onChange={(event) => props.onLock(event.target.checked)}
+            />
+            {props.text('Заблокировать экран (пример)', 'Lock the screen (sample)')}
+          </label>
+          {props.lockStatus}
+        </div>
+        <SettingLink kind="recovery" {...props}>
+          {props.recoveryStatus}
+        </SettingLink>
+        <SettingLink kind="delete" {...props} />
+      </section>
+    </div>
+  );
+}
+
+function SettingLink({
+  kind,
+  text,
+  open,
+  children,
+}: Pick<GroupProps, 'text' | 'open'> & Readonly<{ kind: Kind; children?: ReactNode }>) {
+  return (
+    <div className="setting-row">
+      <button id={`settings-open-${kind}`} className="setting-link" onClick={() => open(kind)}>
+        <span>{settingName(text, kind)}</span>
+        <Icon name="chevron" />
+      </button>
+      {children}
+    </div>
+  );
+}
+
+function HiddenSetting(props: Props & Readonly<{ text: SettingText }>) {
+  return (
+    <label className="check-row">
+      <input
+        id="settings-hidden"
+        type="checkbox"
+        checked={props.hidden}
+        onChange={(event) => props.onHidden(event.target.checked)}
+      />
+      {props.text('Скрыть суммы', 'Hide balances')}
+    </label>
+  );
+}
+
+// Плотность применяется сразу, без диалога и «Применить».
+function DensitySetting(props: GroupProps) {
+  return (
+    <label className="setting-select">
+      {props.text('Плотность интерфейса', 'Interface density')}
+      <select
+        id="settings-density"
+        value={props.density}
+        onChange={(event) =>
+          props.onDensity(event.target.value === 'compact' ? 'compact' : 'comfortable')
+        }
+      >
+        <option value="comfortable">{props.text('Свободно', 'Comfortable')}</option>
+        <option value="compact">{props.text('Компактно', 'Compact')}</option>
+      </select>
+    </label>
+  );
+}
+
+export function settingName(text: SettingText, kind: Kind) {
+  if (kind === 'notifications') return text('Уведомления', 'Notifications');
+  if (kind === 'recovery') return text('Ключ восстановления', 'Recovery key');
+  if (kind === 'backup') return text('Резервная копия и восстановление', 'Backup and restore');
+  if (kind === 'export') return text('Экспорт данных', 'Export data');
+  return text('Удаление данных', 'Delete data');
+}

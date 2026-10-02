@@ -4,8 +4,13 @@
   gap: 18px;
   padding: 28px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--paper);
+}
+.empty-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 .static-state > p {
   max-width: 640px;
@@ -19,8 +24,8 @@
 }
 .skeleton {
   height: 32px;
-  background: #e3e8df;
-  border-radius: 6px;
+  background: var(--surface);
+  border-radius: var(--radius);
 }
 .skeleton:last-child {
   width: 70%;

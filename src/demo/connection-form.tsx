@@ -21,29 +21,35 @@ export function ConnectionForm({ provider, language, initial, t, onSave, onCance
     },
   );
   const [result, setResult] = useState<'idle' | 'passed' | 'failed'>('idle');
+  const [testError, setTestError] = useState(false);
   const update = (value: Connection) => {
     setDraft(value);
     setResult('idle');
   };
+  // «Сохранить» сама выполняет проверку: при успехе сохраняет, при ошибке показывает её у кнопки.
   const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (result === 'passed') onSave(draft);
+    const outcome = result === 'passed' || !testError ? 'passed' : 'failed';
+    setResult(outcome);
+    if (outcome === 'passed') onSave(draft);
   };
   return (
     <form onSubmit={save}>
-      <p>{t.rights}</p>
       <ConnectionFields draft={draft} update={update} t={t} language={language} />
-      <label>
-        {t.token}
-        <input readOnly value="demo-token-••••••••" />
-      </label>
-      <ConnectionTest t={t} result={result} setResult={setResult} />
+      <ConnectionAccess t={t} />
+      <ConnectionTest
+        t={t}
+        result={result}
+        setResult={setResult}
+        testError={testError}
+        setTestError={setTestError}
+      />
       <p className="demo-note">{t.onlyDemo}</p>
       <div className="dialog-actions">
         <button type="button" className="quiet" onClick={onCancel}>
           {t.cancel}
         </button>
-        <button type="submit" disabled={result !== 'passed'}>
+        <button type="submit" className="primary">
           {t.save}
         </button>
       </div>
@@ -62,7 +68,8 @@ function ConnectionFields({
   language: 'ru' | 'en';
 }>) {
   return (
-    <>
+    <fieldset className="demo-field-group">
+      <legend>{t.destination}</legend>
       <label>
         {t.destination}
         <select
@@ -84,7 +91,7 @@ function ConnectionFields({
       </label>
       <ConnectionAccount draft={draft} update={update} t={t} language={language} />
       <ConnectionDate draft={draft} update={update} t={t} />
-    </>
+    </fieldset>
   );
 }
 function ConnectionResult({
@@ -96,7 +103,7 @@ function ConnectionResult({
   t: ConnectionWords;
   retry: () => void;
 }>) {
-  if (result === 'idle') return <p>{t.required}</p>;
+  if (result === 'idle') return null;
   return (
     <div role="status">
       <p>{result === 'passed' ? t.passed : t.failed}</p>
@@ -172,43 +179,59 @@ function ConnectionTest({
   t,
   result,
   setResult,
+  testError,
+  setTestError,
 }: Readonly<{
   t: ConnectionWords;
   result: 'idle' | 'passed' | 'failed';
   setResult: (value: 'idle' | 'passed' | 'failed') => void;
+  testError: boolean;
+  setTestError: (value: boolean) => void;
 }>) {
-  const [testError, setTestError] = useState(false);
+  const retry = () => {
+    setTestError(false);
+    setResult('passed');
+    document.getElementById('connection-test')?.focus();
+  };
   return (
     <>
-      <label>
-        {t.result}
-        <select
-          value={testError ? 'error' : 'success'}
-          onChange={(event) => {
-            setTestError(event.target.value === 'error');
-            setResult('idle');
-          }}
-        >
-          <option value="success">{t.success}</option>
-          <option value="error">{t.error}</option>
-        </select>
-      </label>
       <button
         id="connection-test"
         type="button"
+        className="quiet"
         onClick={() => setResult(testError ? 'failed' : 'passed')}
       >
         {t.test}
       </button>
-      <ConnectionResult
-        result={result}
-        t={t}
-        retry={() => {
-          setTestError(false);
-          setResult('passed');
-          document.getElementById('connection-test')?.focus();
-        }}
-      />
+      <ConnectionResult result={result} t={t} retry={retry} />
+      <details className="demo-scenarios">
+        <summary>{t.result}</summary>
+        <label>
+          {t.result}
+          <select
+            value={testError ? 'error' : 'success'}
+            onChange={(event) => {
+              setTestError(event.target.value === 'error');
+              setResult('idle');
+            }}
+          >
+            <option value="success">{t.success}</option>
+            <option value="error">{t.error}</option>
+          </select>
+        </label>
+      </details>
     </>
+  );
+}
+
+function ConnectionAccess({ t }: Readonly<{ t: ConnectionWords }>) {
+  return (
+    <div className="demo-field-group">
+      <p className="demo-note">{t.rights}</p>
+      <label>
+        {t.token}
+        <input readOnly value="demo-token-••••••••" />
+      </label>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { closeDialog, keepDialogFocus } from '../Dialog.tsx';
+import { closeDialog, keepDialogFocus, openDialog } from '../Dialog.tsx';
 import type { Language } from './words.ts';
+import { Icon } from '../Icon.tsx';
 
 type Props = Readonly<{
   id: string;
@@ -16,14 +17,10 @@ export function DemoModal({ id, title, language, onClose, children }: Props) {
     const dialog = ref.current;
     if (!dialog) return;
     const previous = document.activeElement;
-    if (!dialog.open) dialog.showModal();
+    openDialog(dialog.id);
     return () => {
       if (dialog.open) dialog.close();
-      const target =
-        previous instanceof HTMLElement && previous.isConnected && previous.checkVisibility()
-          ? previous
-          : document.querySelector<HTMLElement>('main');
-      target?.focus();
+      restoreFocus(previous);
     };
   }, []);
   return (
@@ -45,10 +42,19 @@ export function DemoModal({ id, title, language, onClose, children }: Props) {
           aria-label={language === 'ru' ? 'Закрыть' : 'Close'}
           onClick={() => closeDialog(id)}
         >
-          ×
+          <Icon name="close" />
         </button>
       </div>
-      {children}
+      <div className="demo-dialog-body">{children}</div>
     </dialog>
   );
+}
+
+function restoreFocus(previous: Element | null) {
+  if (document.querySelector('dialog[open]')) return;
+  const target =
+    previous instanceof HTMLElement && previous.isConnected && previous.checkVisibility()
+      ? previous
+      : document.querySelector<HTMLElement>('main');
+  target?.focus();
 }

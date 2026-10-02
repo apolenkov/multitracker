@@ -1,5 +1,5 @@
 import { attribution, type Buy, type Currency } from './model/portfolio.ts';
-import { money, type Language } from './i18n.ts';
+import { money, resultTone, type Language } from './i18n.ts';
 import { insightWords } from './insights/words.ts';
 
 type Props = Readonly<{
@@ -20,19 +20,26 @@ export function Example({ buys, currency, language, hidden }: Props) {
     [words.total, Object.values(effects).reduce((sum, value) => sum + value, 0)],
   ] as const;
   return (
-    <section className="attribution" aria-labelledby="attribution-title">
-      <h2 id="attribution-title">{words.reasons}</h2>
+    <details className="attribution">
+      <summary>
+        {words.reasons} · {currency}
+      </summary>
       <dl className="effects">
         {rows.map(([label, value]) => (
           <div key={label}>
             <dt>{label}</dt>
-            <dd className={value >= 0 ? 'positive' : 'negative'}>
+            <dd className={resultTone(value, hidden)}>
               {hidden ? '••••' : money(value, currency, language, true)}
             </dd>
           </div>
         ))}
       </dl>
-      <p className="quiet">{words.reasonsNote}</p>
-    </section>
+      <details className="calculation-note">
+        <summary>
+          {language === 'ru' ? 'Как считается результат' : 'How the result is calculated'}
+        </summary>
+        <p className="quiet">{words.reasonsNote}</p>
+      </details>
+    </details>
   );
 }

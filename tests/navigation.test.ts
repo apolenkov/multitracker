@@ -13,8 +13,10 @@ await test('only seven known fragments resolve, invalid input falls back to over
     'settings',
   ];
   screens.forEach((screen) => assert.equal(parseScreen(`#${screen}`), screen));
-  ['', '#main', '#UNKNOWN', '#overview/extra', '#%73ettings'].forEach((hash) =>
-    assert.equal(parseScreen(hash), 'overview'),
+  const removed = ['markets', 'following', 'analytics', 'events'];
+  const unknown = ['', '#main', '#UNKNOWN', '#overview/extra', '#%73ettings', ...removed];
+  unknown.forEach((hash) =>
+    assert.equal(parseScreen(hash.startsWith('#') ? hash : `#${hash}`), 'overview'),
   );
 });
 
@@ -25,4 +27,14 @@ await test('financial navigation preserves the last auxiliary page without mutat
   assert.deepEqual(settings, { screen: 'settings', demoScreen: 'settings' });
   assert.deepEqual(finance, { screen: 'history', demoScreen: 'settings' });
   assert.deepEqual(initial, { screen: 'import', demoScreen: 'import' });
+});
+
+await test('every demo route is retained when returning to financial screens', () => {
+  const initial: Route = Object.freeze({ screen: 'overview', demoScreen: 'settings' });
+  (['import', 'connections', 'sync', 'settings'] as const).forEach((screen) => {
+    const demo = routeFor(initial, screen);
+    assert.deepEqual(demo, { screen, demoScreen: screen });
+    assert.deepEqual(routeFor(demo, 'overview'), { screen: 'overview', demoScreen: screen });
+  });
+  assert.deepEqual(initial, { screen: 'overview', demoScreen: 'settings' });
 });

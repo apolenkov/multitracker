@@ -1,0 +1,58 @@
+.asset-symbol.neutral {
+  background: var(--surface);
+  color: var(--ink);
+}
+.holding-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.holding-allocation {
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin-top: 6px;
+  border-radius: 2px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.holding-allocation > span {
+  display: block;
+  height: 100%;
+  background: var(--chart);
+}
+.holding-allocation.btc > span {
+  background: var(--allocation-btc);
+}
+.holding-allocation.msft > span {
+  background: var(--allocation-msft);
+}
+.holding-allocation.twt > span {
+  background: var(--allocation-twt);
+}
+.portfolio-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  color: var(--muted);
+}
+.portfolio-meta .asset-symbol {
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+}
+.history-row .asset-symbol {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
+.history-row .record-summary {
+  flex-wrap: nowrap;
+}
+.history-row .record-summary dt {
+  line-height: 1.2;
+}
+.history-row .record-summary dd {
+  margin-top: 0;
+}

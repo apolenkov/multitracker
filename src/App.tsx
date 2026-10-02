@@ -6,20 +6,32 @@ import type { Currency } from './model/portfolio.ts';
 import { Navigation } from './Navigation.tsx';
 import { BuyForm, PortfolioForm, PrivacyDialog } from './Forms.tsx';
 import { Workspace } from './Workspace.tsx';
-import type { DemoState, Density } from './demo/words.ts';
+import type { DemoState, Density, Theme } from './demo/words.ts';
 import { focusMain, useNavigation } from './navigation.ts';
+import { useDialogPointerGuard } from './dialog-pointer-guard.ts';
+
+export type Notice = Readonly<{ sequence: number; message: string }>;
 import './base.css';
+import './appearance.css';
 import './layout.css';
 import './finance.css';
 import './records.css';
 import './finance-responsive.css';
+import './disclosure.css';
+import './dialog-layout.css';
 
 export type AppView = ReturnType<typeof useAppView>;
 export function App() {
+  useDialogPointerGuard();
   const view = useAppView();
   const labels = getLabels(view.language);
   return (
-    <div className="app-shell" data-density={view.density}>
+    <div
+      className="app-shell"
+      data-density={view.density}
+      data-theme={view.theme}
+      data-monochrome={view.monochrome}
+    >
       <a
         className="skip-link"
         href="#main"
@@ -40,19 +52,21 @@ function useAppView() {
   const preferences = usePreferences();
   const navigation = useNavigation();
   const [portfolioId, setPortfolioId] = useState('all');
-  const [notice, setNotice] = useState({ sequence: 0, message: '' });
+  const [notice, setNotice] = useState<Notice>({ sequence: 0, message: '' });
   const demo = useDemoView();
   useDocumentMetadata(preferences.language, navigation.screen);
+  useDocumentTheme(preferences.theme);
   const navigate = (next: Screen) => {
     navigation.navigate(next);
-    setNotice((current) => ({ ...current, message: '' }));
+    setNotice((current) => ({ sequence: current.sequence, message: '' }));
   };
   const selectPortfolio = (id: string) => {
     setPortfolioId(id);
     navigate('overview');
   };
-  const onSaved = (message: string) =>
+  const onSaved = (message: string) => {
     setNotice((current) => ({ sequence: current.sequence + 1, message }));
+  };
   return {
     ...demo,
     ...preferences,
@@ -68,8 +82,24 @@ function useAppView() {
 function usePreferences() {
   const [language, setLanguage] = useState<Language>('ru');
   const [currency, setCurrency] = useState<Currency>('RUB');
+  const [baseCurrency, setBaseCurrency] = useState<Currency>('RUB');
+  const [theme, setTheme] = useState<Theme>('light');
   const [hidden, setHidden] = useState(false);
-  return { language, setLanguage, currency, setCurrency, hidden, setHidden };
+  const [monochrome, setMonochrome] = useState(false);
+  return {
+    language,
+    setLanguage,
+    currency,
+    setCurrency,
+    baseCurrency,
+    setBaseCurrency,
+    theme,
+    setTheme,
+    hidden,
+    setHidden,
+    monochrome,
+    setMonochrome,
+  };
 }
 function useDemoView() {
   const [density, setDensity] = useState<Density>('comfortable');
@@ -84,6 +114,20 @@ function useDocumentMetadata(language: Language, screen: Screen) {
       .querySelector('title')
       ?.replaceChildren(document.createTextNode(`MultiTracker — ${title}`));
   }, [language, title]);
+}
+function useDocumentTheme(theme: Theme) {
+  useEffect(() => {
+    const system = window.matchMedia('(prefers-color-scheme: dark)');
+    const update = () => {
+      document.documentElement.setAttribute('data-theme', theme);
+      const canvas = getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim();
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', canvas);
+    };
+    update();
+    if (theme !== 'system') return;
+    system.addEventListener('change', update);
+    return () => system.removeEventListener('change', update);
+  }, [theme]);
 }
 function AppDialogs({ view }: Readonly<{ view: AppView }>) {
   return (

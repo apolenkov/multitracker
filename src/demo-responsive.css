@@ -1,0 +1,179 @@
+.import-file-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 20px 0;
+}
+.import-file-summary span {
+  color: var(--muted);
+  font-size: 14px;
+}
+.import-history {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.import-current-step {
+  margin: 0 0 20px;
+  font-weight: 600;
+}
+.import-result {
+  font-weight: 600;
+  color: var(--ink);
+}
+.import-rows {
+  display: none;
+  padding: 0;
+  list-style: none;
+}
+.import-rows li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.import-row-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.import-row-heading span {
+  color: var(--muted);
+  font-size: 14px;
+}
+.import-row-status {
+  font-weight: 600;
+}
+.import-rows [data-status='unknown'] .import-row-status,
+.import-rows [data-status='duplicate'] .import-row-status {
+  color: var(--warning);
+}
+.conflict-choices {
+  border: 0;
+  padding: 0;
+  margin: 24px 0;
+  min-width: 0;
+}
+.conflict-choices legend {
+  padding-bottom: 12px;
+}
+.conflict-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.conflict-table :is(th, td) {
+  padding: 12px 8px 12px 0;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.conflict-table :is(thead td, tbody th) {
+  width: 22%;
+}
+.conflict-table tbody tr {
+  border-top: 1px solid var(--line);
+}
+.conflict-table tbody th {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+.conflict-table tbody td {
+  font-weight: 600;
+}
+.conflict-table thead th > span {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+.conflict-table .check-row {
+  align-items: start;
+  gap: 8px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.detail-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px 20px;
+  margin-block: 20px;
+}
+.detail-list dd {
+  text-align: right;
+}
+.demo-token {
+  display: block;
+  padding: 16px;
+  margin-block: 20px;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.lost-key-choices button {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+}
+@media (max-width: 600px) {
+  .conflict-table :is(thead, tbody) {
+    display: block;
+  }
+  .conflict-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .conflict-table thead td {
+    display: none;
+  }
+  .conflict-table tbody th {
+    grid-column: 1 / -1;
+    width: auto;
+    padding-bottom: 0;
+  }
+  .mapping-list,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .connection-row {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .connection-actions {
+    grid-column: 2;
+    justify-items: start;
+  }
+  .import-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .import-actions .primary {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .import-rows {
+    display: block;
+  }
+  .import-source-table {
+    display: none;
+  }
+  .dialog-actions {
+    flex-wrap: wrap;
+  }
+}
+/* Status lines keep the height of their longest text, so a sync result replaces text in place. */
+@media (max-width: 900px) {
+  .sync-state {
+    min-height: 2lh;
+  }
+}
+@media (max-width: 600px) {
+  .sync-state {
+    min-height: 3lh;
+  }
+  .sync-status .demo-note {
+    min-height: 2lh;
+  }
+}

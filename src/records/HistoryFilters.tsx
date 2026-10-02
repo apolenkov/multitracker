@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Icon } from '../Icon.tsx';
 import { assessmentDate } from '../model/portfolio.ts';
 import { operationTypes, operationLabel } from '../forms/operations.ts';
 import { accountSamples, accountLabel } from '../forms/accounts.ts';
@@ -15,51 +17,76 @@ type Props = Readonly<{
 }>;
 export function HistoryFilters(props: Props) {
   const copy = recordsCopy(props.language);
+  const [opened, setOpened] = useState(false);
   const update = (key: keyof HistoryFilter, value: string) =>
     props.onChange({ ...props.filter, [key]: value });
+  const count = Object.entries(props.filter).filter(
+    ([key, value]) => key !== 'search' && key !== 'order' && value !== '' && value !== 'all',
+  ).length;
   return (
-    <details className="history-filters" open>
-      <summary>{copy.filter}</summary>
-      <div className="filter-grid">
-        <label>
-          {copy.search}
+    <div className="history-filter-panel">
+      <label className="history-search">
+        <span className="visually-hidden">{copy.search}</span>
+        <div>
+          <Icon name="search" />
           <input
             type="search"
             value={props.filter.search}
             placeholder={copy.searchHint}
             onChange={(event) => update('search', event.target.value)}
           />
-        </label>
-        <label>
-          {copy.type}
-          <select
-            value={props.filter.type}
-            onChange={(event) => update('type', event.target.value)}
-          >
-            <option value="all">{copy.allTypes}</option>
-            {operationTypes.map((type) => (
-              <option value={type} key={type}>
-                {operationLabel(type, props.language)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <AssetFilter {...props} update={update} />
-        <AccountFilter {...props} update={update} />
-        <DateFilters {...props} update={update} />
-        <label>
-          {copy.order}
-          <select
-            value={props.filter.order}
-            onChange={(event) => update('order', event.target.value)}
-          >
-            <option value="newest">{copy.newest}</option>
-            <option value="oldest">{copy.oldest}</option>
-          </select>
-        </label>
-      </div>
-      <button onClick={() => props.onChange(initialFilters)}>{copy.reset}</button>
-    </details>
+        </div>
+      </label>
+      <details
+        className="history-filters"
+        open={opened}
+        onToggle={(event) => setOpened(event.currentTarget.open)}
+      >
+        <summary>
+          {copy.filter}
+          {count > 0 ? ` · ${count}` : ''}
+        </summary>
+        <div className="filter-grid">
+          <TypeFilter {...props} update={update} />
+          <AssetFilter {...props} update={update} />
+          <AccountFilter {...props} update={update} />
+          <DateFilters {...props} update={update} />
+          <OrderFilter {...props} update={update} />
+        </div>
+        <button className="filter-reset" onClick={() => props.onChange(initialFilters)}>
+          {copy.reset}
+        </button>
+      </details>
+    </div>
+  );
+}
+type UpdatedProps = Props & Readonly<{ update: (key: keyof HistoryFilter, value: string) => void }>;
+function TypeFilter({ filter, language, update }: UpdatedProps) {
+  const copy = recordsCopy(language);
+  return (
+    <label>
+      {copy.type}
+      <select value={filter.type} onChange={(event) => update('type', event.target.value)}>
+        <option value="all">{copy.allTypes}</option>
+        {operationTypes.map((type) => (
+          <option value={type} key={type}>
+            {operationLabel(type, language)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+function OrderFilter({ filter, language, update }: UpdatedProps) {
+  const copy = recordsCopy(language);
+  return (
+    <label>
+      {copy.order}
+      <select value={filter.order} onChange={(event) => update('order', event.target.value)}>
+        <option value="newest">{copy.newest}</option>
+        <option value="oldest">{copy.oldest}</option>
+      </select>
+    </label>
   );
 }
 function AssetFilter({

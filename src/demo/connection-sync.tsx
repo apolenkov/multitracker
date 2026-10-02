@@ -3,6 +3,9 @@ import { DemoModal } from './modal';
 import { ConnectionForm } from './connection-form';
 import { demoState } from '../model/portfolio';
 import { accountLabel } from '../forms/accounts';
+import { Icon } from '../Icon.tsx';
+import { RowNotice, undoneText } from '../RowActions.tsx';
+import { focusMain } from '../navigation.ts';
 import {
   connectionText,
   providerLabel,
@@ -16,33 +19,26 @@ export { SyncPanel } from './sync-panel';
 export function ConnectionsPanel({ language, notify }: ConnectionProps) {
   const t = language === 'ru' ? connectionText.ru : connectionText.en;
   const localeProps = { language, t };
-  const [configured, setConfigured] = useState<readonly Connection[]>([]);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [removing, setRemoving] = useState<string | null>(null);
-  const save = (value: Connection) => {
-    setConfigured([...configured.filter((item) => item.provider !== value.provider), value]);
-    setEditing(null);
-    notify(t.saved);
-  };
-  const disconnect = () => {
-    setConfigured(configured.filter((item) => item.provider !== removing));
-    setRemoving(null);
-    notify(t.removed);
-  };
+  const { configured, dropped, editing, setEditing, save, disconnect, restore } = useConnections(
+    language,
+    t,
+    notify,
+  );
   return (
     <div className="demo-panel connection-list">
-      <p className="demo-note">{t.onlyDemo}</p>
       {providers.map((provider) => (
         <ConnectionCard
           key={provider}
           provider={provider}
           {...localeProps}
-          value={configured.find((item) => item.provider === provider)}
+          value={dropped.get(provider) ?? configured.find((item) => item.provider === provider)}
+          dropped={dropped.has(provider)}
           edit={() => setEditing(provider)}
-          remove={() => setRemoving(provider)}
+          remove={disconnect}
+          restore={() => restore(provider)}
         />
       ))}
-      <p className="demo-note">{t.privacy}</p>
+      <ConnectionPrivacy language={language} t={t} />
       {editing !== null && (
         <EditConnection
           {...localeProps}
@@ -52,35 +48,75 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
           close={() => setEditing(null)}
         />
       )}
-      {removing !== null && (
-        <RemoveConnection
-          {...localeProps}
-          provider={removing}
-          disconnect={disconnect}
-          close={() => setRemoving(null)}
-        />
-      )}
     </div>
+  );
+}
+
+function useConnections(
+  language: 'ru' | 'en',
+  t: ConnectionWords,
+  notify: (message: string) => void,
+) {
+  const [configured, setConfigured] = useState<readonly Connection[]>([]);
+  const [dropped, setDropped] = useState<ReadonlyMap<string, Connection>>(new Map());
+  const [editing, setEditing] = useState<string | null>(null);
+  const save = (value: Connection) => {
+    setConfigured([...configured.filter((item) => item.provider !== value.provider), value]);
+    setEditing(null);
+    notify(t.saved);
+  };
+  // Отключение сразу: строка остаётся под встроенным «Отменить», которое возвращает настройки.
+  const disconnect = (value: Connection) => {
+    setConfigured((current) => current.filter((item) => item.provider !== value.provider));
+    setDropped((current) => new Map([...current, [value.provider, value]]));
+    notify(t.removed);
+  };
+  const restore = (provider: string) => {
+    const value = dropped.get(provider);
+    if (value) setConfigured((current) => [...current, value]);
+    setDropped((current) => new Map([...current].filter(([key]) => key !== provider)));
+    notify(undoneText(language));
+    focusMain({ preventScroll: true });
+  };
+  return { configured, dropped, editing, setEditing, save, disconnect, restore };
+}
+function ConnectionPrivacy({
+  language,
+  t,
+}: Readonly<{ language: 'ru' | 'en'; t: ConnectionWords }>) {
+  return (
+    <>
+      <p className="demo-note">{t.onlyDemo}</p>
+      <details className="connection-privacy">
+        <summary>{language === 'ru' ? 'Приватность подключений' : 'Connection privacy'}</summary>
+        <p>{t.privacy}</p>
+      </details>
+    </>
   );
 }
 function ConnectionCard({
   provider,
   language,
   value,
+  dropped,
   t,
   edit,
   remove,
+  restore,
 }: Readonly<{
   provider: string;
   language: 'ru' | 'en';
   value: Connection | undefined;
+  dropped: boolean;
   t: ConnectionWords;
   edit: () => void;
-  remove: () => void;
+  remove: (value: Connection) => void;
+  restore: () => void;
 }>) {
   const portfolio = demoState.portfolios.find((item) => item.id === value?.portfolio);
   return (
-    <article>
+    <article className={dropped ? 'connection-row row-removed' : 'connection-row'}>
+      <ProviderLogo provider={provider} />
       <div className="connection-summary">
         <h2>{providerLabel(provider, t)}</h2>
         <p>{value ? t.configured : t.disconnected}</p>
@@ -90,21 +126,31 @@ function ConnectionCard({
             {t.history}: {value.start}
           </p>
         )}
-        <p>{t.rights}</p>
       </div>
-      <div className="sync-actions">
+      <div className="connection-actions">
         <button onClick={edit}>{value ? t.edit : t.configure}</button>
         {value && (
-          <details>
-            <summary>{t.more}</summary>
-            <button className="quiet" onClick={remove}>
-              {t.disconnect}
-            </button>
-          </details>
+          <button
+            className="danger"
+            aria-label={`${t.disconnect}: ${providerLabel(provider, t)}`}
+            onClick={() => remove(value)}
+          >
+            {t.disconnect}
+          </button>
         )}
       </div>
+      {dropped && <ConnectionNotice t={t} language={language} onUndo={restore} />}
     </article>
   );
+}
+
+// Уведомление об отключении источника: короткий текст + контекст для скринридера.
+function ConnectionNotice({
+  t,
+  language,
+  onUndo,
+}: Readonly<{ t: ConnectionWords; language: 'ru' | 'en'; onUndo: () => void }>) {
+  return <RowNotice text={t.removedRow} detail={t.removed} language={language} onUndo={onUndo} />;
 }
 
 type ModalProps = Readonly<{
@@ -143,27 +189,15 @@ function EditConnection({
     </DemoModal>
   );
 }
-function RemoveConnection({
-  language,
-  t,
-  provider,
-  close,
-  disconnect,
-}: ModalProps &
-  Readonly<{
-    disconnect: () => void;
-  }>) {
+function ProviderLogo({ provider }: Readonly<{ provider: string }>) {
+  const mark = new Map([
+    ['Tradernet', 'T'],
+    ['Binance', 'BN'],
+    ['Bybit', 'BY'],
+  ]).get(provider);
   return (
-    <DemoModal id="connection-remove" language={language} title={t.disconnectTitle} onClose={close}>
-      <p>
-        {providerLabel(provider, t)} — {t.disconnectInfo}
-      </p>
-      <div className="dialog-actions">
-        <button className="quiet" onClick={close}>
-          {t.cancel}
-        </button>
-        <button onClick={disconnect}>{t.disconnect}</button>
-      </div>
-    </DemoModal>
+    <span className="provider-logo" data-provider={provider} aria-hidden="true">
+      {mark ?? <Icon name={provider === 'wallet' ? 'portfolios' : 'connections'} />}
+    </span>
   );
 }

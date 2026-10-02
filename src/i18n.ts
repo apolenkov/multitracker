@@ -16,11 +16,11 @@ export const copy = {
     ascending: 'по возрастанию',
     descending: 'по убыванию',
     chartTitle: 'Стоимость портфеля: вымышленная история',
-    chartPeriod: 'Период примера',
-    chartDate: 'Дата примера',
-    chartContributions: 'Внесено в примере',
+    chartPeriod: 'Период',
+    chartDate: 'Дата',
+    chartContributions: 'Внесено',
     chartChange: 'Изменение стоимости за период',
-    chartAdded: 'Внесено за период в примере',
+    chartAdded: 'Внесено за период',
     chartDates: 'Суммы по ключевым датам',
     chartSampleNote:
       'Траектория и внесённые суммы вымышлены. Это не история операций и не рыночные котировки.',
@@ -96,8 +96,8 @@ export const copy = {
     demoOnly: 'Используйте только придуманные данные.',
     privacy: 'О приватности',
     assetDetails: 'Сведения об активе',
-    currentPrice: 'Учебная цена за единицу',
-    source: 'Источник примера',
+    currentPrice: 'Цена за единицу',
+    source: 'Источник',
     privacyText:
       'Это статический макет: сервера, базы данных и шифрования нет. Значения форм не сохраняются и не передаются. Файлы не читаются; подключения, котировки и синхронизация — только примеры. Не вводите настоящие финансовые данные и ключи.',
     hidden: 'Суммы скрыты',
@@ -115,11 +115,11 @@ export const copy = {
     ascending: 'ascending',
     descending: 'descending',
     chartTitle: 'Portfolio value: fictional history',
-    chartPeriod: 'Sample period',
-    chartDate: 'Sample date',
-    chartContributions: 'Contributed in sample',
+    chartPeriod: 'Period',
+    chartDate: 'Date',
+    chartContributions: 'Contributed',
     chartChange: 'Value change over the period',
-    chartAdded: 'Contributed during the sample period',
+    chartAdded: 'Contributed during the period',
     chartDates: 'Values on key dates',
     chartSampleNote:
       'The trajectory and contributions are fictional. This is neither transaction history nor market prices.',
@@ -197,7 +197,7 @@ export const copy = {
     privacy: 'About privacy',
     assetDetails: 'Asset details',
     currentPrice: 'Illustrative unit price',
-    source: 'Sample source',
+    source: 'Source',
     privacyText:
       'This is a static prototype: there is no server, database or encryption. Form values are neither saved nor transmitted. Files are not read; connections, prices and synchronization are examples only. Do not enter real financial data or keys.',
     hidden: 'Amounts hidden',
@@ -212,6 +212,9 @@ export const money = (value: number, currency: Currency, language: Language, sig
     maximumFractionDigits: 2,
     signDisplay: signed ? 'exceptZero' : 'auto',
   }).format(value);
+// Скрытые суммы не раскрывают знак результата цветом.
+export const resultTone = (value: number, hidden: boolean) =>
+  hidden ? undefined : value >= 0 ? 'positive' : 'negative';
 export const number = (value: number, language: Language) =>
   new Intl.NumberFormat(locale(language), { maximumFractionDigits: 6 }).format(value);
 export const date = (value: string, language: Language) =>

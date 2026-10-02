@@ -9,7 +9,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -30,14 +30,18 @@ jobs:
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - run: npm ci
       - run: npm run check
-      - name: Установить проверку интерфейса
+      - name: Установить agent-browser и выбрать системный Chrome
+        shell: bash
         run: |
           npm install --global agent-browser@0.38.1
-          agent-browser install --with-deps
+          multitracker_chrome_path="$(command -v google-chrome)"
+          "$multitracker_chrome_path" --version
+          printf 'AGENT_BROWSER_EXECUTABLE_PATH=%s\n' "$multitracker_chrome_path" >> "$GITHUB_ENV"
       - name: Проверить действия интерфейса
         shell: bash
         env:
           MULTITRACKER_UI_URL: http://127.0.0.1:5173
+          MULTITRACKER_SMOKE_OUTPUT: ${{ runner.temp }}/ui-smoke
         run: |
           ./node_modules/.bin/vite --host 127.0.0.1 --port 5173 --strictPort \
             > "$RUNNER_TEMP/vite.log" 2>&1 &
@@ -46,4 +50,15 @@ jobs:
           curl --fail --silent --show-error --retry 30 --retry-delay 1 \
             --retry-connrefused --retry-all-errors --retry-max-time 40 \
             --connect-timeout 2 --max-time 2 "$MULTITRACKER_UI_URL" > /dev/null
-          npm run test:ui
+          npm run test:ui 2>&1 | tee "$RUNNER_TEMP/ui.log"
+          npm run test:smoke 2>&1 | tee "$RUNNER_TEMP/smoke.log"
+      - name: Сохранить доказательства проверок интерфейса
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ui-evidence
+          path: |
+            ${{ runner.temp }}/vite.log
+            ${{ runner.temp }}/ui.log
+            ${{ runner.temp }}/smoke.log
+            ${{ runner.temp }}/ui-smoke

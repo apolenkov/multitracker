@@ -1,0 +1,23 @@
+{
+  "stage": "interview",
+  "goalSlug": "finish-multitracker",
+  "source": "owner-delegated: «Делай как рекомендуешь» (2026-10-01), браузерный опрос не заполнялся",
+  "answers": [
+    {
+      "id": "github",
+      "optionIds": ["push-branch"],
+      "text": "Отправить ветку fix/prototype-design для CI, без слияния в main."
+    },
+    {
+      "id": "standard",
+      "optionIds": ["f-p1"],
+      "text": "Профиль F+P1 сейчас, P2/P3 позже; только добавлять строгость."
+    },
+    {
+      "id": "budget",
+      "optionIds": ["full-crawl"],
+      "text": "Полный перебор, до 30 минут за прогон в контейнере."
+    },
+    { "id": "settings", "optionIds": ["confirm"], "text": "Подтверждено без изменений." }
+  ]
+}

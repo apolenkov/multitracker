@@ -1,12 +1,13 @@
 import { useState } from 'react';
+import { WidgetPreview } from './settings-widget.tsx';
 import { DemoModal } from './modal';
-import { DemoStateSettings, LocaleSettings } from './settings-display';
+import { DemoStateSettings } from './settings-display';
+import { SettingsGroups, settingName } from './settings-layout';
 import type { Notifications, SettingText } from './settings-display';
 import { SettingsModalBody } from './settings-dialogs';
 import type { Density, Props } from './words';
 
-export type Kind =
-  'display' | 'notifications' | 'privacy' | 'recovery' | 'backup' | 'export' | 'delete';
+export type Kind = 'notifications' | 'recovery' | 'backup' | 'export' | 'delete';
 export type Preferences = Readonly<{
   notifications: Notifications;
   locked: boolean;
@@ -35,103 +36,89 @@ export function SettingsPanel(props: SettingsProps) {
   const update = (patch: Partial<Preferences>) => setValue((current) => ({ ...current, ...patch }));
   return (
     <div className="demo-panel settings-panel">
-      <LocaleSettings {...props} text={text} />
-      <p>
-        {text(
-          'Настройки действуют в этой вкладке. Данные никуда не отправляются.',
-          'Preferences last in this tab. No data is sent anywhere.',
-        )}
-      </p>
-      <SettingLinks text={text} open={setKind} />
-      <PrivacyStatus
-        value={value}
+      <SettingsGroups
+        {...props}
         text={text}
-        unlock={() => {
-          document.getElementById('settings-open-privacy')?.focus();
-          update({ locked: false });
-          props.notify(
-            text(
-              'Учебный экран разблокирован без проверки личности.',
-              'Sample screen unlocked without an identity check.',
-            ),
-          );
-        }}
-      />
-      <DemoStateSettings {...props} text={text} />
-      {kind && (
-        <DemoModal
-          id="settings-dialog"
-          title={settingName(text, kind)}
-          language={props.language}
-          onClose={() => setKind(null)}
-        >
-          <SettingsModalBody
-            {...props}
-            kind={kind}
+        open={setKind}
+        locked={value.locked}
+        onLock={(locked) => update({ locked })}
+        lockStatus={
+          <LockStatus
+            locked={value.locked}
             text={text}
-            value={value}
-            update={update}
-            onClose={() => setKind(null)}
+            unlock={() => {
+              document.getElementById('settings-lock')?.focus();
+              update({ locked: false });
+              props.notify(
+                text(
+                  'Учебный экран разблокирован без проверки личности.',
+                  'Sample screen unlocked without an identity check.',
+                ),
+              );
+            }}
           />
-        </DemoModal>
+        }
+        recoveryStatus={<RecoveryStatus recorded={value.recorded} text={text} />}
+      />
+      <details className="demo-scenarios">
+        <summary>{text('Сценарии макета', 'Mockup scenarios')}</summary>
+        <DemoStateSettings {...props} text={text} />
+      </details>
+      <WidgetPreview language={props.language} hidden={props.hidden} />
+      {kind && (
+        <SettingsDialog
+          {...props}
+          kind={kind}
+          text={text}
+          value={value}
+          update={update}
+          onClose={() => setKind(null)}
+        />
       )}
     </div>
   );
 }
 
-function SettingLinks({ text, open }: Readonly<{ text: SettingText; open: (kind: Kind) => void }>) {
+function SettingsDialog(props: ModalProps) {
   return (
-    <div className="option-links">
-      {(
-        ['display', 'notifications', 'privacy', 'recovery', 'backup', 'export', 'delete'] as const
-      ).map((kind) => (
-        <button
-          id={`settings-open-${kind}`}
-          className="quiet"
-          key={kind}
-          onClick={() => open(kind)}
-        >
-          {settingName(text, kind)}
-        </button>
-      ))}
-    </div>
+    <DemoModal
+      id="settings-dialog"
+      title={settingName(props.text, props.kind)}
+      language={props.language}
+      onClose={props.onClose}
+    >
+      <SettingsModalBody {...props} />
+    </DemoModal>
   );
 }
 
-function settingName(text: SettingText, kind: Kind) {
-  if (kind === 'display') return text('Отображение', 'Display');
-  if (kind === 'notifications') return text('Уведомления', 'Notifications');
-  if (kind === 'privacy') return text('Блокировка примера', 'Sample lock');
-  if (kind === 'recovery') return text('Ключ восстановления', 'Recovery key');
-  if (kind === 'backup') return text('Резервная копия и восстановление', 'Backup and restore');
-  if (kind === 'export') return text('Экспорт данных', 'Export data');
-  return text('Удаление данных', 'Delete data');
-}
-
-function PrivacyStatus({
-  value,
+function LockStatus({
+  locked,
   text,
   unlock,
-}: Readonly<{ value: Preferences; text: SettingText; unlock: () => void }>) {
+}: Readonly<{ locked: boolean; text: SettingText; unlock: () => void }>) {
+  return locked ? (
+    <LockExample text={text} unlock={unlock} />
+  ) : (
+    <p className="demo-note">
+      {text('Пример открыт · защиты нет.', 'Sample unlocked · no protection.')}
+    </p>
+  );
+}
+
+function RecoveryStatus({ recorded, text }: Readonly<{ recorded: boolean; text: SettingText }>) {
   return (
-    <section>
-      {value.locked ? (
-        <LockExample text={text} unlock={unlock} />
-      ) : (
-        <p>{text('Учебный экран открыт.', 'Sample screen unlocked.')}</p>
-      )}
-      <p>
-        {value.recorded
-          ? text(
-              'Запись ключа подтверждена в примере.',
-              'Recording the key is confirmed in this sample.',
-            )
-          : text(
-              'Ключ восстановления ещё не отмечен как записанный.',
-              'The recovery key is not marked as recorded.',
-            )}
-      </p>
-    </section>
+    <p className="demo-note">
+      {recorded
+        ? text(
+            'Запись ключа подтверждена в примере.',
+            'Recording the key is confirmed in this sample.',
+          )
+        : text(
+            'Ключ восстановления ещё не отмечен как записанный.',
+            'The recovery key is not marked as recorded.',
+          )}
+    </p>
   );
 }
 
@@ -157,7 +144,7 @@ function LockExample({ text, unlock }: Readonly<{ text: SettingText; unlock: () 
         )}
       </p>
       <button className="primary" onClick={unlock}>
-        {text('Разблокировать пример', 'Unlock sample')}
+        {text('Разблокировать', 'Unlock')}
       </button>
     </section>
   );

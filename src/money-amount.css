@@ -1,0 +1,9 @@
+.money-amount {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.money-minor {
+  font-size: 0.65em;
+  font-weight: 500;
+  color: var(--muted);
+}

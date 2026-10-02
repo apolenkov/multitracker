@@ -10,11 +10,11 @@ const copy = {
     account: 'Счёт',
     addAccount: 'Добавить счёт',
     addGroup: 'Создать группу',
+    editGroup: 'Изменить группу',
     edit: 'Изменить',
     archive: 'В архив',
     delete: 'Удалить',
     details: 'Подробнее',
-    manage: 'Управление',
     entitySaved: 'Это пример. Изменения не сохранены.',
     filter: 'Фильтры операций',
     search: 'Поиск',
@@ -42,13 +42,25 @@ const copy = {
     source: 'Источник записи',
     externalSource: 'Внешний источник',
     externalDestination: 'Внешнее назначение',
-    bank: 'Учебный банковский счёт',
+    bank: 'Банковский счёт',
+    bankName: 'Учебный банковский счёт',
     destination: 'Получатель',
     comment: 'Заметка',
     example: 'Вымышленный пример',
-    deleteTitle: 'Удалить операцию?',
-    confirmDelete: 'Подтверждаю удаление примера',
-    deleteNote: 'В настоящем учёте это изменит остатки и результат. В макете строка останется.',
+    removed: 'Операция убрана из списка. Расчёт не изменён.',
+    archived: 'Перенесено в архив. История сохранена.',
+    entityRemoved: 'Удалено из списка. Расчёт не изменён.',
+    rowRemoved: 'Операция удалена',
+    rowArchived: {
+      portfolio: 'Портфель в архиве',
+      account: 'Счёт в архиве',
+      group: 'Группа в архиве',
+    },
+    rowDeleted: {
+      portfolio: 'Портфель удалён',
+      account: 'Счёт удалён',
+      group: 'Группа удалена',
+    },
     displayed: 'Показаны фиксированные примеры',
     accounts: 'Счета и группы',
     groupName: 'Криптовалюты',
@@ -62,11 +74,11 @@ const copy = {
     account: 'Account',
     addAccount: 'Add account',
     addGroup: 'Create group',
+    editGroup: 'Edit group',
     edit: 'Edit',
     archive: 'Archive',
     delete: 'Delete',
     details: 'Details',
-    manage: 'Manage',
     entitySaved: 'This is a sample. Changes were not saved.',
     filter: 'Transaction filters',
     search: 'Search',
@@ -94,14 +106,25 @@ const copy = {
     source: 'Record source',
     externalSource: 'External source',
     externalDestination: 'External destination',
-    bank: 'Sample bank account',
+    bank: 'Bank account',
+    bankName: 'Sample bank account',
     destination: 'Destination',
     comment: 'Note',
     example: 'Fictional example',
-    deleteTitle: 'Delete transaction?',
-    confirmDelete: 'I confirm deletion of this sample',
-    deleteNote:
-      'In a real ledger, this changes balances and the result. This prototype keeps the row.',
+    removed: 'Transaction removed from the list. The calculation is unchanged.',
+    archived: 'Moved to the archive. History is kept.',
+    entityRemoved: 'Removed from the list. The calculation is unchanged.',
+    rowRemoved: 'Transaction deleted',
+    rowArchived: {
+      portfolio: 'Portfolio archived',
+      account: 'Account archived',
+      group: 'Group archived',
+    },
+    rowDeleted: {
+      portfolio: 'Portfolio deleted',
+      account: 'Account deleted',
+      group: 'Group deleted',
+    },
     displayed: 'Fixed samples are displayed',
     accounts: 'Accounts and groups',
     groupName: 'Crypto',
@@ -109,3 +132,18 @@ const copy = {
 } as const;
 
 export const recordsCopy = (language: Language) => (language === 'ru' ? copy.ru : copy.en);
+export const rowNoticeText = (
+  texts: ReturnType<typeof recordsCopy>,
+  entity: 'portfolio' | 'account' | 'group',
+  action: 'archive' | 'delete',
+) => {
+  const rows = action === 'archive' ? texts.rowArchived : texts.rowDeleted;
+  if (entity === 'portfolio') return rows.portfolio;
+  return entity === 'account' ? rows.account : rows.group;
+};
+
+// Контекст уведомления для скринридера: архив хранит историю, удаление не меняет расчёт.
+export const rowNoticeDetail = (
+  texts: ReturnType<typeof recordsCopy>,
+  action: 'archive' | 'delete',
+): string => (action === 'archive' ? texts.archived : texts.entityRemoved);

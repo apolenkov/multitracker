@@ -161,13 +161,15 @@ function validDate(value: string) {
 }
 function selectionError(field: Field, input: OperationInput, state: State, value: string) {
   if (field === 'targetPortfolio')
-    return state.portfolios.some((item) => item.id === value) ? undefined : 'destination';
+    return state.portfolios.some((item) => item.id === value) ? undefined : 'selection';
   if (field === 'account') return validAccount(value, input.portfolioId) ? undefined : 'account';
-  if (field === 'targetAccount')
-    return validAccount(value, input.targetPortfolio) && value !== input.account
-      ? undefined
-      : 'destination';
+  if (field === 'targetAccount') return targetError(input, value);
   return currencyError(field, input, value);
+}
+// Совпадение получателя с источником проверяется только когда оба выбраны.
+function targetError(input: OperationInput, value: string) {
+  if (!validAccount(value, input.targetPortfolio)) return 'selection';
+  return input.account !== '' && value === input.account ? 'destination' : undefined;
 }
 export const feeCurrencies = (input: OperationInput): readonly string[] =>
   input.type === 'transfer' && ['BTC', 'TWT'].includes(input.asset)
@@ -212,7 +214,8 @@ function numericError(field: Field, value: string, type: OperationType) {
       ['quantity', 1e6],
       ['fee', 1e7],
     ]).get(field) ?? 1e9;
-  return validNumber(value, field === 'fee' || type === 'opening', max) ? undefined : 'positive';
+  if (validNumber(value, field === 'fee' || type === 'opening', max)) return undefined;
+  return Number(value.trim().replace(',', '.')) > max ? 'range' : 'positive';
 }
 export function validateOperation(input: OperationInput, state: State): OperationErrors {
   const errors = Object.fromEntries(
@@ -228,8 +231,8 @@ export function validateOperation(input: OperationInput, state: State): Operatio
         )
       : {};
   return {
-    ...errors,
     ...buyErrors,
+    ...errors,
     ...(!state.portfolios.some((item) => item.id === input.portfolioId)
       ? { portfolioId: 'portfolio' }
       : {}),

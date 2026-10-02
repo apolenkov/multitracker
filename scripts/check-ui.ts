@@ -1,6 +1,25 @@
-import assert, { AssertionError } from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import { createBrowser, evaluate } from './ui-driver.ts';
 import type { Browser } from './ui-driver.ts';
+import { appearanceThemes, independentCurrencies, settingsPersist } from './ui-preferences.ts';
+import { reveal, widgetAppearance } from './ui-helpers.ts';
+import { connectionLifecycle } from './ui-connection-checks.ts';
+import { createCheck, type Result } from './ui-results.ts';
+import { conflictRadioChoices, syncPostConflictDisclosure } from './ui-sync-checks.ts';
+import { operationExtras } from './ui-operation-checks.ts';
+import { mappingSamples } from './ui-import-checks.ts';
+import {
+  attributionLine,
+  initialSkipFocus,
+  maskedResultTones,
+  narrowAllocation,
+} from './ui-overview-checks.ts';
+import { stableHeroDisclosure } from './ui-overview-checks.ts';
+import { recordRowActions, entityUndo, importAndSyncUndo } from './ui-row-action-checks.ts';
+import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
+import { emptyOverview } from './ui-empty-overview-checks.ts';
+import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
+import { cashFlow } from './ui-cash-flow-checks.ts';
 
 const screens = [
   ['overview', 'Обзор', 'Overview'],
@@ -12,28 +31,18 @@ const screens = [
   ['settings', 'Настройки', 'Settings'],
 ] as const;
 type Language = 'ru' | 'en';
-type Result = Readonly<{ id: string; status: string; observed: unknown }>;
 const baseUrl = new URL(process.env.MULTITRACKER_UI_URL ?? 'http://127.0.0.1:5173');
 assert.ok(['http:', 'https:'].includes(baseUrl.protocol), 'URL должен быть HTTP(S)');
 assert.equal(baseUrl.username + baseUrl.password, '', 'URL не должен содержать credentials');
 const browser = createBrowser();
+const check = createCheck(browser);
+const headingLabel = "document.querySelector('#main h1')?.firstChild?.textContent?.trim()";
 
 function truth(source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
 }
-function check(id: string, action: () => unknown): Result {
-  try {
-    return { id, status: 'PASS', observed: action() };
-  } catch (error: unknown) {
-    return {
-      id,
-      status: error instanceof AssertionError ? 'FAIL' : 'NOT VERIFIED',
-      observed: error instanceof Error ? error.message : String(error),
-    };
-  }
-}
 function navigate(screen: string, width = 1440, language: Language = 'ru') {
-  const extra = ['import', 'connections', 'sync', 'settings'].includes(screen);
+  const extra = !['overview', 'portfolios', 'history'].includes(screen);
   if (width === 375 && extra) {
     browser.run(
       'find',
@@ -45,17 +54,18 @@ function navigate(screen: string, width = 1440, language: Language = 'ru') {
       '--exact',
     );
   }
-  const scope = width === 375 && extra ? '.more-menu' : '.navigation';
+  const scope = width === 375 ? (extra ? '.more-menu' : '.mobile-links') : '.desktop-links';
   const selector = `${scope} a[href="#${screen}"]`;
   browser.run('click', selector);
+  const heading = screens.find(([route]) => route === screen)?.[language === 'ru' ? 1 : 2];
   browser.run(
     'wait',
     '--fn',
-    `location.hash === '#${screen}' && document.activeElement?.id === 'main'`,
+    `location.hash === '#${screen}' && document.activeElement?.id === 'main' && ${headingLabel} === ${JSON.stringify(heading)}`,
   );
 }
 function language(value: Language) {
-  browser.run('select', '.topbar label:first-of-type select', value);
+  browser.run('select', '#topbar-language', value);
   browser.run('wait', '--fn', `document.documentElement.lang === '${value}'`);
 }
 function screenChecks(width: number, locale: Language): readonly Result[] {
@@ -63,13 +73,19 @@ function screenChecks(width: number, locale: Language): readonly Result[] {
   return screens.map(([screen, ru, en]) =>
     check(`screen:${width}:${locale}:${screen}`, () => {
       navigate(screen, width, locale);
-      assert.equal(
-        evaluate(browser, 'document.querySelector("#main h1")?.textContent'),
-        locale === 'ru' ? ru : en,
-      );
+      assert.equal(evaluate(browser, headingLabel), locale === 'ru' ? ru : en);
+      if (screen === 'portfolios')
+        assert.equal(
+          evaluate(browser, 'document.querySelector("#main h1 .count")?.textContent.trim()'),
+          '3',
+        );
       truth(
         'document.documentElement.scrollWidth <= innerWidth + 1',
         'Горизонтальное переполнение страницы',
+      );
+      truth(
+        '[...document.querySelectorAll("[role=tab][aria-controls]")].every((node) => node.getAttribute("aria-controls").split(" ").every((id) => document.getElementById(id)))',
+        'aria-controls вкладки ссылается на несуществующую панель',
       );
       return evaluate(
         browser,
@@ -126,74 +142,48 @@ function repeatSave() {
   );
   return 'Два Save: непустой результат, второй DOM-узел отличается';
 }
-function startImport() {
-  browser.run('find', 'role', 'button', 'click', '--name', 'Начать импорт-пример', '--exact');
-  browser.run('wait', '#import-wizard[open]');
-}
 function importMapping() {
   navigate('import');
   browser.run('select', '#import-page-source', 'Binance');
-  browser.run('click', '.demo-panel details summary');
+  reveal(browser, '#import-mapping-options > summary');
+  mappingSamples(browser, 'page');
   browser.run('select', '#import-page-map-date', 'skip');
   language('en');
   assert.equal(evaluate(browser, 'document.querySelector("#import-page-map-date")?.value'), 'skip');
   language('ru');
-  startImport();
-  browser.run('click', '#import-next');
-  browser.run('click', '#import-sample-file');
-  browser.run('click', '#import-next');
-  assert.equal(
-    evaluate(browser, 'document.querySelector("#import-wizard-map-date")?.value'),
-    'skip',
-  );
-  browser.run('click', '#import-next');
+  browser.run('click', '#import-run');
   truth(
-    'Boolean(document.querySelector("#import-error")?.textContent?.trim()) && document.querySelector("#import-wizard-map-date")?.getAttribute("aria-invalid") === "true"',
-    'Неверное обязательное сопоставление должно блокировать следующий шаг',
+    'Boolean(document.querySelector("#import-error")?.textContent?.trim()) && document.querySelector("#import-page-map-date")?.getAttribute("aria-invalid") === "true" && document.activeElement?.id === "import-page-map-date"',
+    'Неверное сопоставление блокирует импорт и получает фокус',
   );
-  browser.run('press', 'Escape');
-  browser.run('wait', '--fn', '!document.querySelector("#import-wizard[open]")');
-  return 'skip сохранён RU→EN→RU и в wizard; ошибка блокирует переход';
+  browser.run('select', '#import-page-map-date', 'date');
+  return 'skip сохранён RU→EN→RU; ошибка блокирует импорт и ставит фокус в поле';
 }
+// Один экран: значения по умолчанию верны, импорт — одно нажатие; снятый пропуск даёт ошибку.
 function cancelImport() {
-  startImport();
-  browser.run('select', '#import-wizard-source', 'Bybit');
-  browser.run('find', 'role', 'button', 'click', '--name', 'Отмена', '--exact');
-  browser.run('wait', '--fn', '!document.querySelector("#import-wizard[open]")');
-  assert.equal(
-    evaluate(browser, 'document.querySelector("#import-page-source")?.value'),
-    'Binance',
-  );
-  return 'Bybit в черновике → Cancel → page Binance';
-}
-function settingsPersist() {
-  navigate('settings');
-  browser.run('click', '#settings-open-notifications');
-  browser.run('wait', '#settings-dialog[open]');
-  browser.run('check', '#settings-notification-price');
-  browser.run('click', '#settings-dialog button[type="submit"]');
-  browser.run('wait', '--fn', '!document.querySelector("#settings-dialog[open]")');
-  navigate('overview');
-  navigate('settings');
-  browser.run('click', '#settings-open-notifications');
-  browser.run('wait', '#settings-dialog[open]');
+  browser.run('find', 'label', 'Пропустить повтор (строка 4)', 'click', '--exact');
+  browser.run('click', '#import-run');
   truth(
-    'document.querySelector("#settings-notification-price")?.checked === true',
-    'Настройка должна пережить переход в финансовый раздел',
+    'Boolean(document.querySelector("#import-error")) && document.activeElement?.getAttribute("aria-invalid") === "true"',
+    'Повтор без пропуска блокирует импорт',
   );
-  browser.run('press', 'Escape');
-  const closed =
-    '!document.querySelector("#settings-dialog") && document.activeElement?.id === "settings-open-notifications"';
-  browser.run('wait', '--fn', closed);
-  truth(closed, 'Escape должен закрыть настройки и вернуть фокус исходной кнопке');
-  return 'Price notification сохранена settings→overview→settings; Escape закрывает и возвращает фокус';
+  browser.run('find', 'label', 'Пропустить повтор (строка 4)', 'click', '--exact');
+  browser.run('click', '#import-run');
+  browser.run('wait', '--fn', '!document.querySelector("#import-error")');
+  assert.match(
+    String(evaluate(browser, 'document.querySelector(".demo-page > .demo-status")?.innerText')),
+    /Добавлено 2, пропущено 2/,
+  );
+  return 'Ошибка повтора → пропуск → одно нажатие «Импортировать 2 операции»';
 }
 function hiddenReconciliation() {
   language('ru');
   navigate('settings');
   browser.run('find', 'label', 'Скрыть суммы', 'check', '--exact');
   navigate('import');
-  browser.run('find', 'role', 'button', 'click', '--name', 'Сверить остаток', '--exact');
+  reveal(browser, '#import-mapping-options > summary');
+  mappingSamples(browser, 'page', true);
+  browser.run('click', '#import-reconcile');
   browser.run('wait', '#import-history[open]');
   assert.deepEqual(
     evaluate(
@@ -207,22 +197,59 @@ function hiddenReconciliation() {
   assert.ok(typeof text === 'string', 'Открытый диалог сверки отсутствует');
   assert.equal(/\+?0[.,]0[145]/.test(text), false, 'Диалог раскрывает исходные суммы');
   browser.run('click', '#import-history[open] .icon-close');
-  browser.run('wait', '--fn', '!document.querySelector("#import-history[open]")');
-  return 'В открытой сверке: три ••••; нет 0.04, 0.05, +0.01 с точкой или запятой';
+  browser.run(
+    'wait',
+    '--fn',
+    '!document.querySelector("#import-history[open]") && document.activeElement === document.querySelector("#import-reconcile")',
+  );
+  return [
+    maskedResultTones(browser),
+    'В открытой сверке: три ••••; нет 0.04, 0.05, +0.01 с точкой или запятой',
+  ];
 }
 function runChecks(driver: Browser): readonly Result[] {
-  driver.run('open', baseUrl.href);
-  driver.run('wait', '#main h1');
-  const pages = allScreens();
-  return [
-    ...pages,
-    check('navigation:back-main-focus', backFocus),
-    check('feedback:repeat-save', repeatSave),
-    check('import:mapping-locale-invalid', importMapping),
-    check('import:cancel-source', cancelImport),
-    check('settings:finance-roundtrip', settingsPersist),
-    check('privacy:hidden-import-reconciliation', hiddenReconciliation),
+  const pages = [
+    check('navigation:initial-skip-focus', () => initialSkipFocus(driver, baseUrl.href)),
+    ...allScreens(),
   ];
+  language('ru');
+  const actions: readonly Readonly<[string, () => unknown]>[] = [
+    ['preferences:appearance-themes', () => appearanceThemes(browser)],
+    ['preferences:independent-currencies', () => independentCurrencies(browser)],
+    ['navigation:back-main-focus', backFocus],
+    ['feedback:repeat-save', repeatSave],
+    ['import:mapping-locale-invalid', importMapping],
+    ['import:one-click-run-and-errors', cancelImport],
+    ['settings:finance-roundtrip', () => settingsPersist(browser)],
+    ['connections:configure-test-save-disconnect-undo', () => connectionLifecycle(browser)],
+    ['preferences:widget-monochrome', () => widgetAppearance(browser)],
+    ['sync:radio-labels-width-selection', () => conflictRadioChoices(browser)],
+    ['operations:meaningful-extras-visible', () => operationExtras(browser)],
+    ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
+    ['cash:opening-balance-rows-and-sort', () => cashFlow(browser)],
+    ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
+    ['overview:attribution-one-line', () => attributionLine(browser)],
+    ['history:row-actions-focus-undo', () => recordRowActions(browser)],
+    ['portfolios:archive-delete-undo', () => entityUndo(browser)],
+    ['import-sync:visible-actions-undo', () => importAndSyncUndo(browser)],
+    ['destructive:visible-targets-named', () => destructiveTargets(browser)],
+    ['settings:delete-focus-return', () => settingsDeleteFocus(browser)],
+    ['overview:empty-state-restores-example', () => emptyOverview(browser)],
+    ['privacy:hidden-import-reconciliation', hiddenReconciliation],
+    ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],
+    ['sync:confirm-then-intentional-disclosure', () => syncPostConflictDisclosure(browser)],
+  ];
+  return actions.reduce<readonly Result[]>(
+    (results, [id, action]) => [
+      ...results,
+      check(
+        id,
+        action,
+        results.every((result) => result.status === 'PASS'),
+      ),
+    ],
+    pages,
+  );
 }
 function main() {
   const start = new Date().toISOString();

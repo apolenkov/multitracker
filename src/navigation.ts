@@ -1,31 +1,16 @@
 import { useEffect, useState } from 'react';
 import type { Screen } from './i18n.ts';
+import { demoScreens, type Screen as DemoScreen } from './demo/words.ts';
 
-type DemoScreen = 'import' | 'connections' | 'sync' | 'settings';
 export type Route = Readonly<{ screen: Screen; demoScreen: DemoScreen }>;
 
+const screens: readonly Screen[] = ['overview', 'portfolios', 'history', ...demoScreens];
+
 export function parseScreen(hash: string): Screen {
-  switch (hash) {
-    case '#portfolios':
-      return 'portfolios';
-    case '#history':
-      return 'history';
-    case '#import':
-      return 'import';
-    case '#connections':
-      return 'connections';
-    case '#sync':
-      return 'sync';
-    case '#settings':
-      return 'settings';
-    default:
-      return 'overview';
-  }
+  return screens.find((screen) => hash === `#${screen}`) ?? 'overview';
 }
 export function isDemoScreen(screen: Screen): screen is DemoScreen {
-  return (
-    screen === 'import' || screen === 'connections' || screen === 'sync' || screen === 'settings'
-  );
+  return demoScreens.some((item) => item === screen);
 }
 export function routeFor(current: Route, screen: Screen): Route {
   return { screen, demoScreen: isDemoScreen(screen) ? screen : current.demoScreen };
@@ -51,21 +36,22 @@ export function useNavigation() {
     return routeFor({ screen: 'overview', demoScreen: 'import' }, screen);
   });
   useEffect(() => {
-    const readAddress = () => {
+    const readAddress = (focus = true) => {
       const screen = parseScreen(window.location.hash);
       if (window.location.hash !== `#${screen}`) {
         window.history.replaceState(null, '', `#${screen}`);
       }
       closeOpenDialogs();
-      focusPage();
+      if (focus) focusPage();
       setRoute((current) => routeFor(current, screen));
     };
-    readAddress();
+    readAddress(false);
+    const onHashChange = () => readAddress();
     const dialogClosed = () => requestAnimationFrame(restoreVisibleFocus);
-    window.addEventListener('hashchange', readAddress);
+    window.addEventListener('hashchange', onHashChange);
     document.addEventListener('close', dialogClosed, true);
     return () => {
-      window.removeEventListener('hashchange', readAddress);
+      window.removeEventListener('hashchange', onHashChange);
       document.removeEventListener('close', dialogClosed, true);
     };
   }, []);

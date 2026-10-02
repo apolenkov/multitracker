@@ -54,13 +54,13 @@ export function importError(draft: ImportDraft, step: number, language: ImportLa
     );
   }
   if (step >= 1 && !draft.fileSelected) {
-    return importText(language, 'Выберите учебный файл.', 'Select the sample file.');
+    return importText(language, 'Выберите файл.', 'Select the file.');
   }
   if (step >= 2 && importFields.some((field) => importColumn(draft, field) !== field)) {
     return importText(
       language,
-      'Сопоставьте все обязательные поля с одноимёнными столбцами учебного файла.',
-      'Map all required fields to the matching columns in the sample file.',
+      'Сопоставьте все обязательные поля с одноимёнными столбцами файла.',
+      'Map all required fields to the matching columns in the file.',
     );
   }
   if (step >= 3 && !safeImportRows(draft)) {

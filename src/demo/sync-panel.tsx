@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { DemoModal } from './modal';
 import { SyncConflict } from './sync-conflict';
 import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
+import { RowNotice, undoneText } from '../RowActions.tsx';
+import { focusMain } from '../navigation.ts';
 
 type ConflictState = Readonly<{ open: boolean; selected: Version | null }>;
 
@@ -23,8 +24,7 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
     notify(t.resolved);
   };
   return (
-    <div className="demo-panel">
-      <p className="demo-note">{t.onlyDemo}</p>
+    <div className="demo-panel sync-panel">
       <SyncStatus
         t={t}
         automatic={automatic}
@@ -42,7 +42,7 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
         status={status}
         run={run}
       />
-      <SyncDevices language={language} t={t} notify={notify} />
+      <SyncDevices t={t} language={language} notify={notify} />
       <SyncConflictArea
         language={language}
         t={t}
@@ -68,18 +68,7 @@ function SyncActions({
 }>) {
   return (
     <div className="sync-actions">
-      <details>
-        <summary>{t.more}</summary>
-        <label className="check-row">
-          <input
-            type="checkbox"
-            checked={error}
-            onChange={(event) => setError(event.target.checked)}
-          />
-          {t.simulate}
-        </label>
-      </details>
-      <button id="sync-run" onClick={() => run(error)}>
+      <button className="primary" id="sync-run" onClick={() => run(error)}>
         {t.manual}
       </button>
       {status === 'error' && (
@@ -94,24 +83,40 @@ function SyncActions({
           {t.retry}
         </button>
       )}
+      <details>
+        <summary>{t.mode}</summary>
+        <label className="check-row">
+          <input
+            type="checkbox"
+            checked={error}
+            onChange={(event) => setError(event.target.checked)}
+          />
+          {t.simulate}
+        </label>
+      </details>
+      <p className="demo-note">{t.onlyDemo}</p>
     </div>
   );
 }
 function SyncDevices({
-  language,
   t,
+  language,
   notify,
 }: Readonly<{
-  language: 'ru' | 'en';
   t: SyncWords;
+  language: 'ru' | 'en';
   notify: (message: string) => void;
 }>) {
   const [revoked, setRevoked] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  // Отзыв выполняется сразу: строка остаётся под встроенным «Отменить», которое возвращает доступ.
   const revoke = () => {
     setRevoked(true);
-    setConfirmOpen(false);
     notify(t.revoked);
+  };
+  const restore = () => {
+    setRevoked(false);
+    notify(undoneText(language));
+    focusMain({ preventScroll: true });
   };
   return (
     <section className="sync-devices">
@@ -121,30 +126,34 @@ function SyncDevices({
         <p>{t.current}</p>
         <p>{t.activity}</p>
       </article>
-      <article>
+      <article className={revoked ? 'row-removed' : undefined}>
         <h3>{t.mobile}</h3>
-        <p>{revoked ? t.revoked : t.activity}</p>
-        {!revoked && (
-          <details>
-            <summary>{t.more}</summary>
-            <button className="quiet" onClick={() => setConfirmOpen(true)}>
-              {t.revoke}
-            </button>
-          </details>
-        )}
+        <p>{t.activity}</p>
+        <button
+          type="button"
+          className="danger"
+          id="sync-revoke-mobile"
+          aria-label={`${t.revoke}: ${t.mobile}`}
+          onClick={revoke}
+        >
+          {t.revoke}
+        </button>
+        {revoked && <RevokeNotice t={t} language={language} onUndo={restore} />}
       </article>
-      {confirmOpen && (
-        <RevokeDevice
-          language={language}
-          t={t}
-          close={() => setConfirmOpen(false)}
-          revoke={revoke}
-        />
-      )}
     </section>
   );
 }
 
+// Уведомление об отзыве доступа: короткий текст + контекст для скринридера.
+function RevokeNotice({
+  t,
+  language,
+  onUndo,
+}: Readonly<{ t: SyncWords; language: 'ru' | 'en'; onUndo: () => void }>) {
+  return (
+    <RowNotice text={t.revoked} detail={t.revokedDetail} language={language} onUndo={onUndo} />
+  );
+}
 function SyncStatus({
   t,
   automatic,
@@ -160,7 +169,13 @@ function SyncStatus({
 }>) {
   const text = status === 'idle' ? t.idle : status === 'error' ? t.error : t.success;
   return (
-    <>
+    <div className="sync-status">
+      <p role="status" className={`sync-state sync-state-${status}`}>
+        {text}
+      </p>
+      <p className="demo-note">
+        {t.last}: {lastSync ?? t.never}
+      </p>
       <label className="check-row">
         <input
           type="checkbox"
@@ -169,11 +184,7 @@ function SyncStatus({
         />
         {t.automatic}
       </label>
-      <p>
-        {t.last}: {lastSync ?? t.never}
-      </p>
-      <p role="status">{text}</p>
-    </>
+    </div>
   );
 }
 function ConflictSummary({
@@ -199,30 +210,6 @@ function ConflictSummary({
     </section>
   );
 }
-function RevokeDevice({
-  language,
-  t,
-  close,
-  revoke,
-}: Readonly<{
-  language: 'ru' | 'en';
-  t: SyncWords;
-  close: () => void;
-  revoke: () => void;
-}>) {
-  return (
-    <DemoModal id="sync-revoke" title={t.revokeTitle} language={language} onClose={close}>
-      <p>{t.revokeInfo}</p>
-      <div className="dialog-actions">
-        <button className="quiet" onClick={close}>
-          {t.cancel}
-        </button>
-        <button onClick={revoke}>{t.revoke}</button>
-      </div>
-    </DemoModal>
-  );
-}
-
 function SyncConflictArea({
   language,
   t,

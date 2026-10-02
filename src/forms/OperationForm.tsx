@@ -21,6 +21,7 @@ import {
 } from './operations.ts';
 import type { Field, OperationInput, OperationType, OperationErrors } from './operations.ts';
 import { OperationFields } from './OperationFields.tsx';
+import { presentationCopy, operationSubmit } from './presentation.ts';
 export type OperationProps = Readonly<{
   id: string;
   language: Language;
@@ -41,20 +42,19 @@ export function OperationForm(props: OperationProps) {
   return (
     <dialog
       id={props.id}
+      className="operation-dialog"
       aria-labelledby={`${props.id}-title`}
       onClose={form.reset}
       onKeyDown={keepDialogFocus}
     >
       <form noValidate autoComplete="off" onSubmit={form.submit}>
         <DialogHeading
-          title={props.title ?? getFormCopy(props.language).title}
+          title={`${props.title ? `${props.title} · ` : ''}${operationLabel(form.input.type, props.language)}`}
           id={`${props.id}-title`}
           dialog={props.id}
           labels={labels}
         />
-        <p className="quiet">
-          {labels.demoOnly} {getFormCopy(props.language).noteSample}
-        </p>
+        <p className="form-sample">{presentationCopy(props.language).sample}</p>
         <TypeSelector
           type={form.input.type}
           language={props.language}
@@ -69,8 +69,15 @@ export function OperationForm(props: OperationProps) {
           prefix={props.id}
           update={form.update}
         />
-        <p className="quiet">{getFormCopy(props.language).limits}</p>
-        <FormActions dialog={props.id} labels={labels} />
+        <FormActions
+          dialog={props.id}
+          labels={labels}
+          submitLabel={
+            props.initial
+              ? presentationCopy(props.language).edit
+              : operationSubmit(form.input.type, props.language)
+          }
+        />
       </form>
     </dialog>
   );
@@ -87,7 +94,7 @@ function TypeSelector({
   change: (type: OperationType) => void;
 }>) {
   return (
-    <>
+    <div className="operation-kind">
       <label htmlFor={`${id}-type`}>{getFormCopy(language).type}</label>
       <select
         id={`${id}-type`}
@@ -102,13 +109,14 @@ function TypeSelector({
           </option>
         ))}
       </select>
-    </>
+    </div>
   );
 }
 function useOperation(props: OperationProps) {
   const create = () => operationDraft(props.state, props.portfolioId, props.initial);
   const [input, setInput] = useState<OperationInput>(create);
-  const [errors, setErrors] = useState<OperationErrors>({});
+  const [attempts, setAttempts] = useState(0);
+  const errors: OperationErrors = attempts > 0 ? validateOperation(input, props.state) : {};
   const update = (field: Field, value: string) =>
     setInput((current) => ({
       ...current,
@@ -119,29 +127,30 @@ function useOperation(props: OperationProps) {
     }));
   const changeType = (type: OperationType) => {
     setInput((current) => ({ ...current, type }));
-    setErrors({});
+    setAttempts(0);
   };
   const reset = () => {
     setInput(create());
-    setErrors({});
+    setAttempts(0);
     props.onClose?.();
   };
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const next = validateOperation(input, props.state);
-    setErrors(next);
-    if (Object.keys(next).length > 0) return;
+    if (Object.keys(validateOperation(input, props.state)).length > 0) {
+      setAttempts((count) => count + 1);
+      return;
+    }
     closeDialog(props.id);
     props.onSaved(getLabels(props.language).purchased);
   };
   useEffect(() => {
-    if (Object.keys(errors).length > 0)
+    if (attempts > 0)
       document
         .getElementById(props.id)
         ?.querySelector<HTMLElement>('[aria-invalid="true"]')
         ?.focus();
-  }, [errors, props.id]);
-  useOperationEvent(props.id, props.state, props.portfolioId, setInput, setErrors);
+  }, [attempts, props.id]);
+  useOperationEvent(props.id, props.state, props.portfolioId, setInput, setAttempts);
   return { input, errors, update, changeType, reset, submit };
 }
 function useOperationEvent(
@@ -149,7 +158,7 @@ function useOperationEvent(
   state: State,
   portfolioId: string,
   setInput: (input: OperationInput) => void,
-  setErrors: (errors: OperationErrors) => void,
+  setAttempts: (count: number) => void,
 ) {
   useEffect(() => {
     if (id !== 'buy-dialog') return;
@@ -170,11 +179,11 @@ function useOperationEvent(
         ),
       );
       setInput(operationDraft(state, portfolioId, { ...context, type: detail.type }));
-      setErrors({});
+      setAttempts(0);
     };
     window.addEventListener('multitracker-operation', open);
     return () => window.removeEventListener('multitracker-operation', open);
-  }, [id, state, portfolioId, setInput, setErrors]);
+  }, [id, state, portfolioId, setInput, setAttempts]);
 }
 
 function operationDraft(

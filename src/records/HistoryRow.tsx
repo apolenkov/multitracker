@@ -3,55 +3,116 @@ import { operationLabel } from '../forms/operations.ts';
 import { accountLabel } from '../forms/accounts.ts';
 import type { RecordsProps, Transaction } from './data.ts';
 import { recordsCopy } from './copy.ts';
+import { Icon } from '../Icon.tsx';
+import { RowAction, RowNotice } from '../RowActions.tsx';
+import { AssetSymbol } from '../AssetSymbol.tsx';
 
 type Props = RecordsProps &
   Readonly<{
     record: Transaction;
     brief: boolean;
+    removed: boolean;
     onDetails: () => void;
     onEdit: () => void;
     onDelete: () => void;
+    onRestore: () => void;
   }>;
 export function HistoryRow(props: Props) {
-  const copy = recordsCopy(props.language);
   const portfolio = props.state.portfolios.find(
     (item) => item.id === props.record.portfolioId,
   )?.name;
   const Heading = props.brief ? 'h3' : 'h2';
+  const copy = recordsCopy(props.language);
+  const title = `${operationLabel(props.record.type, props.language)} ${props.record.asset}`;
+  const text = `${operationLabel(props.record.type, props.language)} · ${props.record.asset}`;
   return (
-    <article className="history-row">
-      <div>
-        <p className="eyebrow">{date(props.record.date, props.language)}</p>
+    <article className={props.removed ? 'history-row row-removed' : 'history-row'}>
+      <div className="record-heading">
         <Heading>
-          {operationLabel(props.record.type, props.language)} · {props.record.asset}
+          <AssetSymbol symbol={props.record.asset} />
+          <RecordDirection type={props.record.type} />
+          {props.brief ? (
+            text
+          ) : (
+            <RowOpen label={`${copy.details}: ${title}`} text={text} onClick={props.onDetails} />
+          )}
         </Heading>
-        <p>{portfolio}</p>
-        <p className="quiet">{props.record.sample ? copy.sample : copy.actual}</p>
+        <p className="quiet">
+          <time dateTime={props.record.date}>{date(props.record.date, props.language)}</time> ·{' '}
+          {portfolio} · {accountLabel(props.record.account, props.language).split(' · ').at(-1)}
+        </p>
       </div>
-      <RecordValues {...props} />
+      <RecordSummary {...props} />
       {!props.brief && (
-        <div className="record-actions">
-          <button
-            aria-label={`${copy.details}: ${operationLabel(props.record.type, props.language)} ${props.record.asset}`}
-            onClick={props.onDetails}
-          >
-            {copy.details}
-          </button>
-          <button
-            aria-label={`${copy.edit}: ${operationLabel(props.record.type, props.language)} ${props.record.asset}`}
-            onClick={props.onEdit}
-          >
-            {copy.edit}
-          </button>
-          <button
-            aria-label={`${copy.delete}: ${operationLabel(props.record.type, props.language)} ${props.record.asset}`}
-            onClick={props.onDelete}
-          >
-            {copy.delete}
-          </button>
+        <div className="row-actions">
+          <RowAction icon="edit" label={copy.edit} subject={title} onClick={props.onEdit} />
+          <RowAction icon="trash" label={copy.delete} subject={title} onClick={props.onDelete} />
         </div>
       )}
+      {props.removed && (
+        <RowNotice
+          text={copy.rowRemoved}
+          detail={copy.removed}
+          language={props.language}
+          onUndo={props.onRestore}
+        />
+      )}
     </article>
+  );
+}
+function RowOpen({
+  label,
+  text,
+  onClick,
+}: Readonly<{ label: string; text: string; onClick: () => void }>) {
+  return (
+    <button type="button" className="history-row-open" aria-label={label} onClick={onClick}>
+      {text}
+    </button>
+  );
+}
+function RecordDirection({ type }: Readonly<{ type: Transaction['type'] }>) {
+  const name = ['deposit', 'income', 'opening'].includes(type)
+    ? 'incoming'
+    : ['withdrawal', 'fee'].includes(type)
+      ? 'outgoing'
+      : 'transfer';
+  return (
+    <span className={`record-direction record-direction-${name}`} aria-hidden="true">
+      <Icon name={name} />
+    </span>
+  );
+}
+export function RecordSummary({
+  record,
+  currency,
+  language,
+  hidden,
+}: RecordsProps & Readonly<{ record: Transaction }>) {
+  const copy = recordsCopy(language);
+  if (record.type === 'exchange')
+    return (
+      <dl className="record-summary">
+        <ExchangeValues record={record} language={language} hidden={hidden} />
+      </dl>
+    );
+  const units = record.type === 'corporate' || isAssetTransfer(record);
+  const value = units
+    ? `${number(record.quantity, language)} ${record.type === 'corporate' ? ': 1' : record.asset}`
+    : money(
+        record.amount * (currency === 'RUB' && record.currency === 'USD' ? record.fx : 1),
+        currency,
+        language,
+      );
+  return (
+    <dl className="record-summary">
+      <RecordValue
+        label={units ? quantityName(record, language) : copy.amount}
+        value={value}
+        hidden={hidden}
+        className={units ? undefined : 'record-amount'}
+      />
+    </dl>
   );
 }
 export function RecordValues({
@@ -95,9 +156,10 @@ function RecordValue({
   label,
   value,
   hidden,
-}: Readonly<{ label: string; value: string; hidden: boolean }>) {
+  className,
+}: Readonly<{ label: string; value: string; hidden: boolean; className?: string | undefined }>) {
   return (
-    <div>
+    <div className={className}>
       <dt>{label}</dt>
       <dd>{hidden ? '••••' : value}</dd>
     </div>

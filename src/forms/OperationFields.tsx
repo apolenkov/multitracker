@@ -1,131 +1,170 @@
-import type { State } from '../model/portfolio.ts';
-import { assessmentDate } from '../model/portfolio.ts';
-import type { Language } from '../i18n.ts';
+import { useState } from 'react';
+import { OperationField } from './OperationControl.tsx';
+import type { OperationFieldsProps } from './OperationControl.tsx';
+import { operationFields } from './operations.ts';
+import type { Field } from './operations.ts';
 import { getFormCopy } from './copy.ts';
-import { accountSamples, accountLabel } from './accounts.ts';
-import { feeCurrencies, operationAssets, operationFields } from './operations.ts';
-import type { Field, OperationInput, OperationErrors } from './operations.ts';
-type Props = Readonly<{
-  input: OperationInput;
-  errors: OperationErrors;
-  state: State;
-  language: Language;
-  prefix: string;
-  update: (field: Field, value: string) => void;
-}>;
-type ControlProps = Readonly<{
-  field: Field;
-  id: string;
-  value: string;
-  error: string | undefined;
-  update: Props['update'];
-}>;
+import { presentationCopy } from './presentation.ts';
+
+type Props = OperationFieldsProps;
 export function OperationFields(props: Props) {
-  const fields: readonly Field[] = [
-    'portfolioId',
-    'account',
-    ...operationFields(props.input.type, props.input.asset),
+  const copy = presentationCopy(props.language);
+  const fields = operationFields(props.input.type, props.input.asset);
+  return (
+    <div className="operation-groups">
+      <OperationGroup
+        {...props}
+        title={props.input.type === 'transfer' ? copy.source : copy.context}
+        fields={['portfolioId', 'account']}
+        className="operation-context"
+      />
+      {props.input.type === 'transfer' && (
+        <OperationGroup
+          {...props}
+          title={copy.destination}
+          fields={['targetPortfolio', 'targetAccount']}
+        />
+      )}
+      <PrimaryFields {...props} />
+      <OperationGroup
+        {...props}
+        title={fields.includes('fx') ? copy.timing : copy.date}
+        fields={fields.includes('fx') ? ['fx', 'date'] : ['date']}
+      />
+      <AdditionalFields {...props} fields={fields} />
+    </div>
+  );
+}
+function PrimaryFields(props: Props) {
+  const copy = presentationCopy(props.language);
+  const type = props.input.type;
+  if (type === 'exchange') return <ExchangeFields {...props} />;
+  if (type === 'buy' || type === 'sell')
+    return (
+      <>
+        <OperationGroup {...props} title={copy.asset} fields={['asset']} hideLegend />
+        <OperationGroup
+          {...props}
+          title={copy.trade}
+          fields={['quantity', 'price', 'priceCurrency']}
+        />
+      </>
+    );
+  if (type === 'corporate')
+    return (
+      <>
+        <OperationGroup {...props} title={copy.asset} fields={['asset', 'quantity']} />
+        <OperationGroup {...props} title={copy.corporateNote} fields={['note']} hideLegend />
+      </>
+    );
+  if (type === 'transfer') return <TransferFields {...props} />;
+  return <CashFields {...props} />;
+}
+function TransferFields(props: Props) {
+  const cash = ['RUB', 'USD'].includes(props.input.asset);
+  const fields: readonly Field[] = cash ? ['asset', 'amount', 'currency'] : ['asset', 'quantity'];
+  return (
+    <OperationGroup {...props} title={presentationCopy(props.language).asset} fields={fields} />
+  );
+}
+function CashFields(props: Props) {
+  const copy = presentationCopy(props.language);
+  const type = props.input.type;
+  return (
+    <>
+      {type === 'income' && (
+        <OperationGroup {...props} title={copy.asset} fields={['asset']} hideLegend />
+      )}
+      {['deposit', 'withdrawal'].includes(type) && (
+        <OperationGroup
+          {...props}
+          title={type === 'deposit' ? copy.source : copy.destination}
+          fields={['external']}
+        />
+      )}
+      <OperationGroup
+        {...props}
+        title={type === 'opening' ? copy.balance : copy.amount}
+        fields={['amount', 'currency']}
+      />
+      {type === 'opening' && <p className="form-hint">{copy.zero}</p>}
+    </>
+  );
+}
+function ExchangeFields(props: Props) {
+  const copy = presentationCopy(props.language);
+  return (
+    <div className="exchange-pair">
+      <OperationGroup {...props} title={copy.spent} fields={['amount', 'currency']} />
+      <OperationGroup
+        {...props}
+        title={copy.received}
+        fields={['receivedAmount', 'targetCurrency']}
+      />
+    </div>
+  );
+}
+function OperationGroup({
+  title,
+  fields,
+  className = '',
+  hideLegend = false,
+  ...props
+}: Props &
+  Readonly<{ title: string; fields: readonly Field[]; className?: string; hideLegend?: boolean }>) {
+  const Group = hideLegend ? 'div' : 'fieldset';
+  return (
+    <Group className={`operation-group ${className}`}>
+      {!hideLegend && <legend>{title}</legend>}
+      <div className="form-grid">
+        {fields.map((field) => (
+          <OperationField key={field} {...props} field={field} />
+        ))}
+      </div>
+    </Group>
+  );
+}
+function AdditionalFields({ fields, ...props }: Props & Readonly<{ fields: readonly Field[] }>) {
+  const extra: readonly Field[] = [
+    ...fields.filter((field) => ['fee', 'feeCurrency'].includes(field)),
+    ...(props.input.type === 'corporate' ? [] : (['note'] as const)),
   ];
+  const meaningful = meaningfulExtras(props);
+  const invalid = extra.some((field) => new Map(Object.entries(props.errors)).has(field));
+  const locked = meaningful || invalid;
+  const [opened, setOpened] = useState(locked);
+  if (extra.length === 0) return null;
   return (
-    <div className="form-grid">
-      {fields.map((field) => (
-        <OperationField key={field} {...props} field={field} />
-      ))}
-    </div>
+    <details
+      className="operation-additional"
+      open={opened || locked}
+      onToggle={(event) => setOpened(event.currentTarget.open)}
+    >
+      <summary
+        aria-disabled={locked}
+        onClick={(event) => {
+          if (locked) event.preventDefault();
+        }}
+      >
+        {presentationCopy(props.language).additional}
+        {locked && (
+          <span className="additional-status">
+            {props.language === 'ru' ? ' · Есть данные или ошибки' : ' · Contains data or errors'}
+          </span>
+        )}
+      </summary>
+      <div className="form-grid">
+        {extra.map((field) => (
+          <OperationField key={field} {...props} field={field} />
+        ))}
+      </div>
+      <p className="form-hint">{getFormCopy(props.language).limits}</p>
+    </details>
   );
 }
-function fieldOptions(field: Field, state: State, input: OperationInput, language: Language) {
-  if (field === 'portfolioId' || field === 'targetPortfolio')
-    return state.portfolios.map((item) => ({ value: item.id, label: item.name }));
-  if (field === 'asset') return operationAssets.map((value) => ({ value, label: value }));
-  if (field === 'account' || field === 'targetAccount')
-    return accountSamples
-      .filter(
-        (item) =>
-          item.portfolioId === (field === 'account' ? input.portfolioId : input.targetPortfolio),
-      )
-      .map((item) => ({ value: item.id, label: accountLabel(item.id, language) }));
-  if (field === 'feeCurrency')
-    return feeCurrencies(input).map((value) => ({ value, label: value }));
-  if (['currency', 'targetCurrency', 'priceCurrency'].includes(field))
-    return ['RUB', 'USD'].map((value) => ({ value, label: value }));
-  return undefined;
-}
-function OperationField({ field, ...props }: Props & Readonly<{ field: Field }>) {
-  const labels = getFormCopy(props.language);
-  const id = `${props.prefix}-${field}`;
-  const error = new Map(Object.entries(props.errors)).get(field);
-  const value = new Map(Object.entries(props.input)).get(field) ?? '';
-  const control = { id, field, error, value, update: props.update };
-  const options = fieldOptions(field, props.state, props.input, props.language);
+function meaningfulExtras(props: Props) {
   return (
-    <div className="form-field">
-      <label htmlFor={id}>
-        {field === 'external'
-          ? props.input.type === 'deposit'
-            ? labels.externalSource
-            : labels.externalDestination
-          : new Map(Object.entries(labels)).get(field)}
-      </label>
-      {options ? (
-        <select
-          id={id}
-          name={field}
-          value={value}
-          onChange={(event) => props.update(field, event.target.value)}
-          aria-invalid={Boolean(error)}
-          aria-describedby={error ? `${id}-error` : undefined}
-        >
-          <option value="">{labels.selectionError}</option>
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <OperationInputControl {...control} />
-      )}
-      {error && (
-        <p id={`${id}-error`} className="field-error" role="alert">
-          {errorText(error, props.language)}
-        </p>
-      )}
-    </div>
+    (props.input.fee !== '' && Number(props.input.fee.replace(',', '.')) !== 0) ||
+    (props.input.type !== 'corporate' && props.input.note.trim() !== '')
   );
-}
-function OperationInputControl({ field, id, value, update, error }: ControlProps) {
-  const textField = ['note', 'external'].includes(field);
-  return (
-    <input
-      id={id}
-      name={field}
-      type={field === 'date' ? 'date' : 'text'}
-      inputMode={field === 'date' || textField ? undefined : 'decimal'}
-      min={field === 'date' ? '2000-01-01' : undefined}
-      max={field === 'date' ? assessmentDate : undefined}
-      maxLength={field === 'external' ? 120 : textField ? 200 : 30}
-      value={value}
-      onChange={(event) => update(field, event.target.value)}
-      aria-invalid={Boolean(error)}
-      aria-describedby={error ? `${id}-error` : undefined}
-    />
-  );
-}
-function errorText(error: string, language: Language) {
-  const labels = getFormCopy(language);
-  const messages = {
-    positive: labels.positive,
-    fee: labels.positive,
-    total: labels.positive,
-    date: labels.dateError,
-    asset: labels.selectionError,
-    portfolio: labels.selectionError,
-    destination: labels.destination,
-    currency: labels.currencyError,
-    cashCurrency: labels.selectionError,
-    note: labels.noteError,
-    external: labels.externalError,
-  };
-  return new Map(Object.entries(messages)).get(error) ?? labels.selectionError;
 }

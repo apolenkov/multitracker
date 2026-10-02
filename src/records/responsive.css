@@ -1,0 +1,102 @@
+@media (max-width: 900px) {
+  .workspace .history-filter-panel {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .history-filter-panel .history-filters {
+    margin-top: 0;
+  }
+}
+@media (max-width: 600px) {
+  .portfolio-list .portfolio-row {
+    gap: 10px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 22px;
+  }
+  .portfolio-list .portfolio-value {
+    grid-column: 2 / 3;
+    text-align: left;
+    margin: 4px 0 0;
+  }
+  .portfolio-list .portfolio-chevron {
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+  .portfolio-list .portfolio-record > .portfolio-manage {
+    align-self: start;
+    margin-top: 12px;
+    margin-right: 32px;
+  }
+  .portfolio-list .portfolio-name {
+    padding-right: 44px;
+  }
+  .portfolio-record .account-list {
+    padding: 0 32px 0 54px;
+  }
+  .workspace .history-head {
+    display: none;
+  }
+  /* Amount on the title line, date and account below across the row; the amount label stays
+     for screen readers only, as on desktop. Labelled values (exchange, quantity) take their own line. */
+  .history-list.with-head .history-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 4px 8px;
+  }
+  .with-head .record-heading {
+    display: contents;
+  }
+  .with-head .record-heading > :is(h2, h3) {
+    grid-area: 1 / 1;
+    font-size: 16px;
+  }
+  /* 16 px titles: 10 px fields keep the one-line button at 44 px. */
+  .with-head .history-row-open {
+    padding-block: 10px;
+    margin-block: -10px;
+  }
+  .with-head .history-row > .record-summary {
+    grid-area: 1 / 2;
+  }
+  .with-head .record-summary dd {
+    font-size: 16px;
+  }
+  /* Действия строки — под суммой, рядом с датой: заголовку остаётся вся ширина первой строки. */
+  .with-head .history-row > .row-actions {
+    grid-area: 2 / 2;
+  }
+  .with-head .record-heading > p {
+    grid-area: 2 / 1;
+    align-self: center;
+  }
+  .with-head .history-row:not(:has(.record-amount)) > .row-actions {
+    grid-area: 1 / 2;
+  }
+  .with-head .history-row:not(:has(.record-amount)) > .record-summary {
+    grid-area: 2 / 1 / 3 / -1;
+    text-align: left;
+  }
+  .with-head .history-row:not(:has(.record-amount)) .record-heading > p {
+    grid-row: 3;
+  }
+  .history-list:not(.with-head) .record-summary {
+    grid-column: 1;
+    text-align: left;
+  }
+  .history-filters .filter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* At 320 px a title beside the amount breaks mid-word: every summary takes its own line. */
+@media (max-width: 360px) {
+  .with-head .history-row > .record-summary {
+    grid-area: 2 / 1 / 3 / -1;
+    text-align: left;
+  }
+  .with-head .history-row .record-heading > p {
+    grid-row: 3;
+  }
+  .with-head .history-row > .row-actions {
+    grid-area: 1 / 2;
+  }
+}

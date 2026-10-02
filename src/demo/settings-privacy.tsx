@@ -2,40 +2,6 @@ import { useState } from 'react';
 import { SettingsActions } from './settings-display';
 import type { SettingFormProps } from './settings-display';
 
-export function PrivacySettings(
-  props: SettingFormProps &
-    Readonly<{
-      locked: boolean;
-      onLock: (locked: boolean) => void;
-    }>,
-) {
-  const [draft, setDraft] = useState(props.locked);
-  return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        props.onLock(draft);
-      }}
-    >
-      <p>
-        {props.text(
-          'Экран блокировки — пример. Настоящей защиты и проверки личности здесь нет.',
-          'Lock screen sample. No real protection or identity check is provided.',
-        )}
-      </p>
-      <label className="check-row">
-        <input
-          type="checkbox"
-          checked={draft}
-          onChange={(event) => setDraft(event.target.checked)}
-        />
-        {props.text('Заблокировать учебный экран', 'Lock the sample screen')}
-      </label>
-      <SettingsActions {...props} />
-    </form>
-  );
-}
-
 export function RecoverySettings(
   props: SettingFormProps &
     Readonly<{
@@ -45,7 +11,6 @@ export function RecoverySettings(
     }>,
 ) {
   const [draft, setDraft] = useState(props.recorded);
-  const [lost, setLost] = useState(false);
   return (
     <form
       onSubmit={(event) => {
@@ -68,10 +33,7 @@ export function RecoverySettings(
         />
         {props.text('Я записал пример в безопасном месте', 'I recorded the sample in a safe place')}
       </label>
-      <button type="button" className="quiet" onClick={() => setLost(!lost)}>
-        {props.text('Что делать, если ключ потерян?', 'What if the key is lost?')}
-      </button>
-      {lost && <LostKeyChoices {...props} />}
+      <LostKeyChoices {...props} />
       <SettingsActions {...props} />
     </form>
   );
@@ -83,7 +45,7 @@ function LostKeyChoices(props: SettingFormProps & Readonly<{ notify: (message: s
     props.notify(lostKeyResult(props.text, available));
   };
   return (
-    <section className="demo-note">
+    <section id="settings-lost-key" className="demo-note lost-key-choices">
       <h3>{props.text('Утрата ключа', 'Lost key')}</h3>
       <p>
         {props.text(

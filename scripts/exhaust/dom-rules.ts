@@ -64,3 +64,15 @@ export const paintsBox = (
   borderAlpha: number,
   hasImage: boolean,
 ): boolean => backgroundAlpha > 0.05 || (borderWidth > 0 && borderAlpha > 0.05) || hasImage;
+
+/**
+ * Исключение overlap для разнесённых по слоям пар: потоковый текст под нижней
+ * навигационной панелью (.mobile-links) проходит под ней при прокрутке — это
+ * устройство раскладки, а не дефект. Любой другой fixed/sticky слой, реально
+ * закрывающий текст, остаётся находкой.
+ */
+export const overlapExempt = (
+  controlFixed: boolean,
+  textFixed: boolean,
+  controlInBottomNav: boolean,
+): boolean => controlFixed !== textFixed && controlInBottomNav;

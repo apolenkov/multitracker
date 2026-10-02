@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
-import { amountLike, lineDeltaMax, paintsBox, visiblePoint } from '../scripts/exhaust/dom-rules.ts';
+import {
+  amountLike,
+  lineDeltaMax,
+  overlapExempt,
+  paintsBox,
+  visiblePoint,
+} from '../scripts/exhaust/dom-rules.ts';
 import { designScales } from '../scripts/exhaust/tokens.ts';
 import { fullInvariantsSource } from '../scripts/exhaust/page-checks.ts';
 import { designScanSource } from '../scripts/exhaust/page-design.ts';
@@ -87,9 +93,21 @@ await test('page probes embed the corrected helpers and checks', () => {
   assert.ok(designScanSource.includes('cfg.fontEm'));
 });
 
+await test('overlap exemption spares only the bottom mobile nav, other fixed layers stay findings', () => {
+  const oldRule = (controlFixed: boolean, textFixed: boolean) => controlFixed !== textFixed;
+  // Старое правило прятало любой fixed/sticky слой над текстом потока.
+  assert.equal(oldRule(true, false), true);
+  assert.equal(overlapExempt(true, false, false), false);
+  assert.equal(overlapExempt(true, false, true), true);
+  assert.equal(overlapExempt(false, true, false), false);
+  assert.equal(overlapExempt(true, true, true), false);
+  assert.equal(overlapExempt(false, false, false), false);
+  assert.ok(designScanSource.includes('overlapExempt'));
+  assert.ok(designScanSource.includes('.mobile-links'));
+});
+
 await test('overlap scan uses the hit stack, not a single top element', () => {
   assert.ok(designScanSource.includes('elementsFromPoint'));
-  assert.ok(designScanSource.includes('fixedNear(c) !== fixedNear(t)'));
   assert.ok(designScanSource.includes('scrollIntoView'));
 });
 

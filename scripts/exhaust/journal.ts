@@ -56,7 +56,6 @@ export const signatureFor = (item: RegistryInput): string =>
     route: item.route,
     dialog: dialogOf(item.path),
     role: item.role,
-    name: item.name,
     path: item.path,
   });
 

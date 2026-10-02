@@ -14,12 +14,7 @@ import {
   rowPairs,
   uncoveredPairs,
 } from '../scripts/exhaust/axes.ts';
-import {
-  elementSignature,
-  normalizeName,
-  stripIndices,
-  dialogOf,
-} from '../scripts/exhaust/signature.ts';
+import { elementSignature, dialogOf } from '../scripts/exhaust/signature.ts';
 import { checkLedger, dumpLedger, parseLedger } from '../scripts/exhaust/ledger.ts';
 import { codeExceptions, elementExceptions } from '../scripts/exhaust/baseline.ts';
 import { splitChunks, ddmin } from '../scripts/exhaust/shrink.ts';
@@ -75,27 +70,24 @@ await test('cartesian produces the full product for the layout grid', () => {
   assert.equal(new Set(grid.map((row) => row.width)).size, 4);
 });
 
-await test('signature normalizes names, strips indices and keeps context', () => {
-  assert.equal(normalizeName('  Купить  BTC  12 '), 'купить btc #');
-  assert.equal(
-    stripIndices('html > body > div:nth-of-type(2) > button:nth-of-type(1)'),
-    'html > body > div > button',
-  );
+await test('signature is positional: language and name never enter the key', () => {
   assert.equal(dialogOf('html > body > dialog#buy-dialog > form > button'), 'buy-dialog');
   const sig = elementSignature({
     route: 'overview',
     dialog: 'buy-dialog',
     role: 'button',
-    name: 'Сохранить 3',
     path: 'html > body > dialog#buy-dialog:nth-of-type(2) > form > button',
   });
   assert.equal(
     sig,
-    'overview|buy-dialog|button|сохранить #|html > body > dialog#buy-dialog > form > button',
+    'overview|buy-dialog|button|html > body > dialog#buy-dialog:nth-of-type(2) > form > button',
   );
-  assert.equal(
-    elementSignature({ route: 'r', dialog: '-', role: 'a', name: 'x', path: 'p' }),
-    elementSignature({ route: 'r', dialog: '-', role: 'a', name: 'X', path: 'p' }),
+  const spot = { route: 'r', dialog: '-', role: 'button' };
+  const path = 'html > body > section > article:nth-of-type(2) > button:nth-of-type(1)';
+  assert.equal(elementSignature({ ...spot, path }), elementSignature({ ...spot, path }));
+  assert.notEqual(
+    elementSignature({ ...spot, path }),
+    elementSignature({ ...spot, path: path.replace('2)', '3)') }),
   );
 });
 

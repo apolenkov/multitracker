@@ -123,7 +123,10 @@ await test('unsettledPoints names every axis point scanned mid-transition', () =
     detail(false, 'history'),
     detail(false, 'sync'),
   ]);
-  assert.deepEqual(points.map((point) => point.split(' ').at(-1)), ['history', 'sync']);
+  assert.deepEqual(
+    points.map((point) => point.split(' ').at(-1)),
+    ['history', 'sync'],
+  );
 });
 
 await test('skipReport shares reasons and the ratchet fails over the share limit', () => {
@@ -131,17 +134,24 @@ await test('skipReport shares reasons and the ratchet fails over the share limit
     { path: 'a', stage: 'walk', reason: 'unreachable' },
     { path: 'b', stage: 'walk', reason: 'unreachable' },
     { path: 'c', stage: 'trusted', reason: 'click-threw' },
+    { path: 'd', stage: 'walk', reason: 'unreachable' },
+    { path: 'e', stage: 'walk', reason: 'settle-timeout' },
+    { path: 'f', stage: 'walk', reason: 'unreachable' },
   ];
   const report = skipReport(skips, 10);
-  assert.equal(report.skipped, 3);
-  assert.equal(report.share, 0.3);
-  assert.equal(report.limit, 0.2);
-  assert.deepEqual(report.reasons, { 'walk:unreachable': 2, 'trusted:click-threw': 1 });
+  assert.equal(report.skipped, 6);
+  assert.equal(report.share, 0.6);
+  assert.equal(report.limit, 0.5);
+  assert.deepEqual(report.reasons, {
+    'walk:unreachable': 4,
+    'walk:settle-timeout': 1,
+    'trusted:click-threw': 1,
+  });
   const base = {
     element: { missing: [], stale: [], sealed: true, ok: true },
     code: { missing: [], stale: [], sealed: true, ok: true },
     errors: [],
   };
   assert.throws(() => reportChecks({ ...base, skips: report }), /skipped clicks/);
-  assert.doesNotThrow(() => reportChecks({ ...base, skips: skipReport(skips.slice(0, 1), 10) }));
+  assert.doesNotThrow(() => reportChecks({ ...base, skips: skipReport(skips.slice(0, 2), 10) }));
 });

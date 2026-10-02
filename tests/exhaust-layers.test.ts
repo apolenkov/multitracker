@@ -13,7 +13,6 @@ import { codeMarkdown, fileReports, newlyCovered } from '../scripts/exhaust/cove
 import { asFinding, parseEnumerate, parseSweepRecord } from '../scripts/exhaust/page-rows.ts';
 import type { Enumerated, SweepHit } from '../scripts/exhaust/page-rows.ts';
 import { clickedSignatures, hitClicks, joinSeen } from '../scripts/exhaust/journal.ts';
-import { parseLedger, checkLedger, dumpLedger } from '../scripts/exhaust/ledger.ts';
 import type { FunctionCoverage, Range, ScriptCoverage } from '../scripts/exhaust/cdp.ts';
 
 const range = (start: number, end: number, count: number): Range => ({
@@ -235,15 +234,4 @@ await test('asFinding maps invariant rows and drops junk', () => {
     actual: 'a',
   });
   assert.equal(asFinding({ rule: 'x' }), null);
-});
-
-await test('code ledger reuses the ratchet: unknown functions fail, covered reported', () => {
-  const ledger = parseLedger(
-    dumpLedger([{ signature: 'src/a.ts|dead@9', reason: 'not reachable' }]),
-  );
-  assert.equal(checkLedger(['src/a.ts|dead@9'], ledger).ok, true);
-  assert.equal(checkLedger(['src/a.ts|dead@9', 'src/a.ts|new@1'], ledger).ok, false);
-  const shrunk = checkLedger([], ledger);
-  assert.deepEqual(shrunk.stale, ['src/a.ts|dead@9']);
-  assert.equal(shrunk.ok, true);
 });

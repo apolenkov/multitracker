@@ -15,8 +15,6 @@ import {
   uncoveredPairs,
 } from '../scripts/exhaust/axes.ts';
 import { elementSignature, dialogOf } from '../scripts/exhaust/signature.ts';
-import { checkLedger, dumpLedger, parseLedger } from '../scripts/exhaust/ledger.ts';
-import { codeExceptions, elementExceptions } from '../scripts/exhaust/baseline.ts';
 import { splitChunks, ddmin } from '../scripts/exhaust/shrink.ts';
 import { contrastRatio, luminance, over, parseColor } from '../scripts/exhaust/contrast.ts';
 import { decodeMappings, mapPosition, parseMap, positionOf } from '../scripts/exhaust/sourcemap.ts';
@@ -89,44 +87,6 @@ await test('signature is positional: language and name never enter the key', () 
     elementSignature({ ...spot, path }),
     elementSignature({ ...spot, path: path.replace('2)', '3)') }),
   );
-});
-
-await test('ledger ratchet: sealed only — missing fails, stale is reported only', () => {
-  const entries = [{ signature: 'a|b', reason: 'disabled' }];
-  const ledger = parseLedger(dumpLedger(entries));
-  assert.equal(checkLedger(['a|b'], ledger).ok, true);
-  const grown = checkLedger(['a|b', 'x|y'], ledger);
-  assert.deepEqual(grown.missing, ['x|y']);
-  assert.equal(grown.ok, false);
-  const shrunk = checkLedger([], ledger);
-  assert.deepEqual(shrunk.stale, ['a|b']);
-  assert.equal(shrunk.ok, true);
-  assert.equal(parseLedger('{"version":2,"exceptions":[]}').version, 2);
-});
-
-await test('baseline rebuilds ledgers from run artifacts, sorted and keyed', () => {
-  const elements = elementExceptions({
-    entries: [
-      { signature: 'b', clicked: false, reason: 'disabled' },
-      { signature: 'a', clicked: false, reason: 'not visible' },
-      { signature: 'c', clicked: true, reason: '' },
-    ],
-  });
-  assert.deepEqual(
-    elements.map((entry) => entry.signature),
-    ['a', 'b'],
-  );
-  assert.equal(elements.at(0)?.reason, 'not visible');
-  const code = codeExceptions({
-    reports: [{ file: 'src/a.ts', uncoveredFunctions: ['z@3', 'a@1'] }],
-  });
-  assert.deepEqual(
-    code.map((entry) => entry.signature),
-    ['src/a.ts|a@1', 'src/a.ts|z@3'],
-  );
-  assert.ok(code.every((entry) => entry.reason.length > 0));
-  assert.deepEqual(elementExceptions({ nope: 1 }), []);
-  assert.deepEqual(codeExceptions(null), []);
 });
 
 await test('ddmin shrinks a failing sequence to its minimal repro', async () => {

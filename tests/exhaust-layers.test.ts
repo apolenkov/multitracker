@@ -127,7 +127,7 @@ await test('registry marks clicked signatures and explains the rest', () => {
         skip: 'closed-disclosure',
       },
     ],
-    new Set(['r|-|button|go|html > body > button']),
+    new Set(['r|-|button|html > body > button']),
   );
   assert.equal(entries.length, 3);
   const clicked = entries.filter((entry) => entry.clicked);
@@ -220,7 +220,7 @@ await test('joinSeen merges enumerate info with sweep skips by path', () => {
   assert.equal(seen.at(0)?.skip, '');
   assert.equal(seen.at(1)?.skip, 'disabled');
   const sigs = clickedSignatures(seen);
-  assert.deepEqual(sigs, ['r|-|button|go|p1']);
+  assert.deepEqual(sigs, ['r|-|button|p1']);
   const clicks = hitClicks('r', baseEnv, 10, seen, [sweepHit('p1')]);
   assert.equal(clicks.length, 1);
   assert.equal(clicks.at(0)?.seq, 10);

@@ -21,6 +21,9 @@ await test('named money slots: bare digits caught when hidden, allowed when show
     // Скрытие вкл: голая сумма — находка; дата в слоте по-прежнему легальна.
     assert.equal(amountLeak('42000', inSlot), true, `${name}: утечка при скрытии`);
     assert.equal(amountLeak('30 сент. 2026 г.', inSlot), false, `${name}: дата легальна`);
+    // Счётчики статусов импорта в слоте — не суммы (регрессия находок muqdvwt8).
+    assert.equal(amountLeak('2 готовы · 1 ошибка · 1 повтор', inSlot), false, `${name}: счётчики`);
+    assert.equal(amountLeak('2 ready · 1 error · 1 duplicate', inSlot), false, `${name}: счётчики`);
     // Скрытие выкл: проверочный блок не запускается — цифры показывать можно.
     const flagged = (hide: 'on' | 'off') => hide === 'on' && amountLeak('42000', inSlot);
     assert.equal(flagged('on'), true, `${name}: при скрытии ждём находку`);

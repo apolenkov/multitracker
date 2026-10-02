@@ -1,6 +1,7 @@
 /** Оркестрация раздела: навигация, обход с дедлайном, донабор диалогов, доверенные клики. */
 import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
+import { restState } from './sweep-rest.ts';
 import type { Env } from './axes.ts';
 import { record } from './records.ts';
 import type { ClickRecord, ClickSkip, Finding } from './records.ts';
@@ -176,6 +177,7 @@ export type Visit = Readonly<{
 /** Навигация, перечисление, обход и донабор: всё наблюдаемое за один визит. */
 export const visitRoute = (browser: Browser, route: string, seq: number, env: Env): Visit => {
   const nav = navClick(browser, stateOf(browser), route, seq, env);
+  restState(browser);
   const first = parseEnumerate(evaluate(browser, enumerateSource));
   const sweep = sweepAll(browser);
   const extra = rescue(browser, sweep);

@@ -52,8 +52,14 @@ button {
   padding: 9px 16px;
   font-weight: 500;
 }
-button:hover {
-  background: var(--surface);
+@media (hover: hover) {
+  button:hover {
+    background: var(--surface);
+  }
+  button.primary:hover {
+    background: var(--primary-hover);
+    color: var(--primary-hover-ink);
+  }
 }
 button:disabled {
   border-color: var(--line);
@@ -65,10 +71,6 @@ button.primary {
   background: var(--primary);
   color: var(--primary-ink);
   border-color: var(--primary-border);
-}
-button.primary:hover {
-  background: var(--primary-hover);
-  color: var(--primary-hover-ink);
 }
 :focus-visible {
   outline: 3px solid var(--focus);
@@ -258,7 +260,6 @@ dialog::backdrop {
     transition: none !important;
   }
 }
-
 .ui-icon {
   display: inline-block;
   width: 22px;

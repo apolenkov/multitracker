@@ -10,7 +10,23 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/Dialog.tsx|we@6",
+      "signature": "src/Dialog.tsx|Te@6",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/HoldingsTable.tsx|onClick@202",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/HoldingsTable.tsx|onClick@287",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/HoldingsTable.tsx|onClick@99",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/HoldingsTable.tsx|r@28",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -30,19 +46,15 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
+      "signature": "src/Workspace.tsx|(anon)@163",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
       "signature": "src/Workspace.tsx|(anon)@164",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/Workspace.tsx|(anon)@165",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/Workspace.tsx|Ql@109",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/Workspace.tsx|onReturn@82",
+      "signature": "src/Workspace.tsx|ru@110",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -70,10 +82,6 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/demo/connection-sync.tsx|mc@148",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
       "signature": "src/demo/connection-sync.tsx|onClick@136",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
@@ -90,7 +98,7 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/demo/import-fields.tsx|onChange@66",
+      "signature": "src/demo/connection-sync.tsx|yc@148",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -102,27 +110,11 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/demo/import-history.tsx|onRestore@44",
+      "signature": "src/demo/import-model.ts|Dc@75",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/demo/import-history.tsx|onUndo@54",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/demo/import-model.ts|(anon)@46",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/demo/import-model.ts|(anon)@59",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/demo/import-model.ts|Sc@75",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/demo/settings-backup.tsx|_l@51",
+      "signature": "src/demo/settings-backup.tsx|Sl@51",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -170,11 +162,63 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
+      "signature": "src/demo/sync-conflict.tsx|ac@52",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-conflict.tsx|ic@11",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-conflict.tsx|oc@68",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
       "signature": "src/demo/sync-panel.tsx|close@237",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
+      "signature": "src/demo/sync-panel.tsx|confirm@22",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|dc@148",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|onChange@183",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|onChange@92",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|onClick@137",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|onClick@71",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
       "signature": "src/demo/sync-panel.tsx|onClick@77",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|onUndo@141",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|open@231",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|run@17",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/demo/sync-panel.tsx|toggle@33",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -186,7 +230,7 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/forms/EntityFields.tsx|Ge@128",
+      "signature": "src/forms/EntityFields.tsx|Ke@128",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -194,15 +238,27 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
+      "signature": "src/forms/OperationForm.tsx|a@165",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/forms/OperationForm.tsx|jt@35",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
       "signature": "src/forms/operations.ts|(anon)@164",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/forms/operations.ts|ft@170",
+      "signature": "src/forms/operations.ts|gt@186",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/forms/operations.ts|ht@186",
+      "signature": "src/forms/operations.ts|pt@170",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/insights/AssetDetails.tsx|o@33",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -210,23 +266,55 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
+      "signature": "src/insights/AssetDetails.tsx|onEdit@69",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
       "signature": "src/insights/AssetDetails.tsx|onSave@59",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/insights/ManualValuation.tsx|(anon)@78",
+      "signature": "src/insights/ManualValuation.tsx|Gt@38",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/insights/ManualValuation.tsx|onSubmit@19",
+      "signature": "src/insights/ManualValuation.tsx|Kt@77",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/navigation.ts|(anon)@26",
+      "signature": "src/insights/ManualValuation.tsx|Wt@14",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/insights/Report.tsx|a@88",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/insights/Report.tsx|onChange@216",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/insights/Report.tsx|onChange@30",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/insights/Report.tsx|onClick@96",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/insights/Report.tsx|onSave@104",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/insights/Report.tsx|wo@119",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
       "signature": "src/navigation.ts|(anon)@52",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
+      "signature": "src/records/History.tsx|onDelete@197",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -266,17 +354,9 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/records/Portfolios.tsx|onToggle@85",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/records/Portfolios.tsx|onUndo@146",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
-      "signature": "src/records/Portfolios.tsx|restore@225",
+      "signature": "src/records/Portfolios.tsx|onToggle@86",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     }
   ],
-  "seal": "124f01a831bfad4a605edb552970cb75cc0a0ae1a29321eef43968624eaa34ee"
+  "seal": "a53fac41406eb318092b56820aefe50a8de5f29a609f26c843ebb4d74cc27461"
 }

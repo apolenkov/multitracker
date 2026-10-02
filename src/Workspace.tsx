@@ -1,4 +1,5 @@
 import type { AppView } from './App.tsx';
+import { Count } from './Count.tsx';
 import { getLabels, text } from './i18n.ts';
 import { demoState, summarize } from './model/portfolio.ts';
 import { Overview } from './Overview.tsx';
@@ -145,9 +146,7 @@ function PageHeading({ view }: Readonly<{ view: AppView }>) {
     <div className="page-heading">
       <h1>
         {text(labels, view.screen)}
-        {view.screen === 'portfolios' && (
-          <span className="count"> {demoState.portfolios.length}</span>
-        )}
+        {view.screen === 'portfolios' && <Count value={demoState.portfolios.length} />}
       </h1>
       {(view.screen === 'overview' || view.screen === 'history') && (
         <div className="page-heading-actions">

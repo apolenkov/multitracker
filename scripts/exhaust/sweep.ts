@@ -72,8 +72,18 @@ const runJob = (
   source: string,
   opts: Readonly<Record<string, unknown>>,
 ): unknown => {
-  kick(browser, source, JSON.stringify(opts));
-  const result = awaitJob(browser, 4);
+  const attempt = (): unknown => {
+    kick(browser, source, JSON.stringify(opts));
+    return awaitJob(browser, 10);
+  };
+  const result = (() => {
+    try {
+      return attempt();
+    } catch {
+      // Опрос может не увидеть слот, если страница перезагрузилась: задание повторяется один раз.
+      return attempt();
+    }
+  })();
   if (isRecord(result) && typeof result.error === 'string')
     throw new Error(`page job: ${result.error}`);
   return result;

@@ -127,10 +127,14 @@ export const paintsBox = (
  * навигационной панелью (.mobile-links) проходит под ней при прокрутке — это
  * устройство раскладки, а не дефект. Открытое всплывающее меню (.more-menu)
  * исключением не считается: оно непрозрачно и закрывает контент намеренно.
- * Любой другой fixed/sticky слой, реально закрывающий текст, остаётся находкой.
+ * Закреплённый подвал диалога (.form-actions/.dialog-actions) тоже исключён:
+ * он закрывает прокручиваемое содержимое намеренно, а фокус полей выводит их
+ * из-под него через --dialog-footer-reserve. Любой другой fixed/sticky слой,
+ * реально закрывающий текст, остаётся находкой.
  */
 export const overlapExempt = (
   controlFixed: boolean,
   textFixed: boolean,
   controlInBottomNav: boolean,
-): boolean => controlFixed !== textFixed && controlInBottomNav;
+  controlInStickyDialogFooter = false,
+): boolean => controlInStickyDialogFooter || (controlFixed !== textFixed && controlInBottomNav);

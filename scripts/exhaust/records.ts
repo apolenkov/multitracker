@@ -54,8 +54,13 @@ const checkName = (name: string) => {
 };
 
 /** Каталог запуска; запись идёт через tee/mkdir, а не fs: путь вычисляемый. */
-export const createRunLog = (auditsDir: string, stamp: string, runId: string): RunLog => {
-  const dir = resolve(auditsDir, `${stamp}-exhaust`, runId);
+export const createRunLog = (
+  auditsDir: string,
+  stamp: string,
+  runId: string,
+  suffix = 'exhaust',
+): RunLog => {
+  const dir = resolve(auditsDir, `${stamp}-${suffix}`, runId);
   execFileSync('mkdir', ['-p', dir]);
   execFileSync('mkdir', ['-p', resolve(dir, 'shots')]);
   const write = (name: string, text: string, append: boolean) => {

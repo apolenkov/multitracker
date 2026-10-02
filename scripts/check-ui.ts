@@ -20,6 +20,7 @@ import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
+import { unifiedCounters } from './ui-counter-checks.ts';
 
 const screens = [
   ['overview', 'Обзор', 'Overview'],
@@ -227,6 +228,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ['operations:meaningful-extras-visible', () => operationExtras(browser)],
     ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
     ['cash:opening-balance-rows-and-sort', () => cashFlow(browser)],
+    ['counters:unified-badge', () => unifiedCounters(browser)],
     ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
     ['overview:attribution-one-line', () => attributionLine(browser)],
     ['history:row-actions-focus-undo', () => recordRowActions(browser)],

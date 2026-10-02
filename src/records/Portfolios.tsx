@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { getLabels, money, resultTone } from '../i18n.ts';
 import { selectedBuys, summarize } from '../model/portfolio.ts';
 import { EntityDialog, openDialog } from '../Forms.tsx';
-import { accountsCount, recordsCopy, rowNoticeDetail, rowNoticeText } from './copy.ts';
+import { accountWord, recordsCopy, rowNoticeDetail, rowNoticeText } from './copy.ts';
+import { Count } from '../Count.tsx';
 import type { RecordsProps } from './data.ts';
 import { accountSamples } from '../forms/accounts.ts';
 import { Icon } from '../Icon.tsx';
@@ -90,7 +91,7 @@ function PortfolioSelection({
     <details className="portfolio-selection">
       <summary>
         {copy.selectMany}
-        <span className="selection-count">{selected.length}</span>
+        <Count value={selected.length} />
       </summary>
       <SelectionFields state={state} selected={selected} language={language} onToggle={toggle} />
       {selected.length === 0 && <p className="quiet">{copy.selectionHelp}</p>}
@@ -171,7 +172,9 @@ function PortfolioValue({
       <span className="portfolio-name">
         <strong>{name}</strong>
         <small className="portfolio-meta">
-          <span>{accountsCount(language, accountCount)}</span>
+          <span>
+            {accountWord(language, accountCount)} <Count value={accountCount} />
+          </span>
           <PortfolioAssets state={state} id={id} />
         </small>
       </span>

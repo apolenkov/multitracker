@@ -45,6 +45,19 @@ const fastInv = () => {
 };
 `;
 
+/**
+ * Селекторы утечки суммы. leakSelectors — что сканируется при скрытых значениях;
+ * moneySelectors — денежные слоты: внутри них голая цифра уже утечка, вне них
+ * курс/дата/счётчик остаются легально видимыми. Именованные слоты (N4):
+ * .portfolio-value, .record-values dd, .summary-result dd, .import-result,
+ * .widget-value — раньше [class*=amount|money] их не накрывал, и голые суммы
+ * там проходили мимо проверки.
+ */
+export const leakSelectors =
+  '.amount, .money, .value, .price, .total, .result, dd, td, .summary, .balance, [class*=amount], [class*=money], .portfolio-value, .import-result, .widget-value';
+export const moneySelectors =
+  '[class*=amount], [class*=money], .portfolio-value, .record-values dd, .summary-result dd, .import-result, .widget-value';
+
 /** Полные инварианты состояния: имена, размеры, маскировка сумм, i18n, липкие панели. */
 export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastInvariants};
   const amountLike = ${amountLike.toString()};
@@ -70,10 +83,10 @@ export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastIn
     }
   }
   if (cfg.hideAmounts === 'on') {
-    // Денежные слоты — классы с amount/money; голая цифра ловится только в них,
-    // иначе курс/дата/счётчик в обычных dd/td давали бы ложные находки.
-    const leakSel = '.amount, .money, .value, .price, .total, .result, dd, td, .summary, .balance, [class*=amount], [class*=money]';
-    const moneySel = '[class*=amount], [class*=money]';
+    // Денежные слоты — классы с amount/money и именованные слоты интерфейса;
+    // голая цифра ловится только в них, иначе курс/дата/счётчик давали бы ложные находки.
+    const leakSel = '${leakSelectors}';
+    const moneySel = '${moneySelectors}';
     all(leakSel).filter(shown).forEach((el) => {
       const t = el.textContent ?? '';
       if (amountLeak(t, el.closest(moneySel) !== null))

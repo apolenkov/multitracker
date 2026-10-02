@@ -14,9 +14,12 @@ Escape даёт тысячи keydown, поэтому локальные прог
 
 1. Раннер `actions/runner` собирается в образ `multitracker-ci-runner:20261002`
    ([scripts/runner/Dockerfile](../../scripts/runner/Dockerfile)): Debian bookworm
-   arm64, Chromium, Git, непривилегированный пользователь `runner`. Управление —
-   `scripts/runner/runner.sh` (`build|start|stop|status|logs`); при первичной
-   регистрации берётся часовой токен через `gh`, конфигурация остаётся в контейнере.
+   arm64, Node из `.nvmrc`, Chromium, Git, запечённый agent-browser,
+   непривилегированный пользователь `runner`. Тот же образ обслуживает локальные
+   контейнерные прогоны (`npm run test:ui:docker`, `scripts/exhaust-docker.sh`).
+   Управление — `scripts/runner/runner.sh` (`build|start|stop|status|logs`);
+   при первичной регистрации берётся часовой токен через `gh`, конфигурация
+   остаётся в контейнере.
 2. Workflow `check.yml` исполняется на `runs-on: [self-hosted, mt-container]`.
    Определение браузера — `google-chrome` или `chromium`; состав проверок не менялся.
 3. Для публичного репозитория включено подтверждение запусков для всех внешних

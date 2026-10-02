@@ -65,7 +65,7 @@ Vite, CSS, Tailwind v4 и примитивах shadcn/ui (Radix: вкладки;
 
 ## Запуск
 
-Закреплён Node.js **24.21.0** в [.nvmrc](.nvmrc); используйте эту версию для
+Закреплён Node.js **26.10.0** в [.nvmrc](.nvmrc); используйте эту версию для
 воспроизводимых проверок. Зависимости закреплены в `package-lock.json`.
 Полная проверка также требует **Gitleaks 8.30.1** из
 [официального выпуска](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1).
@@ -147,9 +147,12 @@ Cn2nrFkw/DtCuvsuC с clean check, UI70 и полным smoke — история 
 Полный `test:ui` на macOS с Chrome 154 не проходит из-за потока событий клавиш
 (один Escape даёт тысячи keydown), поэтому клавиатурные сценарии запускаются в
 Linux-контейнере: `npm run test:ui:docker` собирает `dist`, поднимает его внутри
-контейнера (образ `multitracker-layout-runtime:20260930`) и выполняет `test:ui`;
-`test:smoke` запускается так же (`scripts/ui-docker.sh`, см.
-[decision-092](docs/decisions/decision-092-linux-ui-runner.md)).
+контейнера и выполняет `test:ui`; `test:smoke` запускается так же
+(`scripts/ui-docker.sh`, см. [decision-092](docs/decisions/decision-092-linux-ui-runner.md)).
+Образ `multitracker-ci-runner` собирается из репозитория одной командой —
+`scripts/runner/runner.sh build` (Dockerfile: Node из .nvmrc, Chromium,
+agent-browser 0.38.1); он же служит раннером гейта
+([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md)).
 
 Гейт «check» GitHub Actions исполняется на self-hosted раннере в контейнере
 OrbStack ([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md)):

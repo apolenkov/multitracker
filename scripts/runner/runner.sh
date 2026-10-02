@@ -1,5 +1,7 @@
 #!/bin/sh
 # Управление self-hosted CI-раннером MultiTracker в контейнере OrbStack.
+# Образ multitracker-ci-runner собирается здесь же и используется локальными
+# контейнерными прогонами (scripts/ui-docker.sh, scripts/exhaust-docker.sh).
 # usage: scripts/runner/runner.sh build|start|stop|status|logs
 #
 # Первая регистрация получает токен через gh (действует час); конфигурация
@@ -26,7 +28,6 @@ case "${1:-status}" in
       --env "MT_RUNNER_TOKEN=$token" \
       --env "MT_RUNNER_NAME=mt-orbstack" \
       --env "MT_RUNNER_LABELS=mt-container" \
-      --env "AGENT_BROWSER_ARGS=--no-sandbox" \
       "$IMAGE"
     ;;
   stop)

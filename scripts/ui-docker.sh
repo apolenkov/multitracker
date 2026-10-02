@@ -1,5 +1,7 @@
 #!/bin/sh
 # Запускает проверку из scripts/ в Linux-контейнере: на macOS Chrome 154 Escape даёт тысячи keydown.
+# Образ — multitracker-ci-runner, собирается из scripts/runner/Dockerfile:
+# Node из .nvmrc, Chromium, agent-browser 0.38.1 запечены.
 # usage: scripts/ui-docker.sh <dist> <script: check-ui.ts|ui-smoke.ts> [extra docker env...]
 # Репозиторий монтируется как есть, dist — только для чтения; dist отдаёт короткий сервер ниже.
 # (Сервер встроен сюда, а не лежит .ts-файлом: правило security/detect-non-literal-fs-filename
@@ -16,4 +18,4 @@ http.createServer(async (req, res) => {
 exec docker run --rm --entrypoint /bin/sh --cpus 2 --memory 2g \
   -v "$WT":"$WT" -v "$DIST":/dist:ro -w "$WT" \
   -e MULTITRACKER_UI_URL=http://127.0.0.1:4180 -e SERVER="$SERVER" "$@" \
-  multitracker-layout-runtime:20260930 -c 'node --input-type=module -e "$SERVER" & sleep 1; export AGENT_BROWSER_SESSION=ui-$$; node --experimental-strip-types scripts/'"$SCRIPT"
+  multitracker-ci-runner:20261002 -c 'node --input-type=module -e "$SERVER" & sleep 1; export AGENT_BROWSER_SESSION=ui-$$; node --experimental-strip-types scripts/'"$SCRIPT"

@@ -32,15 +32,26 @@ export type Acc = Readonly<{
   prev: readonly FileReport[];
   skips: readonly ClickSkip[];
   attempts: number;
+  sweepAttempted: number;
+  sweepSkipped: number;
 }>;
 
 /**
- * Доля пропущенных проверочных кликов, выше которой прогон падает.
- * Замер здорового прогона (muqaw0r5): 27/78 ≈ 0.35 — почти всё unreachable
- * от диалогов, закрывшихся по ходу блуждания. Предел оставляет запас и всё
- * ещё ловит обвал покрытия.
+ * Доля пропущенных проверочных кликов (доверенных и блуждающих), выше которой
+ * прогон падает. Замер здорового прогона (muqaw0r5): 27/78 ≈ 0.35 — почти всё
+ * unreachable от диалогов, закрывшихся по ходу блуждания. Предел 0.4 оставляет
+ * небольшой запас и ловит обвал проверочной глубины (N3: раньше 0.5 давал
+ * +43 % деградации до падения). Пропуски обхода sweep гейтит не этот порог,
+ * а леджер непокрытых: здесь они идут отдельными долями `sweep` и `total`,
+ * чтобы сводка показывала все клики, а не только проверочные.
  */
-export const SKIP_SHARE_LIMIT = 0.5;
+export const SKIP_SHARE_LIMIT = 0.4;
+
+export type ClickShare = Readonly<{
+  attempted: number;
+  skipped: number;
+  share: number;
+}>;
 
 export type SkipReport = Readonly<{
   attempted: number;
@@ -48,6 +59,10 @@ export type SkipReport = Readonly<{
   share: number;
   limit: number;
   reasons: Readonly<Record<string, number>>;
+  /** Клики обхода sweep: все записи (клик или пропуск с причиной). */
+  sweep: ClickShare;
+  /** Все запланированные клики прогона: проверочные + sweep. */
+  total: ClickShare;
 }>;
 
 export type Checks = Readonly<{
@@ -85,8 +100,22 @@ const writeCodeReports = (log: RunLog, acc: Acc, finalReports: readonly FileRepo
 const totals = (reports: readonly FileReport[], pick: (report: FileReport) => number) =>
   reports.reduce((sum, report) => sum + pick(report), 0);
 
-/** Сводка пропусков кликов: счётчик, доля от попыток и причины по этапам. */
-export const skipReport = (skips: readonly ClickSkip[], attempted: number): SkipReport => {
+const shareOf = (skipped: number, attempted: number): ClickShare => ({
+  attempted,
+  skipped,
+  share: attempted === 0 ? 0 : Math.round((skipped / attempted) * 1000) / 1000,
+});
+
+/**
+ * Сводка пропусков кликов: гейтится доля проверочных попыток (доверенные клики
+ * и шаги блужданий); рядом измеренные доли sweep и всех кликов прогона, чтобы
+ * пропуски обхода не прятались за узкий знаменатель проверочной выборки.
+ */
+export const skipReport = (
+  skips: readonly ClickSkip[],
+  attempted: number,
+  sweep: Readonly<{ attempted: number; skipped: number }>,
+): SkipReport => {
   const reasons = skips.reduce<Readonly<Record<string, number>>>(
     (acc, skip) => ({
       ...acc,
@@ -95,11 +124,11 @@ export const skipReport = (skips: readonly ClickSkip[], attempted: number): Skip
     {},
   );
   return {
-    attempted,
-    skipped: skips.length,
-    share: attempted === 0 ? 0 : Math.round((skips.length / attempted) * 1000) / 1000,
+    ...shareOf(skips.length, attempted),
     limit: SKIP_SHARE_LIMIT,
     reasons,
+    sweep: shareOf(sweep.skipped, sweep.attempted),
+    total: shareOf(skips.length + sweep.skipped, attempted + sweep.attempted),
   };
 };
 
@@ -150,7 +179,10 @@ export const writeReports = (
   log.saveJson('element-coverage.json', { sections, entries });
   const checks = {
     ...ledgerChecks(sections, finalReports),
-    skips: skipReport(acc.skips, acc.attempts),
+    skips: skipReport(acc.skips, acc.attempts, {
+      attempted: acc.sweepAttempted,
+      skipped: acc.sweepSkipped,
+    }),
   };
   writeCodeReports(log, acc, finalReports);
   log.saveJson('findings.json', acc.findings);

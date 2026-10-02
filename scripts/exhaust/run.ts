@@ -30,6 +30,8 @@ const seedAcc = (scripts: readonly ScriptCoverage[], sources: readonly ScriptSou
   prev: fileReports(scripts, sources),
   skips: [],
   attempts: 0,
+  sweepAttempted: 0,
+  sweepSkipped: 0,
 });
 
 const nextAcc = (
@@ -52,6 +54,8 @@ const nextAcc = (
   prev: reports,
   skips: [...prev.skips, ...result.skips],
   attempts: prev.attempts + result.attempts,
+  sweepAttempted: prev.sweepAttempted + result.sweepAttempted,
+  sweepSkipped: prev.sweepSkipped + result.sweepSkipped,
 });
 
 const collectOne = async (

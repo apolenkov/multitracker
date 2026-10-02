@@ -159,6 +159,8 @@ export type Visit = Readonly<{
   errors: readonly string[];
   skips: readonly ClickSkip[];
   attempts: number;
+  sweepAttempted: number;
+  sweepSkipped: number;
 }>;
 
 /** Навигация, перечисление, обход и донабор: всё наблюдаемое за один визит. */
@@ -177,6 +179,8 @@ export const visitRoute = (browser: Browser, route: string, seq: number, env: En
     seen,
     skips: verified.skips,
     attempts: verified.clicks.length + verified.skips.length,
+    sweepAttempted: hits.length,
+    sweepSkipped: hits.filter((hit) => hit.skipped !== '').length,
     errors: [...sweep.errors, ...extra.errors, ...hits.flatMap((hit) => hit.errors)],
   };
 };
@@ -189,6 +193,8 @@ export type SectionResult = Readonly<{
   consoleErrors: readonly string[];
   skips: readonly ClickSkip[];
   attempts: number;
+  sweepAttempted: number;
+  sweepSkipped: number;
   durationMs: number;
 }>;
 
@@ -218,6 +224,8 @@ export const visitSection = (
     consoleErrors: visit.errors,
     skips: visit.skips,
     attempts: visit.attempts,
+    sweepAttempted: visit.sweepAttempted,
+    sweepSkipped: visit.sweepSkipped,
     durationMs: Date.now() - started,
   };
 };

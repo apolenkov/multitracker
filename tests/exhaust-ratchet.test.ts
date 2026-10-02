@@ -117,7 +117,7 @@ const good = {
   element: { missing: [], stale: [], sealed: true, ok: true },
   code: { missing: [], stale: [], sealed: true, ok: true },
   errors: [],
-  skips: skipReport([], 0),
+  skips: skipReport([], 0, { attempted: 0, skipped: 0 }),
 };
 
 await test('reportChecks lets a stale-only ledger fail the run', () => {
@@ -125,24 +125,49 @@ await test('reportChecks lets a stale-only ledger fail the run', () => {
   assert.throws(() => reportChecks({ ...good, element: staleElement }), /element ledger/);
 });
 
-await test('skipReport shares reasons and the ratchet fails over the share limit', () => {
+const skip = (path: string, stage: ClickSkip['stage']): ClickSkip => ({
+  path,
+  stage,
+  reason: 'unreachable',
+});
+
+await test('skipReport gates verification share at 0.4 and reports sweep share', () => {
   const skips: readonly ClickSkip[] = [
-    { path: 'a', stage: 'walk', reason: 'unreachable' },
-    { path: 'b', stage: 'walk', reason: 'unreachable' },
+    skip('a', 'walk'),
+    skip('b', 'walk'),
     { path: 'c', stage: 'trusted', reason: 'click-threw' },
-    { path: 'd', stage: 'walk', reason: 'unreachable' },
+    skip('d', 'walk'),
     { path: 'e', stage: 'walk', reason: 'settle-timeout' },
-    { path: 'f', stage: 'walk', reason: 'unreachable' },
+    skip('f', 'walk'),
   ];
-  const report = skipReport(skips, 10);
+  const report = skipReport(skips, 10, { attempted: 100, skipped: 40 });
   assert.equal(report.skipped, 6);
   assert.equal(report.share, 0.6);
-  assert.equal(report.limit, 0.5);
+  assert.equal(report.limit, 0.4);
+  assert.deepEqual(report.sweep, { attempted: 100, skipped: 40, share: 0.4 });
+  assert.deepEqual(report.total, { attempted: 110, skipped: 46, share: 0.418 });
   assert.deepEqual(report.reasons, {
     'walk:unreachable': 4,
     'walk:settle-timeout': 1,
     'trusted:click-threw': 1,
   });
   assert.throws(() => reportChecks({ ...good, skips: report }), /skipped clicks/);
-  assert.doesNotThrow(() => reportChecks({ ...good, skips: skipReport(skips.slice(0, 2), 10) }));
+  const calm = skipReport(skips.slice(0, 2), 10, { attempted: 100, skipped: 40 });
+  assert.doesNotThrow(() => reportChecks({ ...good, skips: calm }));
+});
+
+await test('skip gate: 0.4 boundary passes, one skip over fails', () => {
+  const ok = skipReport([skip('a', 'trusted'), skip('b', 'trusted'), skip('c', 'trusted'), skip('d', 'trusted')], 10, {
+    attempted: 0,
+    skipped: 0,
+  });
+  assert.equal(ok.share, 0.4);
+  assert.doesNotThrow(() => reportChecks({ ...good, skips: ok }));
+  const over = skipReport(
+    [skip('a', 'trusted'), skip('b', 'trusted'), skip('c', 'trusted'), skip('d', 'trusted'), skip('e', 'trusted')],
+    10,
+    { attempted: 0, skipped: 0 },
+  );
+  assert.equal(over.share, 0.5);
+  assert.throws(() => reportChecks({ ...good, skips: over }), /skipped clicks/);
 });

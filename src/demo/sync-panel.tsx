@@ -138,9 +138,20 @@ function SyncDevices({
         >
           {t.revoke}
         </button>
-        {revoked && <RowNotice text={t.revoked} language={language} onUndo={restore} />}
+        {revoked && <RevokeNotice t={t} language={language} onUndo={restore} />}
       </article>
     </section>
+  );
+}
+
+// Уведомление об отзыве доступа: короткий текст + контекст для скринридера.
+function RevokeNotice({
+  t,
+  language,
+  onUndo,
+}: Readonly<{ t: SyncWords; language: 'ru' | 'en'; onUndo: () => void }>) {
+  return (
+    <RowNotice text={t.revoked} detail={t.revokedDetail} language={language} onUndo={onUndo} />
   );
 }
 function SyncStatus({

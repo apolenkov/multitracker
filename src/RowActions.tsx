@@ -36,11 +36,13 @@ export function UndoButton({
 }
 
 // Встроенное уведомление вместо убранной строки: та же высота, фокус на «Отменить».
+// detail несёт контекст («расчёт не изменён») в имя живого региона.
 export function RowNotice({
   text,
+  detail,
   language,
   onUndo,
-}: Readonly<{ text: string; language: Language; onUndo: () => void }>) {
+}: Readonly<{ text: string; detail?: string; language: Language; onUndo: () => void }>) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const frame = requestAnimationFrame(() =>
@@ -49,7 +51,7 @@ export function RowNotice({
     return () => cancelAnimationFrame(frame);
   }, []);
   return (
-    <div ref={ref} className="row-notice" role="status" aria-atomic="true">
+    <div ref={ref} className="row-notice" role="status" aria-atomic="true" aria-label={detail}>
       <span>{text}</span>
       <UndoButton language={language} onUndo={onUndo} />
     </div>

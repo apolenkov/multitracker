@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getLabels, money, resultTone } from '../i18n.ts';
 import { selectedBuys, summarize } from '../model/portfolio.ts';
 import { EntityDialog, openDialog } from '../Forms.tsx';
-import { recordsCopy, rowNoticeText } from './copy.ts';
+import { recordsCopy, rowNoticeDetail, rowNoticeText } from './copy.ts';
 import type { RecordsProps } from './data.ts';
 import { accountSamples } from '../forms/accounts.ts';
 import { Icon } from '../Icon.tsx';
@@ -141,6 +141,7 @@ function PortfolioRow(props: ManageProps & Readonly<{ id: string }>) {
       {action && (
         <RowNotice
           text={rowNoticeText(copy, 'portfolio', action)}
+          detail={rowNoticeDetail(copy, action)}
           language={props.language}
           onUndo={() => props.onRestore(key)}
         />

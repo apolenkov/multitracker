@@ -92,6 +92,11 @@ function HistoryEntry({
       {undone && (
         <RowNotice
           text={importText(language, 'Импорт отменён', 'Import undone')}
+          detail={importText(
+            language,
+            'Импорт отменён. Данные не изменялись.',
+            'Import undone. No data was changed.',
+          )}
           language={language}
           onUndo={onRestore}
         />

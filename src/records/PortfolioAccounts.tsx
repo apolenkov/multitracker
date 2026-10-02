@@ -1,7 +1,7 @@
 import { accountSamples, accountLabel } from '../forms/accounts.ts';
 import { getLabels } from '../i18n.ts';
 import { RowAction, RowNotice } from '../RowActions.tsx';
-import { recordsCopy, rowNoticeText } from './copy.ts';
+import { recordsCopy, rowNoticeDetail, rowNoticeText } from './copy.ts';
 import type { RecordsProps } from './data.ts';
 export type EntityRequest = Readonly<{
   entity: 'portfolio' | 'account' | 'group';
@@ -94,6 +94,7 @@ function AccountRow({
       {removed && (
         <RowNotice
           text={rowNoticeText(copy, 'account', removed)}
+          detail={rowNoticeDetail(copy, removed)}
           language={language}
           onUndo={onRestore}
         />
@@ -132,6 +133,7 @@ export function SelectionActions({
         {groupAction && (
           <RowNotice
             text={rowNoticeText(copy, 'group', groupAction)}
+            detail={rowNoticeDetail(copy, groupAction)}
             language={language}
             onUndo={() => onRestore('group:crypto')}
           />

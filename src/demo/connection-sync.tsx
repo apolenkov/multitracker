@@ -139,9 +139,18 @@ function ConnectionCard({
           </button>
         )}
       </div>
-      {dropped && <RowNotice text={t.removedRow} language={language} onUndo={restore} />}
+      {dropped && <ConnectionNotice t={t} language={language} onUndo={restore} />}
     </article>
   );
+}
+
+// Уведомление об отключении источника: короткий текст + контекст для скринридера.
+function ConnectionNotice({
+  t,
+  language,
+  onUndo,
+}: Readonly<{ t: ConnectionWords; language: 'ru' | 'en'; onUndo: () => void }>) {
+  return <RowNotice text={t.removedRow} detail={t.removed} language={language} onUndo={onUndo} />;
 }
 
 type ModalProps = Readonly<{

@@ -50,7 +50,12 @@ export function HistoryRow(props: Props) {
         </div>
       )}
       {props.removed && (
-        <RowNotice text={copy.rowRemoved} language={props.language} onUndo={props.onRestore} />
+        <RowNotice
+          text={copy.rowRemoved}
+          detail={copy.removed}
+          language={props.language}
+          onUndo={props.onRestore}
+        />
       )}
     </article>
   );

@@ -141,3 +141,9 @@ export const rowNoticeText = (
   if (entity === 'portfolio') return rows.portfolio;
   return entity === 'account' ? rows.account : rows.group;
 };
+
+// Контекст уведомления для скринридера: архив хранит историю, удаление не меняет расчёт.
+export const rowNoticeDetail = (
+  texts: ReturnType<typeof recordsCopy>,
+  action: 'archive' | 'delete',
+): string => (action === 'archive' ? texts.archived : texts.entityRemoved);

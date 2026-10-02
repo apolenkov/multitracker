@@ -7,7 +7,7 @@
 
 Дата: 2026-09-30. Основание: [план](../plans/2026-09-30-mintlify.md),
 [решение 085](../decisions/decision-085-mintlify.md),
-[M01–M03](../../openspec/changes/mintlify-redesign/specs/presentation/spec.md).
+[M01–M03](../../openspec/changes/archive/2026-10-02-mintlify-redesign/specs/presentation/spec.md).
 Базовый коммит до переделки — `c296541`; работа ведётся в `fix/prototype-design`,
 [черновик PR3](https://github.com/apolenkov/multitracker/pull/3).
 

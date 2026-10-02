@@ -10,7 +10,7 @@
 элементы; три непересекающиеся области оформления. Общий сборщик DOM (дерева
 элементов страницы) обслуживает четыре независимых набора сценариев.
 **Tech Stack:** TypeScript, React, Vite, CSS, agent-browser; новые службы не нужны.
-**Spec:** [product-ui-dom-audit](../../openspec/changes/product-ui-dom-audit/specs/product-ui/spec.md),
+**Spec:** [product-ui-dom-audit](../../openspec/changes/archive/2026-10-02-product-ui-dom-audit/specs/product-ui/spec.md),
 [135 ID](../design/form-inventory.md), [DESIGN.md](../../DESIGN.md).
 
 ## Общие ограничения
@@ -105,9 +105,9 @@ DESIGN, текущая приёмка и PR3 обновляются их вла�
 - [x] `openspec validate product-ui-dom-audit --strict --no-interactive`: код 0.
 - [x] Единственное ревью Standards/Spec: SHIP, существенных открытых замечаний нет.
 - [x] Обновить черновик PR3; push/PR GitHub Actions кода `14e9ee2` — SUCCESS.
-      CI следующего документационного коммита проверяется отдельно; ветка не слита.
+      CI итогового дерева — зелёный; ветка влита в `main` 2026-10-02 (`348e7d8`).
 - [x] Предъявить макет и доказательства: `http://127.0.0.1:5173/#overview`.
-- [ ] Получить отдельное визуальное одобрение владельца; не считать его полученным.
+- [x] Получить отдельное визуальное одобрение владельца; получено 2026-10-02.
 
 ## Текущая запись
 
@@ -116,5 +116,5 @@ DESIGN, текущая приёмка и PR3 обновляются их вла�
 Чистый check: код 0, 32 теста, 39 ограничений, audit/secrets 0; UI 68/68.
 Первичный check код 1 из-за чужого ignored crawl.mjs сохранён; правила не ослаблены.
 Google: 0 ошибок, 62 orphaned-tokens предупреждения, 1 info; OpenSpec strict код 0.
-Ревью SHIP для `14e9ee2`; CI [push](https://github.com/apolenkov/multitracker/actions/runs/36769903318) и [PR](https://github.com/apolenkov/multitracker/actions/runs/36769908791) SUCCESS; PR3 остаётся черновиком.
-Визуальное одобрение ожидается. CI следующего документационного коммита — отдельно.
+Ревью SHIP для `14e9ee2`; CI [push](https://github.com/apolenkov/multitracker/actions/runs/36769903318) и [PR](https://github.com/apolenkov/multitracker/actions/runs/36769908791) SUCCESS; PR3 слит 2026-10-02.
+Визуальное одобрение получено; CI итогового дерева — зелёный.

@@ -244,8 +244,8 @@ await test('skipReport shares reasons and the ratchet fails over the share limit
   assert.equal(report.limit, 0.2);
   assert.deepEqual(report.reasons, { 'walk:unreachable': 2, 'trusted:click-threw': 1 });
   const base = {
-    element: { missing: [], stale: [], ok: true },
-    code: { missing: [], stale: [], ok: true },
+    element: { missing: [], stale: [], sealed: true, ok: true },
+    code: { missing: [], stale: [], sealed: true, ok: true },
     errors: [],
   };
   assert.throws(() => reportChecks({ ...base, skips: report }), /skipped clicks/);

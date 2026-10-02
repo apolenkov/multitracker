@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { asArray, isRecord } from './guards.ts';
-import { ledgerEntry } from './ledger.ts';
+import { dumpLedger, ledgerEntry } from './ledger.ts';
 import type { LedgerEntry } from './ledger.ts';
 
 const CODE_REASON = 'baseline: not exercised by the layers 1-3 sweep, may only shrink';
@@ -44,16 +44,23 @@ export const codeExceptions = (doc: unknown): readonly LedgerEntry[] => {
   return rows.toSorted(bySignature);
 };
 
-const dump = (exceptions: readonly LedgerEntry[]): string =>
-  `${JSON.stringify({ version: 1, exceptions }, null, 2)}\n`;
+/**
+ * Базлайн пересобирается только явной командой `npm run exhaust:baseline`.
+ * В CI генератор отказывается работать: тихий сброс в пайплайне невозможен.
+ */
+export const assertLocalRun = (env: Readonly<Record<string, string | undefined>>): void => {
+  if (env.CI === 'true' || env.CI === '1')
+    throw new Error('exhaust baseline: rebuild is manual-only, refusing in CI');
+};
 
-export const rebuild = (dir: string): void => {
-  const elements = dump(elementExceptions(loadJson(dir, 'element-coverage.json')));
+export const rebuild = (dir: string, env: Readonly<Record<string, string | undefined>>): void => {
+  assertLocalRun(env);
+  const elements = dumpLedger(elementExceptions(loadJson(dir, 'element-coverage.json')));
   writeFileSync('scripts/exhaust/uncovered-ledger.json', elements);
-  const code = dump(codeExceptions(loadJson(dir, 'code-coverage.json')));
+  const code = dumpLedger(codeExceptions(loadJson(dir, 'code-coverage.json')));
   writeFileSync('scripts/exhaust/uncovered-code-ledger.json', code);
 };
 
 const script = process.argv.at(1) ?? '';
 const dir = process.argv.at(2);
-if (script.endsWith('baseline.ts') && dir !== undefined) rebuild(dir);
+if (script.endsWith('baseline.ts') && dir !== undefined) rebuild(dir, process.env);

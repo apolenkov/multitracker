@@ -26,6 +26,7 @@
     "test:ui": "node --experimental-strip-types scripts/check-ui.ts",
     "test:ui:docker": "vite build --outDir dist && scripts/ui-docker.sh dist check-ui.ts",
     "test:ui:exhaust": "vite build --outDir dist/exhaust --emptyOutDir --sourcemap && scripts/exhaust-docker.sh dist/exhaust exhaust/run.ts",
+    "exhaust:baseline": "node --experimental-strip-types scripts/exhaust/baseline.ts",
     "test:smoke": "node --experimental-strip-types scripts/ui-smoke.ts"
   },
   "dependencies": {

@@ -20,7 +20,7 @@ import {
   stripIndices,
   dialogOf,
 } from '../scripts/exhaust/signature.ts';
-import { checkLedger, parseLedger } from '../scripts/exhaust/ledger.ts';
+import { checkLedger, dumpLedger, parseLedger } from '../scripts/exhaust/ledger.ts';
 import { codeExceptions, elementExceptions } from '../scripts/exhaust/baseline.ts';
 import { splitChunks, ddmin } from '../scripts/exhaust/shrink.ts';
 import { contrastRatio, luminance, over, parseColor } from '../scripts/exhaust/contrast.ts';
@@ -99,10 +99,9 @@ await test('signature normalizes names, strips indices and keeps context', () =>
   );
 });
 
-await test('ledger ratchet: uncovered must be listed, covered entries must shrink away', () => {
-  const ledger = parseLedger(
-    JSON.stringify({ version: 1, exceptions: [{ signature: 'a|b', reason: 'disabled' }] }),
-  );
+await test('ledger ratchet: sealed only — uncovered listed, covered shrink away', () => {
+  const entries = [{ signature: 'a|b', reason: 'disabled' }];
+  const ledger = parseLedger(dumpLedger(entries));
   assert.equal(checkLedger(['a|b'], ledger).ok, true);
   assert.deepEqual(checkLedger(['a|b', 'x|y'], ledger).missing, ['x|y']);
   assert.deepEqual(checkLedger([], ledger).stale, ['a|b']);

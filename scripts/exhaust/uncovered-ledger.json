@@ -2457,5 +2457,6 @@
       "signature": "sync|portfolio-dialog|textbox|название|html > body > div#root > div > dialog#portfolio-dialog > form > div > div > input#portfolio-dialog-name",
       "reason": "dialog-unreachable"
     }
-  ]
+  ],
+  "seal": "2a9771d52d300c5429b8e80ea7dc2110b93e25f16a132cd57d34fd9cd00d3e57"
 }

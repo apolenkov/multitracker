@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getLabels, money, resultTone } from '../i18n.ts';
 import { selectedBuys, summarize } from '../model/portfolio.ts';
 import { EntityDialog, openDialog } from '../Forms.tsx';
-import { recordsCopy, rowNoticeDetail, rowNoticeText } from './copy.ts';
+import { accountsCount, recordsCopy, rowNoticeDetail, rowNoticeText } from './copy.ts';
 import type { RecordsProps } from './data.ts';
 import { accountSamples } from '../forms/accounts.ts';
 import { Icon } from '../Icon.tsx';
@@ -160,6 +160,7 @@ function PortfolioValue({
   onSelect,
 }: Props & Readonly<{ id: string; name: string }>) {
   const labels = getLabels(language);
+  const accountCount = accountSamples.filter((account) => account.portfolioId === id).length;
   const result = summarize(state, id, currency);
   const performance = summarize(state, id, baseCurrency);
   return (
@@ -170,10 +171,7 @@ function PortfolioValue({
       <span className="portfolio-name">
         <strong>{name}</strong>
         <small className="portfolio-meta">
-          <span>
-            {language === 'ru' ? 'Счетов' : 'Accounts'}:{' '}
-            {accountSamples.filter((account) => account.portfolioId === id).length}
-          </span>
+          <span>{accountsCount(language, accountCount)}</span>
           <PortfolioAssets state={state} id={id} />
         </small>
       </span>

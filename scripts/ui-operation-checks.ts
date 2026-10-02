@@ -107,8 +107,7 @@ export function operationExtras(browser: Browser) {
 }
 
 function editedExtras(browser: Browser) {
-  browser.run('click', '.desktop-links a[href="#history"]');
-  browser.run('wait', '--fn', 'document.querySelector("#main h1")?.textContent === "Операции"');
+  go(browser, 'history');
   browser.run('click', '.history-row:first-child .row-action:not(.danger)');
   browser.run('wait', '#record-edit-dialog[open]');
   truth(

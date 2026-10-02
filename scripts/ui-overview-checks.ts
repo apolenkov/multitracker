@@ -118,12 +118,7 @@ export function attributionLine(browser: Browser) {
 // В режиме скрытия сумм знак результата не раскрывается цветом (DESIGN.md).
 export function maskedResultTones(browser: Browser) {
   const tones = ['overview', 'portfolios', 'history', 'settings'].map((screen) => {
-    browser.run('click', `.desktop-links a[href="#${screen}"]`);
-    browser.run(
-      'wait',
-      '--fn',
-      `location.hash === '#${screen}' && document.activeElement?.id === 'main'`,
-    );
+    go(browser, screen);
     return evaluate(
       browser,
       'Array.from(document.querySelectorAll("#main .positive, #main .negative")).filter((node) => !node.closest("[hidden]")).map((node) => node.textContent?.trim())',

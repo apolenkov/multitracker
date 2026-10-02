@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { evaluate, type Browser } from './ui-driver.ts';
-import { count, focused, layoutShift, reveal, undoFocused, waitTrue } from './ui-helpers.ts';
+import { count, focused, go, layoutShift, reveal, undoFocused, waitTrue } from './ui-helpers.ts';
 
 const rows = '#main .history-list .history-row';
 const words = {
@@ -129,8 +129,7 @@ function deleteUndo(browser: Browser, from: 'row' | 'details') {
 export function recordRowActions(browser: Browser) {
   browser.run('set', 'viewport', '1440', '900');
   browser.run('select', '#topbar-language', 'ru');
-  browser.run('click', '.desktop-links a[href="#history"]');
-  browser.run('wait', '--fn', 'location.hash === "#history"');
+  go(browser, 'history');
   const total = evaluate(browser, count(rows));
   assert.ok(typeof total === 'number' && total > 1, 'Нужны первая и последняя операции');
   const layout = (['ru', 'en'] as const).flatMap((language) => {
@@ -190,8 +189,7 @@ const entities: readonly {
 export function entityUndo(browser: Browser) {
   browser.run('set', 'viewport', '1440', '900');
   browser.run('select', '#topbar-language', 'ru');
-  browser.run('click', '.desktop-links a[href="#portfolios"]');
-  browser.run('wait', '--fn', 'location.hash === "#portfolios"');
+  go(browser, 'portfolios');
   return entities.map(({ items, veil, opener, action, names, inside }) => {
     if (inside) {
       reveal(browser, inside);
@@ -231,7 +229,7 @@ export function entityUndo(browser: Browser) {
 export function importAndSyncUndo(browser: Browser) {
   browser.run('set', 'viewport', '1440', '900');
   browser.run('select', '#topbar-language', 'ru');
-  browser.run('click', '.desktop-links a[href="#import"]');
+  go(browser, 'import');
   browser.run('click', '#import-history-details');
   browser.run('wait', '#import-history[open]');
   browser.run('find', 'role', 'button', 'click', '--name', 'Отменить импорт', '--exact');
@@ -252,7 +250,7 @@ export function importAndSyncUndo(browser: Browser) {
     'document.querySelector("#import-history-details")?.checkVisibility({checkVisibilityCSS:true}) === true',
     'Отмена вернула запись импорта',
   );
-  browser.run('click', '.desktop-links a[href="#sync"]');
+  go(browser, 'sync');
   const revoke = '#sync-revoke-mobile';
   browser.run('wait', revoke);
   assert.equal(

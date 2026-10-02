@@ -25,6 +25,9 @@ export function go(browser: Browser, screen: string) {
     '--fn',
     `location.hash === '#${screen}' && document.activeElement?.id === 'main' && document.querySelector('#main h1')?.textContent.startsWith(${JSON.stringify(headings.get(screen))})`,
   );
+  // Переход анимируется; без остановки анимаций клик может попасть в сайдбар
+  // или в соседний экран (падение import-sync:visible-actions-undo 2026-10-02).
+  settleLayout(browser);
 }
 
 export function truth(browser: Browser, source: string, message: string) {

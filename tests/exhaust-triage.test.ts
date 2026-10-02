@@ -131,6 +131,10 @@ await test('overlap exemption spares only the bottom mobile nav, other fixed lay
   assert.equal(overlapExempt(false, true, false), false);
   assert.equal(overlapExempt(true, true, true), false);
   assert.equal(overlapExempt(false, false, false), false);
+  // Закреплённый подвал диалога закрывает прокручиваемое содержимое намеренно.
+  assert.equal(overlapExempt(true, true, false, true), true);
+  assert.equal(overlapExempt(false, false, false, true), true);
+  assert.equal(overlapExempt(true, false, false, false), false);
 });
 
 await test('open more-menu loses the overlap exemption; closed bottom nav keeps it', () => {

@@ -23,7 +23,15 @@ const covers = (t, c) => {
   if (Math.min(tr.w, tr.h) <= 1 || getComputedStyle(t).clipPath === 'inset(50%)') return false;
   // Поток под закрытой нижней навигацией — не дефект. Открытое меню «Ещё»
   // (.more-menu есть в DOM только при expanded) исключением не является (N5).
-  if (overlapExempt(fixedNear(c), fixedNear(t), c.closest('.mobile-links') !== null)) return false;
+  if (
+    overlapExempt(
+      fixedNear(c),
+      fixedNear(t),
+      c.closest('.mobile-links') !== null,
+      c.closest('dialog') !== null && c.closest('.form-actions, .dialog-actions') !== null,
+    )
+  )
+    return false;
   let stack = stackAbove(tr, rectOf(c));
   if (stack.length === 0) {
     // Пересечение вне вьюпорта: мгновенно подводим текст, меряем стек, возвращаем прокрутку.

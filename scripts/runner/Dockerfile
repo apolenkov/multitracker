@@ -23,7 +23,9 @@ RUN apt-get update \
 ENV AGENT_BROWSER_EXECUTABLE_PATH=/usr/bin/chromium \
   AGENT_BROWSER_ARGS=--no-sandbox
 
-RUN useradd --create-home --shell /bin/bash runner
+# UID закреплён: тома _work и .npm живут между пересборками образа, и смена UID
+# иначе оставляет их за прежним владельцем («Access to the path ... is denied»).
+RUN useradd --uid 1001 --create-home --shell /bin/bash runner
 
 USER runner
 RUN mkdir -p /home/runner/actions-runner \

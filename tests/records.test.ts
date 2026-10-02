@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { transactions, operationInput } from '../src/records/data.ts';
 import { filterTransactions, initialFilters } from '../src/records/filters.ts';
-import { accountsCount } from '../src/records/copy.ts';
+import { accountWord } from '../src/records/copy.ts';
 import { demoState } from '../src/model/portfolio.ts';
 
 const records = transactions(demoState);
@@ -52,12 +52,12 @@ await test('editing a hidden transaction does not prefill financial amounts', ()
 });
 
 await test('account counter declines Russian numerals and stays plain in English', () => {
-  assert.equal(accountsCount('ru', 1), 'Счёт: 1');
-  assert.equal(accountsCount('ru', 2), 'Счёта: 2');
-  assert.equal(accountsCount('ru', 4), 'Счёта: 4');
-  assert.equal(accountsCount('ru', 5), 'Счетов: 5');
-  assert.equal(accountsCount('ru', 11), 'Счетов: 11');
-  assert.equal(accountsCount('ru', 21), 'Счёт: 21');
-  assert.equal(accountsCount('ru', 112), 'Счетов: 112');
-  assert.equal(accountsCount('en', 1), 'Accounts: 1');
+  assert.equal(accountWord('ru', 1), 'Счёт');
+  assert.equal(accountWord('ru', 2), 'Счёта');
+  assert.equal(accountWord('ru', 4), 'Счёта');
+  assert.equal(accountWord('ru', 5), 'Счетов');
+  assert.equal(accountWord('ru', 11), 'Счетов');
+  assert.equal(accountWord('ru', 21), 'Счёт');
+  assert.equal(accountWord('ru', 112), 'Счетов');
+  assert.equal(accountWord('en', 1), 'Accounts');
 });

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { assets, selectedBuys, totals } from './model/portfolio.ts';
 import type { Asset, Currency, State } from './model/portfolio.ts';
 import { getLabels } from './i18n.ts';
+import { Count } from './Count.tsx';
 import { AssetDetails } from './insights/AssetDetails.tsx';
 import { HoldingsTable } from './HoldingsTable.tsx';
 import type { Language } from './i18n.ts';
@@ -28,7 +29,7 @@ export function Holdings(props: Props) {
   return (
     <section className="holdings" aria-labelledby="holdings-title">
       <h2 id="holdings-title">
-        {labels.holdings} <span className="count">{rows.length + 2}</span>
+        {labels.holdings} <Count value={rows.length + 2} />
       </h2>
       <HoldingsTable rows={rows} value={value} {...props} onSelect={setSelected} />
       {rows.length > 0 && <AssetDetails asset={selected} {...props} />}

@@ -165,7 +165,12 @@ const clickRecord = record(1, baseEnv, 'overview', { b: 'x', a: 'x', dur: 0 }, '
 });
 
 await test('attemptClick turns unreachable and throwing clicks into counted skips', () => {
-  const unreachable = attemptClick('p1', false, () => clickRecord, () => undefined);
+  const unreachable = attemptClick(
+    'p1',
+    false,
+    () => clickRecord,
+    () => undefined,
+  );
   assert.equal(unreachable.clicks.length, 0);
   assert.deepEqual(unreachable.skips, [{ path: 'p1', stage: 'trusted', reason: 'unreachable' }]);
   const threw = attemptClick(
@@ -193,9 +198,12 @@ await test('attemptClick turns unreachable and throwing clicks into counted skip
       ),
     /cleanup-ran/,
   );
-  const ok = attemptClick('p4', true, () => clickRecord, () => undefined);
+  const ok = attemptClick(
+    'p4',
+    true,
+    () => clickRecord,
+    () => undefined,
+  );
   assert.equal(ok.clicks.length, 1);
   assert.equal(ok.skips.length, 0);
 });
-
-

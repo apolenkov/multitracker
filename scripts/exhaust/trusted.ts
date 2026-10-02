@@ -112,8 +112,7 @@ export const attemptClick = (
   click: () => ClickRecord,
   cleanup: () => void,
 ): ClickOutcome => {
-  if (!reachable)
-    return { clicks: [], skips: [{ path, stage: 'trusted', reason: 'unreachable' }] };
+  if (!reachable) return { clicks: [], skips: [{ path, stage: 'trusted', reason: 'unreachable' }] };
   try {
     return { clicks: [click()], skips: [] };
   } catch {
@@ -123,12 +122,7 @@ export const attemptClick = (
 };
 
 /** Один доверенный клик без падения прогона: перекрытый элемент пропускается. */
-const safeOne = (
-  browser: Browser,
-  env: Env,
-  seq: number,
-  pick: TrustPick,
-): ClickOutcome =>
+const safeOne = (browser: Browser, env: Env, seq: number, pick: TrustPick): ClickOutcome =>
   attemptClick(
     pick.hit.path,
     clickable(browser, pick.hit.path),

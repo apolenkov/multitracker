@@ -113,9 +113,7 @@ const stepOne = (drv: WalkDriver, path: string, acc: StepAcc): StepAcc => {
 };
 
 export const execSteps = (drv: WalkDriver, paths: readonly string[], acc: StepAcc): StepAcc =>
-  paths.length === 0
-    ? acc
-    : execSteps(drv, paths.slice(1), stepOne(drv, paths.at(0) ?? '', acc));
+  paths.length === 0 ? acc : execSteps(drv, paths.slice(1), stepOne(drv, paths.at(0) ?? '', acc));
 
 const replays = (browser: Browser, env: Env, candidate: readonly string[]): Promise<boolean> =>
   Promise.resolve().then(() => {

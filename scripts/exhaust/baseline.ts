@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { asArray, isRecord } from './guards.ts';
-import { dumpLedger, ledgerEntry } from './ledger.ts';
+import { dumpLedger, ledgerEntry, parseLedger } from './ledger.ts';
 import type { LedgerEntry } from './ledger.ts';
 
 const CODE_REASON = 'baseline: not exercised by the layers 1-3 sweep, may only shrink';
@@ -53,12 +53,41 @@ export const assertLocalRun = (env: Readonly<Record<string, string | undefined>>
     throw new Error('exhaust baseline: rebuild is manual-only, refusing in CI');
 };
 
+/**
+ * Пересборка — объединение: свежие непокрытые сигнатуры добавляются к книге,
+ * старые записи сохраняются (элемент мог не попасть в скан этого прогона, а не
+ * стать покрытым). Книга растёт монотонно и никогда не откатывает подтверждённое.
+ */
+export const unionEntries = (
+  fresh: readonly LedgerEntry[],
+  existing: readonly LedgerEntry[],
+): readonly LedgerEntry[] => {
+  const known = new Set(fresh.map((entry) => entry.signature));
+  return [...fresh, ...existing.filter((entry) => !known.has(entry.signature))].toSorted(
+    bySignature,
+  );
+};
+
+const readExceptions = (path: string): readonly LedgerEntry[] => {
+  try {
+    return parseLedger(execFileSync('cat', [resolve(path)], { encoding: 'utf8' })).exceptions;
+  } catch {
+    return [];
+  }
+};
+
 export const rebuild = (dir: string, env: Readonly<Record<string, string | undefined>>): void => {
   assertLocalRun(env);
-  const elements = dumpLedger(elementExceptions(loadJson(dir, 'element-coverage.json')));
-  writeFileSync('scripts/exhaust/uncovered-ledger.json', elements);
-  const code = dumpLedger(codeExceptions(loadJson(dir, 'code-coverage.json')));
-  writeFileSync('scripts/exhaust/uncovered-code-ledger.json', code);
+  const elements = unionEntries(
+    elementExceptions(loadJson(dir, 'element-coverage.json')),
+    readExceptions('scripts/exhaust/uncovered-ledger.json'),
+  );
+  writeFileSync('scripts/exhaust/uncovered-ledger.json', dumpLedger(elements));
+  const code = unionEntries(
+    codeExceptions(loadJson(dir, 'code-coverage.json')),
+    readExceptions('scripts/exhaust/uncovered-code-ledger.json'),
+  );
+  writeFileSync('scripts/exhaust/uncovered-code-ledger.json', dumpLedger(code));
 };
 
 const script = process.argv.at(1) ?? '';

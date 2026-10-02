@@ -237,11 +237,13 @@ await test('asFinding maps invariant rows and drops junk', () => {
   assert.equal(asFinding({ rule: 'x' }), null);
 });
 
-await test('code ledger reuses the ratchet: unknown functions fail, fixed ones shrink', () => {
+await test('code ledger reuses the ratchet: unknown functions fail, covered reported', () => {
   const ledger = parseLedger(
     dumpLedger([{ signature: 'src/a.ts|dead@9', reason: 'not reachable' }]),
   );
   assert.equal(checkLedger(['src/a.ts|dead@9'], ledger).ok, true);
   assert.equal(checkLedger(['src/a.ts|dead@9', 'src/a.ts|new@1'], ledger).ok, false);
-  assert.equal(checkLedger([], ledger).ok, false);
+  const shrunk = checkLedger([], ledger);
+  assert.deepEqual(shrunk.stale, ['src/a.ts|dead@9']);
+  assert.equal(shrunk.ok, true);
 });

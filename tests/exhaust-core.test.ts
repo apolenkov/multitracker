@@ -91,12 +91,16 @@ await test('signature is positional: language and name never enter the key', () 
   );
 });
 
-await test('ledger ratchet: sealed only — uncovered listed, covered shrink away', () => {
+await test('ledger ratchet: sealed only — missing fails, stale is reported only', () => {
   const entries = [{ signature: 'a|b', reason: 'disabled' }];
   const ledger = parseLedger(dumpLedger(entries));
   assert.equal(checkLedger(['a|b'], ledger).ok, true);
-  assert.deepEqual(checkLedger(['a|b', 'x|y'], ledger).missing, ['x|y']);
-  assert.deepEqual(checkLedger([], ledger).stale, ['a|b']);
+  const grown = checkLedger(['a|b', 'x|y'], ledger);
+  assert.deepEqual(grown.missing, ['x|y']);
+  assert.equal(grown.ok, false);
+  const shrunk = checkLedger([], ledger);
+  assert.deepEqual(shrunk.stale, ['a|b']);
+  assert.equal(shrunk.ok, true);
   assert.equal(parseLedger('{"version":2,"exceptions":[]}').version, 2);
 });
 

@@ -6,7 +6,7 @@ import { walkSequences, walkSeeds, walkDepth } from '../scripts/exhaust/walk-pla
 import { shrinkWalk } from '../scripts/exhaust/walk-run.ts';
 import { findingsMarkdown, verdictOf } from '../scripts/exhaust/findings.ts';
 import { checkLedger, dumpLedger, ledgerSeal, parseLedger } from '../scripts/exhaust/ledger.ts';
-import { assertLocalRun } from '../scripts/exhaust/baseline.ts';
+import { assertLocalRun, unionEntries } from '../scripts/exhaust/baseline.ts';
 import { execSteps } from '../scripts/exhaust/walk-run.ts';
 import type { StepAcc, WalkDriver } from '../scripts/exhaust/walk-run.ts';
 import type { ClickSkip } from '../scripts/exhaust/records.ts';
@@ -65,6 +65,24 @@ await test('baseline generator refuses to run inside CI', () => {
   assert.throws(() => assertLocalRun({ CI: '1' }), /manual-only/);
   assert.doesNotThrow(() => assertLocalRun({}));
   assert.doesNotThrow(() => assertLocalRun({ CI: 'false' }));
+});
+
+await test('baseline union keeps acknowledged entries and adds fresh uncovered', () => {
+  const merged = unionEntries(
+    [
+      { signature: 'b', reason: 'disabled' },
+      { signature: 'c', reason: 'not visible' },
+    ],
+    [
+      { signature: 'a', reason: 'inside closed details' },
+      { signature: 'b', reason: 'old reason' },
+    ],
+  );
+  assert.deepEqual(
+    merged.map((entry) => entry.signature),
+    ['a', 'b', 'c'],
+  );
+  assert.equal(merged.find((entry) => entry.signature === 'b')?.reason, 'disabled');
 });
 
 const quietDriver: WalkDriver = {

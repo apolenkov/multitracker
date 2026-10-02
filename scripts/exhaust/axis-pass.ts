@@ -16,6 +16,8 @@ export type AxisDetail = Readonly<{
   env: Env;
   route: string;
   findings: readonly Finding[];
+  /** false — скан снят посреди перехода/раскладки: точка видима в журнале. */
+  settled: boolean;
 }>;
 
 const cfgOf = (env: Env) =>
@@ -35,6 +37,27 @@ const pageFindings = (browser: Browser, env: Env, config: DesignConfig): readonl
 
 const SETTLED = 'document.getAnimations({subtree:true}).every((a)=>a.playState!=="running")';
 
+const waitSettled = (browser: Browser): boolean => {
+  try {
+    browser.run('wait', '--fn', SETTLED);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const waitLaidOut = (browser: Browser): boolean => {
+  try {
+    evaluate(
+      browser,
+      '(async()=>{await new Promise((r)=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(0))))})()',
+    );
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const checkRoute = (
   browser: Browser,
   env: Env,
@@ -43,22 +66,11 @@ const checkRoute = (
 ): AxisDetail => {
   applyEnv(browser, env, route);
   browser.run('wait', '--fn', "!!document.querySelector('#main h1')");
-  // Цвета и контраст меряем после CSS-переходов: снятие посреди transition даёт ложные значения.
-  try {
-    browser.run('wait', '--fn', SETTLED);
-  } catch {
-    /* ожидание истекло — сканируем как есть, а не теряем точку осей */
-  }
-  // Раскладка по JS (collapse навигации и пр.) не покрывается getAnimations: ждём два кадра.
-  try {
-    evaluate(
-      browser,
-      '(async()=>{await new Promise((r)=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(0))))})()',
-    );
-  } catch {
-    /* тот же принцип: сканируем как есть */
-  }
-  return { env, route, findings: pageFindings(browser, env, config) };
+  // Цвета и контраст меряем после CSS-переходов и JS-раскладки (два кадра):
+  // снятие посреди transition даёт ложные значения. Таймаут не теряет точку
+  // осей — сканируем как есть, но помечаем settled:false в журнале.
+  const settled = waitSettled(browser) && waitLaidOut(browser);
+  return { env, route, settled, findings: pageFindings(browser, env, config) };
 };
 
 const checkRow = (browser: Browser, env: Env, config: DesignConfig): readonly AxisDetail[] =>
@@ -83,3 +95,7 @@ export const axisTable = (rows: readonly Env[]): string =>
 
 export const axisFindings = (details: readonly AxisDetail[]): readonly Finding[] =>
   details.flatMap((detail) => detail.findings);
+
+/** Точки, снятые до конца усадки: «env маршрут» по одной строке для журнала. */
+export const unsettledPoints = (details: readonly AxisDetail[]): readonly string[] =>
+  details.filter((detail) => !detail.settled).map((d) => `${envKey(d.env)} ${d.route}`);

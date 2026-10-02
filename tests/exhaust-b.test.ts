@@ -11,6 +11,8 @@ import { execSteps } from '../scripts/exhaust/walk-run.ts';
 import type { StepAcc, WalkDriver } from '../scripts/exhaust/walk-run.ts';
 import type { ClickSkip } from '../scripts/exhaust/records.ts';
 import { reportChecks, skipReport } from '../scripts/exhaust/reports.ts';
+import { unsettledPoints } from '../scripts/exhaust/axis-pass.ts';
+import { baseEnv } from '../scripts/exhaust/axes.ts';
 
 await test('probe inputs derive one field from schema per case', () => {
   const first = formCases().at(0);
@@ -107,6 +109,21 @@ await test('walk steps count every skipped click with its reason', () => {
   assert.equal(refused.skips.length, 0);
   assert.ok(refused.findings.some((f) => f.rule === 'walk-click-fail'));
   assert.equal(refused.failed, true);
+});
+
+await test('unsettledPoints names every axis point scanned mid-transition', () => {
+  const detail = (settled: boolean, route: string) => ({
+    env: baseEnv,
+    route,
+    findings: [],
+    settled,
+  });
+  const points = unsettledPoints([
+    detail(true, 'overview'),
+    detail(false, 'history'),
+    detail(false, 'sync'),
+  ]);
+  assert.deepEqual(points.map((point) => point.split(' ').at(-1)), ['history', 'sync']);
 });
 
 await test('skipReport shares reasons and the ratchet fails over the share limit', () => {

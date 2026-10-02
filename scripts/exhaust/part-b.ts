@@ -1,7 +1,7 @@
 /** Часть (b): оси, формы, блуждания — один проход после слоёв 1–3. */
 import type { Browser } from '../ui-driver.ts';
 import { baseEnv, coveringArray, envKey, partBAxes } from './axes.ts';
-import { axisFindings, axisPass, axisTable } from './axis-pass.ts';
+import { axisFindings, axisPass, axisTable, unsettledPoints } from './axis-pass.ts';
 import type { AxisDetail } from './axis-pass.ts';
 import { designConfig } from './design.ts';
 import { formCases } from './form-cases.ts';
@@ -52,7 +52,11 @@ const runAxis = (browser: Browser, log: RunLog): readonly AxisDetail[] => {
   const rows = coveringArray(partBAxes());
   const details = axisPass(browser, rows, designConfig());
   log.saveText('axis-table.md', axisTable(rows));
-  log.saveJson('axis-details.json', { tuples: rows.length, routes: details.length });
+  log.saveJson('axis-details.json', {
+    tuples: rows.length,
+    routes: details.length,
+    unsettled: unsettledPoints(details),
+  });
   return details;
 };
 

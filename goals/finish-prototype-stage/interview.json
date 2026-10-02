@@ -1,0 +1,77 @@
+{
+  "stage": "interview",
+  "title": "Закрытие этапа макета",
+  "goalSlug": "finish-prototype-stage",
+  "questions": [
+    {
+      "id": "scope",
+      "prompt": "Что входит в закрытие этапа макета?",
+      "description": "Отметьте пункты, которые должны войти в пакет цели. Рекомендую всё перечисленное: это и есть известные остатки этапа.",
+      "answerMode": "multi-custom",
+      "recommendedAnswer": "Все пункты: публикация, решения по Info-находкам, зависимости, устаревший test:ui:docker, строгая матрица и гигиена.",
+      "recommendedOptionIds": ["pages", "ux-info", "deps", "docker", "matrix", "hygiene"],
+      "options": [
+        { "id": "pages", "label": "Публикация на GitHub Pages" },
+        { "id": "ux-info", "label": "Решения по Info-находкам UX-2/UX-3" },
+        { "id": "deps", "label": "Зависимости: dependabot @types/node" },
+        { "id": "docker", "label": "Починить test:ui:docker и устаревшие ссылки на образ" },
+        { "id": "matrix", "label": "Строгая матрица 135×8" },
+        { "id": "hygiene", "label": "Гигиена: воркдри, ветки, временные файлы" }
+      ],
+      "required": true
+    },
+    {
+      "id": "pages",
+      "prompt": "Публикуем ли статическую демонстрацию на GitHub Pages?",
+      "description": "Workflow подготовлен (check → build → deploy), публикация не выполнялась; нужно включить Pages в настройках репозитория и прогнать pages.yml.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Опубликовать, проверить открытый URL и обновить README/отчёт ссылкой.",
+      "recommendedOptionIds": ["publish"],
+      "options": [
+        { "id": "publish", "label": "Опубликовать и проверить" },
+        { "id": "prepare", "label": "Оставить только подготовленным" }
+      ],
+      "required": true
+    },
+    {
+      "id": "matrix",
+      "prompt": "Как закрываем строгую матрицу 135×8 (1080 контекстных ячеек)?",
+      "description": "Пункт остался PENDING в приёмке. Подтверждены 135/135 при 540 конфигурациях (375/1440 × RU/EN) и отдельные проверки тем.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Зафиксировать честной границей: 540 конфигураций и темы отдельно; обновить приёмку и архивировать layout-smoke-polish.",
+      "recommendedOptionIds": ["boundary"],
+      "options": [
+        { "id": "boundary", "label": "Зафиксировать границу" },
+        { "id": "run", "label": "Выполнить полный прогон 1080" }
+      ],
+      "required": true
+    },
+    {
+      "id": "ux-info",
+      "prompt": "Как закрываем Info-находки полосы: рамку фокуса после перехода и разные формы счётчиков?",
+      "description": "Рамка вокруг заголовка при переходе уже описана в DESIGN.md; строковая и бейдж-формы счётчиков делят уровни «заголовок» и «мета-строка».",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Закрыть как задуманное и записать это явно в отчёте полосы и приёмке.",
+      "recommendedOptionIds": ["document"],
+      "options": [
+        { "id": "document", "label": "Закрыть как задуманное" },
+        { "id": "narrow", "label": "Править: рамка только с клавиатуры" },
+        { "id": "align", "label": "Править: счётчики единообразно" }
+      ],
+      "required": true
+    },
+    {
+      "id": "deps",
+      "prompt": "Что делаем с dependabot PR #1 (типы Node 24.19.0 → 26.6.3)?",
+      "description": "Рантайм закреплён .nvmrc на 24.21.0; типы 26 разойдутся с рантаймом и контейнером гейта.",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Закрыть PR: типы держим по рантайму 24; добавить ignore для major-обновлений @types/node.",
+      "recommendedOptionIds": ["close"],
+      "options": [
+        { "id": "close", "label": "Закрыть и закрепить" },
+        { "id": "merge", "label": "Принять 26.6.3" }
+      ],
+      "required": true
+    }
+  ]
+}

@@ -186,6 +186,10 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
+      "signature": "src/demo/sync-panel.tsx|onClick@77",
+      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
+    },
+    {
       "signature": "src/dialog-pointer-guard.ts|(anon)@9",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },

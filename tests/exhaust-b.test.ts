@@ -45,6 +45,8 @@ await test('findings markdown records repro and product verdict', () => {
 
 const quietDriver: WalkDriver = {
   clickable: () => true,
+  obstructed: () => false,
+  closeDialogs: () => undefined,
   click: () => undefined,
   settle: () => undefined,
   findings: () => [],

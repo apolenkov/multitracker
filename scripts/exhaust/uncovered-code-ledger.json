@@ -170,10 +170,6 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/demo/sync-panel.tsx|close@237",
-      "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
-    },
-    {
       "signature": "src/demo/sync-panel.tsx|onClick@77",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
@@ -262,5 +258,5 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     }
   ],
-  "seal": "6199714021275ead9e2afd265ee98a6e9c56624fd03d378993b0db12d26af6ae"
+  "seal": "c4e12a9c41b299a82d897d97ba5d054502a43cfe4bbab1141bb67362621f9606"
 }

@@ -138,6 +138,7 @@ const mergeEnumerated = (
 
 export type Visit = Readonly<{
   clicks: readonly ClickRecord[];
+  openers: Readonly<Record<string, string>>;
   doms: StateDoms;
   seen: readonly RegistryInput[];
   errors: readonly string[];
@@ -167,6 +168,7 @@ export const visitRoute = (browser: Browser, route: string, seq: number, env: En
     sweepAttempted: hits.length,
     sweepSkipped: hits.filter((hit) => hit.skipped !== '').length,
     doms: { ...sweep.doms, ...extra.doms },
+    openers: openersOf(hits),
     errors: [...sweep.errors, ...extra.errors, ...hits.flatMap((hit) => hit.errors)],
   };
 };
@@ -174,6 +176,7 @@ export const visitRoute = (browser: Browser, route: string, seq: number, env: En
 export type SectionResult = Readonly<{
   route: string;
   clicks: readonly ClickRecord[];
+  openers: Readonly<Record<string, string>>;
   doms: StateDoms;
   seen: readonly RegistryInput[];
   findings: readonly Finding[];
@@ -207,6 +210,7 @@ export const visitSection = (
     route,
     clicks: visit.clicks,
     doms: visit.doms,
+    openers: visit.openers,
     seen: visit.seen,
     findings: invariantFindings(browser, env),
     consoleErrors: visit.errors,

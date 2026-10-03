@@ -7,6 +7,7 @@ import { shrinkWalk } from '../scripts/exhaust/walk-run.ts';
 import { findingsMarkdown, verdictOf } from '../scripts/exhaust/findings.ts';
 import { execSteps } from '../scripts/exhaust/walk-run.ts';
 import type { StepAcc, WalkDriver } from '../scripts/exhaust/walk-run.ts';
+import { dialogOf } from '../scripts/exhaust/walk-reach.ts';
 import { unsettledPoints } from '../scripts/exhaust/axis-pass.ts';
 import { baseEnv } from '../scripts/exhaust/axes.ts';
 
@@ -117,4 +118,12 @@ await test('unsettledPoints names every axis point scanned mid-transition', () =
     points.map((point) => point.split(' ').at(-1)),
     ['history', 'sync'],
   );
+});
+
+await test('walk reach finds the dialog that holds a target path', () => {
+  assert.equal(
+    dialogOf('html > body > div#root > dialog#buy-dialog > form > select#asset'),
+    'buy-dialog',
+  );
+  assert.equal(dialogOf('html > body > main#main > button'), '');
 });

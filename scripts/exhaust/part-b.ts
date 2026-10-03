@@ -7,7 +7,7 @@ import { designConfig } from './design.ts';
 import { formCases } from './form-cases.ts';
 import { formGating, formSummary } from './form-pass.ts';
 import { runWalks } from './walk-run.ts';
-import type { WalkResult } from './walk-run.ts';
+import type { Opener, WalkResult } from './walk-run.ts';
 import { findingsMarkdown } from './findings.ts';
 import type { ReproFinding } from './findings.ts';
 import type { ClickSkip, Finding, RunLog } from './records.ts';
@@ -76,8 +76,9 @@ const runWalkSave = async (
   browser: Browser,
   log: RunLog,
   seen: readonly RegistryInput[],
+  openers: Readonly<Record<string, Opener>>,
 ): Promise<readonly WalkResult[]> => {
-  const walks = await runWalks(browser, sweepEnv, seen);
+  const walks = await runWalks(browser, sweepEnv, seen, openers);
   log.saveJson('walks.json', {
     seeds: walks.map((item) => item.seed),
     count: walks.length,
@@ -92,10 +93,11 @@ export const runPartB = async (
   browser: Browser,
   log: RunLog,
   seen: readonly RegistryInput[],
+  openers: Readonly<Record<string, Opener>>,
 ): Promise<PartB> => {
   const details = runAxis(browser, log);
   const gating = runForms(browser, log);
-  const walks = await runWalkSave(browser, log, seen);
+  const walks = await runWalkSave(browser, log, seen, openers);
   const axis = axisFindings(details);
   const walkFindings = walks.flatMap((item) => item.findings);
   log.saveText(

@@ -21,6 +21,7 @@ import type { PartB } from './part-b.ts';
 
 const seedAcc = (scripts: readonly ScriptCoverage[], sources: readonly ScriptSource[]): Acc => ({
   seq: 1,
+  openers: {},
   seen: [],
   clicked: [],
   attribution: [],
@@ -34,6 +35,16 @@ const seedAcc = (scripts: readonly ScriptCoverage[], sources: readonly ScriptSou
   sweepSkipped: 0,
 });
 
+/** Первый найденный открыватель диалога остаётся: он из раннего, более простого состояния. */
+const mergeOpeners = (
+  prev: Acc['openers'],
+  found: SectionResult['openers'],
+  route: string,
+): Acc['openers'] => ({
+  ...Object.fromEntries(Object.entries(found).map(([id, path]) => [id, { route, path }])),
+  ...prev,
+});
+
 const nextAcc = (
   prev: Acc,
   result: SectionResult,
@@ -42,6 +53,7 @@ const nextAcc = (
   reports: readonly FileReport[],
 ): Acc => ({
   seq: prev.seq + result.clicks.length,
+  openers: mergeOpeners(prev.openers, result.openers, route),
   seen: [...prev.seen, ...result.seen],
   clicked: [...prev.clicked, ...clickedSignatures(result.seen)],
   attribution: [
@@ -112,7 +124,7 @@ const finishRun = async (
   acc: Acc,
   started: number,
 ): Promise<void> => {
-  const partB = await runPartB(browser, log, acc.seen);
+  const partB = await runPartB(browser, log, acc.seen, acc.openers);
   const full: Acc = {
     ...acc,
     findings: [...acc.findings, ...partB.findings],

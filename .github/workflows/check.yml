@@ -90,8 +90,9 @@ jobs:
           SERVER
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true' EXIT
-          sleep 1
-          curl --fail --silent --show-error http://127.0.0.1:5179/ > /dev/null
+          curl --fail --silent --show-error --retry 30 --retry-delay 1 \
+            --retry-connrefused --retry-all-errors --retry-max-time 40 \
+            --connect-timeout 2 --max-time 2 http://127.0.0.1:5179/ > /dev/null
           MULTITRACKER_UI_URL=http://127.0.0.1:5179 \
             node --experimental-strip-types scripts/exhaust/run.ts 2>&1 | tee "$RUNNER_TEMP/exhaust.log"
       - name: Сохранить доказательства матрицы и перебора

@@ -48,6 +48,24 @@ const closeDialogsProbe =
 const obstructed = (browser: Browser, path: string): boolean =>
   evaluate(browser, obstructedProbe(path)) === true;
 
+/** Раскрыть свёрнутые details над целью кликом по их summary, как сделал бы человек. */
+const openDisclosuresProbe = (path: string): string =>
+  `(() => { const el = document.querySelector(${JSON.stringify(path)}); if (!el) return false; for (let d = el.closest('details:not([open])'); d; d = d.parentElement?.closest('details:not([open])') ?? null) d.querySelector(':scope > summary')?.click(); return true; })()`;
+
+/** Цель в другом разделе или в свёрнутом раскрытии: перейти в её раздел и раскрыть. */
+const reveal = (browser: Browser, path: string, route: string): void => {
+  if (route !== '') {
+    evaluate(browser, `(location.hash === '#${route}' || (location.hash = '${route}'), true)`);
+    browser.run(
+      'wait',
+      '--fn',
+      `location.hash === '#${route}' && !!document.querySelector('#main h1')`,
+    );
+  }
+  evaluate(browser, openDisclosuresProbe(path));
+  browser.run('wait', '--fn', SETTLED);
+};
+
 const stepFindings = (browser: Browser, env: Env): readonly Finding[] => {
   const cfg = JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
   const value: unknown = evaluate(browser, `(${fullInvariantsSource})(${cfg})`);
@@ -69,15 +87,23 @@ export type WalkDriver = Readonly<{
   clickable: (path: string) => boolean;
   obstructed: (path: string) => boolean;
   closeDialogs: () => void;
+  reveal: (path: string) => void;
   click: (path: string) => void;
   settle: () => void;
   findings: () => readonly Finding[];
 }>;
 
-const browserDriver = (browser: Browser, env: Env): WalkDriver => ({
+const browserDriver = (
+  browser: Browser,
+  env: Env,
+  routeOf: ReadonlyMap<string, string>,
+): WalkDriver => ({
   clickable: (path) => clickable(browser, path),
   obstructed: (path) => obstructed(browser, path),
   closeDialogs: () => void evaluate(browser, closeDialogsProbe),
+  reveal: (path) => {
+    reveal(browser, path, routeOf.get(path) ?? '');
+  },
   click: (path) => {
     browser.run('click', path);
   },
@@ -109,13 +135,20 @@ const withFail = (acc: StepAcc, path: string): StepAcc => ({
   failed: true,
 });
 
+/**
+ * Дойти до цели, как человек: убрать помеху-диалог, перейти в раздел цели
+ * и раскрыть свёрнутое над ней. false — цель так и не стала доступной.
+ */
+const reach = (drv: WalkDriver, path: string): boolean => {
+  if (drv.clickable(path)) return true;
+  if (drv.obstructed(path)) drv.closeDialogs();
+  if (drv.clickable(path)) return true;
+  drv.reveal(path);
+  return drv.clickable(path);
+};
+
 const stepOne = (drv: WalkDriver, path: string, acc: StepAcc): StepAcc => {
-  if (!drv.clickable(path)) {
-    // Закрытый диалог закрывает цель: убираем помеху и пробуем снова,
-    // иначе пишем пропуск с причиной.
-    if (drv.obstructed(path)) drv.closeDialogs();
-    if (!drv.clickable(path)) return withSkip(acc, path, 'unreachable');
-  }
+  if (!reach(drv, path)) return withSkip(acc, path, 'unreachable');
   try {
     drv.click(path);
   } catch {
@@ -134,10 +167,17 @@ const stepOne = (drv: WalkDriver, path: string, acc: StepAcc): StepAcc => {
 export const execSteps = (drv: WalkDriver, paths: readonly string[], acc: StepAcc): StepAcc =>
   paths.length === 0 ? acc : execSteps(drv, paths.slice(1), stepOne(drv, paths.at(0) ?? '', acc));
 
-const replays = (browser: Browser, env: Env, candidate: readonly string[]): Promise<boolean> =>
+type Routes = ReadonlyMap<string, string>;
+
+const replays = (
+  browser: Browser,
+  env: Env,
+  routes: Routes,
+  candidate: readonly string[],
+): Promise<boolean> =>
   Promise.resolve().then(() => {
     closeDialogs(browser);
-    const acc: StepAcc = execSteps(browserDriver(browser, env), candidate, emptyAcc);
+    const acc: StepAcc = execSteps(browserDriver(browser, env, routes), candidate, emptyAcc);
     closeDialogs(browser);
     return acc.findings.length > 0;
   });
@@ -145,24 +185,26 @@ const replays = (browser: Browser, env: Env, candidate: readonly string[]): Prom
 const shrinkIfFailed = (
   browser: Browser,
   env: Env,
+  routes: Routes,
   seq: readonly string[],
   findings: readonly Finding[],
 ): Promise<readonly string[]> =>
   findings.length === 0
     ? Promise.resolve(seq)
-    : shrinkWalk(seq, (cand) => replays(browser, env, cand));
+    : shrinkWalk(seq, (cand) => replays(browser, env, routes, cand));
 
 const runOne = async (
   browser: Browser,
   env: Env,
+  routes: Routes,
   paths: readonly string[],
   seed: number,
   index: number,
 ): Promise<WalkResult> => {
   const seq = walkSequences(paths, seed, 1, walkDepth).at(0) ?? [];
   const ordered = walkSequences(paths, seed + index, 1, walkDepth).at(0) ?? seq;
-  const acc = execSteps(browserDriver(browser, env), ordered, emptyAcc);
-  const repro = await shrinkIfFailed(browser, env, ordered, acc.findings);
+  const acc = execSteps(browserDriver(browser, env, routes), ordered, emptyAcc);
+  const repro = await shrinkIfFailed(browser, env, routes, ordered, acc.findings);
   closeDialogs(browser);
   return { seed: seed + index, path: ordered, findings: acc.findings, repro, skips: acc.skips };
 };
@@ -170,12 +212,13 @@ const runOne = async (
 const runSeed = (
   browser: Browser,
   env: Env,
+  routes: Routes,
   paths: readonly string[],
   seed: number,
   count: number,
 ): Promise<readonly WalkResult[]> =>
   Promise.all(
-    Array.from({ length: count }, (_, index) => runOne(browser, env, paths, seed, index)),
+    Array.from({ length: count }, (_, index) => runOne(browser, env, routes, paths, seed, index)),
   );
 
 /** Все блуждания: по count на сид, глубина walkDepth, усадка падающих. */
@@ -186,6 +229,10 @@ export const runWalks = async (
 ): Promise<readonly WalkResult[]> => {
   const pool = walkPool(seen);
   if (pool.length === 0) return [];
-  const per = await Promise.all(walkSeeds.map((seed) => runSeed(browser, env, pool, seed, 2)));
+  // Раздел цели — первый визит, где её видели: туда блуждание переходит при необходимости.
+  const routes: Routes = new Map(seen.toReversed().map((item) => [item.path, item.route]));
+  const per = await Promise.all(
+    walkSeeds.map((seed) => runSeed(browser, env, routes, pool, seed, 2)),
+  );
   return per.flatMap((row) => row);
 };

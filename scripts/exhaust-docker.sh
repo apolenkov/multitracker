@@ -17,4 +17,4 @@ http.createServer(async (req, res) => {
 exec docker run --rm --entrypoint /bin/sh --cpus 2 --memory 2g --name "mt-exhaust-$$" \
   -v "$WT":"$WT" -v "$DIST":/dist:ro -w "$WT" \
   -e MULTITRACKER_UI_URL=http://127.0.0.1:5179 -e SERVER="$SERVER" "$@" \
-  multitracker-ci-runner:20261002 -c 'node --input-type=module -e "$SERVER" & sleep 1; export AGENT_BROWSER_SESSION=mt-exhaust-$$; node --experimental-strip-types scripts/'"$SCRIPT"
+  multitracker-ci-runner:20261002 -c 'node --input-type=module -e "$SERVER" & curl --fail --silent --retry 30 --retry-delay 1 --retry-connrefused --retry-all-errors --retry-max-time 40 --connect-timeout 2 --max-time 2 http://127.0.0.1:5179/ > /dev/null; export AGENT_BROWSER_SESSION=mt-exhaust-$$; node --experimental-strip-types scripts/'"$SCRIPT"

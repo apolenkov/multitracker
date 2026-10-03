@@ -1,6 +1,6 @@
 /** Часть (b): оси, формы, блуждания — один проход после слоёв 1–3. */
 import type { Browser } from '../ui-driver.ts';
-import { baseEnv, coveringArray, envKey, partBAxes } from './axes.ts';
+import { coveringArray, envKey, partBAxes, sweepEnv } from './axes.ts';
 import { axisFindings, axisPass, axisTable, unsettledPoints } from './axis-pass.ts';
 import type { AxisDetail } from './axis-pass.ts';
 import { designConfig } from './design.ts';
@@ -44,7 +44,7 @@ const walkRepro = (walks: readonly WalkResult[]): readonly ReproFinding[] =>
       actual: finding.actual,
       seed: item.seed,
       path: item.path.join('>'),
-      env: envKey(baseEnv),
+      env: envKey(sweepEnv),
     })),
   );
 
@@ -77,7 +77,7 @@ const runWalkSave = async (
   log: RunLog,
   seen: readonly RegistryInput[],
 ): Promise<readonly WalkResult[]> => {
-  const walks = await runWalks(browser, baseEnv, seen);
+  const walks = await runWalks(browser, sweepEnv, seen);
   log.saveJson('walks.json', {
     seeds: walks.map((item) => item.seed),
     count: walks.length,

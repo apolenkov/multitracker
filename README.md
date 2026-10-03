@@ -162,7 +162,9 @@ agent-browser 0.38.1); он же служит раннером гейта
 OrbStack ([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md)):
 сборка и запуск — `scripts/runner/runner.sh build|start`, состояние и занятость —
 `scripts/runner/runner.sh status`. Пока контейнер выключен, проверки и слияния
-в `main` ждут. После UI-шага гейт исполняет строгую матрицу 135×8
+в `main` ждут. Раннеров может быть несколько — по одному на компьютер, с разными
+именами: `MT_RUNNER_NAME=mt-air scripts/runner/runner.sh start` (по умолчанию
+`mt-orbstack`); задание берёт свободный. После UI-шага гейт исполняет строгую матрицу 135×8
 (`scripts/exhaust/matrix.ts`) и полный перебор покрытия (`scripts/exhaust/run.ts`)
 с проверкой реестров; журналы, отчёты и покрытие сохраняются артефактом
 `matrix-evidence`.

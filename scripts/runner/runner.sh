@@ -12,6 +12,9 @@ set -eu
 REPO="apolenkov/multitracker"
 IMAGE="multitracker-ci-runner:20261002"
 NAME="mt-ci-runner"
+# Имя раннера в GitHub: у каждого компьютера своё, иначе второй вытеснит первого.
+# Пример для второго Mac: MT_RUNNER_NAME=mt-air scripts/runner/runner.sh start
+RUNNER_NAME="${MT_RUNNER_NAME:-mt-orbstack}"
 
 case "${1:-status}" in
   build)
@@ -26,7 +29,7 @@ case "${1:-status}" in
       --mount "type=volume,source=mt-ci-runner-npm,target=/home/runner/.npm" \
       --env "MT_RUNNER_URL=https://github.com/$REPO" \
       --env "MT_RUNNER_TOKEN=$token" \
-      --env "MT_RUNNER_NAME=mt-orbstack" \
+      --env "MT_RUNNER_NAME=$RUNNER_NAME" \
       --env "MT_RUNNER_LABELS=mt-container" \
       "$IMAGE"
     # Тома могли остаться за прежним UID: возвращаем владельца перед первым заданием.

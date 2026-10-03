@@ -141,7 +141,7 @@ const sweepStep = (browser: Browser, acc: readonly Chunk[], round: number): read
     }),
   );
   const next = [...acc, chunk];
-  return round >= 6 || !chunk.truncated ? next : sweepStep(browser, next, round + 1);
+  return round >= 11 || !chunk.truncated ? next : sweepStep(browser, next, round + 1);
 };
 
 const sweepAll = (browser: Browser): SweepOutcome => mergeChunks(sweepStep(browser, [], 0));

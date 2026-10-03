@@ -10,6 +10,10 @@ import { asArray } from './guards.ts';
 import type { ClickSkip, Finding } from './records.ts';
 import type { RegistryInput } from './registry.ts';
 import { walkDepth, walkSeeds, walkSequences } from './walk-plan.ts';
+import { reveal } from './walk-reach.ts';
+import type { Opener, Places } from './walk-reach.ts';
+
+export type { Opener } from './walk-reach.ts';
 
 /** Тонкая обёртка ddmin для путей: test true, когда сбой воспроизводится. */
 export const shrinkWalk = async (
@@ -48,24 +52,6 @@ const closeDialogsProbe =
 const obstructed = (browser: Browser, path: string): boolean =>
   evaluate(browser, obstructedProbe(path)) === true;
 
-/** Раскрыть свёрнутые details над целью кликом по их summary, как сделал бы человек. */
-const openDisclosuresProbe = (path: string): string =>
-  `(() => { const el = document.querySelector(${JSON.stringify(path)}); if (!el) return false; for (let d = el.closest('details:not([open])'); d; d = d.parentElement?.closest('details:not([open])') ?? null) d.querySelector(':scope > summary')?.click(); return true; })()`;
-
-/** Цель в другом разделе или в свёрнутом раскрытии: перейти в её раздел и раскрыть. */
-const reveal = (browser: Browser, path: string, route: string): void => {
-  if (route !== '') {
-    evaluate(browser, `(location.hash === '#${route}' || (location.hash = '${route}'), true)`);
-    browser.run(
-      'wait',
-      '--fn',
-      `location.hash === '#${route}' && !!document.querySelector('#main h1')`,
-    );
-  }
-  evaluate(browser, openDisclosuresProbe(path));
-  browser.run('wait', '--fn', SETTLED);
-};
-
 const stepFindings = (browser: Browser, env: Env): readonly Finding[] => {
   const cfg = JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
   const value: unknown = evaluate(browser, `(${fullInvariantsSource})(${cfg})`);
@@ -93,16 +79,16 @@ export type WalkDriver = Readonly<{
   findings: () => readonly Finding[];
 }>;
 
-const browserDriver = (
-  browser: Browser,
-  env: Env,
-  routeOf: ReadonlyMap<string, string>,
-): WalkDriver => ({
+const browserDriver = (browser: Browser, env: Env, places: Places): WalkDriver => ({
   clickable: (path) => clickable(browser, path),
   obstructed: (path) => obstructed(browser, path),
   closeDialogs: () => void evaluate(browser, closeDialogsProbe),
   reveal: (path) => {
-    reveal(browser, path, routeOf.get(path) ?? '');
+    try {
+      reveal(browser, path, places);
+    } catch {
+      // Открыватель не сработал: цель останется недоступной и попадёт в пропуски.
+    }
   },
   click: (path) => {
     browser.run('click', path);
@@ -167,17 +153,15 @@ const stepOne = (drv: WalkDriver, path: string, acc: StepAcc): StepAcc => {
 export const execSteps = (drv: WalkDriver, paths: readonly string[], acc: StepAcc): StepAcc =>
   paths.length === 0 ? acc : execSteps(drv, paths.slice(1), stepOne(drv, paths.at(0) ?? '', acc));
 
-type Routes = ReadonlyMap<string, string>;
-
 const replays = (
   browser: Browser,
   env: Env,
-  routes: Routes,
+  places: Places,
   candidate: readonly string[],
 ): Promise<boolean> =>
   Promise.resolve().then(() => {
     closeDialogs(browser);
-    const acc: StepAcc = execSteps(browserDriver(browser, env, routes), candidate, emptyAcc);
+    const acc: StepAcc = execSteps(browserDriver(browser, env, places), candidate, emptyAcc);
     closeDialogs(browser);
     return acc.findings.length > 0;
   });
@@ -185,26 +169,26 @@ const replays = (
 const shrinkIfFailed = (
   browser: Browser,
   env: Env,
-  routes: Routes,
+  places: Places,
   seq: readonly string[],
   findings: readonly Finding[],
 ): Promise<readonly string[]> =>
   findings.length === 0
     ? Promise.resolve(seq)
-    : shrinkWalk(seq, (cand) => replays(browser, env, routes, cand));
+    : shrinkWalk(seq, (cand) => replays(browser, env, places, cand));
 
 const runOne = async (
   browser: Browser,
   env: Env,
-  routes: Routes,
+  places: Places,
   paths: readonly string[],
   seed: number,
   index: number,
 ): Promise<WalkResult> => {
   const seq = walkSequences(paths, seed, 1, walkDepth).at(0) ?? [];
   const ordered = walkSequences(paths, seed + index, 1, walkDepth).at(0) ?? seq;
-  const acc = execSteps(browserDriver(browser, env, routes), ordered, emptyAcc);
-  const repro = await shrinkIfFailed(browser, env, routes, ordered, acc.findings);
+  const acc = execSteps(browserDriver(browser, env, places), ordered, emptyAcc);
+  const repro = await shrinkIfFailed(browser, env, places, ordered, acc.findings);
   closeDialogs(browser);
   return { seed: seed + index, path: ordered, findings: acc.findings, repro, skips: acc.skips };
 };
@@ -212,13 +196,13 @@ const runOne = async (
 const runSeed = (
   browser: Browser,
   env: Env,
-  routes: Routes,
+  places: Places,
   paths: readonly string[],
   seed: number,
   count: number,
 ): Promise<readonly WalkResult[]> =>
   Promise.all(
-    Array.from({ length: count }, (_, index) => runOne(browser, env, routes, paths, seed, index)),
+    Array.from({ length: count }, (_, index) => runOne(browser, env, places, paths, seed, index)),
   );
 
 /** Все блуждания: по count на сид, глубина walkDepth, усадка падающих. */
@@ -226,13 +210,17 @@ export const runWalks = async (
   browser: Browser,
   env: Env,
   seen: readonly RegistryInput[],
+  openers: Readonly<Record<string, Opener>>,
 ): Promise<readonly WalkResult[]> => {
   const pool = walkPool(seen);
   if (pool.length === 0) return [];
-  // Раздел цели — первый визит, где её видели: туда блуждание переходит при необходимости.
-  const routes: Routes = new Map(seen.toReversed().map((item) => [item.path, item.route]));
+  // Раздел цели — первый визит, где её видели; диалог — через открыватель из обхода.
+  const places: Places = {
+    routeOf: new Map(seen.toReversed().map((item) => [item.path, item.route])),
+    openers: new Map(Object.entries(openers)),
+  };
   const per = await Promise.all(
-    walkSeeds.map((seed) => runSeed(browser, env, routes, pool, seed, 2)),
+    walkSeeds.map((seed) => runSeed(browser, env, places, pool, seed, 2)),
   );
   return per.flatMap((row) => row);
 };

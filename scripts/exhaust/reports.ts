@@ -1,5 +1,6 @@
 /** Отчёты прогона: реестр элементов, покрытие кода, сводка и проверки ratchet. */
 import assert from 'node:assert/strict';
+import type { Opener } from './walk-run.ts';
 import { readFileSync } from 'node:fs';
 import type { ClickSkip, Finding, RunLog } from './records.ts';
 import { buildRegistry, coveragePercent, elementMarkdown, sectionCoverage } from './registry.ts';
@@ -23,6 +24,8 @@ export const routes = [
 export type Attribution = Readonly<{ route: string; fresh: number; durationMs: number }>;
 export type Acc = Readonly<{
   seq: number;
+  /** Открыватели диалогов из обхода: id диалога → раздел и путь открывателя. */
+  openers: Readonly<Record<string, Opener>>;
   seen: readonly RegistryInput[];
   clicked: readonly string[];
   attribution: readonly Attribution[];

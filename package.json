@@ -18,7 +18,7 @@
     "lint": "eslint . --max-warnings 0 && npm run accessibility",
     "accessibility": "oxlint --config scripts/oxlint.json --disable-nested-config --max-warnings 0 .",
     "complexity": "eslint . --max-warnings 0 && find src -type f -name '*.css' -exec awk 'FNR > 300 { print FILENAME \": больше 300 строк\"; exit 1 }' {} +",
-    "security": "npm run lint && env -u npm_config_allow_scripts -u NPM_CONFIG_ALLOW_SCRIPTS npm audit --audit-level=high",
+    "security": "npm run lint && node --experimental-strip-types scripts/audit.ts",
     "secrets": "gitleaks dir . --redact --no-banner",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:gates": "node --experimental-strip-types scripts/check-gates.ts",

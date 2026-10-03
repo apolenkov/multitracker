@@ -73,7 +73,9 @@ const clickPath = async (el, purpose, fastInv) => {
   if (opened.length) rec.opened = opened[0];
   if (log.e.length) rec.err = log.e;
   if (log.w.length) rec.warn = log.w;
-  if (after.hash !== before.hash) { history.back(); await settle(); }
+  // Возврат явным адресом: шаг назад по истории асинхронен и при частых переходах
+  // уходит за пределы документа, вместе со страницей пропадает слот задания.
+  if (after.hash !== before.hash) { location.hash = before.hash; await settle(); }
   return rec;
 };
 `;

@@ -62,7 +62,7 @@ const restore = (browser: Browser, kind: TrustKind, before: PageState, after: Pa
     );
   }
   if (kind === 'nav' && after.hash !== before.hash) {
-    evaluate(browser, 'history.back(); true');
+    evaluate(browser, `location.hash = ${JSON.stringify(before.hash)}; true`);
     browser.run('wait', '--fn', `location.hash === ${JSON.stringify(before.hash)}`);
   }
 };

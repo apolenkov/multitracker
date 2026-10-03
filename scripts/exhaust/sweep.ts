@@ -17,6 +17,7 @@ import { hitClicks, joinSeen, openersOf } from './journal.ts';
 import type { PageState } from './probe.ts';
 import { stateOf } from './probe.ts';
 import { trustedSample } from './trusted.ts';
+import { runJob } from './job.ts';
 
 /** Навигация настоящей кнопкой мыши: доверенная запись в журнале. */
 export const navClick = (
@@ -42,55 +43,6 @@ export const navClick = (
     `.desktop-links a[href="#${route}"]`,
     { role: 'link', name: route, tag: 'a', trusted: true, purpose: 'navigate' },
   );
-};
-
-const SLOT = 'window.__mtJob';
-
-const kick = (browser: Browser, source: string, opts: string) =>
-  evaluate(
-    browser,
-    `${SLOT} = null; (${source})(${opts}).then((r) => { ${SLOT} = r; }, (e) => { ${SLOT} = { error: String(e) }; }); 'started'`,
-  );
-
-const jobStatus = (browser: Browser): string =>
-  asText(
-    evaluate(browser, `${SLOT} === undefined ? 'none' : ${SLOT} === null ? 'pending' : 'ready'`),
-  );
-
-const awaitJob = (browser: Browser, left: number): unknown => {
-  if (jobStatus(browser) === 'ready') return evaluate(browser, SLOT);
-  if (left <= 0) throw new Error('in-page job did not finish in time');
-  try {
-    browser.run('wait', '--fn', `${SLOT} !== null && ${SLOT} !== undefined`);
-  } catch {
-    // Таймаут опроса не равен сбою работы: проверяем слот ещё раз.
-  }
-  return awaitJob(browser, left - 1);
-};
-
-const runJob = (
-  browser: Browser,
-  source: string,
-  opts: Readonly<Record<string, unknown>>,
-): unknown => {
-  const attempt = (): unknown => {
-    kick(browser, source, JSON.stringify(opts));
-    // Опрос ждёт не меньше бюджета самого задания: иначе исправное задание
-    // объявляется зависшим ровно потому, что ему разрешили работать долго.
-    const budget = typeof opts.budget === 'number' ? opts.budget : 20_000;
-    return awaitJob(browser, Math.ceil(budget / 10_000) + 12);
-  };
-  const result = (() => {
-    try {
-      return attempt();
-    } catch {
-      // Опрос может не увидеть слот, если страница перезагрузилась: задание повторяется один раз.
-      return attempt();
-    }
-  })();
-  if (isRecord(result) && typeof result.error === 'string')
-    throw new Error(`page job: ${result.error}`);
-  return result;
 };
 
 type Chunk = Readonly<{

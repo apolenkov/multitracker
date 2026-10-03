@@ -135,13 +135,13 @@ const sweepStep = (browser: Browser, acc: readonly Chunk[], round: number): read
     runJob(browser, sweepSource, {
       done: acc.at(-1)?.done ?? [],
       openers: {},
-      budget: 20_000,
-      limit: 700,
+      budget: 120_000,
+      limit: 2000,
       finalize: false,
     }),
   );
   const next = [...acc, chunk];
-  return round >= 3 || !chunk.truncated ? next : sweepStep(browser, next, round + 1);
+  return round >= 6 || !chunk.truncated ? next : sweepStep(browser, next, round + 1);
 };
 
 const sweepAll = (browser: Browser): SweepOutcome => mergeChunks(sweepStep(browser, [], 0));
@@ -151,8 +151,8 @@ const rescue = (browser: Browser, outcome: SweepOutcome): Chunk =>
     runJob(browser, sweepSource, {
       done: outcome.done,
       openers: openersOf(outcome.hits),
-      budget: 20_000,
-      limit: 700,
+      budget: 120_000,
+      limit: 2000,
       finalize: true,
     }),
   );

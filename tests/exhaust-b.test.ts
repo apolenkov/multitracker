@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { mock, test } from 'node:test';
 import { formCases } from '../scripts/exhaust/form-cases.ts';
 import { probeInput, shortErrors } from '../scripts/exhaust/form-pass.ts';
 import { walkSequences, walkSeeds, walkDepth } from '../scripts/exhaust/walk-plan.ts';
@@ -47,6 +47,7 @@ const quietDriver: WalkDriver = {
   clickable: () => true,
   obstructed: () => false,
   closeDialogs: () => undefined,
+  reveal: () => undefined,
   click: () => undefined,
   settle: () => undefined,
   findings: () => [],
@@ -87,6 +88,17 @@ await test('walk steps count every skipped click with its reason', () => {
   assert.equal(refused.skips.length, 0);
   assert.ok(refused.findings.some((f) => f.rule === 'walk-click-fail'));
   assert.equal(refused.failed, true);
+});
+
+await test('walk step reveals a target in another section or closed disclosure before skipping', () => {
+  const reveal = mock.fn();
+  const acc = execSteps(
+    { ...quietDriver, clickable: () => reveal.mock.callCount() > 0, reveal },
+    ['folded'],
+    stepInit,
+  );
+  assert.deepEqual(acc.skips, []);
+  assert.equal(reveal.mock.callCount(), 1);
 });
 
 await test('unsettledPoints names every axis point scanned mid-transition', () => {

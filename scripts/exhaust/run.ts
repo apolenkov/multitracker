@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { createBrowser, evaluate } from '../ui-driver.ts';
 import type { Browser } from '../ui-driver.ts';
-import { baseEnv } from './axes.ts';
+import { sweepEnv } from './axes.ts';
 import { installHooksSource } from './page-dom.ts';
 import { applyEnv } from './envctl.ts';
 import { createRunLog } from './records.ts';
@@ -66,8 +66,9 @@ const collectOne = async (
   prev: Acc,
   route: string,
 ): Promise<Acc> => {
-  const result = visitSection(browser, route, prev.seq, baseEnv);
+  const result = visitSection(browser, route, prev.seq, sweepEnv);
   log.appendClicks(result.clicks);
+  log.appendStates(route, result.doms);
   const scripts = mergeScripts(prev.scripts, await takeCoverage(send));
   return nextAcc(prev, result, route, scripts, fileReports(scripts, sources));
 };
@@ -155,7 +156,7 @@ const openApp = (browser: Browser, base: string, log: RunLog): void => {
     "document.readyState === 'complete' && !!document.querySelector('.desktop-links a')",
   );
   evaluate(browser, installHooksSource);
-  const applied: unknown = applyEnv(browser, baseEnv, 'overview');
+  const applied: unknown = applyEnv(browser, sweepEnv, 'overview');
   browser.run(
     'wait',
     '--fn',

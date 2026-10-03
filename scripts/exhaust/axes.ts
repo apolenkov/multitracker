@@ -41,6 +41,13 @@ export const baseEnv: Env = {
   reducedMotion: 'off',
 };
 
+/**
+ * Среда обхода слоёв 1–3 и блужданий: анимации отключены, чтобы набор видимых
+ * элементов после клика не зависел от скорости машины (анимации в приложении
+ * только CSS, JS-ветки от них не зависят). Оси части (b) и матрица — со своими средами.
+ */
+export const sweepEnv: Env = { ...baseEnv, reducedMotion: 'on' };
+
 /** Значение оси и варианты оси через Map: прямой индекс по переменной запрещён правилами. */
 export const axisValue = (env: Env, axis: Axis): string =>
   new Map(Object.entries(env)).get(axis) ?? '';

@@ -30,7 +30,12 @@ case "${1:-status}" in
       --env "MT_RUNNER_LABELS=mt-container" \
       "$IMAGE"
     # Тома могли остаться за прежним UID: возвращаем владельца перед первым заданием.
-    sleep 2
+    # Ждём готовности контейнера по условию, не фиксированной паузой (до 30 с).
+    tries=0
+    until docker exec "$NAME" true 2>/dev/null; do
+      tries=$((tries + 1)); [ "$tries" -gt 150 ] && { echo "runner: контейнер не поднялся" >&2; exit 1; }
+      sleep 0.2
+    done
     docker exec --user root "$NAME" chown --recursive runner:runner /home/runner/_work /home/runner/.npm
     ;;
   stop)

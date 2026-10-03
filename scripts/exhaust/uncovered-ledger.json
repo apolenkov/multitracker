@@ -1218,10 +1218,6 @@
       "reason": "not visible"
     },
     {
-      "signature": "portfolios|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > section:nth-of-type(1) > details:nth-of-type(1) > div:nth-of-type(1) > button:nth-of-type(1)",
-      "reason": "inside closed details"
-    },
-    {
       "signature": "portfolios|-|button|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > section:nth-of-type(1) > details:nth-of-type(1) > div:nth-of-type(1) > button:nth-of-type(2)",
       "reason": "inside closed details"
     },
@@ -1264,18 +1260,6 @@
     {
       "signature": "portfolios|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1) > input#widget-changes",
       "reason": "not visible"
-    },
-    {
-      "signature": "portfolios|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > section:nth-of-type(1) > details:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(1) > input:nth-of-type(1)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "portfolios|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > section:nth-of-type(1) > details:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2) > input:nth-of-type(1)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "portfolios|-|checkbox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > section:nth-of-type(1) > details:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3) > input:nth-of-type(1)",
-      "reason": "inside closed details"
     },
     {
       "signature": "portfolios|-|combobox|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > details#import-mapping-options > fieldset:nth-of-type(1) > label:nth-of-type(1) > select#import-page-map-date",
@@ -1412,18 +1396,6 @@
     {
       "signature": "portfolios|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > div:nth-of-type(3) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > label:nth-of-type(1)",
       "reason": "not visible"
-    },
-    {
-      "signature": "portfolios|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > section:nth-of-type(1) > details:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(1)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "portfolios|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > section:nth-of-type(1) > details:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(2)",
-      "reason": "inside closed details"
-    },
-    {
-      "signature": "portfolios|-|label|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > div:nth-of-type(1) > main#main > section:nth-of-type(1) > details:nth-of-type(1) > fieldset:nth-of-type(1) > label:nth-of-type(3)",
-      "reason": "inside closed details"
     },
     {
       "signature": "portfolios|-|link|html > body:nth-of-type(1) > div#root > div:nth-of-type(1) > aside:nth-of-type(1) > nav:nth-of-type(1) > div:nth-of-type(2) > a:nth-of-type(1)",
@@ -1922,5 +1894,5 @@
       "reason": "dialog-unreachable"
     }
   ],
-  "seal": "444f65b2b3f93ad83f86818c1e819b035a04180f06969a07d44d90a75c84054d"
+  "seal": "68cb8faa9ef98a150ad92ac463e8651a686287401c825b0735e851834874dbd3"
 }

@@ -59,6 +59,8 @@ export type SkipReport = Readonly<{
   share: number;
   limit: number;
   reasons: Readonly<Record<string, number>>;
+  /** Пропущенные проверочные клики поимённо: причина и путь, чтобы долю можно было разобрать. */
+  items: readonly string[];
   /** Клики обхода sweep: все записи (клик или пропуск с причиной). */
   sweep: ClickShare;
   /** Все запланированные клики прогона: проверочные + sweep. */
@@ -127,6 +129,7 @@ export const skipReport = (
     ...shareOf(skips.length, attempted),
     limit: SKIP_SHARE_LIMIT,
     reasons,
+    items: skips.map((skip) => `${skip.stage}:${skip.reason} ${skip.path}`),
     sweep: shareOf(sweep.skipped, sweep.attempted),
     total: shareOf(skips.length + sweep.skipped, attempted + sweep.attempted),
   };

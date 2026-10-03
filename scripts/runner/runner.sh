@@ -29,6 +29,9 @@ case "${1:-status}" in
       --env "MT_RUNNER_NAME=mt-orbstack" \
       --env "MT_RUNNER_LABELS=mt-container" \
       "$IMAGE"
+    # Тома могли остаться за прежним UID: возвращаем владельца перед первым заданием.
+    sleep 2
+    docker exec --user root "$NAME" chown --recursive runner:runner /home/runner/_work /home/runner/.npm
     ;;
   stop)
     docker rm --force "$NAME" >/dev/null 2>&1 || true

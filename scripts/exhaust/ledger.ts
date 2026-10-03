@@ -70,5 +70,7 @@ export const checkLedger = (uncovered: readonly string[], ledger: Ledger): Ledge
     .map((entry) => entry.signature)
     .filter((signature) => !seen.has(signature));
   const sealed = ledger.seal === ledgerSeal(ledger.version, ledger.exceptions);
-  return { missing, stale, sealed, ok: sealed && missing.length === 0 && stale.length === 0 };
+  // Храповик допускает только уменьшение книги: рост (missing) — провал,
+  // сокращение (stale) — законный результат и материал для пересборки книг.
+  return { missing, stale, sealed, ok: sealed && missing.length === 0 };
 };

@@ -10,7 +10,7 @@ import {
 import type { ClickSkip } from '../scripts/exhaust/records.ts';
 import { reportChecks, skipReport } from '../scripts/exhaust/reports.ts';
 
-await test('ledger ratchet: missing fails and stale fails until baseline regeneration', () => {
+await test('ledger ratchet: growth fails, shrink is allowed (only-shrink mode)', () => {
   const entries = [
     { signature: 'a|b', reason: 'disabled' },
     { signature: 'c|d', reason: 'not visible' },
@@ -21,21 +21,22 @@ await test('ledger ratchet: missing fails and stale fails until baseline regener
   assert.deepEqual(grown.missing, ['x|y']);
   assert.equal(grown.ok, false);
   // Запись c|d стала лишней (элемент кликнут или не встретился сканеру) —
-  // книга расходится с замером, прогон падает до явной пересборки (N1).
+  // книга сокращается свободно: сокращение не роняет прогон, а показывается
+  // в stale как материал для пересборки.
   const shrunk = checkLedger(['a|b'], ledger);
   assert.deepEqual(shrunk.stale, ['c|d']);
-  assert.equal(shrunk.ok, false);
+  assert.equal(shrunk.ok, true);
   assert.equal(parseLedger('{"version":2,"exceptions":[]}').version, 2);
 });
 
-await test('code ledger reuses the ratchet: unknown functions fail, stale fails too', () => {
+await test('code ledger reuses the ratchet: unknown functions fail, shrink is allowed', () => {
   const ledger = parseLedger(
     dumpLedger([{ signature: 'src/a.ts|dead@9', reason: 'not reachable' }]),
   );
   assert.equal(checkLedger(['src/a.ts|dead@9'], ledger).ok, true);
   assert.equal(checkLedger(['src/a.ts|dead@9', 'src/a.ts|new@1'], ledger).ok, false);
   assert.deepEqual(checkLedger([], ledger).stale, ['src/a.ts|dead@9']);
-  assert.equal(checkLedger([], ledger).ok, false);
+  assert.equal(checkLedger([], ledger).ok, true);
 });
 
 await test('ledger seal: hand edits and forged seals fail the ratchet', () => {
@@ -94,8 +95,8 @@ await test('regeneration replaces the book: covered entries shrink away, run pas
       { signature: 'gone', reason: 'inside closed details' },
     ]),
   );
-  // Покрывшийся gone → stale → прогон падает до пересборки генератором.
-  assert.equal(checkLedger(['a'], book).ok, false);
+  // Покрывшийся gone → stale → сокращение допустимо, прогон не падает.
+  assert.equal(checkLedger(['a'], book).ok, true);
   const ledgers = baselineText(
     elementDoc([
       { signature: 'a', clicked: false },
@@ -120,9 +121,11 @@ const good = {
   skips: skipReport([], 0, { attempted: 0, skipped: 0 }),
 };
 
-await test('reportChecks lets a stale-only ledger fail the run', () => {
-  const staleElement = { missing: [], stale: ['gone|y'], sealed: true, ok: false };
-  assert.throws(() => reportChecks({ ...good, element: staleElement }), /element ledger/);
+await test('reportChecks lets stale-only (shrunk) ledger pass, growth still fails', () => {
+  const staleElement = { missing: [], stale: ['gone|y'], sealed: true, ok: true };
+  assert.doesNotThrow(() => reportChecks({ ...good, element: staleElement }));
+  const grown = { missing: ['new|y'], stale: [], sealed: true, ok: false };
+  assert.throws(() => reportChecks({ ...good, element: grown }), /element ledger/);
 });
 
 const skip = (path: string, stage: ClickSkip['stage']): ClickSkip => ({

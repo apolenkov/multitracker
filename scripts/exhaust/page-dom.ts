@@ -36,7 +36,7 @@ const hashText = (text) => {
   for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193); }
   return (h >>> 0).toString(36);
 };
-const settle = () => new Promise((r) => { requestAnimationFrame(() => setTimeout(r, 0)); });
+const settle = () => new Promise((r) => { let done = false; const once = () => { if (!done) { done = true; r(); } }; requestAnimationFrame(() => setTimeout(once, 0)); setTimeout(once, 50); });
 const installHooks = () => {
   if (window.__exh) return;
   const bag = { errors: [], warnings: [] };

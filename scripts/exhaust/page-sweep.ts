@@ -73,7 +73,9 @@ const clickPath = async (el, purpose, fastInv) => {
   if (opened.length) rec.opened = opened[0];
   if (log.e.length) rec.err = log.e;
   if (log.w.length) rec.warn = log.w;
-  if (after.hash !== before.hash) { history.back(); await settle(); }
+  // Возврат явным адресом: шаг назад по истории асинхронен и при частых переходах
+  // уходит за пределы документа, вместе со страницей пропадает слот задания.
+  if (after.hash !== before.hash) { location.hash = before.hash; await settle(); }
   return rec;
 };
 `;
@@ -124,6 +126,7 @@ if (opts.finalize === true) {
  */
 export const sweepSource = `async (opts) => { ${preamble} ${pickNext}
   const records = [];
+  const deferred = [];
   const done = new Set(opts.done ?? []);
   const openers = opts.openers ?? {};
   const failed = new Set();
@@ -134,7 +137,7 @@ export const sweepSource = `async (opts) => { ${preamble} ${pickNext}
     if (el !== null) {
       const p = pathOf(el);
       const status = statusOf(el);
-      if (status !== '') { done.add(p); records.push({ p, skip: status }); continue; }
+      if (status !== '') { done.add(p); deferred.push(p); records.push({ p, skip: status }); continue; }
       records.push(await clickPath(el, 'sweep', fastInv));
       done.add(p);
       continue;
@@ -142,6 +145,12 @@ export const sweepSource = `async (opts) => { ${preamble} ${pickNext}
     if (openDialogs().length > 0) { await closeAll(); continue; }
     if (await reopen(records, fastInv)) continue;
     break;
+  }
+  for (const p of deferred) {
+    if (performance.now() >= deadline || records.length >= limit) break;
+    const el = document.querySelector(p);
+    if (el === null || !inScope(el) || statusOf(el) !== '') continue;
+    records.push(await clickPath(el, 'sweep', fastInv));
   }
   await closeAll();
   ${finalizeLeftover}

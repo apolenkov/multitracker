@@ -38,6 +38,16 @@ export const clickableProbe = (path: string): string =>
 const clickable = (browser: Browser, path: string): boolean =>
   evaluate(browser, clickableProbe(path)) === true;
 
+/** Цель существует и видна, но её закрывает открытый диалог: это чинится. */
+const obstructedProbe = (path: string): string =>
+  `(() => { const el = document.querySelector(${JSON.stringify(path)}); const dlg = document.querySelector('dialog[open]'); return !!el && el.checkVisibility() && dlg !== null && !dlg.contains(el); })()`;
+
+const closeDialogsProbe =
+  "(() => { for (const d of document.querySelectorAll('dialog[open]')) d.close(); return document.querySelectorAll('dialog[open]').length; })()";
+
+const obstructed = (browser: Browser, path: string): boolean =>
+  evaluate(browser, obstructedProbe(path)) === true;
+
 const stepFindings = (browser: Browser, env: Env): readonly Finding[] => {
   const cfg = JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
   const value: unknown = evaluate(browser, `(${fullInvariantsSource})(${cfg})`);
@@ -57,6 +67,8 @@ const closeDialogs = (browser: Browser): void => {
 /** Шаги блуждания через узкий интерфейс: единственная точка, знающая о Browser. */
 export type WalkDriver = Readonly<{
   clickable: (path: string) => boolean;
+  obstructed: (path: string) => boolean;
+  closeDialogs: () => void;
   click: (path: string) => void;
   settle: () => void;
   findings: () => readonly Finding[];
@@ -64,6 +76,8 @@ export type WalkDriver = Readonly<{
 
 const browserDriver = (browser: Browser, env: Env): WalkDriver => ({
   clickable: (path) => clickable(browser, path),
+  obstructed: (path) => obstructed(browser, path),
+  closeDialogs: () => void evaluate(browser, closeDialogsProbe),
   click: (path) => {
     browser.run('click', path);
   },
@@ -96,7 +110,12 @@ const withFail = (acc: StepAcc, path: string): StepAcc => ({
 });
 
 const stepOne = (drv: WalkDriver, path: string, acc: StepAcc): StepAcc => {
-  if (!drv.clickable(path)) return withSkip(acc, path, 'unreachable');
+  if (!drv.clickable(path)) {
+    // Закрытый диалог закрывает цель: убираем помеху и пробуем снова,
+    // иначе пишем пропуск с причиной.
+    if (drv.obstructed(path)) drv.closeDialogs();
+    if (!drv.clickable(path)) return withSkip(acc, path, 'unreachable');
+  }
   try {
     drv.click(path);
   } catch {

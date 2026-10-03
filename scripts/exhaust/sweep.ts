@@ -1,6 +1,7 @@
 /** Оркестрация раздела: навигация, обход с дедлайном, донабор диалогов, доверенные клики. */
 import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
+import { restState } from './sweep-rest.ts';
 import type { Env } from './axes.ts';
 import { record } from './records.ts';
 import type { ClickRecord, ClickSkip, Finding } from './records.ts';
@@ -16,6 +17,7 @@ import { hitClicks, joinSeen, openersOf } from './journal.ts';
 import type { PageState } from './probe.ts';
 import { stateOf } from './probe.ts';
 import { trustedSample } from './trusted.ts';
+import { runJob } from './job.ts';
 
 /** Навигация настоящей кнопкой мыши: доверенная запись в журнале. */
 export const navClick = (
@@ -41,42 +43,6 @@ export const navClick = (
     `.desktop-links a[href="#${route}"]`,
     { role: 'link', name: route, tag: 'a', trusted: true, purpose: 'navigate' },
   );
-};
-
-const SLOT = 'window.__mtJob';
-
-const kick = (browser: Browser, source: string, opts: string) =>
-  evaluate(
-    browser,
-    `${SLOT} = null; (${source})(${opts}).then((r) => { ${SLOT} = r; }, (e) => { ${SLOT} = { error: String(e) }; }); 'started'`,
-  );
-
-const jobStatus = (browser: Browser): string =>
-  asText(
-    evaluate(browser, `${SLOT} === undefined ? 'none' : ${SLOT} === null ? 'pending' : 'ready'`),
-  );
-
-const awaitJob = (browser: Browser, left: number): unknown => {
-  if (jobStatus(browser) === 'ready') return evaluate(browser, SLOT);
-  if (left <= 0) throw new Error('in-page job did not finish in time');
-  try {
-    browser.run('wait', '--fn', `${SLOT} !== null && ${SLOT} !== undefined`);
-  } catch {
-    // Таймаут опроса не равен сбою работы: проверяем слот ещё раз.
-  }
-  return awaitJob(browser, left - 1);
-};
-
-const runJob = (
-  browser: Browser,
-  source: string,
-  opts: Readonly<Record<string, unknown>>,
-): unknown => {
-  kick(browser, source, JSON.stringify(opts));
-  const result = awaitJob(browser, 4);
-  if (isRecord(result) && typeof result.error === 'string')
-    throw new Error(`page job: ${result.error}`);
-  return result;
 };
 
 type Chunk = Readonly<{
@@ -124,13 +90,13 @@ const sweepStep = (browser: Browser, acc: readonly Chunk[], round: number): read
     runJob(browser, sweepSource, {
       done: acc.at(-1)?.done ?? [],
       openers: {},
-      budget: 20_000,
-      limit: 700,
+      budget: 120_000,
+      limit: 2000,
       finalize: false,
     }),
   );
   const next = [...acc, chunk];
-  return round >= 3 || !chunk.truncated ? next : sweepStep(browser, next, round + 1);
+  return round >= 11 || !chunk.truncated ? next : sweepStep(browser, next, round + 1);
 };
 
 const sweepAll = (browser: Browser): SweepOutcome => mergeChunks(sweepStep(browser, [], 0));
@@ -140,8 +106,8 @@ const rescue = (browser: Browser, outcome: SweepOutcome): Chunk =>
     runJob(browser, sweepSource, {
       done: outcome.done,
       openers: openersOf(outcome.hits),
-      budget: 20_000,
-      limit: 700,
+      budget: 120_000,
+      limit: 2000,
       finalize: true,
     }),
   );
@@ -166,6 +132,7 @@ export type Visit = Readonly<{
 /** Навигация, перечисление, обход и донабор: всё наблюдаемое за один визит. */
 export const visitRoute = (browser: Browser, route: string, seq: number, env: Env): Visit => {
   const nav = navClick(browser, stateOf(browser), route, seq, env);
+  restState(browser);
   const first = parseEnumerate(evaluate(browser, enumerateSource));
   const sweep = sweepAll(browser);
   const extra = rescue(browser, sweep);

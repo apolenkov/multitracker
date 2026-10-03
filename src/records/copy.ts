@@ -144,9 +144,9 @@ const accountForm = (count: number): string => {
   return accountForms.many;
 };
 
-// «Счёт: 1», «Счёта: 3», «Счетов: 5»; в английском склонения нет.
-export const accountsCount = (language: Language, count: number): string =>
-  language === 'en' ? `Accounts: ${count}` : `${accountForm(count)}: ${count}`;
+// «Счёт», «Счёта», «Счетов» — слово счётчика склоняется; число рисует общий Count.
+export const accountWord = (language: Language, count: number): string =>
+  language === 'en' ? 'Accounts' : accountForm(count);
 export const rowNoticeText = (
   texts: ReturnType<typeof recordsCopy>,
   entity: 'portfolio' | 'account' | 'group',

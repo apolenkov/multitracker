@@ -1,4 +1,5 @@
 import { money, percentage, type Language } from '../i18n.ts';
+import { Count } from '../Count.tsx';
 import { assets, totals, type Buy, type Currency } from '../model/portfolio.ts';
 import { insightWords } from './words.ts';
 
@@ -24,7 +25,7 @@ export function Composition({ buys, currency, language, hidden }: Props) {
   return (
     <section className="allocation-list" aria-labelledby="composition-title">
       <h2 id="composition-title">
-        {words.composition} <span className="count">{rows.length}</span>
+        {words.composition} <Count value={rows.length} />
       </h2>
       <div className="allocation-content">
         <AllocationRing rows={rows} total={total} language={language} hidden={hidden} />

@@ -14,6 +14,7 @@ import { asFinding, parseEnumerate, parseSweepRecord } from '../scripts/exhaust/
 import type { Enumerated, SweepHit } from '../scripts/exhaust/page-rows.ts';
 import { clickedSignatures, hitClicks, joinSeen } from '../scripts/exhaust/journal.ts';
 import type { FunctionCoverage, Range, ScriptCoverage } from '../scripts/exhaust/cdp.ts';
+import { sweepSource } from '../scripts/exhaust/page-sweep.ts';
 
 const range = (start: number, end: number, count: number): Range => ({
   startOffset: start,
@@ -234,4 +235,11 @@ await test('asFinding maps invariant rows and drops junk', () => {
     actual: 'a',
   });
   assert.equal(asFinding({ rule: 'x' }), null);
+});
+
+await test('обход возвращается на раздел явным адресом, не history.back', () => {
+  // history.back() асинхронен: при частых переходах он уводил вкладку за пределы
+  // документа, и задание внутри страницы пропадало без результата.
+  assert.doesNotMatch(sweepSource, /history\.back/);
+  assert.match(sweepSource, /location\.hash = before\.hash/);
 });

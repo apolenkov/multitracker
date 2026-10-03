@@ -9,7 +9,7 @@ permissions:
 jobs:
   check:
     runs-on: [self-hosted, mt-container]
-    timeout-minutes: 35
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -57,6 +57,53 @@ jobs:
             --connect-timeout 2 --max-time 2 "$MULTITRACKER_UI_URL" > /dev/null
           npm run test:ui 2>&1 | tee "$RUNNER_TEMP/ui.log"
           npm run test:smoke 2>&1 | tee "$RUNNER_TEMP/smoke.log"
+      - name: Строгая матрица 135×8
+        shell: bash
+        env:
+          MULTITRACKER_MATRIX_OUT: ${{ runner.temp }}/matrix
+        run: |
+          ./node_modules/.bin/vite --host 127.0.0.1 --port 5174 --strictPort \
+            > "$RUNNER_TEMP/vite-matrix.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --show-error --retry 30 --retry-delay 1 \
+            --retry-connrefused --retry-all-errors --retry-max-time 40 \
+            --connect-timeout 2 --max-time 2 http://127.0.0.1:5174/ > /dev/null
+          MULTITRACKER_UI_URL=http://127.0.0.1:5174 \
+            node --experimental-strip-types scripts/exhaust/matrix.ts 2>&1 | tee "$RUNNER_TEMP/matrix.log"
+      - name: Перебор покрытия и реестры
+        shell: bash
+        run: |
+          ./node_modules/.bin/vite build --outDir dist/exhaust --emptyOutDir --sourcemap
+          node <<'SERVER' &
+          import http from 'node:http';
+          import { readFile } from 'node:fs/promises';
+          import { extname, resolve } from 'node:path';
+          const root = resolve('dist/exhaust');
+          const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8', '.webmanifest': 'application/manifest+json' };
+          http.createServer(async (req, res) => {
+            const p = new URL(req.url, 'http://x').pathname;
+            const f = resolve(root, '.' + (p === '/' ? '/index.html' : p));
+            if (!f.startsWith(root + '/')) return res.writeHead(403).end();
+            try { const d = await readFile(f); res.writeHead(200, { 'Content-Type': types[extname(f)] ?? 'application/octet-stream', 'Cache-Control': 'no-store' }); res.end(d); } catch { res.writeHead(404).end(); }
+          }).listen(5179, '127.0.0.1');
+          SERVER
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true' EXIT
+          sleep 1
+          curl --fail --silent --show-error http://127.0.0.1:5179/ > /dev/null
+          MULTITRACKER_UI_URL=http://127.0.0.1:5179 \
+            node --experimental-strip-types scripts/exhaust/run.ts 2>&1 | tee "$RUNNER_TEMP/exhaust.log"
+      - name: Сохранить доказательства матрицы и перебора
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: matrix-evidence
+          path: |
+            ${{ runner.temp }}/matrix.log
+            ${{ runner.temp }}/matrix
+            ${{ runner.temp }}/exhaust.log
+            docs/audits/*-exhaust
       - name: Сохранить доказательства проверок интерфейса
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

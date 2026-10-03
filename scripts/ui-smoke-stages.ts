@@ -44,6 +44,16 @@ function dialogContent(
   return { entries: content.entries, findings: [...geometry, ...content.findings] };
 }
 
+/** Повторное открытие ждёт условия, а не проверяет сразу после клика. */
+function waitOpen(browser: Browser, id: string): boolean {
+  try {
+    browser.run('wait', '--fn', `document.querySelector('dialog#${id}')?.open === true`);
+  } catch {
+    // Не открылся за время ожидания — ниже это станет находкой.
+  }
+  return query(browser, `dialog#${id}`, 'element?.open') === true;
+}
+
 export function auditDialog(
   browser: Browser,
   state: State,
@@ -55,7 +65,7 @@ export function auditDialog(
 ): Outcome {
   const returned = escapeDialog(browser, control, id);
   activate(browser, control, false);
-  const reopened = query(browser, `dialog#${id}`, 'element?.open') === true;
+  const reopened = waitOpen(browser, id);
   if (!reopened)
     return {
       entries: [],

@@ -67,7 +67,8 @@ const items = [...document.querySelectorAll(CONTROL_SEL)]
 `;
 
 export const semantic = String.raw`
-const semanticState = () => ({
+const ownOf = (s) => hashText(JSON.stringify([s.h1, s.dialogs, s.expanded, s.values, s.text]));
+const semanticState = () => { const s = {
   hash: location.hash,
   lang: document.documentElement.lang,
   h1: document.querySelector('#main h1')?.textContent?.trim() ?? '',
@@ -76,11 +77,11 @@ const semanticState = () => ({
   pressed: [...document.querySelectorAll('[aria-pressed="true"],[aria-selected="true"],input:checked')].map((e) => pathOf(e)),
   values: [...document.querySelectorAll('input,select,textarea')].map((e) => [e.id || e.name, e.value ?? e.checked]),
   text: hashText((document.querySelector('dialog[open]') ?? document.querySelector('#main') ?? document.body).innerText ?? ''),
-});
+}; return { ...s, own: ownOf(s) }; };
 `;
 
 export const installHooksSource = `(() => { ${domHelpers}; installHooks(); return true; })()`;
 
 export const enumerateSource = `(() => { ${domHelpers}; ${enumerate}; return { items, dialogs, title: document.title, scrollW: document.documentElement.scrollWidth, innerW: innerWidth, scrollH: document.documentElement.scrollHeight }; })()`;
 
-export const stateHashSource = `(() => { ${domHelpers}; ${semantic}; const s = semanticState(); s.own = hashText(JSON.stringify([s.h1, s.dialogs, s.expanded, s.values, s.text])); return s; })()`;
+export const stateHashSource = `(() => { ${domHelpers}; ${semantic}; return semanticState(); })()`;

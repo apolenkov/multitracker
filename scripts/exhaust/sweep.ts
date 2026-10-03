@@ -4,7 +4,7 @@ import { evaluate } from '../ui-driver.ts';
 import { restState } from './sweep-rest.ts';
 import type { Env } from './axes.ts';
 import { record } from './records.ts';
-import type { ClickRecord, ClickSkip, Finding } from './records.ts';
+import type { ClickRecord, ClickSkip, Finding, StateDoms } from './records.ts';
 import { enumerateSource } from './page-dom.ts';
 import { sweepSource } from './page-sweep.ts';
 import { fullInvariantsSource } from './page-checks.ts';
@@ -47,15 +47,29 @@ export const navClick = (
 
 type Chunk = Readonly<{
   hits: readonly SweepHit[];
+  doms: StateDoms;
   done: readonly string[];
   leftover: readonly Leftover[];
   truncated: boolean;
   errors: readonly string[];
 }>;
 
+const JUNK: Chunk = {
+  hits: [],
+  doms: {},
+  done: [],
+  leftover: [],
+  truncated: false,
+  errors: ['job: junk result'],
+};
+
+const parseDoms = (value: unknown): StateDoms =>
+  isRecord(value)
+    ? Object.fromEntries(Object.entries(value).map(([hash, html]) => [hash, asText(html)]))
+    : {};
+
 const parseChunk = (value: unknown): Chunk => {
-  if (!isRecord(value))
-    return { hits: [], done: [], leftover: [], truncated: false, errors: ['job: junk result'] };
+  if (!isRecord(value)) return JUNK;
   const hits = asArray(value.records).flatMap((row) => {
     const hit = parseSweepRecord(row);
     return hit === null ? [] : [hit];
@@ -64,6 +78,7 @@ const parseChunk = (value: unknown): Chunk => {
   const thrown = typeof value.error === 'string' ? [value.error] : [];
   return {
     hits,
+    doms: parseDoms(value.doms),
     done: asArray(value.done).map((entry) => asText(entry)),
     leftover: parseLeftover(value.leftover),
     truncated: value.truncated === true,
@@ -73,6 +88,7 @@ const parseChunk = (value: unknown): Chunk => {
 
 type SweepOutcome = Readonly<{
   hits: readonly SweepHit[];
+  doms: StateDoms;
   done: readonly string[];
   leftover: readonly Leftover[];
   errors: readonly string[];
@@ -80,6 +96,7 @@ type SweepOutcome = Readonly<{
 
 const mergeChunks = (chunks: readonly Chunk[]): SweepOutcome => ({
   hits: chunks.flatMap((chunk) => chunk.hits),
+  doms: Object.fromEntries(chunks.flatMap((chunk) => Object.entries(chunk.doms))),
   done: [...new Set(chunks.flatMap((chunk) => chunk.done))],
   leftover: chunks.at(-1)?.leftover ?? [],
   errors: chunks.flatMap((chunk) => chunk.errors),
@@ -121,6 +138,7 @@ const mergeEnumerated = (
 
 export type Visit = Readonly<{
   clicks: readonly ClickRecord[];
+  doms: StateDoms;
   seen: readonly RegistryInput[];
   errors: readonly string[];
   skips: readonly ClickSkip[];
@@ -148,6 +166,7 @@ export const visitRoute = (browser: Browser, route: string, seq: number, env: En
     attempts: verified.clicks.length + verified.skips.length,
     sweepAttempted: hits.length,
     sweepSkipped: hits.filter((hit) => hit.skipped !== '').length,
+    doms: { ...sweep.doms, ...extra.doms },
     errors: [...sweep.errors, ...extra.errors, ...hits.flatMap((hit) => hit.errors)],
   };
 };
@@ -155,6 +174,7 @@ export const visitRoute = (browser: Browser, route: string, seq: number, env: En
 export type SectionResult = Readonly<{
   route: string;
   clicks: readonly ClickRecord[];
+  doms: StateDoms;
   seen: readonly RegistryInput[];
   findings: readonly Finding[];
   consoleErrors: readonly string[];
@@ -186,6 +206,7 @@ export const visitSection = (
   return {
     route,
     clicks: visit.clicks,
+    doms: visit.doms,
     seen: visit.seen,
     findings: invariantFindings(browser, env),
     consoleErrors: visit.errors,

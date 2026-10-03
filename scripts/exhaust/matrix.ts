@@ -83,15 +83,18 @@ const resetState = (browser: Browser, env: Env): void => {
   applyEnv(browser, env, 'overview');
 };
 
-const scoreCell = (
-  browser: Browser,
-  plan: EntryPlan,
-  cellEnv: Env,
-): Readonly<{ note: string; findings: readonly Finding[] }> => {
+type Scored = Readonly<{ note: string; findings: readonly Finding[]; dom: string }>;
+
+/** DOM открытого состояния ячейки — доказательство в states.jsonl. */
+const STATE_DOM =
+  "(document.querySelector('dialog[open]') ?? document.querySelector('#main') ?? document.body).outerHTML";
+
+const scoreCell = (browser: Browser, plan: EntryPlan, cellEnv: Env): Scored => {
   resetScene(browser);
   const outcome = runSteps(browser, plan.steps, cellEnv);
-  // Семантика ячейки фиксируется сразу после шагов, пока меню или диалог открыты.
+  // Семантика ячейки и DOM состояния фиксируются сразу после шагов, пока меню или диалог открыты.
   const expectation = expectationNote(browser, plan, outcome);
+  const dom = asText(evaluate(browser, STATE_DOM));
   // Замеры идут на покое: меню закрыто, прокрутка в начало, курсор уведён.
   quietScene(browser);
   browser.run('mouse', 'move', '0', '0');
@@ -105,13 +108,13 @@ const scoreCell = (
       ? expectation
       : important.map((finding) => `${finding.rule} ${finding.selector}`).join('; ');
   restore(browser, outcome.openedDetails);
-  return { note, findings };
+  return { note, findings, dom };
 };
 
 const cellOf = (
   entry: InventoryEntry,
   context: MatrixContext,
-  scored: Readonly<{ note: string; findings: readonly Finding[] }>,
+  scored: Scored,
   started: number,
 ): MatrixCell => ({
   id: entry.id,
@@ -120,6 +123,7 @@ const cellOf = (
   note: scored.note,
   durationMs: Date.now() - started,
   findings: scored.findings,
+  dom: scored.dom,
 });
 
 const scoredCell = (

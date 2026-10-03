@@ -60,6 +60,8 @@ const clickPath = async (el, purpose, fastInv) => {
   activate(el);
   await settle();
   const after = semanticState();
+  // DOM каждого нового состояния — доказательство прогона (states/<хеш>.html).
+  if (!(after.own in doms)) doms[after.own] = (document.querySelector('dialog[open]') ?? document.querySelector('#main') ?? document.body).outerHTML;
   const log = drainLog();
   const rec = {
     p, b: before.own, a: after.own, dlg: after.dialogs,
@@ -126,6 +128,7 @@ if (opts.finalize === true) {
  */
 export const sweepSource = `async (opts) => { ${preamble} ${pickNext}
   const records = [];
+  const doms = {};
   const deferred = [];
   const done = new Set(opts.done ?? []);
   const openers = opts.openers ?? {};
@@ -155,6 +158,6 @@ export const sweepSource = `async (opts) => { ${preamble} ${pickNext}
   await closeAll();
   ${finalizeLeftover}
   const leftover = pending().map((el) => ({ p: pathOf(el), dlg: el.closest('dialog')?.id ?? '', st: statusOf(el) }));
-  return { records, done: [...done], leftover,
+  return { records, doms, done: [...done], leftover,
     truncated: performance.now() >= deadline || records.length >= limit, consoleLeft: drainLog() };
 }`;

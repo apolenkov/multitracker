@@ -68,6 +68,7 @@ const collectOne = async (
 ): Promise<Acc> => {
   const result = visitSection(browser, route, prev.seq, sweepEnv);
   log.appendClicks(result.clicks);
+  log.appendStates(route, result.doms);
   const scripts = mergeScripts(prev.scripts, await takeCoverage(send));
   return nextAcc(prev, result, route, scripts, fileReports(scripts, sources));
 };

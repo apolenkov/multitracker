@@ -42,9 +42,13 @@ export type ClickSkip = Readonly<{
   reason: 'unreachable' | 'click-threw' | 'settle-timeout';
 }>;
 
+export type StateDoms = Readonly<Record<string, string>>;
+
 export type RunLog = Readonly<{
   dir: string;
   appendClicks: (rows: readonly ClickRecord[]) => void;
+  /** DOM уникальных состояний обхода: одна строка JSONL на хеш состояния. */
+  appendStates: (route: string, doms: StateDoms) => void;
   saveJson: (name: string, value: unknown) => void;
   saveText: (name: string, text: string) => void;
 }>;
@@ -52,6 +56,19 @@ export type RunLog = Readonly<{
 const checkName = (name: string) => {
   if (!/^[a-zA-Z0-9.-]+$/.test(name)) throw new Error(`unsafe artifact name ${name}`);
 };
+
+const stateLines = (route: string, doms: StateDoms): string =>
+  Object.entries(doms)
+    .map(([hash, html]) => `${JSON.stringify({ hash, route, html })}\n`)
+    .join('');
+
+const writerIn =
+  (dir: string) =>
+  (name: string, text: string, append: boolean): void => {
+    checkName(name);
+    const args = append ? ['-a', resolve(dir, name)] : [resolve(dir, name)];
+    execFileSync('tee', args, { input: text, stdio: ['pipe', 'ignore', 'pipe'] });
+  };
 
 /** Каталог запуска; запись идёт через tee/mkdir, а не fs: путь вычисляемый. */
 export const createRunLog = (
@@ -63,17 +80,17 @@ export const createRunLog = (
   const dir = resolve(auditsDir, `${stamp}-${suffix}`, runId);
   execFileSync('mkdir', ['-p', dir]);
   execFileSync('mkdir', ['-p', resolve(dir, 'shots')]);
-  const write = (name: string, text: string, append: boolean) => {
-    checkName(name);
-    const args = append ? ['-a', resolve(dir, name)] : [resolve(dir, name)];
-    execFileSync('tee', args, { input: text, stdio: ['pipe', 'ignore', 'pipe'] });
-  };
+  const write = writerIn(dir);
   return {
     dir,
     appendClicks: (rows) => {
       if (rows.length > 0) {
         write('clicks.jsonl', `${rows.map((row) => JSON.stringify(row)).join('\n')}\n`, true);
       }
+    },
+    appendStates: (route, doms) => {
+      const rows = stateLines(route, doms);
+      if (rows !== '') write('states.jsonl', rows, true);
     },
     saveJson: (name, value) => write(name, JSON.stringify(value, null, 2), false),
     saveText: (name, text) => write(name, text, false),

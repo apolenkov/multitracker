@@ -75,7 +75,10 @@ const runJob = (
 ): unknown => {
   const attempt = (): unknown => {
     kick(browser, source, JSON.stringify(opts));
-    return awaitJob(browser, 10);
+    // Опрос ждёт не меньше бюджета самого задания: иначе исправное задание
+    // объявляется зависшим ровно потому, что ему разрешили работать долго.
+    const budget = typeof opts.budget === 'number' ? opts.budget : 20_000;
+    return awaitJob(browser, Math.ceil(budget / 10_000) + 12);
   };
   const result = (() => {
     try {

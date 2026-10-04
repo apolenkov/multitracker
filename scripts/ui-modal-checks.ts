@@ -28,6 +28,9 @@ function env(browser: Browser, screen: string, width: number, lang: Lang) {
 }
 
 function openVia(browser: Browser, opener: string, dialog: string) {
+  // Открыватель может оказаться у самого сгиба (строка resolved толкает его
+  // вниз): частично видимый элемент кликается вне вьюпорта и попадает в <html>.
+  browser.run('scrollintoview', opener);
   browser.run('click', opener);
   browser.run('wait', '--fn', opened(dialog));
 }

@@ -145,12 +145,26 @@ export function dialogClosePaths(browser: Browser) {
 
 function mountShiftIn(browser: Browser, width: number, lang: Lang) {
   env(browser, 'sync', width, lang);
+  // Замер «открытое → закрытое» нельзя делать прямым снимком: после размонта
+  // в индексный путь бывшего диалога встаёт следующий сосед (в DOM остаются
+  // portfolio/buy/privacy dialog) — коллизия путей ложно считает его сдвигом.
+  // Честная проверка размонта — цикл «закрытое → закрытое»: возврат к той же
+  // раскладке без остаточного сдвига, диалог отсутствует в обоих снимках.
+  layoutShift(
+    browser,
+    () => {
+      openVia(browser, SYNC_OPENER, SYNC_DIALOG);
+      escape(browser, SYNC_DIALOG);
+    },
+    `dialog-mount-unmount ${width}/${lang}`,
+  );
+  // Монтаж: существующее содержимое не двигается (диалог фиксирован поверх).
   layoutShift(
     browser,
     () => openVia(browser, SYNC_OPENER, SYNC_DIALOG),
     `dialog-mount ${width}/${lang}`,
   );
-  layoutShift(browser, () => escape(browser, SYNC_DIALOG), `dialog-unmount ${width}/${lang}`);
+  escape(browser, SYNC_DIALOG);
   return { width, lang, shift: '<=2px' };
 }
 

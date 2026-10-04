@@ -11,6 +11,7 @@ import { designScan } from './page-design.ts';
 import { designConfig } from './design.ts';
 import { asArray, asText } from './guards.ts';
 import { asFinding } from './page-rows.ts';
+import { routeReady } from './probe.ts';
 import type { Finding } from './records.ts';
 
 const marker = '[data-matrix-target]';
@@ -22,11 +23,7 @@ export type StepOutcome = Readonly<{
 }>;
 
 const hashWait = (browser: Browser, hash: string): void => {
-  browser.run(
-    'wait',
-    '--fn',
-    `location.hash === '${hash}' && !!document.querySelector('#main h1')`,
-  );
+  browser.run('wait', '--fn', routeReady(hash));
   settleLayout(browser);
 };
 

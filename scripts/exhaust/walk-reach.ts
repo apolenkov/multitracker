@@ -1,6 +1,7 @@
 /** Блуждание доходит до цели, как человек: раздел, открыватель диалога, свёрнутые раскрытия. */
 import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
+import { routeReady } from './probe.ts';
 
 const SETTLED = 'document.getAnimations({subtree:true}).every((a)=>a.playState!=="running")';
 
@@ -20,11 +21,7 @@ const openDisclosuresProbe = (path: string): string =>
 const goTo = (browser: Browser, route: string): void => {
   if (route === '') return;
   evaluate(browser, `(location.hash === '#${route}' || (location.hash = '${route}'), true)`);
-  browser.run(
-    'wait',
-    '--fn',
-    `location.hash === '#${route}' && !!document.querySelector('#main h1')`,
-  );
+  browser.run('wait', '--fn', routeReady(`#${route}`));
 };
 
 /** Открыть диалог цели настоящим кликом по открывателю, который нашёл обход. */

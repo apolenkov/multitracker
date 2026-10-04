@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { WidgetPreview } from './settings-widget.tsx';
 import { DemoModal } from './modal';
+import { useModalSession } from './modal-session';
 import { DemoStateSettings } from './settings-display';
 import { SettingsGroups, settingName } from './settings-layout';
 import type { Notifications, SettingText } from './settings-display';
@@ -30,7 +31,7 @@ export type ModalProps = SettingsProps &
   }>;
 
 export function SettingsPanel(props: SettingsProps) {
-  const [kind, setKind] = useState<Kind | null>(null);
+  const { current: session, open, close } = useModalSession<Kind>();
   const [value, setValue] = usePreferences();
   const text: SettingText = (ru, en) => (props.language === 'ru' ? ru : en);
   const update = (patch: Partial<Preferences>) => setValue((current) => ({ ...current, ...patch }));
@@ -39,7 +40,7 @@ export function SettingsPanel(props: SettingsProps) {
       <SettingsGroups
         {...props}
         text={text}
-        open={setKind}
+        open={open}
         locked={value.locked}
         onLock={(locked) => update({ locked })}
         lockStatus={
@@ -65,14 +66,15 @@ export function SettingsPanel(props: SettingsProps) {
         <DemoStateSettings {...props} text={text} />
       </details>
       <WidgetPreview language={props.language} hidden={props.hidden} />
-      {kind && (
+      {session && (
         <SettingsDialog
+          key={session.nonce}
           {...props}
-          kind={kind}
+          kind={session.kind}
           text={text}
           value={value}
           update={update}
-          onClose={() => setKind(null)}
+          onClose={() => close(session.nonce)}
         />
       )}
     </div>

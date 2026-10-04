@@ -19,6 +19,7 @@ import { recordRowActions, entityUndo, importAndSyncUndo } from './ui-row-action
 import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
+import { dialogClosePaths, dialogMountStability } from './ui-modal-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
 import { unifiedCounters } from './ui-counter-checks.ts';
 
@@ -240,6 +241,8 @@ function runChecks(driver: Browser): readonly Result[] {
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
     ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],
     ['sync:confirm-then-intentional-disclosure', () => syncPostConflictDisclosure(browser)],
+    ['dialogs:close-paths-reopen-focus', () => dialogClosePaths(browser)],
+    ['dialogs:mount-layout-shift-2px', () => dialogMountStability(browser)],
   ];
   return actions.reduce<readonly Result[]>(
     (results, [id, action]) => [

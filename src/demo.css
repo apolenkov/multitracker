@@ -151,7 +151,7 @@ label.checkbox-row {
   color: var(--red);
 }
 .sync-devices,
-.sync-panel > .sync-actions:last-child {
+.sync-panel > section.sync-actions:last-of-type {
   margin-top: 28px;
   padding-top: 24px;
   border-top: 1px solid var(--line);

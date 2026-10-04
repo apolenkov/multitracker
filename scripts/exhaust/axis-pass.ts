@@ -10,6 +10,7 @@ import type { DesignConfig } from './design.ts';
 import { asFinding } from './page-rows.ts';
 import { asArray } from './guards.ts';
 import type { Finding } from './records.ts';
+import { routeReady } from './probe.ts';
 import { routes } from './reports.ts';
 
 export type AxisDetail = Readonly<{
@@ -65,7 +66,7 @@ const checkRoute = (
   config: DesignConfig,
 ): AxisDetail => {
   applyEnv(browser, env, route);
-  browser.run('wait', '--fn', "!!document.querySelector('#main h1')");
+  browser.run('wait', '--fn', routeReady(`#${route}`));
   // Цвета и контраст меряем после CSS-переходов и JS-раскладки (два кадра):
   // снятие посреди transition даёт ложные значения. Таймаут не теряет точку
   // осей — сканируем как есть, но помечаем settled:false в журнале.

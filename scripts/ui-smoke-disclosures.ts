@@ -5,7 +5,7 @@ import { batch, settleLayout, type Browser } from './ui-driver.ts';
 import type { crawl } from './ui-smoke-crawl.ts';
 
 function toggle(browser: Browser, control: Control, keyboard: boolean) {
-  settleLayout(browser);
+  settleLayout(browser, control.path);
   batch(browser, [
     ['scrollintoview', control.path],
     ...(keyboard
@@ -18,8 +18,11 @@ function toggle(browser: Browser, control: Control, keyboard: boolean) {
   settleLayout(browser);
 }
 function measure(browser: Browser, state: State, control: Control, seen: readonly string[]) {
-  settleLayout(browser);
+  settleLayout(browser, control.path);
   browser.run('scrollintoview', control.path);
+  // Прокрутка может запустить отложенный пересчёт — точка пробы должна
+  // стоять два кадра до снимка before.
+  settleLayout(browser, control.path);
   const before = positionState(browser, control.path);
   const initial = query(browser, control.path, 'element?.parentElement?.open');
   toggle(browser, control, seen.length % 2 === 0);

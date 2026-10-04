@@ -98,6 +98,16 @@ export function operationKinds(browser: Browser, state: State): Outcome {
 
 export function escapeDialog(browser: Browser, opener: Control, id: string): readonly Finding[] {
   browser.run('press', 'Escape');
+  try {
+    browser.run(
+      'wait',
+      '--fn',
+      `document.getElementById(${JSON.stringify(id)})?.open !== true &&
+      document.activeElement === document.querySelector(${JSON.stringify(opener.path)})`,
+    );
+  } catch {
+    // Условие не наступило за лимит ожидания — ниже это станет находкой.
+  }
   settleLayout(browser);
   const observed = evaluate(
     browser,

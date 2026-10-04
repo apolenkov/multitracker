@@ -68,11 +68,34 @@ export function batch(
   });
 }
 
+// Общий гейт готовности раскладки для всех геометрических замеров.
+// Только getAnimations недостаточно: замер в контейнере показал окна, где
+// пересчёт раскладки ещё идёт при нуле running-анимаций (хвост transition на
+// ::details-content двигает высоты после конца анимации), плюс поздняя подмена
+// font-display:swap. Ждём: нет running/pending-анимаций на всей странице,
+// document.fonts.status === 'loaded' и неизменная геометрия (высота/ширина
+// документа и позиция точки пробы) два кадра подряд по счётчику rAF.
+// Бюджет — таймаут wait --fn: нестабильная раскладка — громкий сбой, а не
+// молчаливый замер на движущейся странице.
 export function settleLayout(browser: Browser, selector = 'body') {
   browser.run(
     'wait',
     '--fn',
-    `document.querySelector(${JSON.stringify(selector)})?.getAnimations({subtree:true}).every(animation => animation.playState !== 'running' && !animation.pending) === true`,
+    `(() => {
+      const w = window;
+      if (!w.__mtBeat) {
+        w.__mtBeat = { n: 0 };
+        requestAnimationFrame(function tick() { w.__mtBeat.n += 1; requestAnimationFrame(tick); });
+      }
+      const target = document.querySelector(${JSON.stringify(selector)});
+      if (!target || document.fonts.status !== 'loaded') return false;
+      if (!document.body.getAnimations({subtree:true}).every(animation => animation.playState !== 'running' && !animation.pending)) return false;
+      const box = target.getBoundingClientRect();
+      const signature = [document.documentElement.scrollHeight, document.documentElement.scrollWidth, box.top + scrollY, box.left + scrollX].join('|');
+      const s = w.__mtSettle ?? (w.__mtSettle = { signature: '', beat: -1 });
+      if (s.signature !== signature) { s.signature = signature; s.beat = w.__mtBeat.n; return false; }
+      return w.__mtBeat.n - s.beat >= 2;
+    })()`,
   );
 }
 

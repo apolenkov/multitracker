@@ -15,6 +15,7 @@ import type { CdpSend, ScriptCoverage } from './cdp.ts';
 import { fetchSource, fileReports, mergeScripts, newlyCovered } from './coverage.ts';
 import type { FileReport, ScriptSource } from './coverage.ts';
 import { reportChecks, routes, writeReports } from './reports.ts';
+import { routeReady } from './probe.ts';
 import type { Acc } from './reports.ts';
 import { runPartB } from './part-b.ts';
 import type { PartB } from './part-b.ts';
@@ -169,11 +170,7 @@ const openApp = (browser: Browser, base: string, log: RunLog): void => {
   );
   evaluate(browser, installHooksSource);
   const applied: unknown = applyEnv(browser, sweepEnv, 'overview');
-  browser.run(
-    'wait',
-    '--fn',
-    "location.hash === '#overview' && !!document.querySelector('#main h1')",
-  );
+  browser.run('wait', '--fn', routeReady('#overview'));
   log.saveJson('env.json', { base: process.env.MULTITRACKER_UI_URL ?? null, applied });
 };
 

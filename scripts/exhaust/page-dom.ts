@@ -37,6 +37,14 @@ const hashText = (text) => {
   return (h >>> 0).toString(36);
 };
 const settle = () => new Promise((r) => { let done = false; const once = () => { if (!done) { done = true; r(); } }; requestAnimationFrame(() => setTimeout(once, 0)); setTimeout(once, 50); });
+// Опрос условия с бюджетом: уступает поток рендеру, в отличие от busy-wait.
+const waitFor = (fn, ms) => new Promise((resolve) => {
+  const t0 = performance.now();
+  const step = () => (fn() || performance.now() - t0 >= ms ? resolve(fn()) : setTimeout(step, 16));
+  step();
+});
+// hash меняется до коммита раздела; aria-current на его ссылке ставится тем же коммитом.
+const routeCommitted = (hash) => !!document.querySelector('a[href="' + hash + '"][aria-current="page"]');
 const installHooks = () => {
   if (window.__exh) return;
   const bag = { errors: [], warnings: [] };

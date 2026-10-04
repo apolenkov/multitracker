@@ -59,7 +59,7 @@ function semanticState(browser: Browser) {
   );
 }
 function activate(browser: Browser, control: Control, keyboard: boolean) {
-  settleLayout(browser);
+  settleLayout(browser, control.path);
   batch(browser, [
     ['scrollintoview', control.path],
     ...(keyboard

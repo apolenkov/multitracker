@@ -1,4 +1,5 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useEffectEvent, useRef, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import { closeDialog, keepDialogFocus, openDialog } from '../Dialog.tsx';
 import type { Language } from './words.ts';
 import { Icon } from '../Icon.tsx';
@@ -13,33 +14,36 @@ type Props = Readonly<{
 
 export function DemoModal({ id, title, language, onClose, children }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
+  const closeEvent = useEffectEvent(onClose);
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
     const previous = document.activeElement;
     openDialog(dialog.id);
+    // «close» — недискретное событие React: dispatch и setState из onClose ждут
+    // очереди, и повторный клик либо схлопывается в bail (диалог навсегда закрыт
+    // при open:true), либо устаревшее закрытие коммитится после открытия и
+    // размонтирует свежий диалог. Свой слушатель коммитит размонт синхронно
+    // внутри задачи close; если родитель оставил компонент смонтированным,
+    // диалог открывается заново — пока модальное место не занял другой диалог.
+    const closed = () => {
+      flushSync(() => closeEvent());
+      const dialog = ref.current;
+      if (dialog && !dialog.open && !document.querySelector('dialog[open]')) openDialog(dialog.id);
+    };
+    dialog.addEventListener('close', closed);
     return () => {
+      dialog.removeEventListener('close', closed);
       if (dialog.open) dialog.close();
       restoreFocus(previous);
     };
   }, []);
-  // Пока DemoModal смонтирован, его dialog обязан быть открыт: быстрая пара
-  // «Escape → повторный клик» схлопывается React в один коммит без перемонта,
-  // и тогда эффект монтирования не сработает — диалог остался бы закрытым
-  // при open:true, а открыватель стал бы мёртвым.
-  useEffect(() => {
-    const dialog = ref.current;
-    if (dialog && !dialog.open) openDialog(dialog.id);
-  });
   return (
     <dialog
       id={id}
       ref={ref}
       className="demo-dialog"
       aria-labelledby={`${id}-title`}
-      onClose={(event) => {
-        if (!event.currentTarget.open) onClose();
-      }}
       onKeyDown={keepDialogFocus}
     >
       <div className="dialog-heading">

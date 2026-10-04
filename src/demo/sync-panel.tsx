@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import { SyncConflict } from './sync-conflict';
 import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
@@ -220,7 +220,7 @@ function SyncConflictArea({
   language: 'ru' | 'en';
   t: SyncWords;
   conflict: ConflictState;
-  update: (value: ConflictState) => void;
+  update: Dispatch<SetStateAction<ConflictState>>;
   confirm: (version: Version) => void;
 }>) {
   return (
@@ -234,7 +234,7 @@ function SyncConflictArea({
         <SyncConflict
           language={language}
           t={t}
-          close={() => update({ ...conflict, open: false })}
+          close={() => update((current) => ({ ...current, open: false }))}
           confirm={confirm}
         />
       )}

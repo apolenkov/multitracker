@@ -42,19 +42,46 @@ await test('внутристраничный обход ждёт коммит р
   assert.ok(sweepSource.includes('settleAfter'), 'поздний коммит не теряет «opened»');
 });
 
-await test('DemoModal перевыставляет open после каждого коммита, не только при монте', () => {
+await test('DemoModal коммитит закрытие внутри задачи события close', () => {
   const src = readFileSync('src/demo/modal.tsx', 'utf8');
-  // Схлопнутое React-пакетом «Escape → повторное открытие» не перемонтирует
-  // компонент: эффект монтирования не перезапускается, и без второго вызова
-  // openDialog диалог остался бы закрытым при open:true навсегда.
+  // «close» — недискретное событие: React откладывает и dispatch onClose,
+  // и setState из него. Собственный слушатель с flushSync коммитит размонт
+  // внутри задачи события — иначе повторный клик схлопывается в bail либо
+  // устаревшее закрытие убивает свежий диалог.
   assert.ok(
-    (src.match(/openDialog\(/g) ?? []).length >= 2,
-    'нужен вызов openDialog вне эффекта монтирования',
+    src.includes(`dialog.addEventListener('close', closed)`),
+    'нужен собственный слушатель close, а не отложенный React onClose',
+  );
+  assert.ok(src.includes('flushSync('), 'слушатель обязан коммитить синхронно');
+  assert.ok(
+    src.indexOf(`dialog.removeEventListener('close', closed)`) <
+      src.indexOf('if (dialog.open) dialog.close()'),
+    'cleanup размонта снимает слушатель до dialog.close() — без flushSync из размонта',
+  );
+});
+
+await test('схлопнутый батч «закрыть и открыть» возвращает диалог через openDialog', () => {
+  const src = readFileSync('src/demo/modal.tsx', 'utf8');
+  // Если состояние родителя оставило DemoModal смонтированным (батч до того же
+  // значения без коммита), слушатель close обязан заново открыть диалог —
+  // но не тогда, когда модальное место уже занял другой диалог.
+  assert.match(
+    src,
+    /if \(dialog && !dialog\.open && !document\.querySelector\('dialog\[open\]'\)\)\s*openDialog\(dialog\.id\)/,
+    'нужен охраняемый openDialog после синхронного коммита закрытия',
+  );
+});
+
+await test('escapeDialog ждёт возврат фокуса условием, а не разовым снимком', () => {
+  const src = readFileSync('scripts/ui-smoke-dialogs.ts', 'utf8');
+  // После Escape размонт и restoreFocus — отдельный коммит; разовый evaluate
+  // снимает состояние до коммита и на медленном хосте даёт ложную находку.
+  assert.ok(
+    /escapeDialog[\s\S]*?'wait'/.test(src),
+    'после Escape нужно ждать closed и возврат фокуса на открыватель',
   );
   assert.ok(
-    /useEffect\(\(\) => \{\s*const dialog = ref\.current;\s*if \(dialog && !dialog\.open\) openDialog\(dialog\.id\);\s*\}\);/.test(
-      src,
-    ),
-    'эффект без зависимостей обязан заново открывать закрытый dialog',
+    src.includes('document.activeElement === document.querySelector('),
+    'ожидание обязано включать возврат фокуса на открыватель',
   );
 });

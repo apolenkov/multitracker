@@ -104,7 +104,7 @@ function race(browser: Browser, dialog: string, first: string, second: string, p
   escape(browser, dialog);
 }
 
-function closePathsIn(browser: Browser, width: number, lang: Lang) {
+export function closePathsIn(browser: Browser, width: number, lang: Lang) {
   env(browser, 'sync', width, lang);
   const ways = Object.entries(triggers).map(([way, trigger]) =>
     closeCycle(browser, way, () => trigger(browser)),

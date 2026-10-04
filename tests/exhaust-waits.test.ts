@@ -42,3 +42,19 @@ await test('внутристраничный обход ждёт коммит р
   assert.ok(sweepSource.includes('settleAfter'), 'поздний коммит не теряет «opened»');
 });
 
+await test('DemoModal перевыставляет open после каждого коммита, не только при монте', () => {
+  const src = readFileSync('src/demo/modal.tsx', 'utf8');
+  // Схлопнутое React-пакетом «Escape → повторное открытие» не перемонтирует
+  // компонент: эффект монтирования не перезапускается, и без второго вызова
+  // openDialog диалог остался бы закрытым при open:true навсегда.
+  assert.ok(
+    (src.match(/openDialog\(/g) ?? []).length >= 2,
+    'нужен вызов openDialog вне эффекта монтирования',
+  );
+  assert.ok(
+    /useEffect\(\(\) => \{\s*const dialog = ref\.current;\s*if \(dialog && !dialog\.open\) openDialog\(dialog\.id\);\s*\}\);/.test(
+      src,
+    ),
+    'эффект без зависимостей обязан заново открывать закрытый dialog',
+  );
+});

@@ -23,6 +23,14 @@ export function DemoModal({ id, title, language, onClose, children }: Props) {
       restoreFocus(previous);
     };
   }, []);
+  // Пока DemoModal смонтирован, его dialog обязан быть открыт: быстрая пара
+  // «Escape → повторный клик» схлопывается React в один коммит без перемонта,
+  // и тогда эффект монтирования не сработает — диалог остался бы закрытым
+  // при open:true, а открыватель стал бы мёртвым.
+  useEffect(() => {
+    const dialog = ref.current;
+    if (dialog && !dialog.open) openDialog(dialog.id);
+  });
   return (
     <dialog
       id={id}

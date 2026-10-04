@@ -89,7 +89,13 @@ function closeCycle(browser: Browser, way: string, trigger: () => void) {
 
 // Событие close ставится в очередь: клик до его задачи не должен умирать
 // вместе с устаревшим закрытием — свежее открытие остаётся открытым.
-function race(browser: Browser, dialog: string, first: string, second: string, proof: string) {
+export function race(
+  browser: Browser,
+  dialog: string,
+  first: string,
+  second: string,
+  proof: string,
+) {
   openVia(browser, first, dialog);
   evaluate(
     browser,

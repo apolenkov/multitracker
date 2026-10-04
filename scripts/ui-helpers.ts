@@ -92,6 +92,7 @@ function boxes(browser: Browser): Boxes {
 
 // Действие не должно сдвигать ни один существующий элемент больше чем на 2 px.
 export function layoutShift(browser: Browser, act: () => void, label: string) {
+  settleLayout(browser);
   const before = boxes(browser);
   const scroll = evaluate(browser, 'scrollY');
   assert.ok(typeof scroll === 'number', `${label}: scrollY не прочитан`);

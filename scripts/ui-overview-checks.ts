@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import type { Browser } from './ui-driver.ts';
 import { content, go, prepare, truth } from './ui-helpers.ts';
-import { evaluate } from './ui-driver.ts';
+import { evaluate, settleLayout } from './ui-driver.ts';
 
 export function stableHeroDisclosure(browser: Browser) {
   prepare(browser);
@@ -10,6 +10,7 @@ export function stableHeroDisclosure(browser: Browser) {
   const result = '.balance-panel .summary-result';
   const disclosure = '.balance-panel .chart-disclosure';
   const geometry = `({summaryHeight:document.querySelector(${JSON.stringify(summary)}).getBoundingClientRect().height,resultTop:document.querySelector(${JSON.stringify(result)}).getBoundingClientRect().top})`;
+  settleLayout(browser, summary);
   const before = evaluate(browser, geometry);
   browser.run('click', `${disclosure} > summary`);
   browser.run(

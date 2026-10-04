@@ -21,8 +21,9 @@ function temporaryStyle(css: string) {
   return 'Isolated historical CSS; application files unchanged';
 }
 function measure(browser: Browser, state: State, selector: string, label: string) {
-  settleLayout(browser);
+  settleLayout(browser, selector);
   browser.run('scrollintoview', selector);
+  settleLayout(browser, selector);
   const before = positionState(browser, selector);
   browser.run('click', selector);
   settleLayout(browser);

@@ -96,10 +96,10 @@ await test('повторное открытие монтирует свежий 
   // устаревший close приходит к снятому элементу.
   assert.match(
     src,
-    /openNonce: current\.openNonce \+ 1/,
-    'открытие обязано увеличивать nonce в состоянии конфликта',
+    /setOpenNonce\(\(n\) => n \+ 1\)/,
+    'открытие обязано увеличивать nonce перемонтирования',
   );
-  assert.ok(src.includes('key={conflict.openNonce}'), 'SyncConflict перемонтируется по nonce');
+  assert.ok(src.includes('key={openNonce}'), 'SyncConflict перемонтируется по nonce');
 });
 
 await test('escapeDialog ждёт возврат фокуса условием, а не разовым снимком', () => {

@@ -5,7 +5,7 @@ import type { ConnectionProps } from './connection-text';
 import { RowNotice, undoneText } from '../RowActions.tsx';
 import { focusMain } from '../navigation.ts';
 
-type ConflictState = Readonly<{ open: boolean; selected: Version | null; openNonce: number }>;
+type ConflictState = Readonly<{ open: boolean; selected: Version | null }>;
 
 export function SyncPanel({ language, notify }: ConnectionProps) {
   const t = language === 'ru' ? syncText.ru : syncText.en;
@@ -13,18 +13,14 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
   const [simulateError, setSimulateError] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [lastSync, setLastSync] = useState<string | null>(null);
-  const [conflict, setConflict] = useState<ConflictState>({
-    open: false,
-    selected: null,
-    openNonce: 0,
-  });
+  const [conflict, setConflict] = useState<ConflictState>({ open: false, selected: null });
   const run = (error: boolean) => {
     setStatus(error ? 'error' : 'success');
     if (!error) setLastSync('2026-09-30 10:30 UTC');
     notify(error ? t.error : t.success);
   };
   const confirm = (version: Version) => {
-    setConflict((current) => ({ ...current, open: false, selected: version }));
+    setConflict({ open: false, selected: version });
     notify(t.resolved);
   };
   return (
@@ -227,18 +223,20 @@ function SyncConflictArea({
   update: Dispatch<SetStateAction<ConflictState>>;
   confirm: (version: Version) => void;
 }>) {
+  const [openNonce, setOpenNonce] = useState(0);
   return (
     <>
       <ConflictSummary
         t={t}
         selected={conflict.selected}
-        open={() =>
-          update((current) => ({ ...current, open: true, openNonce: current.openNonce + 1 }))
-        }
+        open={() => {
+          setOpenNonce((n) => n + 1);
+          update((current) => ({ ...current, open: true }));
+        }}
       />
       {conflict.open && (
         <SyncConflict
-          key={conflict.openNonce}
+          key={openNonce}
           language={language}
           t={t}
           close={() => update((current) => ({ ...current, open: false }))}

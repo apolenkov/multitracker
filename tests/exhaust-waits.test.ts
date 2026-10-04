@@ -72,6 +72,36 @@ await test('схлопнутый батч «закрыть и открыть» �
   );
 });
 
+await test('монтирование dialog не отнимает отбивку у последней секции панели', () => {
+  const src = readFileSync('src/demo.css', 'utf8');
+  // <dialog> монтируется последним ребёнком .sync-panel: селектор :last-child
+  // снимал бы margin/padding/border секции при каждом открытии — страница
+  // прыгает на ~52px и повторный клик летит в соседний элемент.
+  assert.match(
+    src,
+    /\.sync-panel > section\.sync-actions:last-of-type/,
+    'отбивка секции конфликта не должна зависеть от позиции смонтированного dialog',
+  );
+  assert.ok(
+    !/\.sync-panel > \.sync-actions:last-child/.test(src),
+    'dialog — последний ребёнок панели, :last-child теряет отбивку',
+  );
+});
+
+await test('повторное открытие монтирует свежий диалог (nonce в key)', () => {
+  const src = readFileSync('src/demo/sync-panel.tsx', 'utf8');
+  // Событие close ставится в очередь: повторный клик до его задачи менял бы
+  // open на true на том же смонтированном диалоге, а устаревшее событие
+  // размонтировало бы его. Перемонтирование по nonce гарантирует, что
+  // устаревший close приходит к снятому элементу.
+  assert.match(
+    src,
+    /openNonce: current\.openNonce \+ 1/,
+    'открытие обязано увеличивать nonce в состоянии конфликта',
+  );
+  assert.ok(src.includes('key={conflict.openNonce}'), 'SyncConflict перемонтируется по nonce');
+});
+
 await test('escapeDialog ждёт возврат фокуса условием, а не разовым снимком', () => {
   const src = readFileSync('scripts/ui-smoke-dialogs.ts', 'utf8');
   // После Escape размонт и restoreFocus — отдельный коммит; разовый evaluate

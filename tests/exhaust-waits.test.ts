@@ -83,7 +83,7 @@ await test('монтирование dialog не отнимает отбивку
     'отбивка секции конфликта не должна зависеть от позиции смонтированного dialog',
   );
   assert.ok(
-    !/\.sync-panel > \.sync-actions:last-child/.test(src),
+    !src.includes('.sync-panel > .sync-actions:last-child'),
     'dialog — последний ребёнок панели, :last-child теряет отбивку',
   );
 });

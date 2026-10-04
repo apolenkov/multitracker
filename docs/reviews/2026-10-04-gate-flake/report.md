@@ -288,20 +288,26 @@ same-task сценарий давал `dom:-dialog` без нового `dom:+di
 | --- | --- |
 | Геометрия `closed → open → closed` | `docH 1158`, `oTop 843`, `oMid 865` — идентично во всех трёх состояниях (до исправления: `1105↔1158`) |
 | Цикл open → Escape → повторный `click` (trusted input), 6 прогонов | `reopened=true` во всех 6; `pointerdown` попадает в `BUTTON.quiet` по y=865 (до исправления: устаревший y=607 → `H2`) |
-| Same-task `close()` + `.click()` (гонка п.4), 3 прогона | `final {exists:true, open:true}` во всех 3; устаревшее `close` приходит к снятому элементу |
+| Same-task `close()` + `.click()` (гонка п.4) | `final {exists:true, open:true}` (3/3 на первом варианте nonce, 1/1 на финальном); устаревшее `close` приходит к снятому элементу |
 
-### Обязательная проверка раунда 2 (форма координатора)
+### Обязательная проверка раунда 2 (форма координатора, финальный код `293e968`)
 
 | Проверка | Результат |
 | --- | --- |
-| `npm run format` | НЕ ПРОВЕРЕНО — прогон в работе |
-| `npm run lint` | НЕ ПРОВЕРЕНО |
-| `npm run typecheck` | НЕ ПРОВЕРЕНО |
-| `npm run complexity` | НЕ ПРОВЕРЕНО |
-| `npm test` | НЕ ПРОВЕРЕНО |
-| `scripts/ui-docker.sh <fresh dist> ui-smoke.ts` × 3 подряд | НЕ ПРОВЕРЕНО |
-| `check-ui.ts` | НЕ ПРОВЕРЕНО |
-| `npm run test:ui:exhaust` × 2 | НЕ ПРОВЕРЕНО |
+| `npm run format` | зелёный: все файлы без изменений |
+| `npm run lint` | зелёный (eslint + oxlint, 0 warnings) |
+| `npm run typecheck` | зелёный |
+| `npm run complexity` | зелёный |
+| `npm test` | 99/99, включая 2 новых поведенческих |
+| `ui-docker.sh /private/tmp/mt-gf-dist ui-smoke.ts` ×3 подряд | 3/3 EXIT=0, `failureClasses {}`, `failed:0`; 326.6/323.9/322.1 с; `sync-1440-light` и `sync-375-light` — 0 находок во всех прогонах |
+| `ui-docker.sh … check-ui.ts` | 54/54 PASS, 0 FAIL |
+| `npm run test:ui:exhaust` ×2 | 2/2 EXIT=0; `elementLedger` и `codeLedger` `ok:true`, `missing:[]`; доля пропусков 0.386/0.387 < 0.4 |
+
+Промежуточный прогон exhaust на варианте с `openNonce` внутри
+`ConflictState` падал на `codeLedger.missing = onClick@81`: поле состояния
+добавляло 4 строки выше опечатанной сигнатуры `onClick@77` (обработчик
+повтора, заведомо не покрываемый перебором). Nonce перенесён ниже — в
+`SyncConflictArea`; сигнатура осталась на месте, книга не тронута.
 
 ## Не проверено
 

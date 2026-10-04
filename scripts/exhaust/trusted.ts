@@ -64,8 +64,10 @@ const restore = (browser: Browser, kind: TrustKind, before: PageState, after: Pa
   if (kind === 'nav' && after.hash !== before.hash) {
     evaluate(browser, `location.hash = ${JSON.stringify(before.hash)}; true`);
     // Ждём закоммиченный раздел: hash приходит раньше DOM-патча React,
-    // иначе следующий клик попадает в предыдущий раздел.
-    if (before.hash !== '') browser.run('wait', '--fn', routeReady(before.hash));
+    // иначе следующий клик попадает в предыдущий раздел. Пустой hash —
+    // стартовое состояние: parseScreen('') даёт overview, и replaceState
+    // навигации доводит адрес до '#overview'.
+    browser.run('wait', '--fn', routeReady(before.hash === '' ? '#overview' : before.hash));
   }
 };
 

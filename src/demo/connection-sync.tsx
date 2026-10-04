@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DemoModal } from './modal';
+import { useModalSession } from './modal-session';
 import { ConnectionForm } from './connection-form';
 import { demoState } from '../model/portfolio';
 import { accountLabel } from '../forms/accounts';
@@ -19,11 +20,12 @@ export { SyncPanel } from './sync-panel';
 export function ConnectionsPanel({ language, notify }: ConnectionProps) {
   const t = language === 'ru' ? connectionText.ru : connectionText.en;
   const localeProps = { language, t };
-  const { configured, dropped, editing, setEditing, save, disconnect, restore } = useConnections(
+  const { configured, dropped, modal, save, disconnect, restore } = useConnections(
     language,
     t,
     notify,
   );
+  const editing = modal.current;
   return (
     <div className="demo-panel connection-list">
       {providers.map((provider) => (
@@ -33,19 +35,20 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
           {...localeProps}
           value={dropped.get(provider) ?? configured.find((item) => item.provider === provider)}
           dropped={dropped.has(provider)}
-          edit={() => setEditing(provider)}
+          edit={() => modal.open(provider)}
           remove={disconnect}
           restore={() => restore(provider)}
         />
       ))}
       <ConnectionPrivacy language={language} t={t} />
-      {editing !== null && (
+      {editing && (
         <EditConnection
+          key={editing.nonce}
           {...localeProps}
-          provider={editing}
-          initial={configured.find((item) => item.provider === editing)}
+          provider={editing.kind}
+          initial={configured.find((item) => item.provider === editing.kind)}
           save={save}
-          close={() => setEditing(null)}
+          close={modal.close}
         />
       )}
     </div>
@@ -59,10 +62,10 @@ function useConnections(
 ) {
   const [configured, setConfigured] = useState<readonly Connection[]>([]);
   const [dropped, setDropped] = useState<ReadonlyMap<string, Connection>>(new Map());
-  const [editing, setEditing] = useState<string | null>(null);
+  const modal = useModalSession<string>();
   const save = (value: Connection) => {
     setConfigured([...configured.filter((item) => item.provider !== value.provider), value]);
-    setEditing(null);
+    modal.close();
     notify(t.saved);
   };
   // Отключение сразу: строка остаётся под встроенным «Отменить», которое возвращает настройки.
@@ -78,7 +81,7 @@ function useConnections(
     notify(undoneText(language));
     focusMain({ preventScroll: true });
   };
-  return { configured, dropped, editing, setEditing, save, disconnect, restore };
+  return { configured, dropped, modal, save, disconnect, restore };
 }
 function ConnectionPrivacy({
   language,

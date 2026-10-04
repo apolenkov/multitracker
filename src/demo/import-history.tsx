@@ -3,6 +3,7 @@ import type { ImportLanguage } from './import-model';
 import { importText } from './import-model';
 import { ImportSample } from './import-fields';
 import { DemoModal } from './modal';
+import { useModalSession } from './modal-session';
 import { closeDialog } from '../Dialog';
 import { RowNotice, undoneText } from '../RowActions.tsx';
 import { focusMain } from '../navigation.ts';
@@ -12,9 +13,9 @@ type HistoryProps = Readonly<{
   hidden: boolean;
   notify: (message: string) => void;
 }>;
-type HistoryDialog = 'details' | 'reconcile' | null;
+type HistoryDialog = 'details' | 'reconcile';
 export function ImportHistory({ language, hidden, notify }: HistoryProps) {
-  const [dialog, setDialog] = useState<HistoryDialog>(null);
+  const modal = useModalSession<HistoryDialog>();
   const [undone, setUndone] = useState(false);
   const title = importText(language, 'История импорта', 'Import history');
   // Отмена импорта выполняется сразу; запись остаётся под встроенным «Отменить» на месте.
@@ -40,17 +41,18 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
       <HistoryEntry
         language={language}
         undone={undone}
-        open={setDialog}
+        open={modal.open}
         onRestore={restoreImport}
       />
-      {dialog && (
+      {modal.current && (
         <DemoModal
+          key={modal.current.nonce}
           id="import-history"
           title={title}
           language={language}
-          onClose={() => setDialog(null)}
+          onClose={modal.close}
         >
-          {dialog === 'details' ? (
+          {modal.current.kind === 'details' ? (
             <HistoryDetails language={language} hidden={hidden} onUndo={undoImport} />
           ) : (
             <Reconciliation language={language} hidden={hidden} notify={notify} />

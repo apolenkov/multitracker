@@ -1,11 +1,10 @@
-import { useState, type Dispatch, type SetStateAction } from 'react';
+import { useState } from 'react';
 import { SyncConflict } from './sync-conflict';
 import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
+import { useModalSession, type ModalControl } from './modal-session';
 import { RowNotice, undoneText } from '../RowActions.tsx';
 import { focusMain } from '../navigation.ts';
-
-type ConflictState = Readonly<{ open: boolean; selected: Version | null }>;
 
 export function SyncPanel({ language, notify }: ConnectionProps) {
   const t = language === 'ru' ? syncText.ru : syncText.en;
@@ -13,14 +12,16 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
   const [simulateError, setSimulateError] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [lastSync, setLastSync] = useState<string | null>(null);
-  const [conflict, setConflict] = useState<ConflictState>({ open: false, selected: null });
+  const [selected, setSelected] = useState<Version | null>(null);
+  const modal = useModalSession<'conflict'>();
   const run = (error: boolean) => {
     setStatus(error ? 'error' : 'success');
     if (!error) setLastSync('2026-09-30 10:30 UTC');
     notify(error ? t.error : t.success);
   };
   const confirm = (version: Version) => {
-    setConflict({ open: false, selected: version });
+    setSelected(version);
+    modal.close();
     notify(t.resolved);
   };
   return (
@@ -46,8 +47,8 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
       <SyncConflictArea
         language={language}
         t={t}
-        conflict={conflict}
-        update={setConflict}
+        selected={selected}
+        modal={modal}
         confirm={confirm}
       />
     </div>
@@ -213,33 +214,25 @@ function ConflictSummary({
 function SyncConflictArea({
   language,
   t,
-  conflict,
-  update,
+  selected,
+  modal,
   confirm,
 }: Readonly<{
   language: 'ru' | 'en';
   t: SyncWords;
-  conflict: ConflictState;
-  update: Dispatch<SetStateAction<ConflictState>>;
+  selected: Version | null;
+  modal: ModalControl<'conflict'>;
   confirm: (version: Version) => void;
 }>) {
-  const [openNonce, setOpenNonce] = useState(0);
   return (
     <>
-      <ConflictSummary
-        t={t}
-        selected={conflict.selected}
-        open={() => {
-          setOpenNonce((n) => n + 1);
-          update((current) => ({ ...current, open: true }));
-        }}
-      />
-      {conflict.open && (
+      <ConflictSummary t={t} selected={selected} open={() => modal.open('conflict')} />
+      {modal.current && (
         <SyncConflict
-          key={openNonce}
+          key={modal.current.nonce}
           language={language}
           t={t}
-          close={() => update((current) => ({ ...current, open: false }))}
+          close={modal.close}
           confirm={confirm}
         />
       )}

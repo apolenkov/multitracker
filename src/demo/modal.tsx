@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useRef, type ReactNode } from 'react';
+import { useEffect, useEffectEvent, useRef, type ReactNode, type Ref } from 'react';
 import { flushSync } from 'react-dom';
 import { closeDialog, keepDialogFocus, openDialog } from '../Dialog.tsx';
 import type { Language } from './words.ts';
@@ -15,29 +15,54 @@ type Props = Readonly<{
 export function DemoModal({ id, title, language, onClose, children }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const closeEvent = useEffectEvent(onClose);
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    const previous = document.activeElement;
-    openDialog(dialog.id);
-    // «close» — недискретное событие React: dispatch и setState из onClose ждут
-    // очереди, и повторный клик либо схлопывается в bail (диалог навсегда закрыт
-    // при open:true), либо устаревшее закрытие коммитится после открытия и
-    // размонтирует свежий диалог. Свой слушатель коммитит размонт синхронно
-    // внутри задачи close; если родитель оставил компонент смонтированным,
-    // диалог открывается заново — пока модальное место не занял другой диалог.
-    const closed = () => {
-      flushSync(() => closeEvent());
-      const dialog = ref.current;
-      if (dialog && !dialog.open && !document.querySelector('dialog[open]')) openDialog(dialog.id);
-    };
-    dialog.addEventListener('close', closed);
-    return () => {
-      dialog.removeEventListener('close', closed);
-      if (dialog.open) dialog.close();
-      restoreFocus(previous);
-    };
-  }, []);
+  useEffect(() => dialogSession(ref.current, closeEvent), []);
+  return (
+    <ModalDialog id={id} title={title} language={language} ref={ref}>
+      {children}
+    </ModalDialog>
+  );
+}
+
+/**
+ * Жизненный цикл смонтированного dialog: открытие, задача события close,
+ * размонт. «close» — недискретное событие React: dispatch и setState из
+ * onClose ждут очереди, и повторный клик либо схлопывается в bail (диалог
+ * навсегда закрыт при open:true), либо устаревшее закрытие коммитится после
+ * открытия и размонтирует свежий диалог. Свой слушатель коммитит размонт
+ * синхронно внутри задачи close; событие, дошедшее до уже переоткрытого
+ * элемента, устарело и пропускается. Перевыставлять showModal по
+ * смонтированности нельзя: закрытие пользователя обязано заканчиваться
+ * закрытым диалогом при любом onClose родителя — иначе no-op ловит пользователя.
+ */
+function dialogSession(dialog: HTMLDialogElement | null, closeEvent: () => void) {
+  if (!dialog) return;
+  const previous = document.activeElement;
+  openDialog(dialog.id);
+  const closed = () => {
+    if (dialog.open) return;
+    flushSync(() => closeEvent());
+  };
+  // Щелчок по подложке (target — сам dialog) — путь закрытия как у Escape/X.
+  const dismiss = (event: MouseEvent) => {
+    if (event.target === dialog) dialog.close();
+  };
+  dialog.addEventListener('close', closed);
+  dialog.addEventListener('click', dismiss);
+  return () => {
+    dialog.removeEventListener('close', closed);
+    dialog.removeEventListener('click', dismiss);
+    if (dialog.open) dialog.close();
+    restoreFocus(previous);
+  };
+}
+
+function ModalDialog({
+  id,
+  title,
+  language,
+  ref,
+  children,
+}: Readonly<Omit<Props, 'onClose'> & { ref: Ref<HTMLDialogElement> }>) {
   return (
     <dialog
       id={id}

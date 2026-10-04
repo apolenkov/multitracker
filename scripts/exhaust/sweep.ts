@@ -15,7 +15,7 @@ import { asArray, asText, isRecord } from './guards.ts';
 import type { RegistryInput } from './registry.ts';
 import { hitClicks, joinSeen, openersOf } from './journal.ts';
 import type { PageState } from './probe.ts';
-import { stateOf } from './probe.ts';
+import { routeReady, stateOf } from './probe.ts';
 import { trustedSample } from './trusted.ts';
 import { runJob } from './job.ts';
 
@@ -29,11 +29,7 @@ export const navClick = (
 ): ClickRecord => {
   const started = Date.now();
   browser.run('click', `.desktop-links a[href="#${route}"]`);
-  browser.run(
-    'wait',
-    '--fn',
-    `location.hash === '#${route}' && !!document.querySelector('#main h1')`,
-  );
+  browser.run('wait', '--fn', routeReady(`#${route}`));
   const after = stateOf(browser);
   return record(
     seq,
@@ -118,8 +114,9 @@ const sweepStep = (browser: Browser, acc: readonly Chunk[], round: number): read
 
 const sweepAll = (browser: Browser): SweepOutcome => mergeChunks(sweepStep(browser, [], 0));
 
-const rescue = (browser: Browser, outcome: SweepOutcome): Chunk =>
-  parseChunk(
+const rescue = (browser: Browser, outcome: SweepOutcome, route: string): Chunk => {
+  browser.run('wait', '--fn', routeReady(`#${route}`));
+  return parseChunk(
     runJob(browser, sweepSource, {
       done: outcome.done,
       openers: openersOf(outcome.hits),
@@ -128,6 +125,13 @@ const rescue = (browser: Browser, outcome: SweepOutcome): Chunk =>
       finalize: true,
     }),
   );
+};
+
+/** Перечисление только на закоммиченном разделе: восстановление тоже асинхронно. */
+const enumerateAt = (browser: Browser, route: string): readonly Enumerated[] => {
+  browser.run('wait', '--fn', routeReady(`#${route}`));
+  return parseEnumerate(evaluate(browser, enumerateSource));
+};
 
 const mergeEnumerated = (
   first: readonly Enumerated[],
@@ -152,10 +156,10 @@ export type Visit = Readonly<{
 export const visitRoute = (browser: Browser, route: string, seq: number, env: Env): Visit => {
   const nav = navClick(browser, stateOf(browser), route, seq, env);
   restState(browser);
-  const first = parseEnumerate(evaluate(browser, enumerateSource));
+  const first = enumerateAt(browser, route);
   const sweep = sweepAll(browser);
-  const extra = rescue(browser, sweep);
-  const last = parseEnumerate(evaluate(browser, enumerateSource));
+  const extra = rescue(browser, sweep, route);
+  const last = enumerateAt(browser, route);
   const hits = [...sweep.hits, ...extra.hits];
   const seen = joinSeen(route, mergeEnumerated(first, last), hits);
   const count = hits.filter((hit) => hit.skipped === '').length;

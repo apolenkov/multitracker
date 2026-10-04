@@ -1,5 +1,6 @@
 import { settleLayout, type Browser } from './ui-driver.ts';
 import { query, record, type Control, type State } from './ui-smoke-dom.ts';
+import { routeReady } from './exhaust/probe.ts';
 
 export function currentControl(browser: Browser, control: Control): Control {
   const observed = query(
@@ -32,7 +33,7 @@ export function restoreNavigation(
     browser.run(
       'wait',
       '--fn',
-      `location.hash === ${JSON.stringify('#' + state.route)} && document.activeElement?.id === 'main'`,
+      `${routeReady('#' + state.route)} && document.activeElement?.id === 'main'`,
     );
     ancestors.forEach((path) => {
       if (query(browser, path, 'element?.parentElement?.open') === false) {

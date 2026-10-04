@@ -51,6 +51,15 @@ const closeAll = async () => { for (const d of openDialogs()) d.close(); await s
 `;
 
 const clickPath = String.raw`
+const settleAfter = async (before) => {
+  const now = semanticState();
+  if (now.own !== before.own) return now;
+  // Клик выглядит инертным: на медленном хосте коммит React мог не долететь
+  // за один кадр. Дожидаемся изменения, иначе «opened» теряется навсегда —
+  // содержимое диалога остаётся необходимым для реестра.
+  const changed = await waitFor(() => semanticState().own !== before.own, 150);
+  return changed ? semanticState() : now;
+};
 const clickPath = async (el, purpose, fastInv) => {
   const p = pathOf(el);
   const host = el.closest('dialog')?.id ?? '';
@@ -59,7 +68,7 @@ const clickPath = async (el, purpose, fastInv) => {
   const t0 = performance.now();
   activate(el);
   await settle();
-  const after = semanticState();
+  const after = await settleAfter(before);
   // DOM каждого нового состояния — доказательство прогона (states/<хеш>.html).
   if (!(after.own in doms)) doms[after.own] = (document.querySelector('dialog[open]') ?? document.querySelector('#main') ?? document.body).outerHTML;
   const log = drainLog();
@@ -77,7 +86,9 @@ const clickPath = async (el, purpose, fastInv) => {
   if (log.w.length) rec.warn = log.w;
   // Возврат явным адресом: шаг назад по истории асинхронен и при частых переходах
   // уходит за пределы документа, вместе со страницей пропадает слот задания.
-  if (after.hash !== before.hash) { location.hash = before.hash; await settle(); }
+  // Восстановление маршрута: ждём коммит раздела (aria-current), иначе
+  // следующие кандидаты обхода снимаются с DOM предыдущего раздела.
+  if (after.hash !== before.hash) { location.hash = before.hash; await waitFor(() => routeCommitted(before.hash), 500); await settle(); }
   return rec;
 };
 `;
@@ -107,7 +118,9 @@ const reopen = async (records, fastInv) => {
   if (!dlg) return false;
   const el = document.querySelector(openers[dlg]);
   if (el) records.push(await clickPath(el, 'reopen', fastInv));
-  if (!el || !openDialogs().some((d) => d.id === dlg)) failed.add(dlg);
+  // Диалог монтируется следующим коммитом: вердикт «недоступен» только
+  // после короткого ожидания условия, а не по снимку одного кадра.
+  if (!el || !(await waitFor(() => openDialogs().some((d) => d.id === dlg), 600))) failed.add(dlg);
   return true;
 };
 `;

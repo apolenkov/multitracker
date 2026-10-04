@@ -9,6 +9,7 @@ import { negativeControls } from './ui-smoke-negative.ts';
 import { rowActionGeometry } from './ui-smoke-row-actions.ts';
 import { merge } from './ui-smoke-dom.ts';
 import { initialSkipFocus } from './ui-overview-checks.ts';
+import { routeReady } from './exhaust/probe.ts';
 
 const routes = ['overview', 'portfolios', 'history', 'import', 'connections', 'sync', 'settings'];
 const regular = [1440, 375].flatMap((width) =>
@@ -39,7 +40,8 @@ function navigate(state: State) {
     browser.run('find', 'role', 'button', 'click', '--name', 'Ещё', '--exact');
   const scope = state.width >= 768 ? '.desktop-links' : extraRoute ? '.more-menu' : '.mobile-links';
   browser.run('click', `${scope} a[href="#${state.route}"]`);
-  browser.run('wait', '--fn', `location.hash === ${JSON.stringify('#' + state.route)}`);
+  // hash приходит раньше коммита раздела: ждём aria-current той же пачки React.
+  browser.run('wait', '--fn', routeReady(`#${state.route}`));
 }
 
 function stateCheck(state: State, shared: readonly string[]): Outcome {

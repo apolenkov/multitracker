@@ -39,7 +39,7 @@ const applySource = `async (env) => {
   if (location.hash !== '#' + env.route) location.hash = '#' + env.route;
   await until(() => location.hash === '#' + env.route, 240);
   await until(
-    () => document.querySelector('#main h1') && document.getAnimations({ subtree: true }).every((a) => a.playState !== 'running'),
+    () => document.querySelector('a[href="#' + env.route + '"][aria-current="page"]') && document.getAnimations({ subtree: true }).every((a) => a.playState !== 'running'),
     240,
   );
   return { applied: out.filter((s) => s !== 'ok' && s !== 'same'), hash: location.hash };
@@ -67,7 +67,7 @@ export const gotoRoute = (browser: Browser, route: string) =>
         spin(left);
       });
       if (location.hash !== ${JSON.stringify('#')} + ${JSON.stringify(route)}) location.hash = '#' + ${JSON.stringify(route)};
-      await until(() => document.querySelector('#main h1'), 240);
+      await until(() => document.querySelector('a[href="#' + ${JSON.stringify(route)} + '"][aria-current="page"]'), 240);
       await until(() => document.getAnimations({ subtree: true }).every((a) => a.playState !== 'running'), 240);
       return location.hash;
     })()`,

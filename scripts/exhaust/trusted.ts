@@ -6,7 +6,7 @@ import { record } from './records.ts';
 import type { ClickRecord, ClickSkip } from './records.ts';
 import { domHelpers } from './page-dom.ts';
 import type { PageState } from './probe.ts';
-import { stateOf } from './probe.ts';
+import { routeReady, stateOf } from './probe.ts';
 import type { SweepHit } from './page-rows.ts';
 import { signatureFor } from './journal.ts';
 import type { RegistryInput } from './registry.ts';
@@ -63,7 +63,9 @@ const restore = (browser: Browser, kind: TrustKind, before: PageState, after: Pa
   }
   if (kind === 'nav' && after.hash !== before.hash) {
     evaluate(browser, `location.hash = ${JSON.stringify(before.hash)}; true`);
-    browser.run('wait', '--fn', `location.hash === ${JSON.stringify(before.hash)}`);
+    // Ждём закоммиченный раздел: hash приходит раньше DOM-патча React,
+    // иначе следующий клик попадает в предыдущий раздел.
+    if (before.hash !== '') browser.run('wait', '--fn', routeReady(before.hash));
   }
 };
 

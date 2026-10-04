@@ -6,11 +6,11 @@
 
 ## Что падало
 
-| Прогон | Шаг | Сбой |
-| --- | --- | --- |
-| run 37157871179, попытка 1 | «Проверить действия интерфейса» (smoke) | `failureClasses: dialog-not-reopened = 1` на `sync-1440-light`, 382 с против обычных ~360 с |
-| run 37157871179, попытка 2 | «Перебор покрытия и реестры» | `element ledger: missing` — ~188 сигнатур `import|-|` |
-| run 37142681916 (`5bbd4b8`) | smoke | падение тем же шагом |
+| Прогон                      | Шаг                                     | Сбой                                                                                        |
+| --------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------- |
+| run 37157871179, попытка 1  | «Проверить действия интерфейса» (smoke) | `failureClasses: dialog-not-reopened = 1` на `sync-1440-light`, 382 с против обычных ~360 с |
+| run 37157871179, попытка 2  | «Перебор покрытия и реестры»            | `element ledger: missing` — ~188 сигнатур `import                                           | -   | `   |
+| run 37142681916 (`5bbd4b8`) | smoke                                   | падение тем же шагом                                                                        |
 
 Зелёный прогон тех же исходников: `7953b42` (37156863846). Хост — Mac с
 OrbStack и двумя self-hosted раннерами в контейнерах; падения случались под
@@ -36,10 +36,10 @@ CI: сборка `npx vite build --outDir /private/tmp/mt-gf-dist --emptyOutDir`
 
 ### Почему 16 «зелёных» прогонов этого не показали
 
-| Прогоны | Точная команда | Покрытие | Чем отличаются от команды координатора |
-| --- | --- | --- | --- |
-| smoke v1–v5 (чистые), l1–l3 (3 CPU-burner) | scratch-копия флагов `ui-docker.sh`: `docker run --rm --cpus 2 --memory 2g --name mt-gate-smk-$TAG -v $WT:$WT -v $WT/dist:/dist:ro -e MULTITRACKER_UI_URL=http://127.0.0.1:5180 … multitracker-ci-runner:20261002 -c '<встроенный node-сервер>; export AGENT_BROWSER_SESSION=mt-gate-smk-$TAG; node --experimental-strip-types scripts/ui-smoke.ts'` | весь `ui-smoke.ts`: 29 сцен, включая `sync-1440-light` и `sync-375-light`; тот же бандл `index-CNpXg3j3.js` | только окружение: порт 5180 вместо 4180, имя контейнера/сессии, путь dist; образ, лимиты, сервер, скрипт, сцены и код продукта — идентичны |
-| exhaust v4–v8 (чистые), l1–l3 (под нагрузкой) | та же команда с `DIST=$WT/dist/exhaust`, `SCRIPT=exhaust/run.ts`, `NAME=mt-gate-exh-$TAG` | перебор покрытия, не smoke-сценарий диалогов | вообще не исполняет `escapeDialog → activate → waitOpen` — не могла показать этот класс |
+| Прогоны                                       | Точная команда                                                                                                                                                                                                                                                                                                                                       | Покрытие                                                                                                    | Чем отличаются от команды координатора                                                                                                     |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| smoke v1–v5 (чистые), l1–l3 (3 CPU-burner)    | scratch-копия флагов `ui-docker.sh`: `docker run --rm --cpus 2 --memory 2g --name mt-gate-smk-$TAG -v $WT:$WT -v $WT/dist:/dist:ro -e MULTITRACKER_UI_URL=http://127.0.0.1:5180 … multitracker-ci-runner:20261002 -c '<встроенный node-сервер>; export AGENT_BROWSER_SESSION=mt-gate-smk-$TAG; node --experimental-strip-types scripts/ui-smoke.ts'` | весь `ui-smoke.ts`: 29 сцен, включая `sync-1440-light` и `sync-375-light`; тот же бандл `index-CNpXg3j3.js` | только окружение: порт 5180 вместо 4180, имя контейнера/сессии, путь dist; образ, лимиты, сервер, скрипт, сцены и код продукта — идентичны |
+| exhaust v4–v8 (чистые), l1–l3 (под нагрузкой) | та же команда с `DIST=$WT/dist/exhaust`, `SCRIPT=exhaust/run.ts`, `NAME=mt-gate-exh-$TAG`                                                                                                                                                                                                                                                            | перебор покрытия, не smoke-сценарий диалогов                                                                | вообще не исполняет `escapeDialog → activate → waitOpen` — не могла показать этот класс                                                    |
 
 Разницы в покрытии нет: `activate()` всегда идёт координатным `click`
 (оба вызова передают `keyboard: false`), сцены `sync-*` входят в каждый
@@ -250,20 +250,20 @@ same-task сценарий давал `dom:-dialog` без нового `dom:+di
 
 ### Хост — раунд 1 (коммит `cf0c9ba`)
 
-| Проверка | Результат |
-| --- | --- |
+| Проверка                | Результат                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
 | `npm run check` целиком | зелёный: format, typecheck (tsc7 + tsc6), complexity, test:gates, test, build, security, secrets |
-| `npm test` | 97/97, включая 6 новых поведенческих |
+| `npm test`              | 97/97, включая 6 новых поведенческих                                                             |
 
 ### Контейнер (multitracker-ci-runner:20261002, mt-gate-*, порт 5180) — раунд 1
 
 Прогоны на коммите `cf0c9ba` (dist и dist/exhaust собраны из одного
 дерева, hash бандла `index-CNpXg3j3.js`):
 
-| Гейт | Чистые | Под нагрузкой (3 CPU-burner) |
-| --- | --- | --- |
-| smoke (`scripts/ui-smoke.ts`) | v1–v5: 5/5 EXIT=0 | l1–l3: 3/3 EXIT=0 |
-| exhaust (`scripts/exhaust/run.ts`) | v4–v8: 5/5 EXIT=0 | l1–l3: 3/3 EXIT=0 |
+| Гейт                               | Чистые            | Под нагрузкой (3 CPU-burner) |
+| ---------------------------------- | ----------------- | ---------------------------- |
+| smoke (`scripts/ui-smoke.ts`)      | v1–v5: 5/5 EXIT=0 | l1–l3: 3/3 EXIT=0            |
+| exhaust (`scripts/exhaust/run.ts`) | v4–v8: 5/5 EXIT=0 | l1–l3: 3/3 EXIT=0            |
 
 Контрольные суммы чистых exhaust-прогонов: `missing: []` в обоих
 реестрах, доля пропусков 0.386 < 0.4. В smoke-журналах ни одного
@@ -284,24 +284,24 @@ same-task сценарий давал `dom:-dialog` без нового `dom:+di
 
 ### Механическая проверка исправлений раунда 2 (в контейнере, до полных ворот)
 
-| Проверка | Результат |
-| --- | --- |
-| Геометрия `closed → open → closed` | `docH 1158`, `oTop 843`, `oMid 865` — идентично во всех трёх состояниях (до исправления: `1105↔1158`) |
-| Цикл open → Escape → повторный `click` (trusted input), 6 прогонов | `reopened=true` во всех 6; `pointerdown` попадает в `BUTTON.quiet` по y=865 (до исправления: устаревший y=607 → `H2`) |
-| Same-task `close()` + `.click()` (гонка п.4) | `final {exists:true, open:true}` (3/3 на первом варианте nonce, 1/1 на финальном); устаревшее `close` приходит к снятому элементу |
+| Проверка                                                           | Результат                                                                                                                         |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| Геометрия `closed → open → closed`                                 | `docH 1158`, `oTop 843`, `oMid 865` — идентично во всех трёх состояниях (до исправления: `1105↔1158`)                             |
+| Цикл open → Escape → повторный `click` (trusted input), 6 прогонов | `reopened=true` во всех 6; `pointerdown` попадает в `BUTTON.quiet` по y=865 (до исправления: устаревший y=607 → `H2`)             |
+| Same-task `close()` + `.click()` (гонка п.4)                       | `final {exists:true, open:true}` (3/3 на первом варианте nonce, 1/1 на финальном); устаревшее `close` приходит к снятому элементу |
 
 ### Обязательная проверка раунда 2 (форма координатора, финальный код `293e968`)
 
-| Проверка | Результат |
-| --- | --- |
-| `npm run format` | зелёный: все файлы без изменений |
-| `npm run lint` | зелёный (eslint + oxlint, 0 warnings) |
-| `npm run typecheck` | зелёный |
-| `npm run complexity` | зелёный |
-| `npm test` | 99/99, включая 2 новых поведенческих |
+| Проверка                                                     | Результат                                                                                                                           |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format`                                             | зелёный: все файлы без изменений                                                                                                    |
+| `npm run lint`                                               | зелёный (eslint + oxlint, 0 warnings)                                                                                               |
+| `npm run typecheck`                                          | зелёный                                                                                                                             |
+| `npm run complexity`                                         | зелёный                                                                                                                             |
+| `npm test`                                                   | 99/99, включая 2 новых поведенческих                                                                                                |
 | `ui-docker.sh /private/tmp/mt-gf-dist ui-smoke.ts` ×3 подряд | 3/3 EXIT=0, `failureClasses {}`, `failed:0`; 326.6/323.9/322.1 с; `sync-1440-light` и `sync-375-light` — 0 находок во всех прогонах |
-| `ui-docker.sh … check-ui.ts` | 54/54 PASS, 0 FAIL |
-| `npm run test:ui:exhaust` ×2 | 2/2 EXIT=0; `elementLedger` и `codeLedger` `ok:true`, `missing:[]`; доля пропусков 0.386/0.387 < 0.4 |
+| `ui-docker.sh … check-ui.ts`                                 | 54/54 PASS, 0 FAIL                                                                                                                  |
+| `npm run test:ui:exhaust` ×2                                 | 2/2 EXIT=0; `elementLedger` и `codeLedger` `ok:true`, `missing:[]`; доля пропусков 0.386/0.387 < 0.4                                |
 
 Промежуточный прогон exhaust на варианте с `openNonce` внутри
 `ConflictState` падал на `codeLedger.missing = onClick@81`: поле состояния
@@ -418,7 +418,7 @@ npm run exhaust:baseline -- docs/audits/2026-10-04-exhaust/muu3swbj-19
 
 - `openVia` кликал открывателя без прокрутки: строка «resolved» в
   `ConflictSummary` опускает кнопку под сгиб 1440×900 (замер: `top=879,
-  bottom=923`, центр ≈901>900) — частично видимый элемент получал клик
+bottom=923`, центр ≈901>900) — частично видимый элемент получал клик
   вне вьюпорта, событие попадало в `<html>`, `open()` не вызывался.
   Добавлен `scrollintoview` — практика уже принята в
   `ui-sync-checks.ts:91`, `ui-cash-flow-checks.ts`,
@@ -433,17 +433,17 @@ npm run exhaust:baseline -- docs/audits/2026-10-04-exhaust/muu3swbj-19
 
 ### Проверки раунда 3 (точные команды координатора)
 
-| Проверка | Результат |
-| --- | --- |
-| `npm run format` | зелёный |
-| `npm run lint` | зелёный (eslint + oxlint, 0 warnings) |
-| `npm run typecheck` | зелёный |
-| `npm run complexity` | зелёный |
-| `npm test` | 94/94 (8 строко-детекторов заменены 4 чистыми unit-тестами + браузерными сценариями) |
-| `npx vite build --outDir /private/tmp/mt-gf-dist --emptyOutDir` | зелёный |
-| `ui-docker.sh /private/tmp/mt-gf-dist check-ui.ts` | 56/56 PASS, 0 FAIL (54 прежних + 2 новых диалоговых) |
-| `ui-docker.sh /private/tmp/mt-gf-dist ui-smoke.ts` ×3 подряд | 3/3 EXIT=0, `failureClasses {}`, `failed:0`; 322.2/311.0/317.9 с |
-| `npm run test:ui:exhaust` ×2 после регенерации книги | 2/2 EXIT=0, `elementLedger`/`codeLedger` `ok:true`, `missing:[]`, `stale:[]`, `sealed:true`; доля пропусков 0.387 < 0.4 |
+| Проверка                                                        | Результат                                                                                                               |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `npm run format`                                                | зелёный                                                                                                                 |
+| `npm run lint`                                                  | зелёный (eslint + oxlint, 0 warnings)                                                                                   |
+| `npm run typecheck`                                             | зелёный                                                                                                                 |
+| `npm run complexity`                                            | зелёный                                                                                                                 |
+| `npm test`                                                      | 94/94 (8 строко-детекторов заменены 4 чистыми unit-тестами + браузерными сценариями)                                    |
+| `npx vite build --outDir /private/tmp/mt-gf-dist --emptyOutDir` | зелёный                                                                                                                 |
+| `ui-docker.sh /private/tmp/mt-gf-dist check-ui.ts`              | 56/56 PASS, 0 FAIL (54 прежних + 2 новых диалоговых)                                                                    |
+| `ui-docker.sh /private/tmp/mt-gf-dist ui-smoke.ts` ×3 подряд    | 3/3 EXIT=0, `failureClasses {}`, `failed:0`; 322.2/311.0/317.9 с                                                        |
+| `npm run test:ui:exhaust` ×2 после регенерации книги            | 2/2 EXIT=0, `elementLedger`/`codeLedger` `ok:true`, `missing:[]`, `stale:[]`, `sealed:true`; доля пропусков 0.387 < 0.4 |
 
 Два прогона exhaust ДО регенерации (артефакты `muu3pn5m-19`, `muu3swbj-19`)
 упали на `codeLedger.ok:false` ровно по ожидаемому механизму L1: 17
@@ -473,7 +473,7 @@ run 37225231592 (событие push, раннер `mt-air` — MacBook Air с �
 
 - `overview-320-dark-coverage.json`: ровно 2 находки `disclosure-shift`,
   обе на ключ `main#main > div:nth-of-type(3) > div:nth-of-type(2) >
-  details > summary` («Отчёт по выбранным портфелям»,
+details > summary` («Отчёт по выбранным портфелям»,
   `details.portfolio-report` в `src/insights/Report.tsx`), обе
   `{dx: 0, dy: -3.390625}` — пары `before→after` и `before→restored`.
 - `overview-320-dark-disclosure-41-geometry.json`: 36 ключей до/после/
@@ -628,18 +628,18 @@ mt-air/mt-orbstack в CI.
 
 ### Проверки раунда 4 (точные команды координатора)
 
-| Проверка | Результат |
-| --- | --- |
-| `npm run format` | зелёный |
-| `npm run lint` | зелёный (eslint + oxlint, 0 warnings) |
-| `npm run typecheck` | зелёный |
-| `npm run complexity` | зелёный |
-| `npm test` | 94/94 |
-| `npx vite build --outDir /private/tmp/mt-gf-dist --emptyOutDir` | зелёный, `index-DIJoZihT.js` 444.48 КБ |
-| `ui-docker.sh /private/tmp/mt-gf-dist check-ui.ts` | 56/56 PASS, 0 FAIL |
-| `ui-docker.sh /private/tmp/mt-gf-dist ui-smoke.ts` ×3 подряд | 3/3 EXIT=0, `failureClasses {}`, `failed:0`; ~599 с каждый |
-| CI-образ: vite 5180 + `npm run test:smoke` ×3 | 3/3 EXIT=0, `failureClasses {}`, `failed:0`, 2280 найдено/754 проверено: plain 593.3 с и 617.5 с; **под нагрузкой** (2 CPU-burner на 2 cpu) 619.4 с; `overview-320-dark` — 0 находок во всех |
-| `npm run test:ui:exhaust` ×1 | EXIT=0, ledgers `ok:true, sealed`, доля пропусков 0.387 < 0.4; `findings:1` — исторический базлайн `walk-click-fail` на том же селекторе, идентичен ~25 прогонам до ветки |
+| Проверка                                                        | Результат                                                                                                                                                                                    |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format`                                                | зелёный                                                                                                                                                                                      |
+| `npm run lint`                                                  | зелёный (eslint + oxlint, 0 warnings)                                                                                                                                                        |
+| `npm run typecheck`                                             | зелёный                                                                                                                                                                                      |
+| `npm run complexity`                                            | зелёный                                                                                                                                                                                      |
+| `npm test`                                                      | 94/94                                                                                                                                                                                        |
+| `npx vite build --outDir /private/tmp/mt-gf-dist --emptyOutDir` | зелёный, `index-DIJoZihT.js` 444.48 КБ                                                                                                                                                       |
+| `ui-docker.sh /private/tmp/mt-gf-dist check-ui.ts`              | 56/56 PASS, 0 FAIL                                                                                                                                                                           |
+| `ui-docker.sh /private/tmp/mt-gf-dist ui-smoke.ts` ×3 подряд    | 3/3 EXIT=0, `failureClasses {}`, `failed:0`; ~599 с каждый                                                                                                                                   |
+| CI-образ: vite 5180 + `npm run test:smoke` ×3                   | 3/3 EXIT=0, `failureClasses {}`, `failed:0`, 2280 найдено/754 проверено: plain 593.3 с и 617.5 с; **под нагрузкой** (2 CPU-burner на 2 cpu) 619.4 с; `overview-320-dark` — 0 находок во всех |
+| `npm run test:ui:exhaust` ×1                                    | EXIT=0, ledgers `ok:true, sealed`, доля пропусков 0.387 < 0.4; `findings:1` — исторический базлайн `walk-click-fail` на том же селекторе, идентичен ~25 прогонам до ветки                    |
 
 ## Не проверено
 

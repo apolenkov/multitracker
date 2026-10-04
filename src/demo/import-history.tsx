@@ -16,6 +16,7 @@ type HistoryProps = Readonly<{
 type HistoryDialog = 'details' | 'reconcile';
 export function ImportHistory({ language, hidden, notify }: HistoryProps) {
   const modal = useModalSession<HistoryDialog>();
+  const session = modal.current;
   const [undone, setUndone] = useState(false);
   const title = importText(language, 'История импорта', 'Import history');
   // Отмена импорта выполняется сразу; запись остаётся под встроенным «Отменить» на месте.
@@ -44,15 +45,15 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
         open={modal.open}
         onRestore={restoreImport}
       />
-      {modal.current && (
+      {session && (
         <DemoModal
-          key={modal.current.nonce}
+          key={session.nonce}
           id="import-history"
           title={title}
           language={language}
-          onClose={modal.close}
+          onClose={() => modal.close(session.nonce)}
         >
-          {modal.current.kind === 'details' ? (
+          {session.kind === 'details' ? (
             <HistoryDetails language={language} hidden={hidden} onUndo={undoImport} />
           ) : (
             <Reconciliation language={language} hidden={hidden} notify={notify} />

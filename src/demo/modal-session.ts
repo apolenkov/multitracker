@@ -3,27 +3,45 @@ import { useState } from 'react';
 /** Одно открытие модального диалога: какой диалог и его монотонный nonce. */
 export type ModalSession<K> = Readonly<{ kind: K; nonce: number }>;
 
+export type State<K> = Readonly<{ current: ModalSession<K> | null; next: number }>;
+
 export type ModalControl<K> = Readonly<{
   current: ModalSession<K> | null;
   open: (kind: K) => void;
-  close: () => void;
+  close: (nonce: number) => void;
+  reset: () => void;
 }>;
 
 /**
- * Следующая сессия — всегда новый объект, даже при том же kind: повторное
- * открытие не схлопывается в bail, а key={nonce} перемонтирует диалог, и
- * событие close, поставленное в очередь до повторного открытия, приходит к
- * уже снятому элементу.
+ * Открытие — всегда новая сессия с монотонным nonce: повторное открытие
+ * того же kind не схлопывается в bail, key={nonce} перемонтирует диалог,
+ * и событие close, поставленное в очередь до повторного открытия, приходит
+ * к уже снятому элементу. Счётчик живёт в состоянии и не переиспользуется
+ * после закрытия — устаревший nonce всегда отличим от свежего.
  */
-export const nextSession = <K>(prev: ModalSession<K> | null, kind: K): ModalSession<K> => ({
-  kind,
-  nonce: (prev?.nonce ?? -1) + 1,
+export const openSession = <K>(state: State<K>, kind: K): State<K> => ({
+  current: { kind, nonce: state.next },
+  next: state.next + 1,
 });
 
-/** Состояние динамического DemoModal: open(kind) — свежая сессия, close — null. */
+/**
+ * Закрытие по nonce: снимает только свою сессию. Событие close — отдельная
+ * задача: flushSync внутри неё применяет и висячее открытие, и само закрытие
+ * в порядке постановки — без охраны устаревшее close(null) обнуляет свежую
+ * сессию, и повторно открытый диалог умирает, не успев смонтироваться.
+ */
+export const closeSession = <K>(state: State<K>, nonce: number): State<K> =>
+  state.current?.nonce === nonce ? { ...state, current: null } : state;
+
+/**
+ * Состояние динамического DemoModal: open(kind) — свежая сессия,
+ * close(nonce) — сессия просит закрыться (чужой nonce игнорируется),
+ * reset — родитель завершает текущую сессию безусловно (confirm/save).
+ */
 export function useModalSession<K>(): ModalControl<K> {
-  const [current, setCurrent] = useState<ModalSession<K> | null>(null);
-  const open = (kind: K) => setCurrent((prev) => nextSession(prev, kind));
-  const close = () => setCurrent(null);
-  return { current, open, close };
+  const [state, setState] = useState<State<K>>({ current: null, next: 0 });
+  const open = (kind: K) => setState((s) => openSession(s, kind));
+  const close = (nonce: number) => setState((s) => closeSession(s, nonce));
+  const reset = () => setState((s) => ({ ...s, current: null }));
+  return { current: state.current, open, close, reset };
 }

@@ -48,7 +48,7 @@ export function ConnectionsPanel({ language, notify }: ConnectionProps) {
           provider={editing.kind}
           initial={configured.find((item) => item.provider === editing.kind)}
           save={save}
-          close={modal.close}
+          close={() => modal.close(editing.nonce)}
         />
       )}
     </div>
@@ -65,7 +65,7 @@ function useConnections(
   const modal = useModalSession<string>();
   const save = (value: Connection) => {
     setConfigured([...configured.filter((item) => item.provider !== value.provider), value]);
-    modal.close();
+    modal.reset();
     notify(t.saved);
   };
   // Отключение сразу: строка остаётся под встроенным «Отменить», которое возвращает настройки.

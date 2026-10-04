@@ -31,7 +31,7 @@ export type ModalProps = SettingsProps &
   }>;
 
 export function SettingsPanel(props: SettingsProps) {
-  const modal = useModalSession<Kind>();
+  const { current: session, open, close } = useModalSession<Kind>();
   const [value, setValue] = usePreferences();
   const text: SettingText = (ru, en) => (props.language === 'ru' ? ru : en);
   const update = (patch: Partial<Preferences>) => setValue((current) => ({ ...current, ...patch }));
@@ -40,7 +40,7 @@ export function SettingsPanel(props: SettingsProps) {
       <SettingsGroups
         {...props}
         text={text}
-        open={modal.open}
+        open={open}
         locked={value.locked}
         onLock={(locked) => update({ locked })}
         lockStatus={
@@ -66,15 +66,15 @@ export function SettingsPanel(props: SettingsProps) {
         <DemoStateSettings {...props} text={text} />
       </details>
       <WidgetPreview language={props.language} hidden={props.hidden} />
-      {modal.current && (
+      {session && (
         <SettingsDialog
-          key={modal.current.nonce}
+          key={session.nonce}
           {...props}
-          kind={modal.current.kind}
+          kind={session.kind}
           text={text}
           value={value}
           update={update}
-          onClose={modal.close}
+          onClose={() => close(session.nonce)}
         />
       )}
     </div>

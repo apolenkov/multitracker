@@ -21,7 +21,7 @@ export function SyncPanel({ language, notify }: ConnectionProps) {
   };
   const confirm = (version: Version) => {
     setSelected(version);
-    modal.close();
+    modal.reset();
     notify(t.resolved);
   };
   return (
@@ -224,15 +224,16 @@ function SyncConflictArea({
   modal: ModalControl<'conflict'>;
   confirm: (version: Version) => void;
 }>) {
+  const session = modal.current;
   return (
     <>
       <ConflictSummary t={t} selected={selected} open={() => modal.open('conflict')} />
-      {modal.current && (
+      {session && (
         <SyncConflict
-          key={modal.current.nonce}
+          key={session.nonce}
           language={language}
           t={t}
-          close={modal.close}
+          close={() => modal.close(session.nonce)}
           confirm={confirm}
         />
       )}

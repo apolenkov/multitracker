@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { evaluate, settleLayout, type Browser } from './ui-driver.ts';
 import { go, hashGo, layoutShift, prepare, truth, waitTrue } from './ui-helpers.ts';
 import { syncStateOneLine } from './ui-sync-checks.ts';
+import { undoFocusKeepsPosition } from './ui-notice-checks.ts';
 
 const toast = '.status-message';
 const toastText = `${toast} [role=status] p`;
@@ -245,6 +246,7 @@ export function arenaWave1(browser: Browser): readonly Readonly<[string, () => u
     ['privacy:hidden-amounts-stable', () => hiddenAmountsStable(browser)],
     ['import:details-no-clipped-cells', () => importDetailsTable(browser)],
     ['sync:state-one-line-375', () => syncStateOneLine(browser)],
+    ['undo:focus-kept-when-moved', () => undoFocusKeepsPosition(browser)],
   ];
 }
 

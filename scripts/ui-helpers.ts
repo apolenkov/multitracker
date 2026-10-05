@@ -182,6 +182,15 @@ export function prepare(browser: Browser) {
   browser.run('select', '#topbar-theme', 'light');
 }
 
+// Сохранение портфеля — самый короткий путь к объявлению в глобальной плашке.
+export function savePortfolio(browser: Browser) {
+  browser.run('find', 'role', 'button', 'click', '--name', '+ Создать портфель', '--exact');
+  browser.run('wait', '#portfolio-dialog[open]');
+  browser.run('fill', '#portfolio-dialog-name', 'Учебная проверка');
+  browser.run('click', '#portfolio-dialog button[type="submit"]');
+  browser.run('wait', '--fn', '!document.querySelector("#portfolio-dialog[open]")');
+}
+
 function widgetChanges(browser: Browser) {
   browser.run('select', '#widget-layout', 'compact');
   browser.run('check', '#widget-changes');

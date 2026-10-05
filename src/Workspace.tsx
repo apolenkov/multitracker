@@ -22,8 +22,8 @@ export function Workspace({ view }: Readonly<{ view: AppView }>) {
       <Topbar view={view} />
       <main id="main" tabIndex={-1}>
         <PageHeading view={view} />
-        <StatusMessage view={view} />
         <PageContent view={view} />
+        <StatusMessage view={view} />
       </main>
       <footer className="footer">
         <Welcome language={view.language} navigate={view.navigate} />

@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { evaluate, settleLayout, type Browser } from './ui-driver.ts';
-import { go, hashGo, layoutShift, prepare, truth, waitTrue } from './ui-helpers.ts';
+import { go, hashGo, layoutShift, prepare, savePortfolio, truth, waitTrue } from './ui-helpers.ts';
 import { syncStateOneLine } from './ui-sync-checks.ts';
 import { undoFocusKeepsPosition } from './ui-notice-checks.ts';
+import { toastLastInMain } from './ui-toast-checks.ts';
 
 const toast = '.status-message';
 const toastText = `${toast} [role=status] p`;
@@ -32,14 +33,6 @@ function headingGap(browser: Browser, screen: string, hash = false) {
   assert.ok(typeof gap === 'number');
   assert.ok(gap <= 24, `${screen}: зазор под заголовком ${gap} px`);
   return { screen, gap };
-}
-
-function savePortfolio(browser: Browser) {
-  browser.run('find', 'role', 'button', 'click', '--name', '+ Создать портфель', '--exact');
-  browser.run('wait', '#portfolio-dialog[open]');
-  browser.run('fill', '#portfolio-dialog-name', 'Учебная проверка');
-  browser.run('click', '#portfolio-dialog button[type="submit"]');
-  browser.run('wait', '--fn', '!document.querySelector("#portfolio-dialog[open]")');
 }
 
 // Появление плашки внизу: ничего не двигает, сама поверх, не закрывает фокус и навигацию.
@@ -243,6 +236,7 @@ export function importDetailsTable(browser: Browser) {
 export function arenaWave1(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
   return [
     ['feedback:toast-out-of-flow', () => feedbackToast(browser)],
+    ['feedback:toast-last-in-main', () => toastLastInMain(browser)],
     ['privacy:hidden-amounts-stable', () => hiddenAmountsStable(browser)],
     ['import:details-no-clipped-cells', () => importDetailsTable(browser)],
     ['sync:state-one-line-375', () => syncStateOneLine(browser)],

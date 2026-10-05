@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { batch, evaluate, settleLayout, type Browser } from './ui-driver.ts';
-import { content, go, prepare, truth } from './ui-helpers.ts';
+import { content, go, hashGo, prepare, reveal, truth, waitTrue } from './ui-helpers.ts';
 
 const labels = {
   ru: ['Локальная версия', 'Версия из облака'],
@@ -110,4 +110,26 @@ export function syncPostConflictDisclosure(browser: Browser) {
   browser.run('click', welcome);
   settleLayout(browser);
   return 'Подтверждение облачной версии → прокрутка → один настоящий клик открывает помощь';
+}
+
+// Состояние синхронизации на 375: каждый из трёх текстов — одна строка, резерв 1lh.
+export function syncStateOneLine(browser: Browser) {
+  browser.run('set', 'viewport', '375', '900');
+  browser.run('select', '#topbar-language', 'ru');
+  hashGo(browser, 'sync');
+  const state = 'document.querySelector(".sync-state")';
+  const oneLine = `(() => { const el = ${state}; return el.offsetHeight <= parseFloat(getComputedStyle(el).lineHeight) + 1; })()`;
+  waitTrue(browser, `${state}.textContent === 'Ожидание запуска'`, 'Исходное состояние');
+  truth(browser, oneLine, '«Ожидание запуска» — одна строка');
+  browser.run('scrollintoview', '#sync-run');
+  browser.run('click', '#sync-run');
+  waitTrue(browser, `${state}.textContent === 'Учебная синхронизация готова'`, 'Запуск завершён');
+  truth(browser, oneLine, '«Учебная синхронизация готова» — одна строка');
+  reveal(browser, '.sync-actions details > summary');
+  browser.run('click', '.sync-actions details input[type=checkbox]');
+  browser.run('click', '#sync-run');
+  waitTrue(browser, `${state}.textContent === 'Пример ошибки сети'`, 'Показана ошибка примера');
+  truth(browser, oneLine, '«Пример ошибки сети» — одна строка');
+  browser.run('set', 'viewport', '1440', '900');
+  return '375: ожидание/успех/ошибка по одной строке, резерв 1lh';
 }

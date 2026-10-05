@@ -30,6 +30,18 @@ export function go(browser: Browser, screen: string) {
   settleLayout(browser);
 }
 
+// Переход на раздел через адресной фрагмент — на 375 нижняя навигация, клик по
+// скрытым ссылкам недоступен; ждёт тот же постусловный фокус на #main.
+export function hashGo(browser: Browser, screen: string) {
+  evaluate(browser, `location.assign('#${screen}'); true`);
+  waitTrue(
+    browser,
+    `location.hash === '#${screen}' && document.activeElement?.id === 'main'`,
+    `Переход на ${screen}`,
+  );
+  settleLayout(browser);
+}
+
 export function truth(browser: Browser, source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
 }

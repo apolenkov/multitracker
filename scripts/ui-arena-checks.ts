@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { evaluate, settleLayout, type Browser } from './ui-driver.ts';
-import { go, layoutShift, prepare, truth, waitTrue } from './ui-helpers.ts';
+import { go, hashGo, layoutShift, prepare, truth, waitTrue } from './ui-helpers.ts';
+import { syncStateOneLine } from './ui-sync-checks.ts';
 
 const toast = '.status-message';
 const toastText = `${toast} [role=status] p`;
@@ -14,16 +15,6 @@ const routes = [
   'sync',
   'settings',
 ] as const;
-
-function hashGo(browser: Browser, screen: string) {
-  evaluate(browser, `location.assign('#${screen}'); true`);
-  waitTrue(
-    browser,
-    `location.hash === '#${screen}' && document.activeElement?.id === 'main'`,
-    `Переход на ${screen}`,
-  );
-  settleLayout(browser);
-}
 
 // Зазор между заголовком и первым содержимым: слот сообщения вне потока.
 function headingGap(browser: Browser, screen: string, hash = false) {
@@ -247,12 +238,13 @@ export function importDetailsTable(browser: Browser) {
   return '1440: 5 столбцов без прокрутки, «Проверка» переносится; 375: карточки без обрезки';
 }
 
-// Действия волны 1 для check-ui: три поведенческих прогона на одном драйвере.
+// Действия волны 1 для check-ui: поведенческие прогоны на одном драйвере.
 export function arenaWave1(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
   return [
     ['feedback:toast-out-of-flow', () => feedbackToast(browser)],
     ['privacy:hidden-amounts-stable', () => hiddenAmountsStable(browser)],
     ['import:details-no-clipped-cells', () => importDetailsTable(browser)],
+    ['sync:state-one-line-375', () => syncStateOneLine(browser)],
   ];
 }
 

@@ -197,16 +197,24 @@ a {
   white-space: nowrap;
   border: 0;
 }
+/* Вне фокуса ссылка не улетает за верх вьюпорта, а схлопывается в невидимую
+   точку: её прямоугольник остаётся на экране и не пересекается с текстом
+   при любой прокрутке; хит-тест пуст, поэтому элемент не покрывает текст. */
 .skip-link {
   position: fixed;
-  top: -80px;
+  top: 12px;
   left: 20px;
-  padding: 12px;
+  width: 44px;
+  height: 44px;
+  clip-path: inset(50%);
   background: var(--paper);
   z-index: 100;
 }
 .skip-link:focus {
-  top: 12px;
+  width: auto;
+  height: auto;
+  padding: 12px;
+  clip-path: none;
 }
 dialog {
   --dialog-inset: 24px;

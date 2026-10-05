@@ -54,8 +54,8 @@ const returnTarget = (opener: Element | null, container: Element | null | undefi
   return visible(fallback) ? fallback : document.getElementById('main');
 };
 
-// При повторном монтировании (StrictMode) узел остаётся в DOM и запасной кадр
-// сам себя отменяет по isConnected — общего состояния не нужно.
+// При повторном монтировании (StrictMode) узел остаётся в DOM и очистка
+// выходит по isConnected — общего состояния не нужно.
 const restoreNoticeFocus = (
   notice: HTMLElement | null,
   opener: Element | null,
@@ -88,8 +88,10 @@ export function RowNotice({
     );
     return () => {
       cancelAnimationFrame(frame);
-      // Кадр после размонтирования: запись снова видна и её действия доступны.
-      requestAnimationFrame(() => restoreNoticeFocus(notice, opener, container));
+      // Синхронно в очистке: запись снова видна в том же коммите. Отложенный кадр
+      // мог бы оказаться между blur и возвратом прокрутки внешнего сценария —
+      // тогда восстановленный фокус остался бы под закреплённой навигацией.
+      restoreNoticeFocus(notice, opener, container);
     };
   }, []);
   return (

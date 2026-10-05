@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { batch, evaluate, settleLayout, type Browser } from './ui-driver.ts';
-import { content, go, hashGo, prepare, reveal, truth, waitTrue } from './ui-helpers.ts';
+import { content, go, prepare, rehash, reveal, truth, waitTrue } from './ui-helpers.ts';
 
 const labels = {
   ru: ['Локальная версия', 'Версия из облака'],
@@ -112,24 +112,50 @@ export function syncPostConflictDisclosure(browser: Browser) {
   return 'Подтверждение облачной версии → прокрутка → один настоящий клик открывает помощь';
 }
 
-// Состояние синхронизации на 375: каждый из трёх текстов — одна строка, резерв 1lh.
-export function syncStateOneLine(browser: Browser) {
-  browser.run('set', 'viewport', '375', '900');
-  browser.run('select', '#topbar-language', 'ru');
-  hashGo(browser, 'sync');
+const states = {
+  ru: {
+    idle: 'Ожидание запуска',
+    success: 'Учебная синхронизация готова',
+    error: 'Пример ошибки сети',
+  },
+  en: { idle: 'Waiting to start', success: 'Sample sync complete', error: 'Sample network error' },
+} as const;
+
+// Одна строка состояния на каждом из трёх текстов: ожидание, успех, ошибка.
+function stateRun(browser: Browser, width: number, language: 'ru' | 'en') {
+  const words = language === 'ru' ? states.ru : states.en;
   const state = 'document.querySelector(".sync-state")';
   const oneLine = `(() => { const el = ${state}; return el.offsetHeight <= parseFloat(getComputedStyle(el).lineHeight) + 1; })()`;
-  waitTrue(browser, `${state}.textContent === 'Ожидание запуска'`, 'Исходное состояние');
-  truth(browser, oneLine, '«Ожидание запуска» — одна строка');
+  const tag = `${width}px ${language}`;
+  // Панели не размонтируются между разделами: перезагрузка возвращает
+  // панель в ожидание и снимает флажок ошибки прошлого прогона.
+  browser.run('reload');
+  browser.run('wait', '#main h1');
+  browser.run('set', 'viewport', String(width), '900');
+  browser.run('select', '#topbar-language', language);
+  browser.run('wait', '--fn', `document.documentElement.lang === '${language}'`);
+  rehash(browser, 'sync');
+  waitTrue(browser, `${state}.textContent === '${words.idle}'`, `${tag}: исходное состояние`);
+  truth(browser, oneLine, `${tag}: «${words.idle}» — одна строка`);
   browser.run('scrollintoview', '#sync-run');
   browser.run('click', '#sync-run');
-  waitTrue(browser, `${state}.textContent === 'Учебная синхронизация готова'`, 'Запуск завершён');
-  truth(browser, oneLine, '«Учебная синхронизация готова» — одна строка');
+  waitTrue(browser, `${state}.textContent === '${words.success}'`, `${tag}: запуск завершён`);
+  truth(browser, oneLine, `${tag}: «${words.success}» — одна строка`);
   reveal(browser, '.sync-actions details > summary');
   browser.run('click', '.sync-actions details input[type=checkbox]');
   browser.run('click', '#sync-run');
-  waitTrue(browser, `${state}.textContent === 'Пример ошибки сети'`, 'Показана ошибка примера');
-  truth(browser, oneLine, '«Пример ошибки сети» — одна строка');
+  waitTrue(browser, `${state}.textContent === '${words.error}'`, `${tag}: показана ошибка примера`);
+  truth(browser, oneLine, `${tag}: «${words.error}» — одна строка`);
+  return `${tag}: ожидание/успех/ошибка по одной строке`;
+}
+
+// Состояние синхронизации на 375 и 320, RU и EN: резерв одна строка + 1px.
+export function syncStateOneLine(browser: Browser) {
+  const results = ([375, 320] as const).flatMap((width) =>
+    (['ru', 'en'] as const).map((language) => stateRun(browser, width, language)),
+  );
+  browser.run('select', '#topbar-language', 'ru');
+  browser.run('wait', '--fn', 'document.documentElement.lang === "ru"');
   browser.run('set', 'viewport', '1440', '900');
-  return '375: ожидание/успех/ошибка по одной строке, резерв 1lh';
+  return results;
 }

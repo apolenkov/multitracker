@@ -11,6 +11,7 @@ import {
   waitTrue,
 } from './ui-helpers.ts';
 import { importPriceNoBreak } from './ui-import-checks.ts';
+import { hiddenAmountsStable } from './ui-privacy-checks.ts';
 import { syncStateOneLine } from './ui-sync-checks.ts';
 import { undoFocusKeepsPosition } from './ui-notice-checks.ts';
 import { toastLastInMain, toastNoCover } from './ui-toast-checks.ts';
@@ -137,72 +138,6 @@ function singleAnnouncement(browser: Browser) {
   return 'одно объявление на удаление и на отмену: в строке, потом в плашке';
 }
 
-// Панель баланса и соседи: высота и верхняя кромка блоков ниже в координатах документа.
-const hiddenProbes = `(() => {
-  const rect = (s) => document.querySelector(s).getBoundingClientRect();
-  return {
-    panel: Math.round(rect('.balance-panel').height),
-    history: Math.round(rect('.value-history').height),
-    holdingsTop: Math.round(rect('.holdings').top + scrollY),
-  };
-})()`;
-
-function toggleHidden(browser: Browser, checked: boolean) {
-  hashGo(browser, 'settings');
-  browser.run('scrollintoview', '#settings-hidden');
-  settleLayout(browser);
-  browser.run(checked ? 'check' : 'uncheck', '#settings-hidden');
-  browser.run(
-    'wait',
-    '--fn',
-    `document.querySelector('#settings-hidden')?.checked === ${String(checked)}`,
-  );
-  hashGo(browser, 'overview');
-}
-
-type Probes = Readonly<{ panel: number; history: number; holdingsTop: number }>;
-
-// evaluate отдаёт unknown: поля проверяются по одному, без приведения типов.
-function measureProbes(browser: Browser): Probes {
-  const raw = evaluate(browser, hiddenProbes);
-  assert.ok(typeof raw === 'object' && raw !== null, 'probes: нужен объект');
-  const nums = new Map(
-    Object.entries(raw).filter((entry): entry is [string, number] => typeof entry[1] === 'number'),
-  );
-  const value = (key: keyof Probes) => {
-    const entry = nums.get(key);
-    assert.ok(typeof entry === 'number', `probes: нет числа ${key}`);
-    return entry;
-  };
-  return { panel: value('panel'), history: value('history'), holdingsTop: value('holdingsTop') };
-}
-
-// Скрытие сумм не должно сдвигать панель баланса и то, что ниже её.
-export function hiddenAmountsStable(browser: Browser) {
-  prepare(browser);
-  const run = (width: number) => {
-    browser.run('set', 'viewport', String(width), '900');
-    hashGo(browser, 'overview');
-    const visible = measureProbes(browser);
-    toggleHidden(browser, true);
-    const hidden = measureProbes(browser);
-    toggleHidden(browser, false);
-    const diffs = {
-      panel: hidden.panel - visible.panel,
-      history: hidden.history - visible.history,
-      holdingsTop: hidden.holdingsTop - visible.holdingsTop,
-    };
-    for (const [key, diff] of Object.entries(diffs)) {
-      assert.ok(Math.abs(diff) <= 2, `${width}px: ${key} при скрытии сумм изменился на ${diff} px`);
-    }
-    return { width, visible, hidden };
-  };
-  const wide = run(1440);
-  const narrow = run(375);
-  browser.run('set', 'viewport', '1440', '900');
-  return { wide, narrow };
-}
-
 // Подробности импорта: таблица помещается в окно без горизонтальной прокрутки,
 // «Проверка» переносится; на 375 вместо таблицы — карточки без обрезки.
 export function importDetailsTable(browser: Browser) {
@@ -256,7 +191,7 @@ export function arenaWave1(browser: Browser): readonly Readonly<[string, () => u
     ['privacy:hidden-amounts-stable', () => hiddenAmountsStable(browser)],
     ['import:details-no-clipped-cells', () => importDetailsTable(browser)],
     ['import:price-currency-nobr', () => importPriceNoBreak(browser)],
-    ['sync:state-one-line-375', () => syncStateOneLine(browser)],
+    ['sync:state-one-line', () => syncStateOneLine(browser)],
     ['undo:focus-kept-when-moved', () => undoFocusKeepsPosition(browser)],
   ];
 }

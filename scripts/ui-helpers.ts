@@ -42,6 +42,21 @@ export function hashGo(browser: Browser, screen: string) {
   settleLayout(browser);
 }
 
+// Повторный вход на раздел внутри сессии: когда фрагмент уже указывает туда,
+// location.assign не порождает hashchange и фокус не уходит на #main.
+// Уводим на промежуточный раздел, чтобы возврат был настоящей сменой адреса.
+export function rehash(browser: Browser, screen: string) {
+  if (evaluate(browser, `location.hash === '#${screen}'`) === true) {
+    evaluate(browser, "location.assign('#import'); true");
+    waitTrue(
+      browser,
+      "location.hash === '#import' && document.activeElement?.id === 'main'",
+      'Промежуточный раздел',
+    );
+  }
+  hashGo(browser, screen);
+}
+
 export function truth(browser: Browser, source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
 }

@@ -1,4 +1,4 @@
-# Opt-in: run `npx lefthook install` once. Nothing installs these hooks automatically.
+# Installed by the lefthook package on `npm ci`; skip once with LEFTHOOK=0, reinstall with `npx lefthook install`.
 pre-commit:
   parallel: true
   jobs:

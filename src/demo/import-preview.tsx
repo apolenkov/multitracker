@@ -31,6 +31,9 @@ export function ImportSample(props: Readonly<{ language: ImportLanguage; hidden:
     </div>
   );
 }
+// В окне подробностей «Действие» одинаково во всех строках, а валюта входит в цену —
+// два столбца не нужны, «Проверка» читается с переносом и без обрезки.
+const detailFields = importFields.filter((field) => field !== 'action' && field !== 'currency');
 function ImportTable({
   language,
   hidden,
@@ -45,7 +48,7 @@ function ImportTable({
       <table>
         <thead>
           <tr>
-            {importFields.map((field) => (
+            {detailFields.map((field) => (
               <th key={field}>{fieldName(field, language)}</th>
             ))}
             <th>{importText(language, 'Проверка', 'Validation')}</th>
@@ -56,10 +59,8 @@ function ImportTable({
             <tr key={row.id}>
               <td>{row.date}</td>
               <td>{row.asset}</td>
-              <td>{importText(language, 'Покупка', 'Buy')}</td>
               <td>{hidden ? '••••' : row.quantity}</td>
-              <td>{hidden ? '••••' : row.price}</td>
-              <td>{row.currency}</td>
+              <td>{hidden ? '••••' : `${row.price} ${row.currency}`}</td>
               <td>{rowStatus(row.status, language)}</td>
             </tr>
           ))}

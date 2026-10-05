@@ -16,7 +16,7 @@ import {
 } from './ui-overview-checks.ts';
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
 import { recordRowActions, entityUndo, importAndSyncUndo } from './ui-row-action-checks.ts';
-import { feedbackToast, firstLoadHashFocus, hiddenAmountsStable } from './ui-arena-checks.ts';
+import { arenaWave1, firstLoadHashFocus } from './ui-arena-checks.ts';
 import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
@@ -228,8 +228,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ['preferences:independent-currencies', () => independentCurrencies(browser)],
     ['navigation:back-main-focus', backFocus],
     ['feedback:repeat-save', repeatSave],
-    ['feedback:toast-out-of-flow', () => feedbackToast(browser)],
-    ['privacy:hidden-amounts-stable', () => hiddenAmountsStable(browser)],
+    ...arenaWave1(browser),
     ['import:mapping-locale-invalid', importMapping],
     ['import:one-click-run-and-errors', cancelImport],
     ['settings:finance-roundtrip', () => settingsPersist(browser)],

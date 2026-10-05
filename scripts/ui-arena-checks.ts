@@ -203,6 +203,59 @@ export function hiddenAmountsStable(browser: Browser) {
   return { wide, narrow };
 }
 
+// Подробности импорта: таблица помещается в окно без горизонтальной прокрутки,
+// «Проверка» переносится; на 375 вместо таблицы — карточки без обрезки.
+export function importDetailsTable(browser: Browser) {
+  prepare(browser);
+  go(browser, 'import');
+  browser.run('click', '#import-history-details');
+  browser.run('wait', '#import-history[open]');
+  settleLayout(browser);
+  assert.deepEqual(
+    evaluate(
+      browser,
+      `Array.from(document.querySelectorAll('#import-history[open] .import-source-table th'), (item) => item.textContent?.trim())`,
+    ),
+    ['Дата', 'Актив', 'Количество', 'Цена', 'Проверка'],
+    'В окне подробностей пять столбцов без «Действие» и «Валюта»',
+  );
+  waitTrue(
+    browser,
+    'getComputedStyle(document.querySelector("#import-history[open] .import-source-table td:last-child")).whiteSpace === "normal"',
+    'Столбец «Проверка» переносит текст',
+  );
+  truth(
+    browser,
+    'document.querySelector("#import-history[open] .import-source-table").scrollWidth <= document.querySelector("#import-history[open] .import-source-table").clientWidth',
+    '1440: таблица помещается без обрезанных столбцов',
+  );
+  browser.run('set', 'viewport', '375', '900');
+  settleLayout(browser);
+  truth(
+    browser,
+    'getComputedStyle(document.querySelector("#import-history[open] .import-source-table")).display === "none" && document.querySelector("#import-history[open] .import-rows").checkVisibility({checkVisibilityCSS:true})',
+    '375: вместо таблицы карточки',
+  );
+  truth(
+    browser,
+    'Array.from(document.querySelectorAll("#import-history[open] .import-rows li")).every((item) => item.scrollWidth <= item.clientWidth)',
+    '375: текст карточек не обрезан',
+  );
+  browser.run('click', '#import-history[open] .icon-close');
+  browser.run('wait', '--fn', '!document.querySelector("#import-history[open]")');
+  browser.run('set', 'viewport', '1440', '900');
+  return '1440: 5 столбцов без прокрутки, «Проверка» переносится; 375: карточки без обрезки';
+}
+
+// Действия волны 1 для check-ui: три поведенческих прогона на одном драйвере.
+export function arenaWave1(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
+  return [
+    ['feedback:toast-out-of-flow', () => feedbackToast(browser)],
+    ['privacy:hidden-amounts-stable', () => hiddenAmountsStable(browser)],
+    ['import:details-no-clipped-cells', () => importDetailsTable(browser)],
+  ];
+}
+
 // Первая загрузка адреса с фрагментом: документ грузится целиком, hashchange нет,
 // штатный перевод фокуса не срабатывает — рамка заголовка не появляется.
 export function firstLoadHashFocus(browser: Browser, url: string) {

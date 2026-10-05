@@ -217,6 +217,7 @@ function PeriodControls({
         {periods.map((item) => (
           <TabsTrigger
             key={item.id}
+            id={`value-history-period-${item.id}`}
             value={item.id}
             aria-label={`${language === 'ru' ? item.ru : item.en}: ${language === 'ru' ? item.ruName : item.enName}`}
           >

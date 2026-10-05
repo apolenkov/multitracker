@@ -14,7 +14,7 @@ import { importPriceNoBreak } from './ui-import-checks.ts';
 import { hiddenAmountsStable } from './ui-privacy-checks.ts';
 import { syncStateOneLine } from './ui-sync-checks.ts';
 import { undoFocusKeepsPosition } from './ui-notice-checks.ts';
-import { toastLastInMain, toastNoCover } from './ui-toast-checks.ts';
+import { toastFocusNotObscured, toastLastInMain, toastNoCover } from './ui-toast-checks.ts';
 
 const toast = '.status-message';
 const toastText = `${toast} [role=status] p`;
@@ -188,6 +188,7 @@ export function arenaWave1(browser: Browser): readonly Readonly<[string, () => u
     ['feedback:toast-out-of-flow', () => feedbackToast(browser)],
     ['feedback:toast-last-in-main', () => toastLastInMain(browser)],
     ['feedback:toast-no-stuck-cover', () => toastNoCover(browser)],
+    ['feedback:toast-clear-of-focus', () => toastFocusNotObscured(browser)],
     ['privacy:hidden-amounts-stable', () => hiddenAmountsStable(browser)],
     ['import:details-no-clipped-cells', () => importDetailsTable(browser)],
     ['import:price-currency-nobr', () => importPriceNoBreak(browser)],

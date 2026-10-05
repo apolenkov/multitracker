@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { AppView } from './App.tsx';
 import { Count } from './Count.tsx';
 import { getLabels, text } from './i18n.ts';
@@ -33,10 +34,31 @@ export function Workspace({ view }: Readonly<{ view: AppView }>) {
     </div>
   );
 }
-// Плавающая плашка вне потока страницы; закрытие — явная цель 44×44 рядом с текстом.
+/* Плавающая плашка вне потока страницы; закрытие — явная цель 44×44 рядом с текстом.
+   Появившись над сфокусированным элементом, плашка выводит его прокруткой в кадр
+   после отрисовки — без таймеров, чтобы не спорить с восстановлением фокуса. */
 function StatusMessage({ view }: Readonly<{ view: AppView }>) {
+  const toastRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const toast = toastRef.current;
+    if (!view.notice.message || !toast) return;
+    const frame = requestAnimationFrame(() => {
+      const active = document.activeElement;
+      if (!(active instanceof HTMLElement)) return;
+      if (active === document.body || active === document.documentElement) return;
+      const box = active.getBoundingClientRect();
+      const toastBox = toast.getBoundingClientRect();
+      const covered =
+        box.bottom > toastBox.top &&
+        box.top < toastBox.bottom &&
+        box.right > toastBox.left &&
+        box.left < toastBox.right;
+      if (covered) active.scrollIntoView({ block: 'nearest' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [view.notice.message, view.notice.sequence]);
   return (
-    <div className="status-message">
+    <div className="status-message" ref={toastRef}>
       <div role="status" aria-atomic="true">
         {view.notice.message && <p key={view.notice.sequence}>{view.notice.message}</p>}
       </div>

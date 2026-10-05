@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { evaluate, settleLayout, type Browser } from './ui-driver.ts';
-import { go, hashGo, prepare, savePortfolio, truth, waitTrue } from './ui-helpers.ts';
+import {
+  focused,
+  go,
+  hashGo,
+  prepare,
+  rehash,
+  savePortfolio,
+  truth,
+  waitTrue,
+} from './ui-helpers.ts';
 
 const toast = '.status-message';
 const region = `${toast} [role=status]`;
@@ -137,4 +146,89 @@ export function toastNoCover(browser: Browser) {
   assert.deepEqual(found, [], 'Плашка накрывает управление без выхода прокруткой');
   browser.run('set', 'viewport', '1440', '900');
   return 'ни одно управление под плашкой не застревает: 7 разделов × 3 ширины × верх/низ';
+}
+
+// WCAG 2.2 Focus Not Obscured: сфокусированный элемент не пересекается
+// с прямоугольником плашки и целиком в пределах вьюпорта.
+const focusClearOfToast = `(() => {
+  const active = document.activeElement;
+  const toastEl = document.querySelector('${toast}');
+  if (!(active instanceof HTMLElement) || !toastEl) return false;
+  const a = active.getBoundingClientRect();
+  const t = toastEl.getBoundingClientRect();
+  const inside = a.bottom > 0 && a.top < innerHeight && a.right > 0 && a.left < innerWidth;
+  const covered = a.bottom > t.top && a.top < t.bottom && a.right > t.left && a.left < t.right;
+  return inside && !covered;
+})()`;
+
+// Ставит элемент так, чтобы его нижний край оказался внутри будущего следа
+// плашки: ниже пустой плашки элемент ещё кликабелен, с сообщением — накрыт.
+const placeInToastBand = (browser: Browser, selector: string) => {
+  evaluate(
+    browser,
+    `(() => {
+      const el = document.querySelector('${selector}');
+      const band = document.querySelector('${toast}').getBoundingClientRect().bottom - 10;
+      scrollTo(0, scrollY + el.getBoundingClientRect().bottom - band);
+      return Boolean(el);
+    })()`,
+  );
+  settleLayout(browser);
+};
+
+const dismissToast = (browser: Browser) => {
+  browser.run('click', `${toast} .icon-close`);
+  waitTrue(browser, `!(${toastShown})`, 'Плашка закрыта');
+};
+
+// Путь отмены: «Отозвать» → встроенное «Отменить» → фокус возвращается на
+// действие рядом с полосой плашки — он обязан оказаться выше неё.
+const undoFocusClear = (browser: Browser, tag: string) => {
+  placeInToastBand(browser, '#sync-revoke-mobile');
+  browser.run('click', '#sync-revoke-mobile');
+  waitTrue(
+    browser,
+    `Boolean(document.querySelector('.sync-devices .row-removed .undo-action'))`,
+    `${tag}: встроенное уведомление отзыва`,
+  );
+  browser.run('click', '.sync-devices .row-removed .undo-action');
+  waitTrue(browser, toastShown, `${tag}: плашка об отмене показана`);
+  waitTrue(
+    browser,
+    `${focused('#sync-revoke-mobile')} && ${focusClearOfToast}`,
+    `${tag}: вернувшийся фокус не под плашкой и в вьюпорте`,
+  );
+};
+
+// Прямое действие: клик оставляет фокус на кнопке, плашка появляется над ней —
+// элемент выводится прокруткой следующим кадром.
+const actionFocusClear = (browser: Browser, tag: string) => {
+  placeInToastBand(browser, '#sync-run');
+  browser.run('click', '#sync-run');
+  waitTrue(browser, toastShown, `${tag}: плашка о действии показана`);
+  waitTrue(
+    browser,
+    `${focused('#sync-run')} && ${focusClearOfToast}`,
+    `${tag}: сфокусированное действие не под плашкой и в вьюпорте`,
+  );
+};
+
+// Показанная плашка никогда не накрывает фокус: RU/EN × 375/1440, оба пути
+// к плашке — возврат фокуса после «Отменить» и действие при фокусе на нём.
+export function toastFocusNotObscured(browser: Browser) {
+  prepare(browser);
+  for (const language of ['ru', 'en'] as const) {
+    for (const width of [375, 1440] as const) {
+      browser.run('set', 'viewport', String(width), '900');
+      browser.run('select', '#topbar-language', language);
+      browser.run('wait', '--fn', `document.documentElement.lang === '${language}'`);
+      rehash(browser, 'sync');
+      undoFocusClear(browser, `${language} @${width}`);
+      dismissToast(browser);
+      actionFocusClear(browser, `${language} @${width}`);
+      dismissToast(browser);
+    }
+  }
+  browser.run('set', 'viewport', '1440', '900');
+  return 'фокус не под плашкой и в вьюпорте: RU/EN × 375/1440, отмена и действие';
 }

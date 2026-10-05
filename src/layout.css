@@ -1,5 +1,10 @@
 @import './layout-core.css';
 
+/* Пока плашка показана, у документа запас прокрутки снизу в её след:
+   прокрутка при переводе фокуса удерживает сфокусированный элемент выше неё. */
+html:has(.status-message p) {
+  scroll-padding-bottom: 96px;
+}
 @media (max-width: 1100px) {
   .sidebar {
     width: 216px;
@@ -94,6 +99,11 @@
   }
   html {
     scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+  /* Показанная плашка занимает больше места, чем навигация: запас прокрутки
+     растёт до её следа (как нижний отступ .workspace), фокус не остаётся под ней. */
+  html:has(.status-message p) {
+    scroll-padding-bottom: calc(184px + env(safe-area-inset-bottom));
   }
   :focus-visible {
     scroll-margin-block: 20px 96px;

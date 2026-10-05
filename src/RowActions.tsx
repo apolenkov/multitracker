@@ -62,7 +62,9 @@ const restoreNoticeFocus = (
   container: Element | null | undefined,
 ) => {
   if (notice?.isConnected === true || !focusLost(notice)) return;
-  returnTarget(opener, container)?.focus({ preventScroll: true });
+  // Прокрутку не отменяем: scroll-padding документа выводит цель
+  // из-под закреплённой навигации и показанной плашки.
+  returnTarget(opener, container)?.focus();
 };
 
 // Встроенное уведомление вместо убранной строки: та же высота, фокус на «Отменить».

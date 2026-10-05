@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { evaluate, settleLayout, type Browser } from './ui-driver.ts';
-import { go, hashGo, layoutShift, prepare, savePortfolio, truth, waitTrue } from './ui-helpers.ts';
+import {
+  announcements,
+  go,
+  hashGo,
+  layoutShift,
+  prepare,
+  savePortfolio,
+  truth,
+  waitTrue,
+} from './ui-helpers.ts';
 import { syncStateOneLine } from './ui-sync-checks.ts';
 import { undoFocusKeepsPosition } from './ui-notice-checks.ts';
 import { toastLastInMain } from './ui-toast-checks.ts';
@@ -47,6 +56,11 @@ function toastOverlay(browser: Browser) {
     () => {
       savePortfolio(browser);
       waitTrue(browser, toastShown, 'Сохранение показывает сообщение');
+      waitTrue(
+        browser,
+        `${announcements} === 1`,
+        'После сохранения объявлено ровно одно сообщение',
+      );
     },
     'Появление сообщения',
   );
@@ -107,19 +121,19 @@ function singleAnnouncement(browser: Browser) {
     `document.querySelector('${row}')?.classList.contains('row-removed')`,
     'Строка остаётся под уведомлением',
   );
-  truth(
-    browser,
-    `Array.from(document.querySelectorAll('[role=status]'))
-      .filter((el) => el.textContent?.trim() && el.checkVisibility()).length === 1`,
-    'После удаления объявлен ровно один живой регион',
-  );
+  truth(browser, `${announcements} === 1`, 'После удаления объявлен ровно один живой регион');
   browser.run('click', `${row} .undo-action`);
   waitTrue(
     browser,
     `!document.querySelector('${row}')?.classList.contains('row-removed')`,
     'Отмена вернула строку',
   );
-  return 'одно объявление на удаление: в строке, без дубля в плашке';
+  waitTrue(
+    browser,
+    `${announcements} === 1`,
+    'После отмены объявлено ровно одно сообщение — плашка, без снятого региона',
+  );
+  return 'одно объявление на удаление и на отмену: в строке, потом в плашке';
 }
 
 // Панель баланса и соседи: высота и верхняя кромка блоков ниже в координатах документа.

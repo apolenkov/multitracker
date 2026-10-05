@@ -54,6 +54,12 @@ export function waitTrue(browser: Browser, source: string, message: string) {
 export const focused = (selector: string) =>
   `document.activeElement === document.querySelector('${selector}')`;
 export const undoFocused = `Array.from(document.querySelectorAll('.undo-action')).some(button => button === document.activeElement && button.checkVisibility({checkVisibilityCSS:true}))`;
+
+// Объявление результата действия — глобальная плашка или встроенное «Отменить»
+// у записи. Постоянная строка состояния (.sync-state) и результат проверки в
+// диалоге — не объявления действия, их не считаем.
+export const announcements = `Array.from(document.querySelectorAll('.status-message [role=status], .row-notice[role=status]'))
+  .filter((el) => el.textContent?.trim() && el.checkVisibility()).length`;
 export const count = (selector: string) => `document.querySelectorAll('${selector}').length`;
 
 // Снимок положений всех элементов #main в координатах документа; ключ — путь по индексам детей.

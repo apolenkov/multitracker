@@ -15,7 +15,8 @@ import {
   narrowAllocation,
 } from './ui-overview-checks.ts';
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
-import { recordRowActions, entityUndo, importAndSyncUndo } from './ui-row-action-checks.ts';
+import { recordRowActions } from './ui-row-action-checks.ts';
+import { entityUndo, importAndSyncUndo } from './ui-demo-undo-checks.ts';
 import { arenaWave1, firstLoadHashFocus } from './ui-arena-checks.ts';
 import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';

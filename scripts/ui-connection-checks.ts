@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { evaluate, type Browser } from './ui-driver.ts';
-import { content, go, prepare, reveal, truth, waitTrue } from './ui-helpers.ts';
+import { announcements, content, go, prepare, reveal, truth, waitTrue } from './ui-helpers.ts';
 
 const card = '.connection-list .connection-row:nth-of-type(1)';
 const dialog = '#connection-config';
@@ -92,7 +92,7 @@ function disconnectUndo(browser: Browser) {
   browser.run(
     'wait',
     '--fn',
-    `document.querySelector('${status}')?.textContent === 'Действие отменено.' && !document.querySelector('${card}')?.classList.contains('row-removed')`,
+    `document.querySelector('${status}')?.textContent === 'Действие отменено.' && !document.querySelector('${card}')?.classList.contains('row-removed') && ${announcements} === 1`,
   );
   // Фокус возвращается кадром после размонтирования уведомления — ждём его.
   waitTrue(

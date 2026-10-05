@@ -6,7 +6,6 @@ import { DemoModal } from './modal';
 import { useModalSession } from './modal-session';
 import { closeDialog } from '../Dialog';
 import { RowNotice, undoneText } from '../RowActions.tsx';
-import { focusMain } from '../navigation.ts';
 
 type HistoryProps = Readonly<{
   language: ImportLanguage;
@@ -28,7 +27,6 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
   const restoreImport = () => {
     setUndone(false);
     notify(undoneText(language));
-    focusMain({ preventScroll: true });
   };
   return (
     <section className="import-history" aria-label={title}>

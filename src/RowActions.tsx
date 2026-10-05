@@ -35,8 +35,13 @@ export function UndoButton({
   );
 }
 
+const visible = (element: Element | null | undefined): element is HTMLElement =>
+  element instanceof HTMLElement && element.isConnected && element.checkVisibility();
+
 // Встроенное уведомление вместо убранной строки: та же высота, фокус на «Отменить».
-// detail несёт контекст («расчёт не изменён») в имя живого региона.
+// detail несёт контекст («расчёт не изменён») в имя живого региона. При монтировании
+// запоминается действие строки (удаление/отзыв); отмена возвращает на него фокус —
+// а если оно исчезло вместе с диалогом, на первое видимое действие записи.
 export function RowNotice({
   text,
   detail,
@@ -45,10 +50,29 @@ export function RowNotice({
 }: Readonly<{ text: string; detail?: string; language: Language; onUndo: () => void }>) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const opener = document.activeElement;
+    const container = ref.current?.parentElement;
     const frame = requestAnimationFrame(() =>
       ref.current?.querySelector<HTMLElement>('.undo-action')?.focus(),
     );
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      cancelAnimationFrame(frame);
+      // Кадр после размонтирования: запись снова видна и её действия доступны.
+      // При переходе на другой раздел все цели отцеплены — остаётся #main, как у hashchange.
+      requestAnimationFrame(() => {
+        const fallback = container?.querySelector<HTMLElement>(
+          '.history-row-open, .row-action, button',
+        );
+        // body — «никто»: диалог захлопнулся до эффекта и вернул activeElement в документ.
+        const target =
+          visible(opener) && opener !== document.body
+            ? opener
+            : visible(fallback)
+              ? fallback
+              : null;
+        (target ?? document.getElementById('main'))?.focus({ preventScroll: true });
+      });
+    };
   }, []);
   return (
     <div ref={ref} className="row-notice" role="status" aria-atomic="true" aria-label={detail}>

@@ -6,7 +6,6 @@ import { demoState } from '../model/portfolio';
 import { accountLabel } from '../forms/accounts';
 import { Icon } from '../Icon.tsx';
 import { RowNotice, undoneText } from '../RowActions.tsx';
-import { focusMain } from '../navigation.ts';
 import {
   connectionText,
   providerLabel,
@@ -79,7 +78,6 @@ function useConnections(
     if (value) setConfigured((current) => [...current, value]);
     setDropped((current) => new Map([...current].filter(([key]) => key !== provider)));
     notify(undoneText(language));
-    focusMain({ preventScroll: true });
   };
   return { configured, dropped, modal, save, disconnect, restore };
 }

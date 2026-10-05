@@ -4,7 +4,6 @@ import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
 import { useModalSession, type ModalControl } from './modal-session';
 import { RowNotice, undoneText } from '../RowActions.tsx';
-import { focusMain } from '../navigation.ts';
 
 export function SyncPanel({ language, notify }: ConnectionProps) {
   const t = language === 'ru' ? syncText.ru : syncText.en;
@@ -117,7 +116,6 @@ function SyncDevices({
   const restore = () => {
     setRevoked(false);
     notify(undoneText(language));
-    focusMain({ preventScroll: true });
   };
   return (
     <section className="sync-devices">

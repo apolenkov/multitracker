@@ -117,7 +117,10 @@ function deleteUndo(browser: Browser, from: 'row' | 'details') {
     },
     'Отмена удаления',
   );
-  waitTrue(browser, focused('#main'), 'После отмены фокус на основном содержимом');
+  // Фокус возвращается на действие строки: удаление — если строка убрана из неё,
+  // открытие — если удаление нажималось в закрывшемся диалоге.
+  const restored = from === 'row' ? `${row} .row-action.danger` : `${row} .history-row-open`;
+  waitTrue(browser, focused(restored), `После отмены фокус на ${restored}`);
   assert.equal(
     evaluate(browser, `document.querySelector('${row} .history-row-open').ariaLabel`),
     name,
@@ -218,17 +221,19 @@ export function entityUndo(browser: Browser) {
       `!document.querySelector('${veil}')?.classList.contains('row-removed')`,
       `${action}: отмена сняла уведомление`,
     );
-    waitTrue(browser, focused('#main'), `${action}: после отмены фокус на основном содержимом`);
+    // Кнопка «В архив/Удалить» нажималась в диалоге и ушла с ним — фокус на действии записи.
+    waitTrue(
+      browser,
+      `document.querySelector('${veil}')?.contains(document.activeElement) === true`,
+      `${action}: после отмены фокус на действии записи`,
+    );
     assert.deepEqual(evaluate(browser, names), before, `${action}: тот же пункт на прежнем месте`);
     return { items, action, restored: true };
   });
 }
 
 // Импорт: видимые «Подробности» и «Сверить остаток»; отмена импорта — встроенное «Отменить».
-// Синхронизация: видимая «Отозвать доступ» вместо меню из одного пункта.
-export function importAndSyncUndo(browser: Browser) {
-  browser.run('set', 'viewport', '1440', '900');
-  browser.run('select', '#topbar-language', 'ru');
+function importUndo(browser: Browser) {
   go(browser, 'import');
   browser.run('click', '#import-history-details');
   browser.run('wait', '#import-history[open]');
@@ -250,6 +255,16 @@ export function importAndSyncUndo(browser: Browser) {
     'document.querySelector("#import-history-details")?.checkVisibility({checkVisibilityCSS:true}) === true',
     'Отмена вернула запись импорта',
   );
+  // «Отменить импорт» нажималась в диалоге — фокус на первом действии записи.
+  waitTrue(
+    browser,
+    'document.querySelector(".import-entry")?.contains(document.activeElement) === true',
+    'Отмена импорта: фокус на действии записи',
+  );
+}
+
+// Синхронизация: видимая «Отозвать доступ» вместо меню из одного пункта.
+function deviceUndo(browser: Browser) {
   go(browser, 'sync');
   const revoke = '#sync-revoke-mobile';
   browser.run('wait', revoke);
@@ -271,5 +286,13 @@ export function importAndSyncUndo(browser: Browser) {
     `document.querySelector('${revoke}')?.checkVisibility({checkVisibilityCSS:true}) === true`,
     'Отмена вернула доступ устройства',
   );
+  waitTrue(browser, focused(revoke), 'Отзыв: после отмены фокус на «Отозвать доступ»');
+}
+
+export function importAndSyncUndo(browser: Browser) {
+  browser.run('set', 'viewport', '1440', '900');
+  browser.run('select', '#topbar-language', 'ru');
+  importUndo(browser);
+  deviceUndo(browser);
   return { import: 'Подробности → Отменить импорт → Отменить', sync: 'Отозвать → Отменить' };
 }

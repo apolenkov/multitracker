@@ -11,7 +11,6 @@ import { RecordDialog } from './RecordDialog.tsx';
 import type { RecordRequest } from './RecordDialog.tsx';
 import { recordsCopy } from './copy.ts';
 import { undoneText } from '../RowActions.tsx';
-import { focusMain } from '../navigation.ts';
 
 type Props = RecordsProps & Readonly<{ brief?: boolean }>;
 export function History(props: Props) {
@@ -116,7 +115,6 @@ function useHistory(props: Props) {
   const restore = (id: string) => {
     setRemoved((current) => current.filter((item) => item !== id));
     save(undoneText(props.language));
-    focusMain({ preventScroll: true });
   };
   const open = (next: RecordRequest | null) => {
     if (next && !request && document.activeElement instanceof HTMLElement)

@@ -9,8 +9,6 @@ import { accountSamples } from '../forms/accounts.ts';
 import { Icon } from '../Icon.tsx';
 import { RowAction, RowNotice, undoneText } from '../RowActions.tsx';
 import { AssetSymbol } from '../AssetSymbol.tsx';
-import { focusMain } from '../navigation.ts';
-
 import { AccountList, SelectionActions, SelectionFields } from './PortfolioAccounts.tsx';
 import type { EntityRequest, RemovedMap } from './PortfolioAccounts.tsx';
 type Props = RecordsProps & Readonly<{ onSelect: (id: string) => void; onCreate: () => void }>;
@@ -206,7 +204,6 @@ function useEntities(props: Props) {
   const restore = (key: string) => {
     setRemoved((current) => new Map([...current].filter(([item]) => item !== key)));
     save(undoneText(props.language));
-    focusMain({ preventScroll: true });
   };
   useEffect(() => {
     if (request) openDialog('entity-dialog');

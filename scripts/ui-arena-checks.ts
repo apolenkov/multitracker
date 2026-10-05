@@ -203,6 +203,24 @@ export function hiddenAmountsStable(browser: Browser) {
   return { wide, narrow };
 }
 
+// Первая загрузка адреса с фрагментом: документ грузится целиком, hashchange нет,
+// штатный перевод фокуса не срабатывает — рамка заголовка не появляется.
+export function firstLoadHashFocus(browser: Browser, url: string) {
+  browser.run('open', 'about:blank');
+  browser.run('open', `${url.replace(/#.*$/, '')}#history`);
+  waitTrue(
+    browser,
+    `location.hash === '#history' && document.querySelector('#main h1')?.textContent === 'Операции'`,
+    'Загрузка #history должна показать Операции',
+  );
+  truth(
+    browser,
+    `document.activeElement?.id !== 'main' && getComputedStyle(document.querySelector('#main h1')).outlineStyle === 'none'`,
+    'Первая загрузка с фрагментом не должна фокусировать main и рисовать рамку заголовка',
+  );
+  return 'open url#history: без рамки и без фокуса main — дефект первой загрузки не воспроизводится';
+}
+
 export function feedbackToast(browser: Browser) {
   prepare(browser);
   const wide = routes.map((screen) => headingGap(browser, screen));

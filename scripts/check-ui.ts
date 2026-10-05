@@ -17,7 +17,7 @@ import {
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
 import { recordRowActions } from './ui-row-action-checks.ts';
 import { entityUndo, importAndSyncUndo } from './ui-demo-undo-checks.ts';
-import { arenaWave1, firstLoadHashFocus } from './ui-arena-checks.ts';
+import { arenaWave1, firstLoadHashGuard } from './ui-arena-checks.ts';
 import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
@@ -220,7 +220,7 @@ function hiddenReconciliation() {
 function runChecks(driver: Browser): readonly Result[] {
   const pages = [
     check('navigation:initial-skip-focus', () => initialSkipFocus(driver, baseUrl.href)),
-    check('navigation:first-load-hash', () => firstLoadHashFocus(driver, baseUrl.href)),
+    check('navigation:first-load-hash', () => firstLoadHashGuard(driver, baseUrl.href)),
     ...allScreens(),
   ];
   language('ru');

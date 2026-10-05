@@ -258,9 +258,12 @@ export function arenaWave1(browser: Browser): readonly Readonly<[string, () => u
   ];
 }
 
-// Первая загрузка адреса с фрагментом: документ грузится целиком, hashchange нет,
-// штатный перевод фокуса не срабатывает — рамка заголовка не появляется.
-export function firstLoadHashFocus(browser: Browser, url: string) {
+// Характеризационный сторожок, а не регрессионная проверка: дефект «первая
+// загрузка #history фокусирует main и рисует рамку заголовка» на текущем
+// поведении не воспроизводится — документ грузится целиком с фрагментом,
+// hashchange не наступает и readAddress(false) фокус не переводит. Прогон
+// фиксирует отсутствие дефекта; «упала на старом поведении» для него нет.
+export function firstLoadHashGuard(browser: Browser, url: string) {
   browser.run('open', 'about:blank');
   browser.run('open', `${url.replace(/#.*$/, '')}#history`);
   waitTrue(
@@ -273,7 +276,7 @@ export function firstLoadHashFocus(browser: Browser, url: string) {
     `document.activeElement?.id !== 'main' && getComputedStyle(document.querySelector('#main h1')).outlineStyle === 'none'`,
     'Первая загрузка с фрагментом не должна фокусировать main и рисовать рамку заголовка',
   );
-  return 'open url#history: без рамки и без фокуса main — дефект первой загрузки не воспроизводится';
+  return 'open url#history: без рамки и без фокуса main — дефект первой загрузки не воспроизводится (характеризация, не регрессия)';
 }
 
 export function feedbackToast(browser: Browser) {

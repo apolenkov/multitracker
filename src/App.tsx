@@ -12,6 +12,7 @@ import { useDialogPointerGuard } from './dialog-pointer-guard.ts';
 
 export type Notice = Readonly<{ sequence: number; message: string }>;
 import './base.css';
+import './skip-link.css';
 import './appearance.css';
 import './layout.css';
 import './finance.css';

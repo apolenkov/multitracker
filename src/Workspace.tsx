@@ -1,6 +1,7 @@
 import type { AppView } from './App.tsx';
 import { Count } from './Count.tsx';
 import { getLabels, text } from './i18n.ts';
+import { Icon } from './Icon.tsx';
 import { demoState, summarize } from './model/portfolio.ts';
 import { Overview } from './Overview.tsx';
 import { OverviewSummary } from './OverviewSummary.tsx';
@@ -32,12 +33,23 @@ export function Workspace({ view }: Readonly<{ view: AppView }>) {
     </div>
   );
 }
+// Плавающая плашка вне потока страницы; закрытие — явная цель 44×44 рядом с текстом.
 function StatusMessage({ view }: Readonly<{ view: AppView }>) {
   return (
     <div className="status-message">
       <div role="status" aria-atomic="true">
         {view.notice.message && <p key={view.notice.sequence}>{view.notice.message}</p>}
       </div>
+      {view.notice.message && (
+        <button
+          type="button"
+          className="icon-close"
+          aria-label={view.language === 'ru' ? 'Закрыть сообщение' : 'Dismiss message'}
+          onClick={view.dismissNotice}
+        >
+          <Icon name="close" />
+        </button>
+      )}
     </div>
   );
 }
@@ -66,6 +78,7 @@ function PageContent({ view }: Readonly<{ view: AppView }>) {
           demoState={view.demoState}
           onDemoState={view.setDemoState}
           onShowExample={() => view.navigate('overview')}
+          onSaved={view.onSaved}
         />
       </div>
     </>

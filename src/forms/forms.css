@@ -1,9 +1,3 @@
-.form-sample {
-  width: fit-content;
-  margin: 12px 0 20px;
-  color: var(--muted);
-  font-size: 14px;
-}
 .operation-kind {
   display: grid;
   gap: 8px;

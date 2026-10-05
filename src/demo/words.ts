@@ -66,6 +66,7 @@ export type Props = Readonly<{
   demoState: DemoState;
   onDemoState: (v: DemoState) => void;
   onShowExample: () => void;
+  onSaved: (message: string) => void;
 }>;
 export type Texts = {
   [K in keyof typeof words.ru]: (typeof words.ru)[K] extends object

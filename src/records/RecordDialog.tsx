@@ -34,9 +34,6 @@ export function RecordDialog(props: Props) {
         {operationLabel(props.request.record.type, props.language)} · {props.request.record.asset} ·{' '}
         {date(props.request.record.date, props.language)}
       </p>
-      <p className="form-sample">
-        {props.language === 'ru' ? 'Данные не сохраняются' : 'Records are not saved'}
-      </p>
       <RecordValues {...props} record={props.request.record} />
       <RecordDetails {...props} />
     </dialog>

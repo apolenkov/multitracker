@@ -27,7 +27,6 @@ export function EntityDialog(props: Props) {
           dialog={props.id}
           labels={labels}
         />
-        <p className="form-sample">{presentationCopy(props.language).sample}</p>
         <EntityFields props={props} {...form} />
         <FormActions
           dialog={props.id}

@@ -69,10 +69,10 @@ function useConnections(
     notify(t.saved);
   };
   // Отключение сразу: строка остаётся под встроенным «Отменить», которое возвращает настройки.
+  // Объявление одно — в карточке (RowNotice несёт t.removed в имени региона).
   const disconnect = (value: Connection) => {
     setConfigured((current) => current.filter((item) => item.provider !== value.provider));
     setDropped((current) => new Map([...current, [value.provider, value]]));
-    notify(t.removed);
   };
   const restore = (provider: string) => {
     const value = dropped.get(provider);

@@ -4,7 +4,7 @@ import { content, go, prepare, reveal, truth } from './ui-helpers.ts';
 
 const card = '.connection-list .connection-row:nth-of-type(1)';
 const dialog = '#connection-config';
-const status = '.demo-page .demo-status [role=status] span';
+const status = '.status-message [role=status] p';
 
 function testConnection(browser: Browser) {
   browser.run('click', '#connection-test');
@@ -68,10 +68,11 @@ function disconnectUndo(browser: Browser) {
     'Отключение источника называет провайдера',
   );
   browser.run('click', disconnect);
+  // Объявление одно — в карточке; подпись региона несёт полный текст, дубля в плашке нет.
   browser.run(
     'wait',
     '--fn',
-    `document.querySelector('${status}')?.textContent === 'Источник отключён в примере. Никакие ключи и операции не удалялись.' && document.querySelector('${card}')?.classList.contains('row-removed')`,
+    `document.querySelector('${card} .row-notice[role=status]')?.getAttribute('aria-label') === 'Источник отключён в примере. Никакие ключи и операции не удалялись.' && document.querySelector('${card}')?.classList.contains('row-removed') && !document.querySelector('${status}')`,
   );
   // Фокус ставится в requestAnimationFrame: ждём кадр, а не читаем состояние мгновенно.
   browser.run(

@@ -20,16 +20,10 @@ export function ImportHistory({ language, hidden, notify }: HistoryProps) {
   const [undone, setUndone] = useState(false);
   const title = importText(language, 'История импорта', 'Import history');
   // Отмена импорта выполняется сразу; запись остаётся под встроенным «Отменить» на месте.
+  // Объявление одно — в записи (RowNotice несёт тот же смысл в имени региона).
   const undoImport = () => {
     closeDialog('import-history');
     setUndone(true);
-    notify(
-      importText(
-        language,
-        'Импорт отменён. Учебные операции и остатки не изменены.',
-        'Import undone. Sample activity and balances are unchanged.',
-      ),
-    );
   };
   const restoreImport = () => {
     setUndone(false);

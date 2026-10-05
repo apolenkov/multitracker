@@ -45,7 +45,7 @@ export const undoFocused = `Array.from(document.querySelectorAll('.undo-action')
 export const count = (selector: string) => `document.querySelectorAll('${selector}').length`;
 
 // Снимок положений всех элементов #main в координатах документа; ключ — путь по индексам детей.
-// Внутренности зарезервированных слотов уведомлений — часть самого уведомления, они не считаются.
+// Само уведомление и его внутренности — вне потока страницы, они не считаются.
 const layoutMap = `(() => {
   const path = (node) => {
     const steps = [];
@@ -58,8 +58,7 @@ const layoutMap = `(() => {
     // Нулевой прямоугольник (display:none, display:contents, option) позиции не имеет:
     // top+scrollY для него — просто scrollY, ложное «движение» при любой прокрутке.
     const inside =
-      element.parentElement?.closest('.status-message, .demo-status, .row-notice') ||
-      (box.width === 0 && box.height === 0)
+      element.closest('.status-message, .row-notice') || (box.width === 0 && box.height === 0)
         ? 1
         : 0;
     const desc = element.tagName.toLowerCase() + (element.className ? '.' + String(element.className).trim().split(/\\s+/).join('.') : '');

@@ -98,6 +98,10 @@
   :focus-visible {
     scroll-margin-block: 20px 96px;
   }
+  /* Нижняя навигация 69 px + зазор 16 px: плашка сообщения читается над ней. */
+  .status-message {
+    bottom: calc(85px + env(safe-area-inset-bottom));
+  }
 }
 @media (max-width: 600px) {
   .workspace {

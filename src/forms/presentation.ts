@@ -3,7 +3,6 @@ import type { Field, OperationInput, OperationType } from './operations.ts';
 
 const copy = {
   ru: {
-    sample: 'Данные не сохраняются',
     context: 'Счёт',
     source: 'Откуда',
     destination: 'Куда',
@@ -51,7 +50,6 @@ const copy = {
     selection: 'Объединить для просмотра',
   },
   en: {
-    sample: 'Records are not saved',
     context: 'Account',
     source: 'From',
     destination: 'To',

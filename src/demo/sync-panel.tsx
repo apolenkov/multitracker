@@ -110,9 +110,9 @@ function SyncDevices({
 }>) {
   const [revoked, setRevoked] = useState(false);
   // Отзыв выполняется сразу: строка остаётся под встроенным «Отменить», которое возвращает доступ.
+  // Объявление одно — в строке (RowNotice несёт t.revoked).
   const revoke = () => {
     setRevoked(true);
-    notify(t.revoked);
   };
   const restore = () => {
     setRevoked(false);

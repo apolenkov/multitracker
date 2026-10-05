@@ -154,6 +154,20 @@ await test('open more-menu loses the overlap exemption; closed bottom nav keeps 
   assert.ok(designScanSource.includes("closest('.mobile-links')"));
 });
 
+await test('padded fixed toast is exempt over flow text only', () => {
+  // Плашка .status-message (fixed) при активном отступе .workspace: потоковый
+  // текст уходит прокруткой выше её края — устройство раскладки, не дефект.
+  // Старые 4 аргумента оставляли эту пару находкой (матрица CI: 58 FAIL).
+  assert.equal(overlapExempt(true, false, false, false, true), true);
+  // Плашка без активного отступа — обычный закреплённый слой и находка.
+  assert.equal(overlapExempt(true, false, false, false, false), false);
+  // Текст другого закреплённого слоя (нижняя навигация, диалог) — находка.
+  assert.equal(overlapExempt(true, true, false, false, true), false);
+  // Нефиксированный контрол под потоком освобождения не получает.
+  assert.equal(overlapExempt(false, false, false, false, true), false);
+  assert.ok(designScanSource.includes("closest('.status-message')"));
+});
+
 const hit = (control: boolean, text: boolean, opaque: boolean) => ({ control, text, opaque });
 
 await test('hit-stack coverage counts only an opaque control layer above text', () => {

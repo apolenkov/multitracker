@@ -79,8 +79,10 @@
   color: var(--muted);
   margin: 4px 3.333% 0;
 }
+/* Тот же отступ и высота, что у .history-chart + .history-plot: скрытие сумм не двигает панель. */
 .history-plot-hidden {
   min-height: 184px;
+  margin-top: 12px;
   display: grid;
   place-content: center;
   color: var(--muted);

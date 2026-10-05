@@ -192,6 +192,12 @@ main {
   background: transparent;
   color: var(--ink);
 }
+/* Пока плашка висит, у корня страницы растёт нижний отступ: место
+   добавляется в конец документа за подвалом, ничто выше не сдвигается,
+   и последние управления уходят прокруткой выше плашки. */
+.workspace:has(.status-message p) {
+  padding-bottom: 96px;
+}
 main:focus-visible {
   outline: none;
 }

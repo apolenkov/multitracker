@@ -102,6 +102,11 @@
   .status-message {
     bottom: calc(85px + env(safe-area-inset-bottom));
   }
+  /* Плашка занимает до ~160 px от низа вьюпорта — подвальное место
+     растёт настолько же, чтобы управления уходили прокруткой выше. */
+  .workspace:has(.status-message p) {
+    padding-bottom: calc(184px + env(safe-area-inset-bottom));
+  }
 }
 @media (max-width: 600px) {
   .workspace {

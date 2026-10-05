@@ -10,6 +10,7 @@ import {
   truth,
   waitTrue,
 } from './ui-helpers.ts';
+import { importPriceNoBreak } from './ui-import-checks.ts';
 import { syncStateOneLine } from './ui-sync-checks.ts';
 import { undoFocusKeepsPosition } from './ui-notice-checks.ts';
 import { toastLastInMain } from './ui-toast-checks.ts';
@@ -253,6 +254,7 @@ export function arenaWave1(browser: Browser): readonly Readonly<[string, () => u
     ['feedback:toast-last-in-main', () => toastLastInMain(browser)],
     ['privacy:hidden-amounts-stable', () => hiddenAmountsStable(browser)],
     ['import:details-no-clipped-cells', () => importDetailsTable(browser)],
+    ['import:price-currency-nobr', () => importPriceNoBreak(browser)],
     ['sync:state-one-line-375', () => syncStateOneLine(browser)],
     ['undo:focus-kept-when-moved', () => undoFocusKeepsPosition(browser)],
   ];

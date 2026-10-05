@@ -32,7 +32,9 @@ export function ImportSample(props: Readonly<{ language: ImportLanguage; hidden:
   );
 }
 // В окне подробностей «Действие» одинаково во всех строках, а валюта входит в цену —
-// два столбца не нужны, «Проверка» читается с переносом и без обрезки.
+// два столбца не нужны, «Проверка» читается с переносом и без обрезки. Сумма и код
+// валюты соединены U+00A0, пара никогда не разрывается по строкам.
+const NBSP = '\u00A0';
 const detailFields = importFields.filter((field) => field !== 'action' && field !== 'currency');
 function ImportTable({
   language,
@@ -60,7 +62,7 @@ function ImportTable({
               <td>{row.date}</td>
               <td>{row.asset}</td>
               <td>{hidden ? '••••' : row.quantity}</td>
-              <td>{hidden ? '••••' : `${row.price} ${row.currency}`}</td>
+              <td>{hidden ? '••••' : `${row.price}${NBSP}${row.currency}`}</td>
               <td>{rowStatus(row.status, language)}</td>
             </tr>
           ))}
@@ -81,7 +83,9 @@ function ImportRows({ language, hidden }: Readonly<{ language: ImportLanguage; h
           </div>
           <p>
             {importText(language, 'Количество', 'Quantity')}: {hidden ? '••••' : row.quantity} ·{' '}
-            {importText(language, 'Цена', 'Price')}: {hidden ? '••••' : row.price} {row.currency}
+            {importText(language, 'Цена', 'Price')}: {hidden ? '••••' : row.price}
+            {NBSP}
+            {row.currency}
           </p>
           <p className="import-row-status">{rowStatus(row.status, language)}</p>
           {row.status !== 'ready' && (

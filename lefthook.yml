@@ -1,0 +1,21 @@
+# Opt-in: run `npx lefthook install` once. Nothing installs these hooks automatically.
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format
+      glob: "*.{ts,tsx,css}"
+      run: npx prettier --check {staged_files}
+    - name: lint
+      glob: "*.{ts,tsx}"
+      run: npm run -s lint
+    - name: typecheck
+      glob: "*.{ts,tsx}"
+      run: npm run -s typecheck
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: npx commitlint --edit {1}
+pre-push:
+  jobs:
+    - name: check
+      run: npm run -s check

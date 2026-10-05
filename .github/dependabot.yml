@@ -1,12 +1,41 @@
+# Weekly version updates; a new release waits 3 days before Dependabot
+# proposes it (cooldown), so a pulled or compromised version is skipped.
+# Every update is auto-merged once the required check is green
+# (see .github/workflows/dependabot-automerge.yml).
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    # typescript-eslint supports TypeScript < 6.1 only; take a new TypeScript
+    # major once it does. @types/node follows the Node.js major pinned in
+    # .nvmrc, so it moves together with that file, not on its own.
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    groups:
+      tooling:
+        patterns: ['*']
+        update-types: [minor, patch]
+    commit-message:
+      prefix: chore
+      include: scope
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    groups:
+      actions:
+        patterns: ['*']
+    commit-message:
+      prefix: chore
+      include: scope

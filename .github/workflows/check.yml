@@ -8,7 +8,9 @@ permissions:
   contents: read
 jobs:
   check:
-    runs-on: [self-hosted, mt-container]
+    # Trusted actors use the shared self-hosted runner; Dependabot and forks use
+    # GitHub-hosted runners so auto-merge cannot stall on it.
+    runs-on: ${{ (github.actor != 'dependabot[bot]' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)) && fromJSON('["self-hosted","mt-container"]') || 'ubuntu-latest' }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

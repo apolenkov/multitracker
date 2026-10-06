@@ -140,14 +140,10 @@ function HistorySummary({
           </dt>
           <dd>{amount(value)}</dd>
         </div>
-        <div>
-          <dt>{labels.chartContributions}</dt>
-          <dd>{amount(basis)}</dd>
-        </div>
       </dl>
       <p className="quiet" aria-live="polite">
         {labels.chartChange}: {amount(value * (1 - firstValue), true)}. {labels.chartAdded}:{' '}
-        {amount(basis * (1 - firstBasis))}.
+        {amount(basis * (1 - firstBasis))}. {labels.chartContributions}: {amount(basis)}.
       </p>
     </>
   );

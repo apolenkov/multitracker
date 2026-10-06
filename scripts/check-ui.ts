@@ -8,13 +8,7 @@ import { createCheck, type Result } from './ui-results.ts';
 import { syncActions } from './ui-sync-checks.ts';
 import { operationActions } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
-import {
-  attributionLine,
-  initialSkipFocus,
-  maskedResultTones,
-  narrowAllocation,
-} from './ui-overview-checks.ts';
-import { stableHeroDisclosure } from './ui-overview-checks.ts';
+import { initialSkipFocus, maskedResultTones, overviewActions } from './ui-overview-checks.ts';
 import { recordRowActions } from './ui-row-action-checks.ts';
 import { entityUndo, importAndSyncUndo } from './ui-demo-undo-checks.ts';
 import { arenaWave1, firstLoadHashGuard } from './ui-arena-checks.ts';
@@ -242,11 +236,9 @@ function runChecks(driver: Browser): readonly Result[] {
     ['preferences:widget-monochrome', () => widgetAppearance(browser)],
     ...syncActions(browser),
     ...operationActions(browser),
-    ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
+    ...overviewActions(browser),
     ['cash:opening-balance-rows-and-sort', () => cashFlow(browser)],
     ['counters:unified-badge', () => unifiedCounters(browser)],
-    ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
-    ['overview:attribution-one-line', () => attributionLine(browser)],
     ['history:row-actions-focus-undo', () => recordRowActions(browser)],
     ['portfolios:archive-delete-undo', () => entityUndo(browser)],
     ['import-sync:visible-actions-undo', () => importAndSyncUndo(browser)],

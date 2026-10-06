@@ -116,6 +116,60 @@ export function attributionLine(browser: Browser) {
   return observed;
 }
 
+// Задача 10 (находка 15): легенда называет только нарисованную серию — линия
+// одна, «Внесено» остаётся фактом; строки активов имеют видимое «Подробнее:
+// <актив>» с целью 44×44.
+export function chartLegendAndAssetDetails(browser: Browser) {
+  prepare(browser);
+  go(browser, 'overview');
+  browser.run('click', '.balance-panel .chart-disclosure > summary');
+  browser.run(
+    'wait',
+    '--fn',
+    'document.querySelector(".balance-panel .chart-disclosure")?.open === true',
+  );
+  truth(
+    browser,
+    `(() => { const key = document.querySelector('.chart-disclosure .chart-key');
+      const section = key?.closest('.value-history');
+      return key?.querySelectorAll('dt').length === 1 &&
+        key.querySelectorAll('.key-line').length === 1 &&
+        key.textContent?.includes('Внесено') === false &&
+        section?.querySelectorAll('.history-value').length === 1 &&
+        document.querySelector('.chart-disclosure')?.textContent?.includes('Внесено') === true; })()`,
+    'Легенда — одна серия при одной линии; «Внесено» — фактом, не серией',
+  );
+  const target44 = `(() => { const buttons = [...document.querySelectorAll('.holding-row button.asset-name')];
+    return buttons.length >= 3 && buttons.every((btn) => {
+      const r = btn.getBoundingClientRect();
+      return r.width >= 44 && r.height >= 44 && btn.querySelector('.ui-icon') &&
+        btn.getAttribute('aria-label')?.startsWith('Подробнее:') === true; }); })()`;
+  truth(browser, target44, 'Строки активов: «Подробнее: <актив>» с целью 44×44');
+  browser.run('select', '#topbar-language', 'en');
+  browser.run('wait', '--fn', 'document.documentElement.lang === "en"');
+  truth(
+    browser,
+    `[...document.querySelectorAll('.holding-row button.asset-name')].length >= 3 &&
+     [...document.querySelectorAll('.holding-row button.asset-name')].every(
+       (btn) => btn.getAttribute('aria-label')?.startsWith('Details:') === true)`,
+    'EN: цель называется «Details: <asset>»',
+  );
+  browser.run('select', '#topbar-language', 'ru');
+  browser.run('wait', '--fn', 'document.documentElement.lang === "ru"');
+  browser.run('click', '.balance-panel .chart-disclosure > summary');
+  return 'легенда — одна серия «Итого»; активы — «Подробнее: <актив>» 44×44 RU/EN';
+}
+
+/** Проверки обзора для списка check-ui: состав, раскрытие, атрибуция, легенда. */
+export function overviewActions(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
+  return [
+    ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
+    ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
+    ['overview:attribution-one-line', () => attributionLine(browser)],
+    ['overview:chart-legend-asset-details', () => chartLegendAndAssetDetails(browser)],
+  ];
+}
+
 // В режиме скрытия сумм знак результата не раскрывается цветом (DESIGN.md).
 export function maskedResultTones(browser: Browser) {
   const tones = ['overview', 'portfolios', 'history', 'settings'].map((screen) => {

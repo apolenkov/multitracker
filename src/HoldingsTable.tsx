@@ -6,6 +6,7 @@ import { openDialog, openOperation } from './Forms.tsx';
 import { RowAction } from './RowActions.tsx';
 import { totals, type Asset, type Buy, type Currency } from './model/portfolio.ts';
 import { getLabels, money, number, percentage, resultTone, type Language } from './i18n.ts';
+import { recordsCopy } from './records/copy.ts';
 import { groupHoldings, holdingClassName, type HoldingGroup } from './holding-groups.ts';
 
 type Holding = Readonly<{ asset: Asset; buys: readonly Buy[] }>;
@@ -222,7 +223,7 @@ function HoldingRow({
 
   return (
     <tr className="holding-row">
-      <HoldingAsset asset={holding.asset} onSelect={onSelect} />
+      <HoldingAsset asset={holding.asset} language={language} onSelect={onSelect} />
       <td className="holding-quantity">
         <span className="mobile-label">{labels.quantity}</span>
         {hidden
@@ -276,14 +277,15 @@ function HoldingWeight({
   );
 }
 
-function HoldingAsset({
-  asset,
-  onSelect,
-}: Readonly<{ asset: Asset; onSelect: (asset: Asset) => void }>) {
+function HoldingAsset(
+  props: Readonly<{ asset: Asset; language: Language; onSelect: (asset: Asset) => void }>,
+) {
+  const { asset, language, onSelect } = props;
   return (
     <td>
       <button
         className="asset-name"
+        aria-label={`${recordsCopy(language).details}: ${asset}`}
         onClick={() => {
           onSelect(asset);
           openDialog('asset-dialog');
@@ -291,6 +293,7 @@ function HoldingAsset({
       >
         <AssetSymbol symbol={asset} />
         <strong>{asset}</strong>
+        <Icon name="chevron" />
       </button>
     </td>
   );

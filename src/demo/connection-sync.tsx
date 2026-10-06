@@ -5,6 +5,7 @@ import { ConnectionForm } from './connection-form';
 import { demoState } from '../model/portfolio';
 import { accountLabel } from '../forms/accounts';
 import { Icon } from '../Icon.tsx';
+import { StatusChip } from '../StatusChip.tsx';
 import { RowNotice, undoneText } from '../RowActions.tsx';
 import {
   connectionText,
@@ -115,12 +116,13 @@ function ConnectionCard({
   restore: () => void;
 }>) {
   const portfolio = demoState.portfolios.find((item) => item.id === value?.portfolio);
+  const tone: 'ok' | 'muted' = value ? 'ok' : 'muted';
   return (
     <article className={dropped ? 'connection-row row-removed' : 'connection-row'}>
       <ProviderLogo provider={provider} />
       <div className="connection-summary">
         <h2>{providerLabel(provider, t)}</h2>
-        <p>{value ? t.configured : t.disconnected}</p>
+        <StatusChip tone={tone} label={value ? t.configured : t.disconnected} />
         {value && (
           <p>
             {t.destination}: {portfolio?.name} · {accountLabel(value.account, language)} ·{' '}

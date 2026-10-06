@@ -5,7 +5,7 @@ import { appearanceThemes, independentCurrencies, settingsPersist } from './ui-p
 import { reveal, widgetAppearance } from './ui-helpers.ts';
 import { connectionLifecycle } from './ui-connection-checks.ts';
 import { createCheck, type Result } from './ui-results.ts';
-import { conflictRadioChoices, syncPostConflictDisclosure } from './ui-sync-checks.ts';
+import { syncActions } from './ui-sync-checks.ts';
 import { operationExtras } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
 import {
@@ -24,6 +24,7 @@ import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
 import { modalDialogActions } from './ui-modal-checks.ts';
 import { inputDialogActions } from './ui-dialog-input-checks.ts';
 import { importActions } from './ui-import-checks.ts';
+import { dryChecks } from './ui-dry-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
 import { unifiedCounters } from './ui-counter-checks.ts';
 
@@ -235,10 +236,11 @@ function runChecks(driver: Browser): readonly Result[] {
     ['import:mapping-locale-invalid', importMapping],
     ['import:one-click-run-and-errors', cancelImport],
     ...importActions(browser),
+    ...dryChecks(browser),
     ['settings:finance-roundtrip', () => settingsPersist(browser)],
     ['connections:configure-test-save-disconnect-undo', () => connectionLifecycle(browser)],
     ['preferences:widget-monochrome', () => widgetAppearance(browser)],
-    ['sync:radio-labels-width-selection', () => conflictRadioChoices(browser)],
+    ...syncActions(browser),
     ['operations:meaningful-extras-visible', () => operationExtras(browser)],
     ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
     ['cash:opening-balance-rows-and-sort', () => cashFlow(browser)],
@@ -253,7 +255,6 @@ function runChecks(driver: Browser): readonly Result[] {
     ['overview:empty-state-restores-example', () => emptyOverview(browser)],
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
     ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],
-    ['sync:confirm-then-intentional-disclosure', () => syncPostConflictDisclosure(browser)],
     ...inputDialogActions(browser),
     ...modalDialogActions(browser),
   ];

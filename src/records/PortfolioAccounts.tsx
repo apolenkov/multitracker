@@ -1,5 +1,5 @@
 import { accountSamples, accountLabel } from '../forms/accounts.ts';
-import { getLabels } from '../i18n.ts';
+import { getLabels, money } from '../i18n.ts';
 import { RowAction, RowNotice } from '../RowActions.tsx';
 import { recordsCopy, rowNoticeDetail, rowNoticeText } from './copy.ts';
 import type { RecordsProps } from './data.ts';
@@ -18,6 +18,7 @@ export function AccountList({
   id,
   name,
   language,
+  hidden,
   removed,
   onManage,
   onRestore,
@@ -25,6 +26,7 @@ export function AccountList({
   id: string;
   name: string;
   language: RecordsProps['language'];
+  hidden: boolean;
   removed: RemovedMap;
   onManage: (request: EntityRequest) => void;
   onRestore: (key: string) => void;
@@ -36,8 +38,9 @@ export function AccountList({
         .map((account) => (
           <AccountRow
             key={account.id}
-            id={account.id}
+            account={account}
             language={language}
+            hidden={hidden}
             removed={removed.get(`account:${account.id}`)}
             onManage={onManage}
             onRestore={() => onRestore(`account:${account.id}`)}
@@ -59,24 +62,29 @@ export function AccountList({
   );
 }
 function AccountRow({
-  id,
+  account,
   language,
+  hidden,
   removed,
   onManage,
   onRestore,
 }: Readonly<{
-  id: string;
+  account: (typeof accountSamples)[number];
   language: RecordsProps['language'];
+  hidden: boolean;
   removed: 'archive' | 'delete' | undefined;
   onManage: (request: EntityRequest) => void;
   onRestore: () => void;
 }>) {
-  const account = accountSamples.find((item) => item.id === id);
+  const id = account.id;
   const label = accountLabel(id, language);
   const copy = recordsCopy(language);
   return (
     <li className={removed ? 'row-removed' : undefined}>
-      <strong>{label.split(' · ').at(-1)}</strong>
+      <span className="account-name">{label.split(' · ').at(-1)}</span>
+      <span className="account-balance">
+        {hidden ? '••••' : money(account.balance, account.currency, language)}
+      </span>
       <RowAction
         icon="edit"
         label={copy.edit}
@@ -87,7 +95,7 @@ function AccountRow({
             action: 'edit',
             name: label,
             target: `account:${id}`,
-            ...(account ? { portfolioId: account.portfolioId } : {}),
+            portfolioId: account.portfolioId,
           })
         }
       />

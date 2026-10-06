@@ -4,6 +4,7 @@ import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
 import { useModalSession, type ModalControl } from './modal-session';
 import { RowNotice, undoneText } from '../RowActions.tsx';
+import { StatusChip } from '../StatusChip.tsx';
 
 export function SyncPanel({ language, notify }: ConnectionProps) {
   const t = language === 'ru' ? syncText.ru : syncText.en;
@@ -122,21 +123,24 @@ function SyncDevices({
       <h2>{t.devices}</h2>
       <article>
         <h3>{t.desktop}</h3>
-        <p>{t.current}</p>
+        <StatusChip tone="muted" label={t.current} />
         <p>{t.activity}</p>
       </article>
       <article className={revoked ? 'row-removed' : undefined}>
         <h3>{t.mobile}</h3>
+        <StatusChip tone={revoked ? 'warn' : 'ok'} label={revoked ? t.revokedLabel : t.active} />
         <p>{t.activity}</p>
-        <button
-          type="button"
-          className="danger"
-          id="sync-revoke-mobile"
-          aria-label={`${t.revoke}: ${t.mobile}`}
-          onClick={revoke}
-        >
-          {t.revoke}
-        </button>
+        <span className="device-action">
+          <button
+            type="button"
+            className="danger"
+            id="sync-revoke-mobile"
+            aria-label={`${t.revoke}: ${t.mobile}`}
+            onClick={revoke}
+          >
+            {t.revoke}
+          </button>
+        </span>
         {revoked && <RevokeNotice t={t} language={language} onUndo={restore} />}
       </article>
     </section>
@@ -167,10 +171,11 @@ function SyncStatus({
   toggle: (value: boolean) => void;
 }>) {
   const text = status === 'idle' ? t.idle : status === 'error' ? t.error : t.success;
+  const tone = status === 'idle' ? 'muted' : status === 'error' ? 'error' : 'ok';
   return (
     <div className="sync-status">
-      <p role="status" className={`sync-state sync-state-${status}`}>
-        {text}
+      <p className="sync-state">
+        <StatusChip tone={tone} label={text} />
       </p>
       <p className="demo-note">
         {t.last}: {lastSync ?? t.never}

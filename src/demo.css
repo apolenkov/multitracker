@@ -125,6 +125,9 @@ label.checkbox-row {
   color: var(--muted);
   overflow-wrap: anywhere;
 }
+.connection-summary .status-chip {
+  margin-block: 4px;
+}
 .connection-actions {
   display: grid;
   justify-items: end;
@@ -150,14 +153,7 @@ label.checkbox-row {
   margin: 0;
 }
 .sync-state {
-  font-size: 20px;
-  font-weight: 600;
-}
-.sync-state-success {
-  color: var(--green);
-}
-.sync-state-error {
-  color: var(--red);
+  margin: 0;
 }
 .sync-devices,
 .sync-panel > section.sync-actions:last-of-type {
@@ -165,21 +161,33 @@ label.checkbox-row {
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
+/* Строки устройств делят общие колонки через subgrid: имя, метка состояния,
+   активность, действие — границы одинаковы в каждой строке. */
+.sync-devices {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  column-gap: 20px;
+}
+.sync-devices h2 {
+  grid-column: 1 / -1;
+}
 .sync-devices article {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: start;
-  gap: 12px 20px;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
   padding-block: 16px;
   border-bottom: 1px solid var(--line);
 }
-.sync-devices article h3 {
-  min-width: 150px;
+.sync-devices article h3,
+.sync-devices article p {
   margin: 0;
 }
 .sync-devices article p {
-  margin: 0;
   color: var(--muted);
+}
+.sync-devices .device-action {
+  display: contents;
 }
 .settings-panel {
   display: grid;

@@ -4,10 +4,10 @@ import { Icon } from './Icon.tsx';
 export function StatusChip({
   tone,
   label,
-}: Readonly<{ tone: 'ok' | 'warn' | 'error'; label: string }>) {
+}: Readonly<{ tone: 'ok' | 'warn' | 'error' | 'muted'; label: string }>) {
   return (
     <span className={`status-chip status-chip-${tone}`}>
-      <Icon name={tone === 'ok' ? 'check' : 'warning'} />
+      <Icon name={tone === 'ok' ? 'check' : tone === 'muted' ? 'info' : 'warning'} />
       {label}
     </span>
   );

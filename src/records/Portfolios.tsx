@@ -122,6 +122,7 @@ function PortfolioRow(props: ManageProps & Readonly<{ id: string }>) {
         id={portfolio.id}
         name={portfolio.name}
         language={props.language}
+        hidden={props.hidden}
         removed={props.removed}
         onManage={props.onManage}
         onRestore={props.onRestore}

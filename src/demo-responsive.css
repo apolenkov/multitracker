@@ -191,18 +191,10 @@
     flex-wrap: wrap;
   }
 }
-/* Состояния синхронизации короткие — по строке на каждое; резерв 1lh подменяет
-   текст без сдвига, без дыры под длинный вариант. */
-@media (max-width: 900px) {
-  .sync-state {
-    min-height: 1lh;
-  }
-}
 @media (max-width: 600px) {
-  /* 288 px содержимого на 320: «Учебная синхронизация готова» при 20 px
-     не помещалась в одну строку — размер снижен до 18 px. */
-  .sync-state {
-    font-size: 18px;
+  /* Узкие строки устройств: имя и метка сверху, активность и действие ниже. */
+  .sync-devices {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
   .sync-status .demo-note {
     min-height: 2lh;

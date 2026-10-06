@@ -132,7 +132,10 @@ export const paintsBox = (
  * из-под него через --dialog-footer-reserve. Плавающая плашка .status-message
  * — такое же устройство, пока нижний отступ .workspace покрывает её след во
  * вьюпорте (caller проверяет отступ по факту): перекрытый текст уходит
- * прокруткой выше её верхнего края. Текст другого закреплённого слоя
+ * прокруткой выше её верхнего края. Контрол внутри непрозрачной липкой шапки
+ * диалога (.dialog-heading) — симметричное устройство: прокручиваемый текст
+ * уходит под неё намеренно (caller проверяет краску шапки и что сам текст
+ * не из шапки). Текст другого закреплённого слоя
  * (навигация, диалог) плашке не прощается. Любой другой fixed/sticky слой,
  * реально закрывающий текст, остаётся находкой.
  */
@@ -142,6 +145,8 @@ export const overlapExempt = (
   controlInBottomNav: boolean,
   controlInStickyDialogFooter = false,
   controlInPaddedToast = false,
+  controlInOpaqueDialogHeading = false,
 ): boolean =>
   controlInStickyDialogFooter ||
-  (controlFixed !== textFixed && (controlInBottomNav || controlInPaddedToast));
+  (controlFixed !== textFixed &&
+    (controlInBottomNav || controlInPaddedToast || controlInOpaqueDialogHeading));

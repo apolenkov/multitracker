@@ -143,6 +143,33 @@ export function dialogClosePaths(browser: Browser) {
   );
 }
 
+/** Программное d.close() на глубоко прокрученной странице: браузер возвращает
+    фокус открывателю, уже уехавшему за вьюпорт (checkVisibility() его не ловит).
+    Восстановление обязано отдать фокус элементу, пересекающему вьюпорт. */
+export function scrolledCloseFocus(browser: Browser) {
+  env(browser, 'history', 1440, 'ru');
+  evaluate(
+    browser,
+    `(() => { const dialog = document.getElementById('buy-dialog');
+      const opener = document.querySelector('.page-heading-actions .primary');
+      scrollTo(0, 0);
+      opener?.focus();
+      dialog?.showModal();
+      scrollTo(0, 500);
+      dialog?.close();
+      return true; })()`,
+  );
+  browser.run(
+    'wait',
+    '--fn',
+    `(() => { const a = document.activeElement;
+      if (!(a instanceof HTMLElement) || a === document.body) return false;
+      const r = a.getBoundingClientRect();
+      return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth; })()`,
+  );
+  return 'программное закрытие при scrollY=500: фокус на элементе внутри вьюпорта';
+}
+
 function mountShiftIn(browser: Browser, width: number, lang: Lang) {
   env(browser, 'sync', width, lang);
   // Замер «открытое → закрытое» нельзя делать прямым снимком: после размонта
@@ -172,4 +199,13 @@ export function dialogMountStability(browser: Browser) {
   return ([1440, 768, 375, 320] as const).flatMap((width) =>
     (['ru', 'en'] as const).map((lang) => mountShiftIn(browser, width, lang)),
   );
+}
+
+/** Все проверки закрытия/монтажа диалогов одним списком для check-ui. */
+export function modalDialogActions(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
+  return [
+    ['dialogs:close-paths-reopen-focus', () => dialogClosePaths(browser)],
+    ['dialogs:close-scrolled-focus-restore', () => scrolledCloseFocus(browser)],
+    ['dialogs:mount-layout-shift-2px', () => dialogMountStability(browser)],
+  ];
 }

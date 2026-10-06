@@ -70,13 +70,17 @@
   padding: 0 38px 0 60px;
 }
 .account-list li {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
 }
-.account-list strong {
+.account-list .account-name {
   font-size: 14px;
+}
+.account-list .account-balance {
+  font-size: 14px;
+  text-align: right;
 }
 .account-list .add-account {
   border: 0;

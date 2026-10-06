@@ -5,6 +5,8 @@ import {
   type ImportField,
   type ImportLanguage,
 } from './import-model';
+import { StatusChip } from '../StatusChip.tsx';
+import { date } from '../i18n.ts';
 const fieldNames = [
   { field: 'date', ru: 'Дата', en: 'Date' },
   { field: 'asset', ru: 'Актив', en: 'Asset' },
@@ -17,11 +19,14 @@ export function fieldName(field: ImportField, language: ImportLanguage) {
   const name = fieldNames.find((item) => item.field === field);
   return name ? importText(language, name.ru, name.en) : field;
 }
-function rowStatus(status: string, language: ImportLanguage) {
-  if (status === 'ready') return importText(language, 'Готово', 'Ready');
-  if (status === 'unknown')
-    return importText(language, 'Неизвестный актив · пропустить', 'Unknown asset · skip');
-  return importText(language, 'Повтор строки 1 · пропустить', 'Duplicate of row 1 · skip');
+function RowStatus({ status, language }: Readonly<{ status: string; language: ImportLanguage }>) {
+  const label =
+    status === 'ready'
+      ? importText(language, 'Готово', 'Ready')
+      : status === 'unknown'
+        ? importText(language, 'Ошибка', 'Error')
+        : importText(language, 'Повтор', 'Duplicate');
+  return <StatusChip tone={status === 'ready' ? 'ok' : 'warn'} label={label} />;
 }
 export function ImportSample(props: Readonly<{ language: ImportLanguage; hidden: boolean }>) {
   return (
@@ -59,11 +64,13 @@ function ImportTable({
         <tbody>
           {sampleImportRows.map((row) => (
             <tr key={row.id}>
-              <td>{row.date}</td>
+              <td>{date(row.date, language)}</td>
               <td>{row.asset}</td>
               <td>{hidden ? '••••' : row.quantity}</td>
               <td>{hidden ? '••••' : `${row.price}${NBSP}${row.currency}`}</td>
-              <td>{rowStatus(row.status, language)}</td>
+              <td>
+                <RowStatus status={row.status} language={language} />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -79,7 +86,7 @@ function ImportRows({ language, hidden }: Readonly<{ language: ImportLanguage; h
         <li key={row.id} data-status={row.status}>
           <div className="import-row-heading">
             <strong>{row.asset}</strong>
-            <span>{row.date}</span>
+            <span>{date(row.date, language)}</span>
           </div>
           <p>
             {importText(language, 'Количество', 'Quantity')}: {hidden ? '••••' : row.quantity} ·{' '}
@@ -87,7 +94,9 @@ function ImportRows({ language, hidden }: Readonly<{ language: ImportLanguage; h
             {NBSP}
             {row.currency}
           </p>
-          <p className="import-row-status">{rowStatus(row.status, language)}</p>
+          <p className="import-row-status">
+            <RowStatus status={row.status} language={language} />
+          </p>
           {row.status !== 'ready' && (
             <p className="demo-note">
               {row.status === 'unknown'

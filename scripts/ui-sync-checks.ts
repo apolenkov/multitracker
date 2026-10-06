@@ -80,6 +80,14 @@ export function conflictRadioChoices(browser: Browser) {
   return results;
 }
 
+/** Пара проверок конфликта для списка check-ui: радио-выбор и раскрытие помощи. */
+export function syncActions(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
+  return [
+    ['sync:radio-labels-width-selection', () => conflictRadioChoices(browser)],
+    ['sync:confirm-then-intentional-disclosure', () => syncPostConflictDisclosure(browser)],
+  ];
+}
+
 export function syncPostConflictDisclosure(browser: Browser) {
   prepare(browser);
   go(browser, 'sync');
@@ -125,7 +133,10 @@ const states = {
 function stateRun(browser: Browser, width: number, language: 'ru' | 'en') {
   const words = language === 'ru' ? states.ru : states.en;
   const state = 'document.querySelector(".sync-state")';
-  const oneLine = `(() => { const el = ${state}; return el.offsetHeight <= parseFloat(getComputedStyle(el).lineHeight) + 1; })()`;
+  // Статус — nowrap-чип: одна строка гарантирована, смотрим только обрезку по ширине.
+  const oneLine = `(() => { const chip = ${state}.querySelector('.status-chip');
+    return chip && chip.offsetHeight <= 40 && chip.scrollWidth <= chip.clientWidth + 1 &&
+      chip.getBoundingClientRect().right <= innerWidth + 1; })()`;
   const tag = `${width}px ${language}`;
   // Панели не размонтируются между разделами: перезагрузка возвращает
   // панель в ожидание и снимает флажок ошибки прошлого прогона.

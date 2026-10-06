@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Screen } from './i18n.ts';
 import { demoScreens, type Screen as DemoScreen } from './demo/words.ts';
+import { elementInViewport } from './viewport.ts';
 
 export type Route = Readonly<{ screen: Screen; demoScreen: DemoScreen }>;
 
@@ -27,7 +28,8 @@ function closeOpenDialogs() {
 }
 function restoreVisibleFocus() {
   const active = document.activeElement;
-  if (active instanceof HTMLElement && active !== document.body && active.checkVisibility()) return;
+  if (active instanceof HTMLElement && active !== document.body && elementInViewport(active))
+    return;
   focusMain({ preventScroll: true });
 }
 export function useNavigation() {

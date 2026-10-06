@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import type { FormEvent } from 'react';
 import { getLabels } from '../i18n.ts';
 import type { Language } from '../i18n.ts';
@@ -54,12 +55,14 @@ export function OperationForm(props: OperationProps) {
           dialog={props.id}
           labels={labels}
         />
-        <TypeSelector
-          type={form.input.type}
-          language={props.language}
-          id={props.id}
-          change={form.changeType}
-        />
+        {!form.lockedType && (
+          <TypeSelector
+            type={form.input.type}
+            language={props.language}
+            id={props.id}
+            change={form.changeType}
+          />
+        )}
         <OperationFields
           input={form.input}
           errors={form.errors}
@@ -115,6 +118,9 @@ function useOperation(props: OperationProps) {
   const create = () => operationDraft(props.state, props.portfolioId, props.initial);
   const [input, setInput] = useState<OperationInput>(create);
   const [attempts, setAttempts] = useState(0);
+  // Тип скрыт, когда форма открыта в готовом контексте (правка записи,
+  // «Изменить остаток»): менять тип там нечего.
+  const [lockedType, setLockedType] = useState<OperationType | null>(props.initial?.type ?? null);
   const errors: OperationErrors = attempts > 0 ? validateOperation(input, props.state) : {};
   const update = (field: Field, value: string) =>
     setInput((current) => ({
@@ -131,6 +137,7 @@ function useOperation(props: OperationProps) {
   const reset = () => {
     setInput(create());
     setAttempts(0);
+    setLockedType(props.initial?.type ?? null);
     props.onClose?.();
   };
   const submit = (event: FormEvent) => {
@@ -149,16 +156,16 @@ function useOperation(props: OperationProps) {
         ?.querySelector<HTMLElement>('[aria-invalid="true"]')
         ?.focus();
   }, [attempts, props.id]);
-  useOperationEvent(props.id, props.state, props.portfolioId, setInput, setAttempts);
-  return { input, errors, update, changeType, reset, submit };
+  useOperationEvent(props, setInput, setAttempts, setLockedType);
+  return { input, errors, update, changeType, lockedType, reset, submit };
 }
 function useOperationEvent(
-  id: string,
-  state: State,
-  portfolioId: string,
+  props: OperationProps,
   setInput: (input: OperationInput) => void,
   setAttempts: (count: number) => void,
+  setLockedType: (type: OperationType | null) => void,
 ) {
+  const { id, state, portfolioId } = props;
   useEffect(() => {
     if (id !== 'buy-dialog') return;
     const open = (event: Event) => {
@@ -171,18 +178,24 @@ function useOperationEvent(
         !isOperationType(detail.type)
       )
         return;
+      const type = detail.type;
       const base = initialOperation(state, portfolioId);
       const context = Object.fromEntries(
         Object.entries(detail).filter(
           ([field, value]) => Object.hasOwn(base, field) && typeof value === 'string',
         ),
       );
-      setInput(operationDraft(state, portfolioId, { ...context, type: detail.type }));
-      setAttempts(0);
+      // Синхронный коммит: openDialog дальше по той же задаче фокусирует поле
+      // уже новой формы (событие шлётся перед открытием).
+      flushSync(() => {
+        setInput(operationDraft(state, portfolioId, { ...context, type }));
+        setAttempts(0);
+        setLockedType(type);
+      });
     };
     window.addEventListener('multitracker-operation', open);
     return () => window.removeEventListener('multitracker-operation', open);
-  }, [id, state, portfolioId, setInput, setAttempts]);
+  }, [id, state, portfolioId, setInput, setAttempts, setLockedType]);
 }
 
 function operationDraft(

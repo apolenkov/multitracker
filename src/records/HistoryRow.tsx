@@ -71,21 +71,36 @@ function RowOpen({
     </button>
   );
 }
-function RecordDirection({ type }: Readonly<{ type: Transaction['type'] }>) {
-  const name = ['deposit', 'income', 'opening'].includes(type)
+// Одна карта направления на значок и знак суммы: приток, отток, перенос.
+const directionOf = (type: Transaction['type']): 'incoming' | 'outgoing' | 'transfer' =>
+  ['deposit', 'income', 'opening'].includes(type)
     ? 'incoming'
     : ['withdrawal', 'fee'].includes(type)
       ? 'outgoing'
       : 'transfer';
+
+function RecordDirection({ type }: Readonly<{ type: Transaction['type'] }>) {
+  const name = directionOf(type);
   return (
     <span className={`record-direction record-direction-${name}`} aria-hidden="true">
       <Icon name={name} />
     </span>
   );
 }
+
+// Сумма в валюте операции: приток «+», отток «−» (amount хранится
+// положительным, знак даёт карта направления), перенос и покупка без знака.
+const directedAmount = (record: Transaction, language: RecordsProps['language']) =>
+  directionOf(record.type) === 'transfer'
+    ? money(record.amount, record.currency, language)
+    : money(
+        directionOf(record.type) === 'outgoing' ? -record.amount : record.amount,
+        record.currency,
+        language,
+        true,
+      );
 export function RecordSummary({
   record,
-  currency,
   language,
   hidden,
 }: RecordsProps & Readonly<{ record: Transaction }>) {
@@ -96,14 +111,12 @@ export function RecordSummary({
         <ExchangeValues record={record} language={language} hidden={hidden} />
       </dl>
     );
+  // Сумма строки — в валюте операции; пересчёт по историческому курсу
+  // остаётся в подробностях записи.
   const units = record.type === 'corporate' || isAssetTransfer(record);
   const value = units
     ? `${number(record.quantity, language)} ${record.type === 'corporate' ? ': 1' : record.asset}`
-    : money(
-        record.amount * (currency === 'RUB' && record.currency === 'USD' ? record.fx : 1),
-        currency,
-        language,
-      );
+    : directedAmount(record, language);
   return (
     <dl className="record-summary">
       <RecordValue

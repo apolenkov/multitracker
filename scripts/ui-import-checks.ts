@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { settleLayout, type Browser } from './ui-driver.ts';
 import { content, go, prepare, truth } from './ui-helpers.ts';
+import { env } from './ui-dialog-input-checks.ts';
 
 export function mappingSamples(browser: Browser, scope: 'page', hidden = false) {
   const sample = (field: string) =>
@@ -49,4 +50,60 @@ export function importPriceNoBreak(browser: Browser) {
   browser.run('click', `${details} .icon-close`);
   browser.run('wait', '--fn', `!document.querySelector('${details}')`);
   return 'U+00A0 между суммой и валютой: таблица и карточки, RU и EN';
+}
+
+/** «Импортировать 2 операции» без прокрутки на 1440×900. */
+function runAboveFold(browser: Browser) {
+  env(browser, 'import', 1440, 900, 'ru');
+  truth(
+    browser,
+    `(() => { const r = document.querySelector('#import-run').getBoundingClientRect();
+      return r.top > 0 && r.bottom <= innerHeight; })()`,
+    'Кнопка импорта за сгибом 1440×900',
+  );
+  return 'кнопка в первом экране 1440×900';
+}
+
+/** Ошибка/повтор помечены чипом «значок + слово» в таблице и в карточках. */
+function statusChips(browser: Browser) {
+  const probe = (scope: string) =>
+    `(() => { const chips = [...document.querySelectorAll('${scope} .status-chip')];
+      return chips.every((el) => el.querySelector('svg')) &&
+        chips.map((el) => el.textContent?.trim()).join(','); })()`;
+  env(browser, 'import', 1440, 900, 'ru');
+  truth(
+    browser,
+    `${probe('.import-source-table')} === 'Готово,Готово,Ошибка,Повтор'`,
+    'Таблица: чипы «значок + слово» для ошибки и повтора',
+  );
+  env(browser, 'import', 375, 667, 'en');
+  truth(
+    browser,
+    `${probe('.import-rows')} === 'Ready,Ready,Error,Duplicate'`,
+    'Карточки 375: те же чипы по-английски',
+  );
+  return 'таблица и карточки: чипы «значок + слово» одинаковы';
+}
+
+/** Даты строк и истории — в формате языка, не ISO. */
+function localizedDates(browser: Browser) {
+  for (const lang of ['ru', 'en'] as const) {
+    env(browser, 'import', 1440, 900, lang);
+    truth(
+      browser,
+      `[...document.querySelectorAll('.import-source-table tbody td:first-child')]
+         .every((td) => !/^\\d{4}-\\d{2}-\\d{2}/.test(td.textContent ?? '')) &&
+        !/2026-09-04/.test(document.querySelector('.import-entry')?.textContent ?? '')`,
+      `Даты импорта не локализованы (${lang})`,
+    );
+  }
+  return 'ISO-дат нет ни в строках, ни в записи истории (ru/en)';
+}
+
+export function importActions(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
+  return [
+    ['import:run-above-fold-1440', () => runAboveFold(browser)],
+    ['import:status-chips-both-layouts', () => statusChips(browser)],
+    ['import:localized-dates', () => localizedDates(browser)],
+  ];
 }

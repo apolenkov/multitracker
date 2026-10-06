@@ -1,6 +1,7 @@
 import { useEffect, useEffectEvent, useRef, type ReactNode, type Ref } from 'react';
 import { flushSync } from 'react-dom';
 import { closeDialog, keepDialogFocus, openDialog } from '../Dialog.tsx';
+import { elementInViewport } from '../viewport.ts';
 import type { Language } from './words.ts';
 import { Icon } from '../Icon.tsx';
 
@@ -90,7 +91,7 @@ function ModalDialog({
 function restoreFocus(previous: Element | null) {
   if (document.querySelector('dialog[open]')) return;
   const target =
-    previous instanceof HTMLElement && previous.isConnected && previous.checkVisibility()
+    previous instanceof HTMLElement && previous.isConnected && elementInViewport(previous)
       ? previous
       : document.querySelector<HTMLElement>('main');
   target?.focus();

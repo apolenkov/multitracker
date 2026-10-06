@@ -34,7 +34,7 @@ export function connectionLifecycle(browser: Browser) {
   prepare(browser);
   go(browser, 'connections');
   assert.match(
-    content(browser, `${card} .connection-summary > p`),
+    content(browser, `${card} .connection-summary .status-chip`),
     /Не настроено/,
     'Tradernet должен начинаться без настройки',
   );
@@ -48,7 +48,7 @@ export function connectionLifecycle(browser: Browser) {
     `!document.querySelector('${dialog}[open]') && document.querySelector('${status}')?.textContent === 'Учебная конфигурация сохранена только в памяти вкладки.'`,
   );
   assert.match(
-    content(browser, `${card} .connection-summary > p`),
+    content(browser, `${card} .connection-summary .status-chip`),
     /Настроено/,
     'Сохранение должно настроить источник',
   );
@@ -102,7 +102,7 @@ function disconnectUndo(browser: Browser) {
   );
   truth(
     browser,
-    `document.querySelector('${card} .connection-summary > p')?.textContent === 'Настроено'`,
+    `document.querySelector('${card} .connection-summary .status-chip')?.textContent === 'Настроено'`,
     'Отмена должна вернуть настройку источника',
   );
 }

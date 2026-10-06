@@ -23,7 +23,8 @@ const entities: readonly {
     veil: '.account-list li:has(.row-action)',
     opener: '.account-list li:first-child .row-action',
     action: 'Удалить',
-    names: '[...document.querySelectorAll(".account-list li strong")].map(i => i.textContent)',
+    names:
+      '[...document.querySelectorAll(".account-list li .account-name")].map(i => i.textContent)',
   },
   {
     items: '.group-slot',

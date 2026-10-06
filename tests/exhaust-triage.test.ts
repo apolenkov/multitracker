@@ -154,6 +154,21 @@ await test('open more-menu loses the overlap exemption; closed bottom nav keeps 
   assert.ok(designScanSource.includes("closest('.mobile-links')"));
 });
 
+await test('opaque dialog heading exempts text passing under it', () => {
+  // Крестик в непрозрачной липкой шапке над откручиваемым текстом — то же
+  // устройство, что и закреплённый подвал: внутри dialog с position: fixed
+  // асимметрии fixed/flow нет, флаг означает доказанную безвредность
+  // (dialogHeadingClear: краска, чужой текст, scrollFrees — см. exhaust-heading).
+  assert.equal(overlapExempt(true, false, false, false, false, true), true);
+  assert.equal(overlapExempt(true, true, false, false, false, true), true);
+  // Без доказанной безвредности (прозрачная, свой текст, нескроллируемое) — находка.
+  assert.equal(overlapExempt(true, false, false, false, false, false), false);
+  assert.equal(overlapExempt(true, true, false, false, false, false), false);
+  // Caller передаёт признак только для непрозрачной шапки чужого откручиваемого текста.
+  assert.ok(designScanSource.includes(".closest('dialog .dialog-heading')"));
+  assert.ok(designScanSource.includes('paints(head)'));
+});
+
 await test('padded fixed toast is exempt over flow text only', () => {
   // Плашка .status-message (fixed) при активном отступе .workspace: потоковый
   // текст уходит прокруткой выше её края — устройство раскладки, не дефект.

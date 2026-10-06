@@ -39,7 +39,20 @@ export function openDialog(id: string) {
       .querySelectorAll<HTMLDialogElement>('dialog[open]')
       .forEach((current) => current.close());
     dialog.showModal();
+    focusFirstEmptyField(dialog);
   }
+}
+/** showModal() ставит фокус на первый фокусируемый (крестик шапки); начало ввода —
+    первое пустое доступное поле ввода input (select и textarea не участвуют:
+    свёрнутый контекст счёта и необязательная заметка заполняются по желанию).
+    Заполненные и недоступные поля пропускаются. */
+function focusFirstEmptyField(dialog: HTMLDialogElement) {
+  const field = Array.from(
+    dialog.querySelectorAll<HTMLInputElement>('input:not([type=checkbox])'),
+  ).find((input) => !input.disabled && !input.readOnly && input.value === '');
+  // Без preventScroll: браузер доводит поле до видимой зоны над липким
+  // подвалом. Подпись типа шириной с текст не достаёт до крестика.
+  field?.focus();
 }
 export function closeDialog(id: string) {
   const dialog = document.getElementById(id);

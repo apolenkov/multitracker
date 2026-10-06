@@ -5,23 +5,21 @@ import { appearanceThemes, independentCurrencies, settingsPersist } from './ui-p
 import { reveal, widgetAppearance } from './ui-helpers.ts';
 import { connectionLifecycle } from './ui-connection-checks.ts';
 import { createCheck, type Result } from './ui-results.ts';
-import { conflictRadioChoices, syncPostConflictDisclosure } from './ui-sync-checks.ts';
-import { operationExtras } from './ui-operation-checks.ts';
+import { syncActions } from './ui-sync-checks.ts';
+import { operationActions } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
-import {
-  attributionLine,
-  initialSkipFocus,
-  maskedResultTones,
-  narrowAllocation,
-} from './ui-overview-checks.ts';
-import { stableHeroDisclosure } from './ui-overview-checks.ts';
+import { initialSkipFocus, maskedResultTones, overviewActions } from './ui-overview-checks.ts';
 import { recordRowActions } from './ui-row-action-checks.ts';
 import { entityUndo, importAndSyncUndo } from './ui-demo-undo-checks.ts';
 import { arenaWave1, firstLoadHashGuard } from './ui-arena-checks.ts';
 import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
-import { dialogClosePaths, dialogMountStability } from './ui-modal-checks.ts';
+import { modalDialogActions } from './ui-modal-checks.ts';
+import { inputDialogActions } from './ui-dialog-input-checks.ts';
+import { headingExemption } from './ui-heading-checks.ts';
+import { importActions } from './ui-import-checks.ts';
+import { dryChecks } from './ui-dry-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
 import { unifiedCounters } from './ui-counter-checks.ts';
 
@@ -232,16 +230,16 @@ function runChecks(driver: Browser): readonly Result[] {
     ...arenaWave1(browser),
     ['import:mapping-locale-invalid', importMapping],
     ['import:one-click-run-and-errors', cancelImport],
+    ...importActions(browser),
+    ...dryChecks(browser),
     ['settings:finance-roundtrip', () => settingsPersist(browser)],
     ['connections:configure-test-save-disconnect-undo', () => connectionLifecycle(browser)],
     ['preferences:widget-monochrome', () => widgetAppearance(browser)],
-    ['sync:radio-labels-width-selection', () => conflictRadioChoices(browser)],
-    ['operations:meaningful-extras-visible', () => operationExtras(browser)],
-    ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
+    ...syncActions(browser),
+    ...operationActions(browser),
+    ...overviewActions(browser),
     ['cash:opening-balance-rows-and-sort', () => cashFlow(browser)],
     ['counters:unified-badge', () => unifiedCounters(browser)],
-    ['overview:stable-hero-disclosure', () => stableHeroDisclosure(browser)],
-    ['overview:attribution-one-line', () => attributionLine(browser)],
     ['history:row-actions-focus-undo', () => recordRowActions(browser)],
     ['portfolios:archive-delete-undo', () => entityUndo(browser)],
     ['import-sync:visible-actions-undo', () => importAndSyncUndo(browser)],
@@ -250,9 +248,9 @@ function runChecks(driver: Browser): readonly Result[] {
     ['overview:empty-state-restores-example', () => emptyOverview(browser)],
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
     ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],
-    ['sync:confirm-then-intentional-disclosure', () => syncPostConflictDisclosure(browser)],
-    ['dialogs:close-paths-reopen-focus', () => dialogClosePaths(browser)],
-    ['dialogs:mount-layout-shift-2px', () => dialogMountStability(browser)],
+    ...inputDialogActions(browser),
+    ['dialogs:heading-exemption-scope', () => headingExemption(browser)],
+    ...modalDialogActions(browser),
   ];
   return actions.reduce<readonly Result[]>(
     (results, [id, action]) => [

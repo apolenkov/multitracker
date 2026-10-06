@@ -21,6 +21,41 @@
 .import-result {
   font-weight: 600;
   color: var(--ink);
+  margin: 0;
+}
+.import-run-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-block: 20px;
+}
+/* Чип статуса: значок и слово, состояние не зависит от одного цвета. */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status-chip .ui-icon {
+  width: 16px;
+  height: 16px;
+}
+.status-chip-ok {
+  color: var(--green);
+}
+.status-chip-warn {
+  color: var(--warning);
+}
+.status-chip-error {
+  color: var(--red);
 }
 .import-rows {
   display: none;
@@ -39,13 +74,6 @@
 .import-row-heading span {
   color: var(--muted);
   font-size: 14px;
-}
-.import-row-status {
-  font-weight: 600;
-}
-.import-rows [data-status='unknown'] .import-row-status,
-.import-rows [data-status='duplicate'] .import-row-status {
-  color: var(--warning);
 }
 .conflict-choices {
   border: 0;
@@ -163,20 +191,30 @@
     flex-wrap: wrap;
   }
 }
-/* Состояния синхронизации короткие — по строке на каждое; резерв 1lh подменяет
-   текст без сдвига, без дыры под длинный вариант. */
-@media (max-width: 900px) {
-  .sync-state {
-    min-height: 1lh;
-  }
-}
 @media (max-width: 600px) {
-  /* 288 px содержимого на 320: «Учебная синхронизация готова» при 20 px
-     не помещалась в одну строку — размер снижен до 18 px. */
-  .sync-state {
-    font-size: 18px;
+  /* Узкие строки устройств: имя и метка сверху, активность и действие ниже. */
+  .sync-devices {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
   .sync-status .demo-note {
     min-height: 2lh;
+  }
+  /* Узкий список счетов: имя в полную ширину строки, остаток и действие —
+     второй линией (замер 375 px: «накопительный» + «1 248 500,00 ₽»).
+     ul в селекторах перекрывает базовую специфичность records.css. */
+  ul.account-list li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'name action' 'balance action';
+    row-gap: 2px;
+  }
+  ul.account-list .account-name {
+    grid-area: name;
+  }
+  ul.account-list .account-balance {
+    grid-area: balance;
+    text-align: left;
+  }
+  ul.account-list .row-action {
+    grid-area: action;
   }
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ImportLanguage } from './import-model';
 import { importText } from './import-model';
 import { ImportSample } from './import-fields';
+import { date } from '../i18n.ts';
 import { DemoModal } from './modal';
 import { useModalSession } from './modal-session';
 import { closeDialog } from '../Dialog';
@@ -68,7 +69,7 @@ function HistoryEntry({
 }>) {
   return (
     <div className={undone ? 'import-entry row-removed' : 'import-entry'}>
-      <p>2026-09-04 · Binance → Binance · sample-transactions.csv</p>
+      <p>{date('2026-09-04', language)} · Binance → Binance · sample-transactions.csv</p>
       <p>
         {importText(
           language,
@@ -107,7 +108,7 @@ function HistoryDetails({
   return (
     <div>
       <p>
-        <strong>sample-transactions.csv</strong> · 2026-09-04
+        <strong>sample-transactions.csv</strong> · {date('2026-09-04', language)}
       </p>
       <p className="import-result">
         {importText(language, '2 готовы · 2 исключены', '2 ready · 2 excluded')}

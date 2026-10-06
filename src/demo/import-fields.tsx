@@ -124,9 +124,6 @@ export function ImportReview({
 }: ImportFieldsProps & Readonly<{ hidden: boolean }>) {
   return (
     <div>
-      <p className="import-result">
-        {importText(language, '2 готовы · 1 ошибка · 1 повтор', '2 ready · 1 error · 1 duplicate')}
-      </p>
       <ImportSample language={language} hidden={hidden} />
       <ImportRowPolicy
         language={language}

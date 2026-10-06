@@ -39,11 +39,20 @@ export function ImportPanel({ language, hidden, notify }: Props) {
         <summary>{importText(language, 'Сопоставление столбцов', 'Column mapping')}</summary>
         <ImportMapping {...fields} hidden={hidden} />
       </details>
-      <ImportReview {...fields} hidden={hidden} />
+      <div className="import-run-row">
+        <p className="import-result">
+          {importText(
+            language,
+            '2 готовы · 1 ошибка · 1 повтор',
+            '2 ready · 1 error · 1 duplicate',
+          )}
+        </p>
+        <button type="button" id="import-run" className="primary" onClick={run}>
+          {importText(language, 'Импортировать 2 операции', 'Import 2 transactions')}
+        </button>
+      </div>
       <ImportError error={error} attempt={attempt} />
-      <button type="button" id="import-run" className="primary" onClick={run}>
-        {importText(language, 'Импортировать 2 операции', 'Import 2 transactions')}
-      </button>
+      <ImportReview {...fields} hidden={hidden} />
       <ImportHistory language={language} hidden={hidden} notify={notify} />
     </div>
   );

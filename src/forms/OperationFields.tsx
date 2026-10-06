@@ -3,6 +3,7 @@ import { OperationField } from './OperationControl.tsx';
 import type { OperationFieldsProps } from './OperationControl.tsx';
 import { operationFields } from './operations.ts';
 import type { Field } from './operations.ts';
+import { accountLabel } from './accounts.ts';
 import { getFormCopy } from './copy.ts';
 import { presentationCopy } from './presentation.ts';
 
@@ -12,12 +13,7 @@ export function OperationFields(props: Props) {
   const fields = operationFields(props.input.type, props.input.asset);
   return (
     <div className="operation-groups">
-      <OperationGroup
-        {...props}
-        title={props.input.type === 'transfer' ? copy.source : copy.context}
-        fields={['portfolioId', 'account']}
-        className="operation-context"
-      />
+      <ContextDetails {...props} />
       {props.input.type === 'transfer' && (
         <OperationGroup
           {...props}
@@ -122,6 +118,39 @@ function OperationGroup({
         ))}
       </div>
     </Group>
+  );
+}
+function ContextDetails(props: Props) {
+  const labels = getFormCopy(props.language);
+  const invalid = ['portfolioId', 'account'].some((field) =>
+    new Map(Object.entries(props.errors)).has(field),
+  );
+  const [opened, setOpened] = useState(invalid);
+  const account = accountLabel(props.input.account, props.language) || labels.account;
+  return (
+    <details
+      className="operation-account"
+      open={opened || invalid}
+      onToggle={(event) => setOpened(event.currentTarget.open)}
+    >
+      <summary
+        aria-disabled={invalid}
+        onClick={(event) => {
+          if (invalid) event.preventDefault();
+        }}
+      >
+        {account} · <span className="summary-action">{labels.action.edit}</span>
+        {invalid && (
+          <span className="additional-status">
+            {props.language === 'ru' ? ' · Ошибка' : ' · Error'}
+          </span>
+        )}
+      </summary>
+      <div className="form-grid">
+        <OperationField {...props} field="portfolioId" />
+        <OperationField {...props} field="account" />
+      </div>
+    </details>
   );
 }
 function AdditionalFields({ fields, ...props }: Props & Readonly<{ fields: readonly Field[] }>) {

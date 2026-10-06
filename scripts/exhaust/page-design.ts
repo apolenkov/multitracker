@@ -15,10 +15,24 @@ import {
   contrastLimit,
 } from './contrast.ts';
 import type { DesignConfig } from './design.ts';
-import { lineDeltaMax, overlapExempt, paintsBox, stackCoversText } from './dom-rules.ts';
+import {
+  dialogHeadingClear,
+  lineDeltaMax,
+  overlapExempt,
+  paintsBox,
+  scrollFrees,
+  stackCoversText,
+} from './dom-rules.ts';
 import { structural } from './page-structure.ts';
 
-const dom = [lineDeltaMax, overlapExempt, paintsBox, stackCoversText]
+const dom = [
+  lineDeltaMax,
+  overlapExempt,
+  paintsBox,
+  stackCoversText,
+  scrollFrees,
+  dialogHeadingClear,
+]
   .map((fn) => `const ${fn.name} = ${fn.toString()};`)
   .join('');
 
@@ -170,3 +184,11 @@ export const designScanSource = `async (cfg) => { ${helpers}; ${math}; ${dom};
 
 export const designScan = (cfg: DesignConfig & Readonly<{ reducedMotion: string }>) =>
   `(${designScanSource})(${JSON.stringify(cfg)})`;
+
+/**
+ * Стенд covers() для поведенческих проверок в живой странице: то же окружение
+ * (helpers, CX, dom-предикаты, structural), что у designScan; body получает
+ * covers и соседние функции и возвращает вычисленный вердикт.
+ */
+export const coversProbe = (body: string): string =>
+  `(() => { ${helpers}; ${math}; ${dom}; ${structural}; return (${body}); })()`;

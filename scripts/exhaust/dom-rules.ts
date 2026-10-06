@@ -123,6 +123,40 @@ export const paintsBox = (
 ): boolean => backgroundAlpha > 0.05 || (borderWidth > 0 && borderAlpha > 0.05) || hasImage;
 
 /**
+ * Уходит ли элемент из-под слоя откруткой скроллера: ближайший прокручиваемый
+ * по вертикали предок уже прокручен (scrollTop > 0 — перекрытие возникло в ходе
+ * прокрутки и отматывается обратно), а сам элемент и предки до скроллера не
+ * закреплены — sticky/fixed слой прокруткой этого скроллера не двигается.
+ * Скроллер проверяется раньше закрепления на том же узле: dialog сам
+ * position: fixed, но своё содержимое скроллит исправно.
+ */
+export const scrollFrees = <E extends Readonly<{ parentElement: E | null; scrollTop: number }>>(
+  el: E,
+  style: (el: E) => Readonly<{ position: string; overflowY: string }>,
+): boolean => {
+  if (['sticky', 'fixed'].includes(style(el).position)) return false;
+  const next = el.parentElement;
+  if (next === null) return false;
+  const cs = style(next);
+  if ((cs.overflowY === 'auto' || cs.overflowY === 'scroll') && next.scrollTop > 0) return true;
+  if (cs.position === 'sticky' || cs.position === 'fixed') return false;
+  return scrollFrees(next, style);
+};
+
+/**
+ * Безвредно ли перекрытие под шапкой диалога — только доказанное: шапка
+ * непрозрачна (прозрачный слой — обычная находка через стек), перекрытый текст
+ * не принадлежит самой шапке (её заголовок под крестиком — находка) и текст
+ * уходит откруткой (нескроллируемое перекрытие под непрозрачной шапкой —
+ * находка).
+ */
+export const dialogHeadingClear = (
+  headingPaints: boolean,
+  headingHasText: boolean,
+  textScrollsOut: boolean,
+): boolean => headingPaints && !headingHasText && textScrollsOut;
+
+/**
  * Исключение overlap для разнесённых по слоям пар: потоковый текст под нижней
  * навигационной панелью (.mobile-links) проходит под ней при прокрутке — это
  * устройство раскладки, а не дефект. Открытое всплывающее меню (.more-menu)
@@ -132,13 +166,14 @@ export const paintsBox = (
  * из-под него через --dialog-footer-reserve. Плавающая плашка .status-message
  * — такое же устройство, пока нижний отступ .workspace покрывает её след во
  * вьюпорте (caller проверяет отступ по факту): перекрытый текст уходит
- * прокруткой выше её верхнего края. Контрол внутри непрозрачной липкой шапки
- * диалога (.dialog-heading) — симметричное устройство и так же безусловно:
- * весь контент внутри dialog с position: fixed считается закреплённым,
- * асимметрия fixed/flow там не различима; caller уже проверил краску шапки
- * и что текст не из самой шапки. Текст другого закреплённого слоя
- * (навигация, диалог) плашке не прощается. Любой другой fixed/sticky слой,
- * реально закрывающий текст, остаётся находкой.
+ * прокруткой выше её верхнего края. Перекрытие под липкой шапкой диалога
+ * (.dialog-heading) прощается, только когда caller доказал безвредность через
+ * dialogHeadingClear (harmlessDialogHeadingOverlap): шапка непрозрачна, текст
+ * чужой и scrollFrees подтвердил откручиваемость — внутри dialog
+ * position: fixed асимметрии fixed/flow нет, поэтому без свидетельства
+ * прокрутки любое перекрытие под шапкой остаётся находкой. Текст другого
+ * закреплённого слоя (навигация, диалог) плашке не прощается. Любой другой
+ * fixed/sticky слой, реально закрывающий текст, остаётся находкой.
  */
 export const overlapExempt = (
   controlFixed: boolean,
@@ -146,8 +181,8 @@ export const overlapExempt = (
   controlInBottomNav: boolean,
   controlInStickyDialogFooter = false,
   controlInPaddedToast = false,
-  controlInOpaqueDialogHeading = false,
+  harmlessDialogHeadingOverlap = false,
 ): boolean =>
   controlInStickyDialogFooter ||
-  controlInOpaqueDialogHeading ||
+  harmlessDialogHeadingOverlap ||
   (controlFixed !== textFixed && (controlInBottomNav || controlInPaddedToast));

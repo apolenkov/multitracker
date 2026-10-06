@@ -17,6 +17,7 @@ import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
 import { modalDialogActions } from './ui-modal-checks.ts';
 import { inputDialogActions } from './ui-dialog-input-checks.ts';
+import { headingExemption } from './ui-heading-checks.ts';
 import { importActions } from './ui-import-checks.ts';
 import { dryChecks } from './ui-dry-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
@@ -248,6 +249,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
     ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],
     ...inputDialogActions(browser),
+    ['dialogs:heading-exemption-scope', () => headingExemption(browser)],
     ...modalDialogActions(browser),
   ];
   return actions.reduce<readonly Result[]>(

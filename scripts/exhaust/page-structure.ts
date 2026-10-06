@@ -37,8 +37,9 @@ const covers = (t, c) => {
   // Поток под закрытой нижней навигацией — не дефект. Открытое меню «Ещё»
   // (.more-menu есть в DOM только при expanded) исключением не является (N5).
   // Плашка над потоком при активном отступе — то же устройство раскладки.
-  // Непрозрачная липкая шапка диалога — симметрично: текст потока уходит под
-  // неё прокруткой намеренно; текст самой шапки (h2 под крестиком) не прощается.
+  // Шапка диалога прощает перекрытие только доказанное: непрозрачная шапка,
+  // чужой текст и откручиваемость (dialogHeadingClear + scrollFrees); свой текст
+  // шапки и нескроллируемый слой под ней остаются находками.
   const head = c.closest('dialog .dialog-heading');
   if (
     overlapExempt(
@@ -47,7 +48,12 @@ const covers = (t, c) => {
       c.closest('.mobile-links') !== null,
       c.closest('dialog') !== null && c.closest('.form-actions, .dialog-actions') !== null,
       toastRoom(c),
-      head !== null && !head.contains(t) && paints(head),
+      head !== null &&
+        dialogHeadingClear(
+          paints(head),
+          head.contains(t),
+          scrollFrees(t, (n) => getComputedStyle(n)),
+        ),
     )
   )
     return false;

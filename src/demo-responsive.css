@@ -199,4 +199,21 @@
   .sync-status .demo-note {
     min-height: 2lh;
   }
+  /* Узкий список счетов: имя в полную ширину строки, остаток и действие —
+     второй линией (замер 375 px: «накопительный» + «1 248 500,00 ₽»). */
+  .account-list li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'name action' 'balance action';
+    row-gap: 2px;
+  }
+  .account-list .account-name {
+    grid-area: name;
+  }
+  .account-list .account-balance {
+    grid-area: balance;
+    text-align: left;
+  }
+  .account-list .row-action {
+    grid-area: action;
+  }
 }

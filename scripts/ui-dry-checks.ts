@@ -29,6 +29,20 @@ function accountRows(browser: Browser) {
        (el) => /[\\d$€₽£]/.test(el.textContent ?? '') || el.textContent === '••••')`,
     'Остаток счёта читается и на 375 px',
   );
+  env(browser, 'portfolios', 375, 667, 'ru');
+  truth(
+    browser,
+    `[...document.querySelectorAll('.account-list li')].every((li) => {
+      const name = li.querySelector('.account-name');
+      const balance = li.querySelector('.account-balance');
+      if (!name || !balance) return true;
+      const range = document.createRange();
+      range.selectNodeContents(name);
+      const ink = range.getBoundingClientRect();
+      const box = balance.getBoundingClientRect();
+      return ink.right <= box.left + 1 || ink.bottom <= box.top + 1; })`,
+    'Имя счёта не наезжает на остаток на 375 px',
+  );
   return 'счета: имя без жирного, остаток справа, одна ссылка «+ Добавить счёт»';
 }
 

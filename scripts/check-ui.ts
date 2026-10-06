@@ -6,7 +6,7 @@ import { reveal, widgetAppearance } from './ui-helpers.ts';
 import { connectionLifecycle } from './ui-connection-checks.ts';
 import { createCheck, type Result } from './ui-results.ts';
 import { syncActions } from './ui-sync-checks.ts';
-import { operationExtras } from './ui-operation-checks.ts';
+import { operationActions } from './ui-operation-checks.ts';
 import { mappingSamples } from './ui-import-checks.ts';
 import {
   attributionLine,
@@ -241,7 +241,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ['connections:configure-test-save-disconnect-undo', () => connectionLifecycle(browser)],
     ['preferences:widget-monochrome', () => widgetAppearance(browser)],
     ...syncActions(browser),
-    ['operations:meaningful-extras-visible', () => operationExtras(browser)],
+    ...operationActions(browser),
     ['overview:narrow-localized-allocation', () => narrowAllocation(browser)],
     ['cash:opening-balance-rows-and-sort', () => cashFlow(browser)],
     ['counters:unified-badge', () => unifiedCounters(browser)],

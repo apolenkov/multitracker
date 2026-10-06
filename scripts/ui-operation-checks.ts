@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { evaluate, type Browser } from './ui-driver.ts';
+import { isRecord } from './exhaust/guards.ts';
 import { content, go, prepare, reveal, truth } from './ui-helpers.ts';
 
 const additional = '#buy-dialog .operation-additional';
@@ -131,4 +132,64 @@ function editedExtras(browser: Browser) {
   browser.run('press', 'Escape');
   browser.run('wait', '--fn', '!document.querySelector("#record-edit-dialog[open]")');
   return 'Исходное примечание → очистка с фокусом → явное сворачивание → отмена';
+}
+
+// Сумма строки — в валюте операции: приток «+», отток «−», без знака для
+// покупки/продажи; вторая строка с пересчётом не добавляется. Ожидание считает
+// тот же Intl.NumberFormat, что и money() — совпадение посимвольное.
+function amountsIn(
+  browser: Browser,
+  lang: 'ru' | 'en',
+  cases: readonly (readonly [string, number, boolean])[],
+) {
+  const pairs = evaluate(
+    browser,
+    `(() => { const fmt = (v, signed) => new Intl.NumberFormat(
+        '${lang === 'ru' ? 'ru-RU' : 'en-US'}',
+        { style: 'currency', currency: 'USD', maximumFractionDigits: 2,
+          signDisplay: signed ? 'exceptZero' : 'auto' }).format(v);
+      const amountOf = (label) => [...document.querySelectorAll('.history-row')]
+        .find((row) => row.querySelector('h2')?.textContent?.includes(label))
+        ?.querySelector('.record-amount dd')?.textContent ?? null;
+      return { ${cases.map(([label, value, signed]) => `${JSON.stringify(label)}: [amountOf(${JSON.stringify(label)}), fmt(${value}, ${signed ? 'true' : 'false'})]`).join(', ')} }; })()`,
+  );
+  assert.ok(isRecord(pairs), `${lang}: ожидались суммы строк`);
+  for (const [label, pair] of Object.entries(pairs)) {
+    assert.ok(Array.isArray(pair) && pair.length === 2, `${lang} ${label}: пара`);
+    assert.equal(pair[0], pair[1], `${lang} ${label}: сумма в валюте операции со знаком`);
+  }
+  return pairs;
+}
+
+export function rowAmountOperationCurrency(browser: Browser) {
+  prepare(browser);
+  go(browser, 'history');
+  const ru = amountsIn(browser, 'ru', [
+    ['Пополнение', 100, true],
+    ['Вывод', -100, true],
+    ['Комиссия', -5, true],
+    ['Дивиденд', 100, true],
+    ['Продажа', 600, false],
+    ['Начальный остаток', 0, true],
+  ]);
+  browser.run('select', '#topbar-language', 'en');
+  browser.run('wait', '--fn', 'document.documentElement.lang === "en"');
+  const en = amountsIn(browser, 'en', [
+    ['Deposit', 100, true],
+    ['Withdrawal', -100, true],
+    ['Fee', -5, true],
+    ['Dividend', 100, true],
+    ['Sale', 600, false],
+  ]);
+  browser.run('select', '#topbar-language', 'ru');
+  browser.run('wait', '--fn', 'document.documentElement.lang === "ru"');
+  return { ru, en };
+}
+
+/** Проверки операций для списка check-ui: сведения черновика и знак суммы. */
+export function operationActions(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
+  return [
+    ['operations:meaningful-extras-visible', () => operationExtras(browser)],
+    ['operations:amount-operation-currency', () => rowAmountOperationCurrency(browser)],
+  ];
 }

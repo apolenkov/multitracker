@@ -21,6 +21,41 @@
 .import-result {
   font-weight: 600;
   color: var(--ink);
+  margin: 0;
+}
+.import-run-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-block: 20px;
+}
+/* Чип статуса: значок и слово, состояние не зависит от одного цвета. */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status-chip .ui-icon {
+  width: 16px;
+  height: 16px;
+}
+.status-chip-ok {
+  color: var(--green);
+}
+.status-chip-warn {
+  color: var(--warning);
+}
+.status-chip-error {
+  color: var(--red);
 }
 .import-rows {
   display: none;
@@ -39,13 +74,6 @@
 .import-row-heading span {
   color: var(--muted);
   font-size: 14px;
-}
-.import-row-status {
-  font-weight: 600;
-}
-.import-rows [data-status='unknown'] .import-row-status,
-.import-rows [data-status='duplicate'] .import-row-status {
-  color: var(--warning);
 }
 .conflict-choices {
   border: 0;

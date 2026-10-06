@@ -4,9 +4,10 @@ import { go, prepare, truth } from './ui-helpers.ts';
 import { routeReady } from './exhaust/probe.ts';
 import { isRecord } from './exhaust/guards.ts';
 
-type Lang = 'ru' | 'en';
+export type Lang = 'ru' | 'en';
 
-function env(browser: Browser, screen: string, width: number, height: number, lang: Lang) {
+/** Экран/язык/окно для изолированной проверки: закрывает забытый диалог. */
+export function env(browser: Browser, screen: string, width: number, height: number, lang: Lang) {
   browser.run('set', 'viewport', '1440', '900');
   if (evaluate(browser, 'Boolean(document.querySelector("dialog[open]"))') === true) {
     browser.run('press', 'Escape');
@@ -127,6 +128,15 @@ export function accountCollapsed(browser: Browser) {
   return 'details счёта свёрнут; тип скрыт при изменении остатка';
 }
 
+/** «Сравнить версии»: кнопка ниже сгиба — без прокрутки клик молча промахивается. */
+function openSyncConflict(browser: Browser) {
+  const trigger = '.sync-panel > .sync-actions:last-child > button';
+  browser.run('scrollintoview', trigger);
+  settleLayout(browser);
+  browser.run('click', trigger);
+  browser.run('wait', '#sync-conflict[open]');
+}
+
 /** На 375×667 количество и цена видны выше липкого подвала. */
 export function fieldsAboveFold(browser: Browser) {
   openBuy(browser, 375, 667);
@@ -149,8 +159,7 @@ export function headingSharedLine(browser: Browser) {
       '#sync-conflict',
       () => {
         env(browser, 'sync', 1440, 900, 'ru');
-        browser.run('click', '.sync-panel .sync-actions:last-of-type button.quiet');
-        browser.run('wait', '#sync-conflict[open]');
+        openSyncConflict(browser);
       },
     ],
   ];
@@ -174,8 +183,7 @@ export function syncButtonSize(browser: Browser) {
     `getComputedStyle(document.querySelector('.sync-actions button.quiet')).fontSize === '16px'`,
     '«Сравнить версии» — 16 px',
   );
-  browser.run('click', '.sync-panel .sync-actions:last-of-type button.quiet');
-  browser.run('wait', '#sync-conflict[open]');
+  openSyncConflict(browser);
   truth(
     browser,
     `getComputedStyle(document.querySelector('#sync-conflict .dialog-actions .quiet')).fontSize === '16px'`,

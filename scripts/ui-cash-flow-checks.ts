@@ -30,7 +30,7 @@ function operation(browser: Browser, trigger: string, type: string, field: strin
   browser.run('wait', '#buy-dialog[open]');
   truth(
     browser,
-    `document.querySelectorAll('dialog[open]').length === 1 && document.querySelector('#buy-dialog-type')?.value === ${JSON.stringify(type)} && document.querySelector('#buy-dialog [name=${field}]')?.value === ${JSON.stringify(value)}`,
+    `document.querySelectorAll('dialog[open]').length === 1 && document.querySelector('#buy-dialog-title')?.textContent === 'Начальный остаток' && document.querySelector('#buy-dialog [name=${field}]')?.value === ${JSON.stringify(value)}`,
     `Нужен один диалог ${type} с предвыбранным ${field}=${value}`,
   );
 }

@@ -18,6 +18,7 @@ const paths = {
   incoming: 'M12 4v16m-6-6 6 6 6-6',
   outgoing: 'M12 20V4m-6 6 6-6 6 6',
   transfer: 'M4 8h16m-4-4 4 4-4 4M20 16H4m4-4-4 4 4 4',
+  warning: 'M12 3 2 21h20L12 3zm0 7v5m0 3.5v.5',
   brand: 'M3 19V5l9 8 9-8v14M3 5h18',
 };
 const pathByName = new Map(Object.entries(paths));
@@ -34,7 +35,8 @@ type Name =
   | 'chevron'
   | 'incoming'
   | 'outgoing'
-  | 'transfer';
+  | 'transfer'
+  | 'warning';
 export function Icon({ name }: Readonly<{ name: Name }>) {
   return (
     <svg className="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">

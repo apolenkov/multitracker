@@ -23,6 +23,7 @@ import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
 import { modalDialogActions } from './ui-modal-checks.ts';
 import { inputDialogActions } from './ui-dialog-input-checks.ts';
+import { importActions } from './ui-import-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
 import { unifiedCounters } from './ui-counter-checks.ts';
 
@@ -233,6 +234,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ...arenaWave1(browser),
     ['import:mapping-locale-invalid', importMapping],
     ['import:one-click-run-and-errors', cancelImport],
+    ...importActions(browser),
     ['settings:finance-roundtrip', () => settingsPersist(browser)],
     ['connections:configure-test-save-disconnect-undo', () => connectionLifecycle(browser)],
     ['preferences:widget-monochrome', () => widgetAppearance(browser)],

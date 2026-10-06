@@ -6,18 +6,21 @@ import { env } from './ui-dialog-input-checks.ts';
 import { isRecord } from './exhaust/guards.ts';
 import { coversProbe } from './exhaust/page-design.ts';
 
+/** Метки, которыми проверка помечает узлы в живой странице (константы, не данные). */
+type ProbeSelector = '#mt-probe-text' | '#mt-probe-h2' | '#mt-probe-pin';
+
 /** Вердикт covers(text, крестик): существует ли перекрытие и считается ли оно находкой. */
-const verdictSource = (textSelector: string): string =>
+const verdictSource = (textSelector: ProbeSelector): string =>
   coversProbe(
     `(() => { const c = document.querySelector('#buy-dialog .close-button');
-      const t = document.querySelector(${JSON.stringify(textSelector)});
+      const t = document.querySelector('${textSelector}');
       return { overlap: t !== null && overlap(rectOf(t), rectOf(c)) && !t.contains(c) && !c.contains(t),
         covered: t !== null && covers(t, c) }; })()`,
   );
 
 const verdict = (
   browser: Browser,
-  sel: string,
+  sel: ProbeSelector,
 ): Readonly<{ overlap: boolean; covered: boolean }> => {
   const raw = evaluate(browser, verdictSource(sel));
   assert.ok(

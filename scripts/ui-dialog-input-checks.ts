@@ -192,11 +192,32 @@ export function syncButtonSize(browser: Browser) {
   return 'compare 16px, отмена 16px, подтвердить 16px';
 }
 
+/** Открытие не прокручивает форму: подписи не уезжают под липкую шапку (матрица FORM-031..041). */
+export function openNoScroll(browser: Browser) {
+  openBuy(browser, 375, 800);
+  const probe = `(() => { const dialog = document.getElementById('buy-dialog');
+    const btn = dialog.querySelector('.close-button').getBoundingClientRect();
+    const texts = [...dialog.querySelectorAll('label, legend, p, span')]
+      .filter((el) => el.checkVisibility() && el.getBoundingClientRect().width > 0)
+      .filter((el) => { const r = el.getBoundingClientRect();
+        return r.bottom > btn.top && r.top < btn.bottom && r.right > btn.left && r.left < btn.right; })
+      .map((el) => el.tagName + ':' + el.textContent.slice(0, 30));
+    return { scroll: dialog.scrollTop, hits: texts }; })()`;
+  const raw = evaluate(browser, probe);
+  assert.ok(
+    isRecord(raw) && raw.scroll === 0 && Array.isArray(raw.hits) && raw.hits.length === 0,
+    `открытие прокрутило форму: ${JSON.stringify(raw)}`,
+  );
+  close(browser, '#buy-dialog');
+  return 'scrollTop=0, надписей под крестиком нет';
+}
+
 /** Все проверки вводных диалогов одним списком для check-ui. */
 export function inputDialogActions(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
   return [
     ['dialogs:input-initial-focus', () => inputInitialFocus(browser)],
     ['dialogs:account-collapsed-summary', () => accountCollapsed(browser)],
+    ['dialogs:open-no-scroll', () => openNoScroll(browser)],
     ['dialogs:fields-above-fold-375', () => fieldsAboveFold(browser)],
     ['dialogs:heading-shared-line', () => headingSharedLine(browser)],
     ['dialogs:sync-button-16px', () => syncButtonSize(browser)],

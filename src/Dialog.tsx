@@ -48,7 +48,9 @@ function focusFirstEmptyField(dialog: HTMLDialogElement) {
   const field = Array.from(
     dialog.querySelectorAll<HTMLInputElement>('input:not([type=checkbox])'),
   ).find((input) => !input.disabled && !input.readOnly && input.value === '');
-  field?.focus();
+  // preventScroll: поле видно при открытии — без прокрутки, иначе верхняя
+  // подпись уезжает под липкую шапку и боксом налезает на крестик.
+  field?.focus({ preventScroll: true });
 }
 export function closeDialog(id: string) {
   const dialog = document.getElementById(id);

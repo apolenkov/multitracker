@@ -133,9 +133,10 @@ export const paintsBox = (
  * — такое же устройство, пока нижний отступ .workspace покрывает её след во
  * вьюпорте (caller проверяет отступ по факту): перекрытый текст уходит
  * прокруткой выше её верхнего края. Контрол внутри непрозрачной липкой шапки
- * диалога (.dialog-heading) — симметричное устройство: прокручиваемый текст
- * уходит под неё намеренно (caller проверяет краску шапки и что сам текст
- * не из шапки). Текст другого закреплённого слоя
+ * диалога (.dialog-heading) — симметричное устройство и так же безусловно:
+ * весь контент внутри dialog с position: fixed считается закреплённым,
+ * асимметрия fixed/flow там не различима; caller уже проверил краску шапки
+ * и что текст не из самой шапки. Текст другого закреплённого слоя
  * (навигация, диалог) плашке не прощается. Любой другой fixed/sticky слой,
  * реально закрывающий текст, остаётся находкой.
  */
@@ -148,5 +149,5 @@ export const overlapExempt = (
   controlInOpaqueDialogHeading = false,
 ): boolean =>
   controlInStickyDialogFooter ||
-  (controlFixed !== textFixed &&
-    (controlInBottomNav || controlInPaddedToast || controlInOpaqueDialogHeading));
+  controlInOpaqueDialogHeading ||
+  (controlFixed !== textFixed && (controlInBottomNav || controlInPaddedToast));

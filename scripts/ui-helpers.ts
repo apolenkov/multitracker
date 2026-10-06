@@ -131,8 +131,14 @@ export function layoutShift(browser: Browser, act: () => void, label: string) {
   act();
   // Клик по строке ниже сгиба прокручивает страницу — поведение указателя, а не сдвиг
   // содержимого. Возвращаем прокрутку и сравниваем положения в координатах документа.
-  evaluate(browser, `scrollTo(0, ${scroll}); true`);
-  waitTrue(browser, `scrollY === ${scroll}`, `${label}: прокрутка не вернулась`);
+  // Возврат фокуса после закрытия диалога идёт в requestAnimationFrame и тоже может
+  // прокрутить страницу к открывателю: возвращаем прокрутку на каждом опросе ожидания,
+  // иначе медленный раннер получает кадр фокуса уже после единственного scrollTo.
+  waitTrue(
+    browser,
+    `(scrollTo(0, ${scroll}), scrollY === ${scroll})`,
+    `${label}: прокрутка не вернулась`,
+  );
   settleLayout(browser);
   const after = boxes(browser);
   const moved = [...before]

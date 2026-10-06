@@ -158,24 +158,45 @@ main {
 .footer > span {
   margin-left: auto;
 }
+/* Плавающая плашка внизу вьюпорта, вне потока: появление и скрытие не двигают
+   страницу. На ≤900 px поднимается над нижней навигацией (layout.css). */
 .status-message {
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 30;
   display: flex;
   align-items: center;
   gap: 12px;
-  /* Слот зарезервирован под две строки: появление и скрытие текста не двигают страницу. */
-  min-height: 56px;
+  width: min(640px, calc(100% - 32px));
+  margin-inline: auto;
   padding: 8px 8px 8px 16px;
-  margin-bottom: 16px;
+  border: 1px solid transparent;
   border-radius: var(--radius);
-  color: var(--green);
+  color: var(--ink);
   font-size: 14px;
+  pointer-events: none;
 }
 .status-message:has(p) {
+  border-color: var(--line);
   background: var(--surface);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+  pointer-events: auto;
 }
 .status-message > [role='status'] {
   flex: 1;
   min-width: 0;
+}
+.status-message .icon-close {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+/* Пока плашка висит, у корня страницы растёт нижний отступ: место
+   добавляется в конец документа за подвалом, ничто выше не сдвигается,
+   и последние управления уходят прокруткой выше плашки. */
+.workspace:has(.status-message p) {
+  padding-bottom: 96px;
 }
 main:focus-visible {
   outline: none;

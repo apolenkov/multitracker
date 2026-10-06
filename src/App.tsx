@@ -12,6 +12,7 @@ import { useDialogPointerGuard } from './dialog-pointer-guard.ts';
 
 export type Notice = Readonly<{ sequence: number; message: string }>;
 import './base.css';
+import './skip-link.css';
 import './appearance.css';
 import './layout.css';
 import './finance.css';
@@ -56,6 +57,11 @@ function useAppView() {
   const demo = useDemoView();
   useDocumentMetadata(preferences.language, navigation.screen);
   useDocumentTheme(preferences.theme);
+  useEffect(() => {
+    setNotice((current) =>
+      current.message ? { sequence: current.sequence, message: '' } : current,
+    );
+  }, [navigation.screen]);
   const navigate = (next: Screen) => {
     navigation.navigate(next);
     setNotice((current) => ({ sequence: current.sequence, message: '' }));
@@ -67,11 +73,20 @@ function useAppView() {
   const onSaved = (message: string) => {
     setNotice((current) => ({ sequence: current.sequence + 1, message }));
   };
+  const dismissNotice = () => {
+    setNotice((current) => ({ sequence: current.sequence, message: '' }));
+  };
+  const setLanguage = (value: Language) => {
+    preferences.setLanguage(value);
+    dismissNotice();
+  };
   return {
     ...demo,
     ...preferences,
     ...navigation,
     navigate,
+    setLanguage,
+    dismissNotice,
     portfolioId,
     setPortfolioId,
     selectPortfolio,

@@ -9,15 +9,12 @@ import { accountSamples } from '../forms/accounts.ts';
 import { Icon } from '../Icon.tsx';
 import { RowAction, RowNotice, undoneText } from '../RowActions.tsx';
 import { AssetSymbol } from '../AssetSymbol.tsx';
-import { focusMain } from '../navigation.ts';
-
 import { AccountList, SelectionActions, SelectionFields } from './PortfolioAccounts.tsx';
 import type { EntityRequest, RemovedMap } from './PortfolioAccounts.tsx';
 type Props = RecordsProps & Readonly<{ onSelect: (id: string) => void; onCreate: () => void }>;
 export function PortfolioList(props: Props) {
   const labels = getLabels(props.language);
-  const copy = recordsCopy(props.language);
-  const { request, setRequest, saved, save, removed, remove, restore } = useEntities(props);
+  const { request, setRequest, save, removed, remove, restore } = useEntities(props);
   return (
     <section>
       <div className="section-top">
@@ -38,16 +35,6 @@ export function PortfolioList(props: Props) {
           />
         ))}
       </div>
-      <p className="quiet">
-        {copy.displayed}. {labels.memory}
-      </p>
-      {!props.onSaved && (
-        <div className="status-message">
-          <div role="status" aria-atomic="true">
-            {saved.message && <p key={saved.count}>{saved.message}</p>}
-          </div>
-        </div>
-      )}
       {request && (
         <EntityDialog
           id="entity-dialog"
@@ -209,27 +196,17 @@ function PortfolioAssets({ state, id }: Readonly<{ state: RecordsProps['state'];
 function useEntities(props: Props) {
   const [request, setRequest] = useState<EntityRequest | null>(null);
   const [removed, setRemoved] = useState<RemovedMap>(new Map());
-  const [saved, setSaved] = useState<Readonly<{ count: number; message: string }>>({
-    count: 0,
-    message: '',
-  });
-  const save = (message: string) => {
-    setSaved((current) => ({ count: current.count + 1, message }));
-    props.onSaved?.(message);
-  };
+  const save = (message: string) => props.onSaved?.(message);
   // Архив и удаление прячут строку под встроенное «Отменить» на её месте; набор и расчёт не меняются.
   const remove = (target: EntityRequest, action: 'archive' | 'delete') => {
-    const copy = recordsCopy(props.language);
     setRemoved((current) => new Map([...current, [target.target ?? '', action]]));
-    save(action === 'archive' ? copy.archived : copy.entityRemoved);
   };
   const restore = (key: string) => {
     setRemoved((current) => new Map([...current].filter(([item]) => item !== key)));
     save(undoneText(props.language));
-    focusMain({ preventScroll: true });
   };
   useEffect(() => {
     if (request) openDialog('entity-dialog');
   }, [request]);
-  return { request, setRequest, saved, save, removed, remove, restore };
+  return { request, setRequest, save, removed, remove, restore };
 }

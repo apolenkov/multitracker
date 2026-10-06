@@ -30,6 +30,33 @@ export function go(browser: Browser, screen: string) {
   settleLayout(browser);
 }
 
+// Переход на раздел через адресной фрагмент — на 375 нижняя навигация, клик по
+// скрытым ссылкам недоступен; ждёт тот же постусловный фокус на #main.
+export function hashGo(browser: Browser, screen: string) {
+  evaluate(browser, `location.assign('#${screen}'); true`);
+  waitTrue(
+    browser,
+    `location.hash === '#${screen}' && document.activeElement?.id === 'main'`,
+    `Переход на ${screen}`,
+  );
+  settleLayout(browser);
+}
+
+// Повторный вход на раздел внутри сессии: когда фрагмент уже указывает туда,
+// location.assign не порождает hashchange и фокус не уходит на #main.
+// Уводим на промежуточный раздел, чтобы возврат был настоящей сменой адреса.
+export function rehash(browser: Browser, screen: string) {
+  if (evaluate(browser, `location.hash === '#${screen}'`) === true) {
+    evaluate(browser, "location.assign('#import'); true");
+    waitTrue(
+      browser,
+      "location.hash === '#import' && document.activeElement?.id === 'main'",
+      'Промежуточный раздел',
+    );
+  }
+  hashGo(browser, screen);
+}
+
 export function truth(browser: Browser, source: string, message: string) {
   assert.equal(evaluate(browser, source), true, message);
 }
@@ -42,10 +69,16 @@ export function waitTrue(browser: Browser, source: string, message: string) {
 export const focused = (selector: string) =>
   `document.activeElement === document.querySelector('${selector}')`;
 export const undoFocused = `Array.from(document.querySelectorAll('.undo-action')).some(button => button === document.activeElement && button.checkVisibility({checkVisibilityCSS:true}))`;
+
+// Объявление результата действия — глобальная плашка или встроенное «Отменить»
+// у записи. Постоянная строка состояния (.sync-state) и результат проверки в
+// диалоге — не объявления действия, их не считаем.
+export const announcements = `Array.from(document.querySelectorAll('.status-message [role=status], .row-notice[role=status]'))
+  .filter((el) => el.textContent?.trim() && el.checkVisibility()).length`;
 export const count = (selector: string) => `document.querySelectorAll('${selector}').length`;
 
 // Снимок положений всех элементов #main в координатах документа; ключ — путь по индексам детей.
-// Внутренности зарезервированных слотов уведомлений — часть самого уведомления, они не считаются.
+// Само уведомление и его внутренности — вне потока страницы, они не считаются.
 const layoutMap = `(() => {
   const path = (node) => {
     const steps = [];
@@ -58,8 +91,7 @@ const layoutMap = `(() => {
     // Нулевой прямоугольник (display:none, display:contents, option) позиции не имеет:
     // top+scrollY для него — просто scrollY, ложное «движение» при любой прокрутке.
     const inside =
-      element.parentElement?.closest('.status-message, .demo-status, .row-notice') ||
-      (box.width === 0 && box.height === 0)
+      element.closest('.status-message, .row-notice') || (box.width === 0 && box.height === 0)
         ? 1
         : 0;
     const desc = element.tagName.toLowerCase() + (element.className ? '.' + String(element.className).trim().split(/\\s+/).join('.') : '');
@@ -169,6 +201,15 @@ export function prepare(browser: Browser) {
   browser.run('select', '#topbar-currency', 'USD');
   browser.run('select', '#settings-base-currency', 'RUB');
   browser.run('select', '#topbar-theme', 'light');
+}
+
+// Сохранение портфеля — самый короткий путь к объявлению в глобальной плашке.
+export function savePortfolio(browser: Browser) {
+  browser.run('find', 'role', 'button', 'click', '--name', '+ Создать портфель', '--exact');
+  browser.run('wait', '#portfolio-dialog[open]');
+  browser.run('fill', '#portfolio-dialog-name', 'Учебная проверка');
+  browser.run('click', '#portfolio-dialog button[type="submit"]');
+  browser.run('wait', '--fn', '!document.querySelector("#portfolio-dialog[open]")');
 }
 
 function widgetChanges(browser: Browser) {

@@ -129,7 +129,11 @@ export const paintsBox = (
  * исключением не считается: оно непрозрачно и закрывает контент намеренно.
  * Закреплённый подвал диалога (.form-actions/.dialog-actions) тоже исключён:
  * он закрывает прокручиваемое содержимое намеренно, а фокус полей выводит их
- * из-под него через --dialog-footer-reserve. Любой другой fixed/sticky слой,
+ * из-под него через --dialog-footer-reserve. Плавающая плашка .status-message
+ * — такое же устройство, пока нижний отступ .workspace покрывает её след во
+ * вьюпорте (caller проверяет отступ по факту): перекрытый текст уходит
+ * прокруткой выше её верхнего края. Текст другого закреплённого слоя
+ * (навигация, диалог) плашке не прощается. Любой другой fixed/sticky слой,
  * реально закрывающий текст, остаётся находкой.
  */
 export const overlapExempt = (
@@ -137,4 +141,7 @@ export const overlapExempt = (
   textFixed: boolean,
   controlInBottomNav: boolean,
   controlInStickyDialogFooter = false,
-): boolean => controlInStickyDialogFooter || (controlFixed !== textFixed && controlInBottomNav);
+  controlInPaddedToast = false,
+): boolean =>
+  controlInStickyDialogFooter ||
+  (controlFixed !== textFixed && (controlInBottomNav || controlInPaddedToast));

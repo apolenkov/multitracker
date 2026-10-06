@@ -4,7 +4,6 @@ import { syncText, type SyncWords, type Version } from './sync-text';
 import type { ConnectionProps } from './connection-text';
 import { useModalSession, type ModalControl } from './modal-session';
 import { RowNotice, undoneText } from '../RowActions.tsx';
-import { focusMain } from '../navigation.ts';
 
 export function SyncPanel({ language, notify }: ConnectionProps) {
   const t = language === 'ru' ? syncText.ru : syncText.en;
@@ -110,14 +109,13 @@ function SyncDevices({
 }>) {
   const [revoked, setRevoked] = useState(false);
   // Отзыв выполняется сразу: строка остаётся под встроенным «Отменить», которое возвращает доступ.
+  // Объявление одно — в строке (RowNotice несёт t.revoked).
   const revoke = () => {
     setRevoked(true);
-    notify(t.revoked);
   };
   const restore = () => {
     setRevoked(false);
     notify(undoneText(language));
-    focusMain({ preventScroll: true });
   };
   return (
     <section className="sync-devices">

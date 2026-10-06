@@ -11,7 +11,6 @@ import { RecordDialog } from './RecordDialog.tsx';
 import type { RecordRequest } from './RecordDialog.tsx';
 import { recordsCopy } from './copy.ts';
 import { undoneText } from '../RowActions.tsx';
-import { focusMain } from '../navigation.ts';
 
 type Props = RecordsProps & Readonly<{ brief?: boolean }>;
 export function History(props: Props) {
@@ -75,13 +74,6 @@ function RecordHost({
   const request = history.request;
   return (
     <>
-      {!props.onSaved && (
-        <div className="status-message">
-          <div role="status" aria-atomic="true">
-            {history.saved.message && <p key={history.saved.count}>{history.saved.message}</p>}
-          </div>
-        </div>
-      )}
       {request && (
         <RecordDialog
           {...props}
@@ -97,18 +89,6 @@ function RecordHost({
       )}
     </>
   );
-}
-
-function useSaved(onSaved: Props['onSaved']) {
-  const [saved, setSaved] = useState<Readonly<{ count: number; message: string }>>({
-    count: 0,
-    message: '',
-  });
-  const save = (message: string) => {
-    setSaved((current) => ({ count: current.count + 1, message }));
-    onSaved?.(message);
-  };
-  return { saved, save };
 }
 
 // После закрытия фокус возвращается к строке-открывателю, пока виден её раздел:
@@ -127,16 +107,14 @@ function useHistory(props: Props) {
   const [request, setRequest] = useState<RecordRequest | null>(null);
   const [removed, setRemoved] = useState<readonly string[]>([]);
   const [opener, setOpener] = useState<HTMLElement | null>(null);
-  const { saved, save } = useSaved(props.onSaved);
-  // Удалённая строка остаётся на месте под уведомлением; отмена возвращает ту же запись.
+  const save = (message: string) => props.onSaved?.(message);
+  // Удалённая строка остаётся на месте под уведомлением; объявление одно — в строке.
   const remove = (record: Transaction) => {
     setRemoved((current) => [...current, record.id]);
-    save(recordsCopy(props.language).removed);
   };
   const restore = (id: string) => {
     setRemoved((current) => current.filter((item) => item !== id));
     save(undoneText(props.language));
-    focusMain({ preventScroll: true });
   };
   const open = (next: RecordRequest | null) => {
     if (next && !request && document.activeElement instanceof HTMLElement)
@@ -157,7 +135,6 @@ function useHistory(props: Props) {
     setFilter,
     request,
     setRequest: open,
-    saved,
     save,
     removed,
     remove,

@@ -44,7 +44,6 @@ export function ConnectionForm({ provider, language, initial, t, onSave, onCance
         testError={testError}
         setTestError={setTestError}
       />
-      <p className="demo-note">{t.onlyDemo}</p>
       <div className="dialog-actions">
         <button type="button" className="quiet" onClick={onCancel}>
           {t.cancel}

@@ -17,18 +17,33 @@ const stackAbove = (a, b) => {
   return x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight ? document.elementsFromPoint(x, y) : [];
 };
 const cSide = (el, c) => el === c || c.contains(el) || el.contains(c);
+// Плашка .status-message — закреплённый слой только при position: fixed;
+// нижний отступ .workspace «включён», когда покрывает её след от верхнего
+// края до низа вьюпорта: перекрытый потоковый текст уходит прокруткой выше.
+const toastRoom = (c) => {
+  const toast = c.closest('.status-message');
+  if (toast === null || getComputedStyle(toast).position !== 'fixed') return false;
+  const ws = document.querySelector('.workspace');
+  return (
+    ws !== null &&
+    Number.parseFloat(getComputedStyle(ws).paddingBottom) >=
+      innerHeight - rectOf(toast).t
+  );
+};
 const covers = (t, c) => {
   if (!overlap(rectOf(t), rectOf(c)) || t.contains(c) || c.contains(t)) return false;
   const tr = rectOf(t); // текст для скринридера (1px, clip-path) никто не видит
   if (Math.min(tr.w, tr.h) <= 1 || getComputedStyle(t).clipPath === 'inset(50%)') return false;
   // Поток под закрытой нижней навигацией — не дефект. Открытое меню «Ещё»
   // (.more-menu есть в DOM только при expanded) исключением не является (N5).
+  // Плашка над потоком при активном отступе — то же устройство раскладки.
   if (
     overlapExempt(
       fixedNear(c),
       fixedNear(t),
       c.closest('.mobile-links') !== null,
       c.closest('dialog') !== null && c.closest('.form-actions, .dialog-actions') !== null,
+      toastRoom(c),
     )
   )
     return false;

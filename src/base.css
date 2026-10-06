@@ -197,17 +197,6 @@ a {
   white-space: nowrap;
   border: 0;
 }
-.skip-link {
-  position: fixed;
-  top: -80px;
-  left: 20px;
-  padding: 12px;
-  background: var(--paper);
-  z-index: 100;
-}
-.skip-link:focus {
-  top: 12px;
-}
 dialog {
   --dialog-inset: 24px;
   border: 1px solid var(--line);

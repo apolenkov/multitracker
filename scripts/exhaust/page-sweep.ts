@@ -45,6 +45,11 @@ const activate = (el) => {
     el.focus(); el.value = '7'; el.dispatchEvent(new Event('input', { bubbles: true }));
     return;
   }
+  // Вкладки срабатывают по mousedown (Radix): синтетический click их не
+  // переключает, и контрол обходился бы без реального действия.
+  if (el.getAttribute('role') === 'tab') {
+    el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 }));
+  }
   el.click();
 };
 const closeAll = async () => { for (const d of openDialogs()) d.close(); await settle(); };

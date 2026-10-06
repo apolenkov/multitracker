@@ -54,7 +54,6 @@ export function OperationForm(props: OperationProps) {
           dialog={props.id}
           labels={labels}
         />
-        <p className="form-sample">{presentationCopy(props.language).sample}</p>
         <TypeSelector
           type={form.input.type}
           language={props.language}

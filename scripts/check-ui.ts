@@ -15,7 +15,9 @@ import {
   narrowAllocation,
 } from './ui-overview-checks.ts';
 import { stableHeroDisclosure } from './ui-overview-checks.ts';
-import { recordRowActions, entityUndo, importAndSyncUndo } from './ui-row-action-checks.ts';
+import { recordRowActions } from './ui-row-action-checks.ts';
+import { entityUndo, importAndSyncUndo } from './ui-demo-undo-checks.ts';
+import { arenaWave1, firstLoadHashGuard } from './ui-arena-checks.ts';
 import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
@@ -171,9 +173,15 @@ function cancelImport() {
   );
   browser.run('find', 'label', 'Пропустить повтор (строка 4)', 'click', '--exact');
   browser.run('click', '#import-run');
-  browser.run('wait', '--fn', '!document.querySelector("#import-error")');
+  browser.run(
+    'wait',
+    '--fn',
+    `!document.querySelector("#import-error") && /Добавлено 2, пропущено 2/.test(document.querySelector('.status-message [role=status] p')?.textContent ?? '')`,
+  );
   assert.match(
-    String(evaluate(browser, 'document.querySelector(".demo-page > .demo-status")?.innerText')),
+    String(
+      evaluate(browser, 'document.querySelector(".status-message [role=status] p")?.textContent'),
+    ),
     /Добавлено 2, пропущено 2/,
   );
   return 'Ошибка повтора → пропуск → одно нажатие «Импортировать 2 операции»';
@@ -212,6 +220,7 @@ function hiddenReconciliation() {
 function runChecks(driver: Browser): readonly Result[] {
   const pages = [
     check('navigation:initial-skip-focus', () => initialSkipFocus(driver, baseUrl.href)),
+    check('navigation:first-load-hash', () => firstLoadHashGuard(driver, baseUrl.href)),
     ...allScreens(),
   ];
   language('ru');
@@ -220,6 +229,7 @@ function runChecks(driver: Browser): readonly Result[] {
     ['preferences:independent-currencies', () => independentCurrencies(browser)],
     ['navigation:back-main-focus', backFocus],
     ['feedback:repeat-save', repeatSave],
+    ...arenaWave1(browser),
     ['import:mapping-locale-invalid', importMapping],
     ['import:one-click-run-and-errors', cancelImport],
     ['settings:finance-roundtrip', () => settingsPersist(browser)],

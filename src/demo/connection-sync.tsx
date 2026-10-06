@@ -6,7 +6,6 @@ import { demoState } from '../model/portfolio';
 import { accountLabel } from '../forms/accounts';
 import { Icon } from '../Icon.tsx';
 import { RowNotice, undoneText } from '../RowActions.tsx';
-import { focusMain } from '../navigation.ts';
 import {
   connectionText,
   providerLabel,
@@ -69,17 +68,16 @@ function useConnections(
     notify(t.saved);
   };
   // Отключение сразу: строка остаётся под встроенным «Отменить», которое возвращает настройки.
+  // Объявление одно — в карточке (RowNotice несёт t.removed в имени региона).
   const disconnect = (value: Connection) => {
     setConfigured((current) => current.filter((item) => item.provider !== value.provider));
     setDropped((current) => new Map([...current, [value.provider, value]]));
-    notify(t.removed);
   };
   const restore = (provider: string) => {
     const value = dropped.get(provider);
     if (value) setConfigured((current) => [...current, value]);
     setDropped((current) => new Map([...current].filter(([key]) => key !== provider)));
     notify(undoneText(language));
-    focusMain({ preventScroll: true });
   };
   return { configured, dropped, modal, save, disconnect, restore };
 }

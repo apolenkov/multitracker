@@ -69,6 +69,11 @@ label.checkbox-row {
   color: var(--muted);
   font-weight: 500;
 }
+/* В подробностях импорта «Проверка» переносится — столбцы таблицы не обрезаются. */
+.import-source-table th:last-child,
+.import-source-table td:last-child {
+  white-space: normal;
+}
 .mapping-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -234,33 +239,6 @@ label.checkbox-row {
 .setting-link:hover {
   color: var(--accent);
   background: var(--surface);
-}
-.demo-status {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  /* Зарезервированный слот под три строки: сообщение не сдвигает нижний колонтитул. */
-  min-height: 94px;
-  padding: 14px 16px;
-  margin-top: 20px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--ink);
-}
-.demo-status:has(span:not(:empty)) {
-  border-color: var(--line);
-  background: var(--surface);
-}
-.demo-status > [role='status'] {
-  min-width: 0;
-  flex: 1;
-  overflow-wrap: anywhere;
-}
-.demo-status button {
-  flex-shrink: 0;
-  min-width: 44px;
-  background: transparent;
-  border: 0;
 }
 .demo-dialog {
   width: min(640px, calc(100% - 32px));

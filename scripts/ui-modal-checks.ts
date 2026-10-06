@@ -200,3 +200,12 @@ export function dialogMountStability(browser: Browser) {
     (['ru', 'en'] as const).map((lang) => mountShiftIn(browser, width, lang)),
   );
 }
+
+/** Все проверки закрытия/монтажа диалогов одним списком для check-ui. */
+export function modalDialogActions(browser: Browser): readonly Readonly<[string, () => unknown]>[] {
+  return [
+    ['dialogs:close-paths-reopen-focus', () => dialogClosePaths(browser)],
+    ['dialogs:close-scrolled-focus-restore', () => scrolledCloseFocus(browser)],
+    ['dialogs:mount-layout-shift-2px', () => dialogMountStability(browser)],
+  ];
+}

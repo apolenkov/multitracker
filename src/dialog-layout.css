@@ -27,6 +27,10 @@ dialog .dialog-heading {
   padding: var(--dialog-inset) var(--dialog-inset) 0;
   background: var(--paper);
 }
+/* Заголовок делит строку с крестиком: посторонние поля (.demo-panel h2) смещали его вниз. */
+dialog .dialog-heading h2 {
+  margin: 0;
+}
 dialog :is(input, select, textarea, summary, a[href]) {
   scroll-margin-block: 6px var(--dialog-footer-reserve);
 }

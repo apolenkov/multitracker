@@ -39,23 +39,20 @@ export function openDialog(id: string) {
       .querySelectorAll<HTMLDialogElement>('dialog[open]')
       .forEach((current) => current.close());
     dialog.showModal();
+    focusFirstEmptyField(dialog);
   }
+}
+/** showModal() ставит фокус на первый фокусируемый (крестик шапки); начало ввода —
+    первое пустое доступное поле. Заполненные и недоступные поля пропускаются. */
+function focusFirstEmptyField(dialog: HTMLDialogElement) {
+  const field = Array.from(
+    dialog.querySelectorAll<HTMLInputElement>('input:not([type=checkbox])'),
+  ).find((input) => !input.disabled && !input.readOnly && input.value === '');
+  field?.focus();
 }
 export function closeDialog(id: string) {
   const dialog = document.getElementById(id);
   if (dialog instanceof HTMLDialogElement) dialog.close();
-}
-/** «Виден» для фокуса — только пересечение с вьюпортом: checkVisibility()
-    не ловит элемент, уехавший за экран прокруткой страницы под диалогом. */
-export function elementInViewport(element: HTMLElement) {
-  const box = element.getBoundingClientRect();
-  return (
-    element.checkVisibility() &&
-    box.bottom > 0 &&
-    box.top < window.innerHeight &&
-    box.right > 0 &&
-    box.left < window.innerWidth
-  );
 }
 export function DialogHeading({
   title,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Screen } from './i18n.ts';
 import { demoScreens, type Screen as DemoScreen } from './demo/words.ts';
-import { elementInViewport } from './Dialog.tsx';
+import { elementInViewport } from './viewport.ts';
 
 export type Route = Readonly<{ screen: Screen; demoScreen: DemoScreen }>;
 

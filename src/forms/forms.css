@@ -57,6 +57,18 @@
 .exchange-pair .form-grid {
   grid-template-columns: 1fr;
 }
+.operation-account summary {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.operation-account .summary-action {
+  color: var(--accent);
+  font-weight: 400;
+}
+.operation-account[open] summary {
+  margin-bottom: 12px;
+}
 .operation-additional {
   border-top: 1px solid var(--line);
   padding-top: 8px;
@@ -89,8 +101,10 @@
   border-bottom: 1px solid var(--line);
   padding-block: 8px;
 }
+/* Ошибка замещает подсказку в том же слоте: тот же верхний отступ — иначе
+   появление ошибки сдвигает форму. */
 .entity-dialog .field-error {
-  margin: 0;
+  margin: 6px 0 0;
 }
 .operation-dialog .form-grid .form-field:only-child,
 .entity-dialog .form-grid .form-field:only-child {

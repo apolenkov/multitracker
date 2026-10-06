@@ -21,7 +21,8 @@ import { arenaWave1, firstLoadHashGuard } from './ui-arena-checks.ts';
 import { destructiveTargets, settingsDeleteFocus } from './ui-destructive-checks.ts';
 import { emptyOverview } from './ui-empty-overview-checks.ts';
 import { dialogPointerSave } from './ui-dialog-pointer-checks.ts';
-import { dialogClosePaths, dialogMountStability, scrolledCloseFocus } from './ui-modal-checks.ts';
+import { modalDialogActions } from './ui-modal-checks.ts';
+import { inputDialogActions } from './ui-dialog-input-checks.ts';
 import { cashFlow } from './ui-cash-flow-checks.ts';
 import { unifiedCounters } from './ui-counter-checks.ts';
 
@@ -251,9 +252,8 @@ function runChecks(driver: Browser): readonly Result[] {
     ['privacy:hidden-import-reconciliation', hiddenReconciliation],
     ['dialogs:rapid-pointer-save-no-fallthrough', () => dialogPointerSave(browser)],
     ['sync:confirm-then-intentional-disclosure', () => syncPostConflictDisclosure(browser)],
-    ['dialogs:close-paths-reopen-focus', () => dialogClosePaths(browser)],
-    ['dialogs:close-scrolled-focus-restore', () => scrolledCloseFocus(browser)],
-    ['dialogs:mount-layout-shift-2px', () => dialogMountStability(browser)],
+    ...inputDialogActions(browser),
+    ...modalDialogActions(browser),
   ];
   return actions.reduce<readonly Result[]>(
     (results, [id, action]) => [

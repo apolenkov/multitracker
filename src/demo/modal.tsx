@@ -1,6 +1,7 @@
 import { useEffect, useEffectEvent, useRef, type ReactNode, type Ref } from 'react';
 import { flushSync } from 'react-dom';
-import { closeDialog, elementInViewport, keepDialogFocus, openDialog } from '../Dialog.tsx';
+import { closeDialog, keepDialogFocus, openDialog } from '../Dialog.tsx';
+import { elementInViewport } from '../viewport.ts';
 import type { Language } from './words.ts';
 import { Icon } from '../Icon.tsx';
 

@@ -43,7 +43,9 @@ export function openDialog(id: string) {
   }
 }
 /** showModal() ставит фокус на первый фокусируемый (крестик шапки); начало ввода —
-    первое пустое доступное поле. Заполненные и недоступные поля пропускаются. */
+    первое пустое доступное поле ввода input (select и textarea не участвуют:
+    свёрнутый контекст счёта и необязательная заметка заполняются по желанию).
+    Заполненные и недоступные поля пропускаются. */
 function focusFirstEmptyField(dialog: HTMLDialogElement) {
   const field = Array.from(
     dialog.querySelectorAll<HTMLInputElement>('input:not([type=checkbox])'),

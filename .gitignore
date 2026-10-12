@@ -22,3 +22,6 @@ docs/evidence/
 /.pi/prompts/opsx-*.md
 /.devin/skills/openspec-*/
 /.devin/workflows/opsx-*.md
+/.worktrees/
+/.superpowers/
+/.codegraph/

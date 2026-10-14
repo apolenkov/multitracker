@@ -53,7 +53,7 @@
 
 ## Запуск
 
-Нужен Node.js **26.10.0** (закреплён в [.nvmrc](.nvmrc)).
+Нужен Node.js **26.10.0** (закреплён в [.nvmrc](.nvmrc)) и npm **12.2.0** (`packageManager` в [package.json](package.json); CI ставит и проверяет эту версию до `npm ci`).
 
 ```sh
 git clone https://github.com/apolenkov/multitracker.git

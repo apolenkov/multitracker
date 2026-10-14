@@ -18,6 +18,14 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
+      - name: Закрепить и проверить npm из packageManager
+        shell: bash
+        run: |
+          multitracker_npm="$(node -p "require('./package.json').packageManager.replace(/^npm@/, '')")"
+          npm install --global "npm@$multitracker_npm"
+          echo "node $(node --version), npm $(npm --version)"
+          test "$(node --version)" = "v$(cat .nvmrc)" || { echo "Node не совпадает с .nvmrc" >&2; exit 1; }
+          test "$(npm --version)" = "$multitracker_npm" || { echo "npm не совпадает с packageManager" >&2; exit 1; }
       - name: Установить Gitleaks из официального выпуска
         shell: bash
         run: |

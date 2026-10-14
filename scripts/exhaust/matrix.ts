@@ -219,6 +219,7 @@ const main = (): void => {
   assert.deepEqual(planProblems(full), [], 'планы не совпадают с инвентарём');
   const scope = full.filter((entry) => only.length === 0 || only.includes(entry.id));
   const out = entries.filter((entry) => entry.scope === 'out');
+  assert.ok(contexts.length > 0 && scope.length > 0, 'пустой фильтр матрицы: нет ячеек');
   const log = createRunLog(
     process.env.MULTITRACKER_MATRIX_OUT ?? 'docs/audits',
     new Date().toISOString().slice(0, 10),

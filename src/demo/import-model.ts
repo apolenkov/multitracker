@@ -39,38 +39,43 @@ export const initialImport: ImportDraft = {
 export function importText(language: ImportLanguage, ru: string, en: string) {
   return language === 'ru' ? ru : en;
 }
-export function importError(draft: ImportDraft, step: number, language: ImportLanguage) {
-  if (!importSources.some((source) => source === draft.source)) {
-    return importText(language, 'Выберите источник.', 'Choose a source.');
-  }
-  if (!importPortfolios.some((portfolio) => portfolio === draft.portfolio)) {
-    return importText(language, 'Выберите портфель.', 'Choose a portfolio.');
-  }
-  if (!validAccount(draft.account, draft.portfolio)) {
-    return importText(
-      language,
-      'Выберите счёт внутри портфеля.',
-      'Choose an account within the portfolio.',
-    );
-  }
-  if (step >= 1 && !draft.fileSelected) {
-    return importText(language, 'Выберите файл.', 'Select the file.');
-  }
+export type ImportErrorKind = 'source' | 'portfolio' | 'account' | 'file' | 'mapping' | 'rows';
+// Порядок проверок задаёт, какому полю принадлежит единая ошибка формы.
+export function importErrorKind(draft: ImportDraft, step: number): ImportErrorKind | undefined {
+  if (!importSources.some((source) => source === draft.source)) return 'source';
+  if (!importPortfolios.some((portfolio) => portfolio === draft.portfolio)) return 'portfolio';
+  if (!validAccount(draft.account, draft.portfolio)) return 'account';
+  if (step >= 1 && !draft.fileSelected) return 'file';
   if (step >= 2 && importFields.some((field) => importColumn(draft, field) !== field)) {
-    return importText(
-      language,
+    return 'mapping';
+  }
+  if (step >= 3 && !safeImportRows(draft)) return 'rows';
+  return undefined;
+}
+const importMessages = new Map<ImportErrorKind, readonly [string, string]>([
+  ['source', ['Выберите источник.', 'Choose a source.']],
+  ['portfolio', ['Выберите портфель.', 'Choose a portfolio.']],
+  ['account', ['Выберите счёт внутри портфеля.', 'Choose an account within the portfolio.']],
+  ['file', ['Выберите файл.', 'Select the file.']],
+  [
+    'mapping',
+    [
       'Сопоставьте все обязательные поля с одноимёнными столбцами файла.',
       'Map all required fields to the matching columns in the file.',
-    );
-  }
-  if (step >= 3 && !safeImportRows(draft)) {
-    return importText(
-      language,
+    ],
+  ],
+  [
+    'rows',
+    [
       'Пропустите неизвестный актив и повтор: эти строки нельзя принять в примере.',
       'Skip the unknown asset and duplicate: these rows cannot be accepted in this sample.',
-    );
-  }
-  return '';
+    ],
+  ],
+]);
+export function importError(draft: ImportDraft, step: number, language: ImportLanguage) {
+  const kind = importErrorKind(draft, step);
+  const [ru = '', en = ''] = importMessages.get(kind ?? 'source') ?? [];
+  return kind ? importText(language, ru, en) : '';
 }
 function safeImportRows(draft: ImportDraft) {
   return draft.skipUnknown && draft.skipDuplicates;

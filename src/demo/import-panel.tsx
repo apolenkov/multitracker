@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ImportDraft, ImportLanguage } from './import-model';
-import { importError, importText, initialImport } from './import-model';
+import type { ImportDraft, ImportErrorKind, ImportLanguage } from './import-model';
+import { importError, importErrorKind, importText, initialImport } from './import-model';
 import { ImportSource, ImportMapping, ImportReview } from './import-fields';
 import { ImportHistory } from './import-history';
 
@@ -30,14 +30,17 @@ export function ImportPanel({ language, hidden, notify }: Props) {
       ),
     );
   };
-  const fields = { language, draft, update: setDraft, error };
+  const kind = attempt > 0 ? importErrorKind(draft, 3) : undefined;
+  const fields = { language, draft, update: setDraft };
+  // Единая ошибка помечает только поле, к которому относится.
+  const only = (own: ImportErrorKind) => (kind === own ? { error } : {});
   return (
     <div className="demo-panel import-panel">
       <ImportFileSummary language={language} />
-      <ImportSource {...fields} />
+      <ImportSource {...fields} {...only('source')} />
       <details id="import-mapping-options">
         <summary>{importText(language, 'Сопоставление столбцов', 'Column mapping')}</summary>
-        <ImportMapping {...fields} hidden={hidden} />
+        <ImportMapping {...fields} {...only('mapping')} hidden={hidden} />
       </details>
       <div className="import-run-row">
         <p className="import-result">
@@ -52,7 +55,7 @@ export function ImportPanel({ language, hidden, notify }: Props) {
         </button>
       </div>
       <ImportError error={error} attempt={attempt} />
-      <ImportReview {...fields} hidden={hidden} />
+      <ImportReview {...fields} {...only('rows')} hidden={hidden} />
       <ImportHistory language={language} hidden={hidden} notify={notify} />
     </div>
   );

@@ -22,7 +22,7 @@
     "security": "npm run lint && node --experimental-strip-types scripts/audit.ts",
     "spec": "npx --yes @fission-ai/openspec@1.14.1 validate --all --strict --no-interactive",
     "secrets": "gitleaks dir . --redact --no-banner && npm run secrets:history",
-    "secrets:history": "test \"$(git rev-parse --is-shallow-repository)\" = false && gitleaks git . --redact --no-banner",
+    "secrets:history": "{ test \"$(git rev-parse --is-shallow-repository)\" = false || { echo 'secrets:history: неполная история, выполните git fetch --unshallow' >&2; exit 1; }; } && gitleaks git . --redact --no-banner",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:gates": "node --experimental-strip-types scripts/check-gates.ts",
     "check": "npm run format:check && npm run typecheck && npm run typecheck:ts6 && npm run complexity && npm run test:gates && npm run spec && npm test && npm run build && npm run security && npm run secrets",

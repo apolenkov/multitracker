@@ -1,4 +1,4 @@
-# Общий CI-образ MultiTracker: self-hosted раннер гейта и локальные контейнерные
+# Общий CI-образ MultiTracker: раннер GitHub Actions (контейнерный job) и локальные контейнерные
 # прогоны (`test:ui:docker`, перебор). Node — из .nvmrc, Chromium — как в
 # проверенной среде decision-092; agent-browser запечён.
 # Google Chrome существует только под amd64, поэтому система — Debian и Chromium (arm64).

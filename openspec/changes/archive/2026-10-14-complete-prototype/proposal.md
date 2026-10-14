@@ -6,4 +6,4 @@
 дефекты состояния, правил и документации. Настоящие данные, API и хранение не входят.
 
 Спецификация: [readiness/spec.md](specs/readiness/spec.md).
-Исполнение: [план](../../../docs/plans/2026-09-30-complete-prototype.md).
+Исполнение: [план](../../../../docs/plans/2026-09-30-complete-prototype.md).

@@ -284,8 +284,8 @@ components:
 Дата: 2026-09-30, редакция после сокращения объёма. Карта описывает сценарии
 текущих исходников; наличие кода не означает подтверждённую приёмку.
 Требования — в [брифе](docs/design/brief.md) и
-[R01–R21](openspec/changes/complete-prototype/specs/readiness/spec.md).
-Расширение Delta ([D01–D07](openspec/changes/delta-capabilities/specs/exploration/spec.md),
+[R01–R21](openspec/specs/readiness/spec.md).
+Расширение Delta ([D01–D07](openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md),
 [карта каталога](docs/design/delta-capabilities.md)) — историческое: его разделы
 «Рынки», «Избранное», «Аналитика» и «События» владелец убрал из текущего
 объёма; полная версия одиннадцати разделов сохранена тегом
@@ -294,7 +294,7 @@ components:
 и границы проверки; [приёмка прежней арены](docs/design/arena/acceptance.md)
 сохраняет исторические проверки. [Прежний аудит](docs/reviews/prototype-readiness.md)
 описывает исторический кандидат семи разделов.
-Исторический первый этап сохранён в [OpenSpec](openspec/changes/clickable-prototype/design.md).
+Исторический первый этап сохранён в [OpenSpec](openspec/changes/archive/2026-10-14-clickable-prototype/design.md).
 
 ## Карта разделов
 

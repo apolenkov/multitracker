@@ -12,7 +12,7 @@
 Один владелец черновика импорта; общие оболочка, диалог, форматирование и токены.
 
 **Стек:** установленные React, TypeScript, Vite, ESLint, Node test, agent-browser.
-**Спецификация:** [OpenSpec](../../openspec/changes/complete-prototype/specs/readiness/spec.md).
+**Спецификация:** [OpenSpec](../../openspec/specs/readiness/spec.md).
 **Основание:** исходный запрос, подтверждение «Довести основу и полный макет»,
 [публичное резюме аудита](../reviews/prototype-readiness.md).
 

@@ -55,10 +55,10 @@ Mobbin зарегистрирован, OAuth-авторизация успешн
 
 1. [AGENTS.md](../AGENTS.md), [README.md](../README.md), [DESIGN.md](../DESIGN.md).
 2. [Полный план](plans/2026-09-30-complete-prototype.md) и
-   [R01–R21](../openspec/changes/complete-prototype/specs/readiness/spec.md).
+   [R01–R21](../openspec/specs/readiness/spec.md).
    Историческое расширение (вне текущего объёма):
    [план расширения](plans/2026-09-30-delta-capabilities.md),
-   [D01–D07](../openspec/changes/delta-capabilities/specs/exploration/spec.md)
+   [D01–D07](../openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md)
    и [карту каталога](design/delta-capabilities.md).
    История дизайна: [план арены](plans/2026-09-30-design-arena.md),
    [перечень 135 ID](design/form-inventory.md) и [приёмка прежней арены](design/arena/acceptance.md).

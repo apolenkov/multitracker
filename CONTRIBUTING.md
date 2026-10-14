@@ -6,7 +6,7 @@
 данных; сведения об уязвимостях отправляйте по [SECURITY.md](SECURITY.md).
 
 1. Прочитайте [README](README.md), [DESIGN](DESIGN.md), [AGENTS](AGENTS.md),
-   [текущие требования](openspec/changes/complete-prototype/specs/readiness/spec.md)
+   [текущие требования](openspec/specs/readiness/spec.md)
    и [дорожную карту](docs/plans/2026-09-30-roadmap.md).
 2. Установите Node из `.nvmrc`, Gitleaks 8.30.1 и зависимости через `npm ci`.
 3. Дорабатывайте существующий модуль на его языке; новый код — TypeScript.

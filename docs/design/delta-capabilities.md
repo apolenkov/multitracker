@@ -160,7 +160,7 @@ Delta Direct как внешняя служба и любые специфиче
 ## Уточнения первоначального плана реализации
 
 Прочитаны [план](../plans/2026-09-30-delta-capabilities.md) и
-[D01–D07](../../openspec/changes/delta-capabilities/specs/exploration/spec.md).
+[D01–D07](../../openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md).
 До запуска исполнителей переданы четыре уточнения:
 
 - DC-25 и DC-37 — самостоятельные счётчики сделок, а не модуль комиссий.

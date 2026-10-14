@@ -8,7 +8,7 @@
 
 **Tech Stack:** Node.js, npm, React, TypeScript, Vite, CSS, семантический HTML и нативные формы/диалоги. Использовать имеющиеся в репозитории зависимости и компоненты; новые добавлять только при необходимости реализации заданного поведения.
 
-**Spec:** `docs/specs/2026-09-30-multitracker.md`. Продуктовый бриф: `docs/design/brief.md`; UX: `docs/design/ux-plan.md`; доступность: `docs/design/accessibility-plan.md`; визуальное направление: `docs/design/visual-direction.md`; полное OpenSpec-изменение: `openspec/changes/clickable-prototype/`.
+**Spec:** `docs/specs/2026-09-30-multitracker.md`. Продуктовый бриф: `docs/design/brief.md`; UX: `docs/design/ux-plan.md`; доступность: `docs/design/accessibility-plan.md`; визуальное направление: `docs/design/visual-direction.md`; полное OpenSpec-изменение: `openspec/changes/archive/2026-10-14-clickable-prototype/`.
 
 ## Global Constraints
 

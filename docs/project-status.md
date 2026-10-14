@@ -41,14 +41,14 @@ Vite, CSS, Tailwind v4 и примитивах shadcn/ui (Radix: вкладки;
 
 Текущая задача — показать полный интерфейс до начала настоящей реализации.
 Область и приёмка: [план полного макета](plans/2026-09-30-complete-prototype.md)
-с [R01–R21](../openspec/changes/complete-prototype/specs/readiness/spec.md).
+с [R01–R21](../openspec/specs/readiness/spec.md).
 [План расширения Delta](plans/2026-09-30-delta-capabilities.md) с
-[D01–D07](../openspec/changes/delta-capabilities/specs/exploration/spec.md) и
+[D01–D07](../openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md) и
 [карта каталога Delta](design/delta-capabilities.md) — исторические:
 их разделы убраны из текущего объёма решением владельца.
 Макет одобрен владельцем 2026-10-02, PR №3 слит в `main`.
 Карта интерфейса — в [DESIGN.md](../DESIGN.md). Первый, более узкий этап сохранён
-отдельно в [OpenSpec](../openspec/changes/clickable-prototype/design.md).
+отдельно в [OpenSpec](../openspec/changes/archive/2026-10-14-clickable-prototype/design.md).
 
 Все разделы показывают вымышленные примеры; настройки добавляют монохром
 и предпросмотр виджета портфеля.

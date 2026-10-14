@@ -8,8 +8,8 @@
 результат; настоящие API, файлы, ключи, база и шифрование отсутствуют.
 Граница и текущая приёмка определены в
 [плане полного макета](docs/plans/2026-09-30-complete-prototype.md) с
-[R01–R21](openspec/changes/complete-prototype/specs/readiness/spec.md).
-Расширение Delta ([D01–D07](openspec/changes/delta-capabilities/specs/exploration/spec.md),
+[R01–R21](openspec/specs/readiness/spec.md).
+Расширение Delta ([D01–D07](openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md),
 [карта каталога](docs/design/delta-capabilities.md)) — историческое:
 разделы «Рынки», «Избранное», «Аналитика» и «События» владелец убрал из
 текущего объёма; полная версия сохранена тегом `prototype-full-11-sections`.

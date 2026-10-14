@@ -158,7 +158,7 @@ function AdditionalFields({ fields, ...props }: Props & Readonly<{ fields: reado
     ...fields.filter((field) => ['fee', 'feeCurrency'].includes(field)),
     ...(props.input.type === 'corporate' ? [] : (['note'] as const)),
   ];
-  const meaningful = meaningfulExtras(props);
+  const meaningful = meaningfulExtras(props, extra);
   const invalid = extra.some((field) => new Map(Object.entries(props.errors)).has(field));
   const locked = meaningful || invalid;
   const [opened, setOpened] = useState(locked);
@@ -191,9 +191,12 @@ function AdditionalFields({ fields, ...props }: Props & Readonly<{ fields: reado
     </details>
   );
 }
-function meaningfulExtras(props: Props) {
+// Скрытые поля текущего типа (например, комиссия после смены типа) не считаются.
+function meaningfulExtras(props: Props, extra: readonly Field[]) {
   return (
-    (props.input.fee !== '' && Number(props.input.fee.replace(',', '.')) !== 0) ||
-    (props.input.type !== 'corporate' && props.input.note.trim() !== '')
+    (extra.includes('fee') &&
+      props.input.fee !== '' &&
+      Number(props.input.fee.replace(',', '.')) !== 0) ||
+    (extra.includes('note') && props.input.note.trim() !== '')
   );
 }

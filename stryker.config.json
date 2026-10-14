@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-core.json",
+  "testRunner": "command",
+  "commandRunner": { "command": "node --experimental-strip-types --test tests/model.test.ts" },
+  "coverageAnalysis": "off",
+  "mutate": ["src/model/portfolio.ts"],
+  "concurrency": 1,
+  "thresholds": { "high": 85, "low": 75, "break": 70 },
+  "reporters": ["clear-text"],
+  "ignorePatterns": [".git", ".claude", ".agents", ".worktrees", ".codegraph", ".stryker-tmp", "dist", "docs", "openspec", "public"],
+  "tempDirName": ".stryker-tmp"
+}

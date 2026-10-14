@@ -14,8 +14,8 @@
 1. Node 26.10.0 закреплён в `.nvmrc`, `engines` (`>=26.10.0`) и базе образа
    `node:26.10.0-bookworm-slim`; `@types/node` — 26.6.3.
 2. Один образ [scripts/runner/Dockerfile](../../scripts/runner/Dockerfile)
-   обслуживает self-hosted раннер ([decision-095](decision-095-self-hosted-container-runner.md))
-   и локальные контейнерные прогоны (`npm run test:ui:docker`,
+   обслуживал self-hosted раннер ([decision-095](decision-095-self-hosted-container-runner.md),
+   заменён: гейт идёт на GitHub-hosted) и обслуживает локальные контейнерные прогоны (`npm run test:ui:docker`,
    `scripts/exhaust-docker.sh`); agent-browser 0.38.1 запечён. Gitleaks 8.30.1
    ставится шагом гейта из официального выпуска.
 

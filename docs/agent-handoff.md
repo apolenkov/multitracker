@@ -178,10 +178,9 @@ agent-browser skills get core
 [GitHub Actions №36713961789](https://github.com/apolenkov/multitracker/actions/runs/36713961789)
 завершился SUCCESS на публичном корневом коммите: 27 тестов, 39 примеров правил, UI 34/34.
 Это исторический запуск семи разделов, не проверка расширения Delta.
-С 2026-10-02 гейт «check» исполняется на self-hosted раннере в контейнере OrbStack
-([decision-095](decisions/decision-095-self-hosted-container-runner.md)); управление —
-`scripts/runner/runner.sh build|start|status|stop`. Пока раннер выключен, слияния
-в `main` ждут проверки.
+С 2026-10-05 гейт «check» исполняется на GitHub-hosted `ubuntu-latest`;
+self-hosted раннер ([decision-095](decisions/decision-095-self-hosted-container-runner.md),
+2026-10-02) заменён. Слияния в `main` ждут проверку `check` на GitHub.
 Историческая проверка API подтвердила защиту `main`; подробности и границы —
 в публичном отчёте. Текущее состояние требует отдельной проверки при изменении.
 Размещение приложения не проводилось.

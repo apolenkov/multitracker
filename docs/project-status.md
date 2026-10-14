@@ -142,16 +142,14 @@ Linux-контейнере: `npm run test:ui:docker` собирает `dist`, п
 (`scripts/ui-docker.sh`, см. [decision-092](decisions/decision-092-linux-ui-runner.md)).
 Образ `multitracker-ci-runner` собирается из репозитория одной командой —
 `scripts/runner/runner.sh build` (Dockerfile: Node из .nvmrc, Chromium,
-agent-browser 0.38.1); он же служит раннером гейта
-([decision-095](decisions/decision-095-self-hosted-container-runner.md)).
+agent-browser 0.38.1); раньше он же служил раннером гейта
+([decision-095](decisions/decision-095-self-hosted-container-runner.md), заменён).
 
-Гейт «check» GitHub Actions исполняется на self-hosted раннере в контейнере
-OrbStack ([decision-095](decisions/decision-095-self-hosted-container-runner.md)):
-сборка и запуск — `scripts/runner/runner.sh build|start`, состояние и занятость —
-`scripts/runner/runner.sh status`. Пока контейнер выключен, проверки и слияния
-в `main` ждут. Раннеров может быть несколько — по одному на компьютер, с разными
-именами: `MT_RUNNER_NAME=mt-air scripts/runner/runner.sh start` (по умолчанию
-`mt-orbstack`); задание берёт свободный. После UI-шага гейт исполняет строгую матрицу 135×8
+Гейт «check» GitHub Actions исполняется на GitHub-hosted `ubuntu-latest`
+([check.yml](../.github/workflows/check.yml)); self-hosted раннер в OrbStack
+([decision-095](decisions/decision-095-self-hosted-container-runner.md), 2026-10-02)
+заменён 2026-10-05 (PR №18). Контейнер `scripts/runner/` остаётся для локальных
+прогонов. После UI-шага гейт исполняет строгую матрицу 135×8
 (`scripts/exhaust/matrix.ts`) и полный перебор покрытия (`scripts/exhaust/run.ts`)
 с проверкой реестров; журналы, отчёты и покрытие сохраняются артефактом
 `matrix-evidence`.

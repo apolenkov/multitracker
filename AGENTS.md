@@ -53,9 +53,10 @@
 - Комплексный аудит по явному запросу ведите через `product-readiness`
   ([локальный пакет](skills/product-readiness/SKILL.md)); маршруты условны по цели
   и наличию навыков. Изолированная правка не запускает полный аудит.
-- Гейт «check» GitHub Actions исполняется на self-hosted раннере в контейнере
-  OrbStack ([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md),
-  `scripts/runner/runner.sh`); выключенный раннер блокирует слияния в `main`.
+- Гейт «check» GitHub Actions исполняется на GitHub-hosted `ubuntu-latest`
+  ([check.yml](.github/workflows/check.yml)); self-hosted раннер
+  ([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md))
+  заменён, контейнер `scripts/runner/` служит только локальным прогонам.
   Ручная публикация статического макета подготавливается локально.
   Не выдавайте проверку конфигурации за удалённый запуск или публикацию.
 

@@ -4,7 +4,7 @@ import { createBrowser, evaluate } from '../ui-driver.ts';
 import type { Browser } from '../ui-driver.ts';
 import { sweepEnv } from './axes.ts';
 import { installHooksSource } from './page-dom.ts';
-import { applyEnv } from './envctl.ts';
+import { applyEnvStrict } from './envctl.ts';
 import { createRunLog } from './records.ts';
 import type { RunLog } from './records.ts';
 import { visitSection } from './sweep.ts';
@@ -169,9 +169,9 @@ const openApp = (browser: Browser, base: string, log: RunLog): void => {
     "document.readyState === 'complete' && !!document.querySelector('.desktop-links a')",
   );
   evaluate(browser, installHooksSource);
-  const applied: unknown = applyEnv(browser, sweepEnv, 'overview');
+  applyEnvStrict(browser, sweepEnv, 'overview');
   browser.run('wait', '--fn', routeReady('#overview'));
-  log.saveJson('env.json', { base: process.env.MULTITRACKER_UI_URL ?? null, applied });
+  log.saveJson('env.json', { base: process.env.MULTITRACKER_UI_URL ?? null, applied: [] });
 };
 
 const main = async (): Promise<void> => {

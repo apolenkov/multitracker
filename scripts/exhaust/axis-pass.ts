@@ -3,7 +3,7 @@ import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
 import type { Env } from './axes.ts';
 import { envKey } from './axes.ts';
-import { applyEnv } from './envctl.ts';
+import { applyEnvStrict } from './envctl.ts';
 import { fullInvariantsSource } from './page-checks.ts';
 import { designScan } from './page-design.ts';
 import type { DesignConfig } from './design.ts';
@@ -65,7 +65,7 @@ const checkRoute = (
   route: string,
   config: DesignConfig,
 ): AxisDetail => {
-  applyEnv(browser, env, route);
+  applyEnvStrict(browser, env, route);
   browser.run('wait', '--fn', routeReady(`#${route}`));
   // Цвета и контраст меряем после CSS-переходов и JS-раскладки (два кадра):
   // снятие посреди transition даёт ложные значения. Таймаут не теряет точку

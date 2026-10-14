@@ -39,7 +39,7 @@ const fastInv = () => {
     const inside = r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
     if (!inside && active.checkVisibility()) push(v, 'focus-outside-viewport', 'document.activeElement', 'intersect viewport', JSON.stringify({ x: r.x, y: r.y }));
   }
-  const left = (window.__exh && window.__exh.errors) || [];
+  const left = window.__exh ? window.__exh.errors.splice(0) : [];
   left.forEach((e) => push(v, 'console-error', 'console', 'none', e));
   return v;
 };

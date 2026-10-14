@@ -3,9 +3,9 @@
 Дата: 2026-09-30. Основание: исходный продуктовый запрос и подтверждение
 «Довести основу и полный макет». Суженный первый этап — историческая запись;
 текущая область задана [планом полного макета](../plans/2026-09-30-complete-prototype.md)
-с [R01–R21](../../openspec/changes/complete-prototype/specs/readiness/spec.md) и
+с [R01–R21](../../openspec/specs/readiness/spec.md) и
 [планом расширения Delta](../plans/2026-09-30-delta-capabilities.md) с
-[D01–D07](../../openspec/changes/delta-capabilities/specs/exploration/spec.md).
+[D01–D07](../../openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md).
 [Карта каталога](delta-capabilities.md) задаёт конкретные следствия новых действий;
 прежняя приёмка семи разделов не подтверждает расширение.
 

@@ -1,6 +1,14 @@
 # decision-095 — гейт «check» на self-hosted раннере в контейнере OrbStack
 
-Статус: accepted. Дата: 2026-10-02.
+Статус: заменён (2026-10-05, PR №18): гейт «check» исполняется на GitHub-hosted
+`ubuntu-latest` ([check.yml](../../.github/workflows/check.yml), см. пункт 5 в
+[decision-083](decision-083-complete-prototype-and-scenario-modules.md)): публичный
+репозиторий получает бесплатные параллельные раннеры, общий self-hosted раннер
+ставил проверки в очередь на 15–20 минут. Маршрут self-hosted не восстанавливается;
+образ и `scripts/runner/` остаются только для локальных контейнерных прогонов.
+Текст ниже — историческая запись.
+
+Первоначально: accepted, 2026-10-02.
 
 ## Контекст
 

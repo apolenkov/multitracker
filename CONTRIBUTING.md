@@ -6,7 +6,7 @@
 данных; сведения об уязвимостях отправляйте по [SECURITY.md](SECURITY.md).
 
 1. Прочитайте [README](README.md), [DESIGN](DESIGN.md), [AGENTS](AGENTS.md),
-   [текущие требования](openspec/changes/complete-prototype/specs/readiness/spec.md)
+   [текущие требования](openspec/specs/readiness/spec.md)
    и [дорожную карту](docs/plans/2026-09-30-roadmap.md).
 2. Установите Node из `.nvmrc`, Gitleaks 8.30.1 и зависимости через `npm ci`.
 3. Дорабатывайте существующий модуль на его языке; новый код — TypeScript.
@@ -17,7 +17,7 @@
    затронутые сценарии: RU/EN, 375/1440 px, ошибки, отмена, клавиатура и фокус.
 5. Сообщения коммитов — [Conventional Commits](https://www.conventionalcommits.org/)
    (`type(scope): subject`, типы — в `.commitlintrc.json`). Хуки Git ставит lefthook
-   при `npm ci` (разовый обход: `LEFTHOOK=0`). Слияние — только squash через запрос на изменение; ветка
+   при `npm ci`; не обходите их, сломанный хук чините. Слияние — только squash через запрос на изменение; ветка
    `main` защищена, обязательная проверка — `check`.
 6. В запросе на изменение укажите проблему, итоговое поведение, точные результаты
    проверок и ограничения. Незапущенная проверка не считается пройденной.

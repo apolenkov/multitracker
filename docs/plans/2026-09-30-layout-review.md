@@ -8,7 +8,7 @@
 **Architecture:** Существующие React/CSS и нативные details/dialog; сначала
 быстрая проверка на неизменённом приложении, затем четыре области реализации.
 **Tech Stack:** TypeScript, React, Vite, CSS, agent-browser; финансовая модель прежняя.
-**Spec:** [layout-smoke-polish](../../openspec/changes/layout-smoke-polish/specs/layout-polish/spec.md).
+**Spec:** [layout-smoke-polish](../../openspec/changes/archive/2026-10-02-layout-smoke-polish/specs/layout-polish/spec.md).
 
 ## Актуальная сверка от `1e64f81`
 

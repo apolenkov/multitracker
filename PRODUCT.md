@@ -49,7 +49,7 @@ web
 ## Evidence on Hand
 
 [Бриф](docs/design/brief.md), [функции Delta](docs/design/delta-capabilities.md),
-[сценарии](openspec/changes/delta-capabilities/specs/exploration/spec.md).
+[сценарии](openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md).
 Снимки и протоколы локально в docs/audits; прежние проверки относятся только
 к указанным в них версиям. Текущего пользовательского одобрения дизайна нет.
 

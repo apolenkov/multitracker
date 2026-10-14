@@ -53,7 +53,7 @@
 
 ## Запуск
 
-Нужен Node.js **26.10.0** (закреплён в [.nvmrc](.nvmrc)).
+Нужен Node.js **26.10.0** (закреплён в [.nvmrc](.nvmrc)) и npm **12.2.0** (`packageManager` в [package.json](package.json); CI ставит и проверяет эту версию до `npm ci`).
 
 ```sh
 git clone https://github.com/apolenkov/multitracker.git
@@ -92,7 +92,7 @@ npm run check
 **Gitleaks 8.30.1** из [официального выпуска](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1).
 Проверки интерфейса (`npm run test:ui`, `npm run test:smoke`) требуют запущенного сервера.
 
-Хуки Git ставятся пакетом lefthook при `npm ci` (отключить разово: `LEFTHOOK=0`): pre-commit
+Хуки Git ставятся пакетом lefthook при `npm ci`: pre-commit
 (форматирование и линтеры), commit-msg (commitlint) и pre-push (`npm run check`). Правила участия — в
 [CONTRIBUTING.md](CONTRIBUTING.md), безопасность — в [SECURITY.md](SECURITY.md), вопросы — в
 [SUPPORT.md](SUPPORT.md).

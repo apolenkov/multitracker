@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "license": "MIT",
+  "packageManager": "npm@12.2.0",
   "engines": {
     "node": ">=26.10.0"
   },
@@ -19,10 +20,13 @@
     "accessibility": "oxlint --config scripts/oxlint.json --disable-nested-config --max-warnings 0 .",
     "complexity": "eslint . --max-warnings 0 && find src -type f -name '*.css' -exec awk 'FNR > 300 { print FILENAME \": больше 300 строк\"; exit 1 }' {} +",
     "security": "npm run lint && node --experimental-strip-types scripts/audit.ts",
-    "secrets": "gitleaks dir . --redact --no-banner",
+    "spec": "npx --yes @fission-ai/openspec@1.14.1 validate --all --strict --no-interactive",
+    "secrets": "gitleaks dir . --redact --no-banner && npm run secrets:history",
+    "secrets:history": "{ test \"$(git rev-parse --is-shallow-repository)\" = false || { echo 'secrets:history: неполная история, выполните git fetch --unshallow' >&2; exit 1; }; } && gitleaks git . --redact --no-banner",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:gates": "node --experimental-strip-types scripts/check-gates.ts",
-    "check": "npm run format:check && npm run typecheck && npm run typecheck:ts6 && npm run complexity && npm run test:gates && npm test && npm run build && npm run security && npm run secrets",
+    "check": "npm run format:check && npm run typecheck && npm run typecheck:ts6 && npm run complexity && npm run test:gates && npm run spec && npm test && npm run build && npm run security && npm run secrets",
+    "test:mutation": "stryker run",
     "test:ui": "node --experimental-strip-types scripts/check-ui.ts",
     "test:ui:docker": "vite build --outDir dist && scripts/ui-docker.sh dist check-ui.ts",
     "test:ui:exhaust": "vite build --outDir dist/exhaust --emptyOutDir --sourcemap && scripts/exhaust-docker.sh dist/exhaust exhaust/run.ts",
@@ -49,6 +53,7 @@
     "@commitlint/cli": "21.2.3",
     "@commitlint/config-conventional": "21.2.3",
     "@eslint/js": "10.0.1",
+    "@stryker-mutator/core": "10.0.0",
     "@tailwindcss/vite": "4.3.3",
     "@types/eslint-plugin-security": "3.0.1",
     "@types/node": "26.6.4",
@@ -71,5 +76,9 @@
     "typescript-7": "npm:typescript@7.0.2",
     "typescript-eslint": "8.71.0",
     "vite": "8.3.2"
+  },
+  "allowScripts": {
+    "lefthook": true,
+    "fsevents": false
   }
 }

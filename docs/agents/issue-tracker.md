@@ -6,7 +6,7 @@
 сведения передаются по [правилам безопасности](../../SECURITY.md).
 
 Переносимые требования находятся в
-[OpenSpec](../../openspec/changes/complete-prototype/specs/readiness/spec.md),
+[OpenSpec](../../openspec/specs/readiness/spec.md),
 [плане](../plans/2026-09-30-complete-prototype.md) и [DESIGN](../../DESIGN.md).
 Исходный запрос пользователя имеет приоритет над суженным локальным планом.
 Публикация репозитория не является одобрением макета для настоящей реализации.

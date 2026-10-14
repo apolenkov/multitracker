@@ -1,4 +1,4 @@
-# Installed by the lefthook package on `npm ci`; skip once with LEFTHOOK=0, reinstall with `npx lefthook install`.
+# Installed by the lefthook package on `npm ci`; do not bypass, reinstall with `npx lefthook install`.
 pre-commit:
   parallel: true
   jobs:

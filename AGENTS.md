@@ -8,8 +8,8 @@
 результат; настоящие API, файлы, ключи, база и шифрование отсутствуют.
 Граница и текущая приёмка определены в
 [плане полного макета](docs/plans/2026-09-30-complete-prototype.md) с
-[R01–R21](openspec/changes/complete-prototype/specs/readiness/spec.md).
-Расширение Delta ([D01–D07](openspec/changes/delta-capabilities/specs/exploration/spec.md),
+[R01–R21](openspec/specs/readiness/spec.md).
+Расширение Delta ([D01–D07](openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md),
 [карта каталога](docs/design/delta-capabilities.md)) — историческое:
 разделы «Рынки», «Избранное», «Аналитика» и «События» владелец убрал из
 текущего объёма; полная версия сохранена тегом `prototype-full-11-sections`.
@@ -53,9 +53,10 @@
 - Комплексный аудит по явному запросу ведите через `product-readiness`
   ([локальный пакет](skills/product-readiness/SKILL.md)); маршруты условны по цели
   и наличию навыков. Изолированная правка не запускает полный аудит.
-- Гейт «check» GitHub Actions исполняется на self-hosted раннере в контейнере
-  OrbStack ([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md),
-  `scripts/runner/runner.sh`); выключенный раннер блокирует слияния в `main`.
+- Гейт «check» GitHub Actions исполняется на GitHub-hosted `ubuntu-latest`
+  ([check.yml](.github/workflows/check.yml)); self-hosted раннер
+  ([decision-095](docs/decisions/decision-095-self-hosted-container-runner.md))
+  заменён, контейнер `scripts/runner/` служит только локальным прогонам.
   Ручная публикация статического макета подготавливается локально.
   Не выдавайте проверку конфигурации за удалённый запуск или публикацию.
 

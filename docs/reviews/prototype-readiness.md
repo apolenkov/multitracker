@@ -3,7 +3,7 @@
 Дата: 2026-09-30. Публичное резюме фактически выполненных локальных и удалённых проверок
 кандидата MultiTracker. Исходники:
 [apolenkov/multitracker](https://github.com/apolenkov/multitracker).
-Область — [R01–R21](../../openspec/changes/complete-prototype/specs/readiness/spec.md),
+Область — [R01–R21](../../openspec/specs/readiness/spec.md),
 а не готовность финансового приложения к настоящим данным.
 
 Проверенный статический кандидат не имеет подтверждённых открытых дефектов

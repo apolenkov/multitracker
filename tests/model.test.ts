@@ -118,3 +118,54 @@ await test('CSV selection includes each named portfolio once and ignores unknown
   assert.equal(summarize(demoState, ' bybit , unknown ', 'RUB').value, 16800);
   assert.equal(summarize(demoState, '', 'USD').value, 0);
 });
+
+await test('fee and FX effects follow the settlement currency', () => {
+  const buys = [
+    {
+      id: 'msft',
+      portfolioId: 'tradernet',
+      asset: 'MSFT' as const,
+      quantity: 2,
+      price: 500,
+      fee: 5,
+      fx: 100,
+      date: '2026-01-15',
+    },
+  ];
+  assert.deepEqual(attribution(buys, 'RUB'), {
+    price: -10000,
+    fx: 20000,
+    interaction: -2000,
+    fees: -500,
+  });
+  assert.deepEqual(attribution(buys, 'USD'), { price: -100, fx: 0, interaction: 0, fees: -5 });
+});
+
+await test('name and numeric limits are inclusive at the edge', () => {
+  assert.equal(validateName('x'), undefined);
+  assert.equal(validateName(` ${'x'.repeat(80)} `), undefined);
+  const edges = [
+    { quantity: '1000000', price: '1', fee: '0', fx: '1' },
+    { quantity: '1', price: '10000000', fee: '0', fx: '1' },
+    { quantity: '1', price: '1', fee: '10000000', fx: '1' },
+    { quantity: '1', price: '1', fee: '0', fx: '10000' },
+  ];
+  edges.forEach((values) => assert.deepEqual(validateBuy({ ...valid, ...values }), {}));
+});
+
+await test('date range accepts both calendar limits', () => {
+  ['2000-01-01', '2026-09-30'].forEach((date) =>
+    assert.deepEqual(validateBuy({ ...valid, date }), {}),
+  );
+});
+
+await test('demo fixtures keep their identifiers, names and dates', () => {
+  assert.deepEqual(
+    demoState.portfolios.map((p) => `${p.id}:${p.name}`),
+    ['tradernet:Tradernet', 'binance:Binance', 'bybit:Bybit'],
+  );
+  assert.deepEqual(
+    demoState.buys.map((b) => `${b.id}:${b.date}`),
+    ['msft:2026-01-15', 'btc:2026-04-10', 'twt:2026-07-02'],
+  );
+});

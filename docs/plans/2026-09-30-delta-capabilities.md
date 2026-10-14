@@ -17,7 +17,7 @@ No backend, persistence, generated advice, audio or real external connection.
 
 **Tech Stack:** Existing React, TypeScript, Vite, CSS; no new dependencies.
 
-**Spec:** [D01–D07](../../openspec/changes/delta-capabilities/specs/exploration/spec.md),
+**Spec:** [D01–D07](../../openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md),
 [catalogue mapping](../design/delta-capabilities.md).
 
 ## Global constraints

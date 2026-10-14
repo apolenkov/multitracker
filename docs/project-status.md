@@ -41,14 +41,14 @@ Vite, CSS, Tailwind v4 и примитивах shadcn/ui (Radix: вкладки;
 
 Текущая задача — показать полный интерфейс до начала настоящей реализации.
 Область и приёмка: [план полного макета](plans/2026-09-30-complete-prototype.md)
-с [R01–R21](../openspec/changes/complete-prototype/specs/readiness/spec.md).
+с [R01–R21](../openspec/specs/readiness/spec.md).
 [План расширения Delta](plans/2026-09-30-delta-capabilities.md) с
-[D01–D07](../openspec/changes/delta-capabilities/specs/exploration/spec.md) и
+[D01–D07](../openspec/changes/archive/2026-10-14-delta-capabilities/specs/exploration/spec.md) и
 [карта каталога Delta](design/delta-capabilities.md) — исторические:
 их разделы убраны из текущего объёма решением владельца.
 Макет одобрен владельцем 2026-10-02, PR №3 слит в `main`.
 Карта интерфейса — в [DESIGN.md](../DESIGN.md). Первый, более узкий этап сохранён
-отдельно в [OpenSpec](../openspec/changes/clickable-prototype/design.md).
+отдельно в [OpenSpec](../openspec/changes/archive/2026-10-14-clickable-prototype/design.md).
 
 Все разделы показывают вымышленные примеры; настройки добавляют монохром
 и предпросмотр виджета портфеля.
@@ -142,16 +142,14 @@ Linux-контейнере: `npm run test:ui:docker` собирает `dist`, п
 (`scripts/ui-docker.sh`, см. [decision-092](decisions/decision-092-linux-ui-runner.md)).
 Образ `multitracker-ci-runner` собирается из репозитория одной командой —
 `scripts/runner/runner.sh build` (Dockerfile: Node из .nvmrc, Chromium,
-agent-browser 0.38.1); он же служит раннером гейта
-([decision-095](decisions/decision-095-self-hosted-container-runner.md)).
+agent-browser 0.38.1); раньше он же служил раннером гейта
+([decision-095](decisions/decision-095-self-hosted-container-runner.md), заменён).
 
-Гейт «check» GitHub Actions исполняется на self-hosted раннере в контейнере
-OrbStack ([decision-095](decisions/decision-095-self-hosted-container-runner.md)):
-сборка и запуск — `scripts/runner/runner.sh build|start`, состояние и занятость —
-`scripts/runner/runner.sh status`. Пока контейнер выключен, проверки и слияния
-в `main` ждут. Раннеров может быть несколько — по одному на компьютер, с разными
-именами: `MT_RUNNER_NAME=mt-air scripts/runner/runner.sh start` (по умолчанию
-`mt-orbstack`); задание берёт свободный. После UI-шага гейт исполняет строгую матрицу 135×8
+Гейт «check» GitHub Actions исполняется на GitHub-hosted `ubuntu-latest`
+([check.yml](../.github/workflows/check.yml)); self-hosted раннер в OrbStack
+([decision-095](decisions/decision-095-self-hosted-container-runner.md), 2026-10-02)
+заменён 2026-10-05 (PR №18). Контейнер `scripts/runner/` остаётся для локальных
+прогонов. После UI-шага гейт исполняет строгую матрицу 135×8
 (`scripts/exhaust/matrix.ts`) и полный перебор покрытия (`scripts/exhaust/run.ts`)
 с проверкой реестров; журналы, отчёты и покрытие сохраняются артефактом
 `matrix-evidence`.

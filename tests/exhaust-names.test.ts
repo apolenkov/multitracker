@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { fileReports } from '../scripts/exhaust/coverage.ts';
-import { decodeMappings, parseMap } from '../scripts/exhaust/sourcemap.ts';
+import { decodeMappings, mapPosition, parseMap } from '../scripts/exhaust/sourcemap.ts';
 
 // Сегмент 'SAASA': колонка 9, источник 0, строка 0, колонка исходника 9, имя 0.
 const map = JSON.stringify({
@@ -77,4 +77,16 @@ await test('a function without a named segment keeps the bundle name', () => {
 await test('a longer identifier at the same column is not taken for the minified name', () => {
   const reports = fileReports(coverage('Su', 0), [bundle('SuMore')]);
   assert.deepEqual(reports.at(0)?.uncoveredFunctions, ['Su@1']);
+});
+
+await test('one-field segment has no source and maps to null', () => {
+  const span = decodeMappings('AAAA,E').at(0)?.at(1);
+  assert.deepEqual(span && [span.column, span.source, span.line, span.srcColumn], [2, -1, -1, -1]);
+  const unmapped = parseMap({ version: 3, sources: ['../src/a.tsx'], mappings: 'AAAA,E' });
+  assert.ok(unmapped);
+  assert.deepEqual(mapPosition(unmapped, 0, 1), { source: '../src/a.tsx', line: 1, column: 0 });
+  assert.equal(mapPosition(unmapped, 0, 2), null);
+  // Сегмент без источника не сбивает перенос дельт для следующего отображённого.
+  const after = decodeMappings('AACC,E,CAAC').at(0)?.at(2);
+  assert.deepEqual(after && [after.line, after.srcColumn], [1, 2]);
 });

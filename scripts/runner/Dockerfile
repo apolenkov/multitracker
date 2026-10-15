@@ -5,6 +5,7 @@
 FROM node:26.10.0-bookworm-slim
 
 ARG RUNNER_VERSION=2.337.0
+ARG RUNNER_SHA256=9b1dc70626422526e3c94767cf024896beb15da5342a3f4819bf2feac13e0393
 ARG AGENT_BROWSER_VERSION=0.38.1
 
 RUN apt-get update \
@@ -32,6 +33,7 @@ RUN mkdir -p /home/runner/actions-runner \
   && curl --fail --silent --show-error --location \
     "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-arm64-${RUNNER_VERSION}.tar.gz" \
     --output /tmp/runner.tar.gz \
+  && echo "${RUNNER_SHA256}  /tmp/runner.tar.gz" | sha256sum --check - \
   && tar --extract --gzip --file /tmp/runner.tar.gz --directory /home/runner/actions-runner \
   && rm /tmp/runner.tar.gz
 

@@ -1,7 +1,9 @@
 /** Применение строки окружения: вьюпорт, медиа, настройки приложения, маршрут. */
+import assert from 'node:assert/strict';
 import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
-import type { Env } from './axes.ts';
+import { envKey, type Env } from './axes.ts';
+import { asText, isRecord } from './guards.ts';
 
 const applySource = `async (env) => {
   const until = (cond, tries) =>
@@ -72,3 +74,19 @@ export const gotoRoute = (browser: Browser, route: string) =>
       return location.hash;
     })()`,
   );
+
+/** Что из строки окружения не встало на страницу: пустой список — всё применено. */
+export const appliedFailures = (applied: unknown): readonly string[] => {
+  if (!isRecord(applied)) return ['<нет ответа>'];
+  const list = applied.applied;
+  return Array.isArray(list) ? list.map((item) => asText(item)) : ['<нет ответа>'];
+};
+
+/** Применение окружения с утверждением: не встало — прогон падает, а не идёт в чужом состоянии. */
+export const applyEnvStrict = (browser: Browser, env: Env, route: string): void => {
+  assert.deepEqual(
+    appliedFailures(applyEnv(browser, env, route)),
+    [],
+    `окружение не применилось: ${envKey(env)} ${route}`,
+  );
+};

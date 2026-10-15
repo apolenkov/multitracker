@@ -7,6 +7,7 @@ export type Span = Readonly<{
   column: number;
   source: number;
   line: number;
+  srcColumn: number;
   offset: number;
 }>;
 export type SourceMap = Readonly<{
@@ -23,7 +24,7 @@ const vlq = (text: string, at: number): Readonly<{ value: number; used: number }
 
 const vlqValue = (raw: number) => (raw & 1 ? -(raw >> 1) : raw >> 1);
 
-type Carry = Readonly<{ src: number; sl: number }>;
+type Carry = Readonly<{ src: number; sl: number; sc: number }>;
 type Fields = Readonly<{ at: number; values: readonly number[] }>;
 
 const decodeFields = (segment: string): Fields =>
@@ -35,26 +36,34 @@ const decodeFields = (segment: string): Fields =>
     { at: 0, values: [] },
   );
 
+const spanOf = (values: readonly number[], column: number, carry: Carry): Span => {
+  const [, source = 0, line = 0, srcColumn = 0] = values;
+  return {
+    column,
+    source: carry.src + source,
+    line: carry.sl + line,
+    srcColumn: carry.sc + srcColumn,
+    offset: 0,
+  };
+};
+
 const decodeSegment = (
   segment: string,
   column: number,
   carry: Carry,
-): Readonly<{ column: number; src: number; sl: number; span: Span }> => {
-  const fields = decodeFields(segment);
-  const nextColumn = column + (fields.values.at(0) ?? 0);
-  const span =
-    fields.values.length < 4
-      ? { column: nextColumn, source: -1, line: -1, offset: 0 }
-      : {
-          column: nextColumn,
-          source: carry.src + (fields.values.at(1) ?? 0),
-          line: carry.sl + (fields.values.at(2) ?? 0),
-          offset: 0,
-        };
+): Readonly<{ column: number; src: number; sl: number; sc: number; span: Span }> => {
+  const { values } = decodeFields(segment);
+  const nextColumn = column + (values.at(0) ?? 0);
+  // Сегмент без источника (меньше 4 полей) карту не двигает.
+  const mapped = values.length >= 4;
+  const span: Span = mapped
+    ? spanOf(values, nextColumn, carry)
+    : { column: nextColumn, source: -1, line: -1, srcColumn: -1, offset: 0 };
   return {
     column: nextColumn,
-    src: span.source < 0 ? carry.src : span.source,
-    sl: span.line < 0 ? carry.sl : span.line,
+    src: mapped ? span.source : carry.src,
+    sl: mapped ? span.line : carry.sl,
+    sc: mapped ? span.srcColumn : carry.sc,
     span,
   };
 };
@@ -71,20 +80,26 @@ const decodeLine = (line: string, carry: Carry) =>
           column: decoded.column,
           src: decoded.src,
           sl: decoded.sl,
+          sc: decoded.sc,
         };
       },
-      { spans: [], column: 0, src: carry.src, sl: carry.sl },
+      { spans: [], column: 0, src: carry.src, sl: carry.sl, sc: carry.sc },
     );
 
-type Lines = Readonly<{ lines: readonly (readonly Span[])[]; src: number; sl: number }>;
+type Lines = Readonly<{ lines: readonly (readonly Span[])[]; src: number; sl: number; sc: number }>;
 
 export const decodeMappings = (mappings: string): readonly (readonly Span[])[] =>
   mappings.split(';').reduce<Lines>(
     (acc, line) => {
       const decoded = decodeLine(line, acc);
-      return { lines: [...acc.lines, decoded.spans], src: decoded.src, sl: decoded.sl };
+      return {
+        lines: [...acc.lines, decoded.spans],
+        src: decoded.src,
+        sl: decoded.sl,
+        sc: decoded.sc,
+      };
     },
-    { lines: [], src: 0, sl: 0 },
+    { lines: [], src: 0, sl: 0, sc: 0 },
   ).lines;
 
 export const parseMap = (json: unknown): SourceMap | null => {
@@ -101,7 +116,7 @@ export const mapPosition = (
   map: SourceMap,
   line: number,
   column: number,
-): Readonly<{ source: string; line: number } | null> => {
+): Readonly<{ source: string; line: number; column: number } | null> => {
   const spans = map.lines.at(line) ?? [];
   const hit = spans.reduce<Span | null>(
     (best, span) => (span.column <= column ? span : best),
@@ -109,7 +124,7 @@ export const mapPosition = (
   );
   if (hit === null || hit.source < 0) return null;
   const source = map.sources.at(hit.source);
-  return source === undefined ? null : { source, line: hit.line + 1 };
+  return source === undefined ? null : { source, line: hit.line + 1, column: hit.srcColumn };
 };
 
 export const lineStartOffsets = (text: string): readonly number[] =>

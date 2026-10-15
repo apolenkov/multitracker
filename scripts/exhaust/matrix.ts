@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { createBrowser, evaluate, settleLayout } from '../ui-driver.ts';
 import { baseEnv, type Env } from './axes.ts';
-import { applyEnv } from './envctl.ts';
+import { applyEnv, applyEnvStrict, appliedFailures } from './envctl.ts';
 import { installHooksSource } from './page-dom.ts';
 import { cellFindings, runSteps, stateSteps } from './matrix-actions.ts';
 import { expectationNote, quietScene, resetScene, restore } from './matrix-scene.ts';
@@ -12,7 +12,7 @@ import type { EntryPlan, MatrixContext } from './matrix-dsl.ts';
 import { loadInventory, validateInventory, type InventoryEntry } from './inventory.ts';
 import { createRunLog } from './records.ts';
 import { writeMatrixReport, type MatrixCell } from './matrix-report.ts';
-import { asText, isRecord } from './guards.ts';
+import { asText } from './guards.ts';
 import type { Finding } from './records.ts';
 
 type Browser = ReturnType<typeof createBrowser>;
@@ -41,12 +41,6 @@ const envFor = (context: MatrixContext): Env => ({
   theme: context.theme,
   width: String(context.width),
 });
-
-const appliedFailures = (applied: unknown): readonly string[] => {
-  if (!isRecord(applied)) return ['<нет ответа>'];
-  const list = applied.applied;
-  return Array.isArray(list) ? list.map((item) => asText(item)) : ['<нет ответа>'];
-};
 
 const skipped = (entry: InventoryEntry, context: MatrixContext): MatrixCell => ({
   id: entry.id,
@@ -80,7 +74,7 @@ const prepareState = (browser: Browser, entry: InventoryEntry, env: Env, plan: E
 };
 
 const resetState = (browser: Browser, env: Env): void => {
-  applyEnv(browser, env, 'overview');
+  applyEnvStrict(browser, env, 'overview');
 };
 
 type Scored = Readonly<{ note: string; findings: readonly Finding[]; dom: string }>;
@@ -219,6 +213,7 @@ const main = (): void => {
   assert.deepEqual(planProblems(full), [], 'планы не совпадают с инвентарём');
   const scope = full.filter((entry) => only.length === 0 || only.includes(entry.id));
   const out = entries.filter((entry) => entry.scope === 'out');
+  assert.ok(contexts.length > 0 && scope.length > 0, 'пустой фильтр матрицы: нет ячеек');
   const log = createRunLog(
     process.env.MULTITRACKER_MATRIX_OUT ?? 'docs/audits',
     new Date().toISOString().slice(0, 10),

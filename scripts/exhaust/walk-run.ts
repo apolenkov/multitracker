@@ -2,6 +2,7 @@
 import type { Browser } from '../ui-driver.ts';
 import { evaluate } from '../ui-driver.ts';
 import type { Env } from './axes.ts';
+import { applyEnvStrict } from './envctl.ts';
 import { ddmin } from './shrink.ts';
 import { fullInvariantsSource } from './page-checks.ts';
 import { clickableNow } from './dom-rules.ts';
@@ -53,7 +54,7 @@ const obstructed = (browser: Browser, path: string): boolean =>
   evaluate(browser, obstructedProbe(path)) === true;
 
 const stepFindings = (browser: Browser, env: Env): readonly Finding[] => {
-  const cfg = JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
+  const cfg = JSON.stringify({ hideAmounts: env.hideAmounts });
   const value: unknown = evaluate(browser, `(${fullInvariantsSource})(${cfg})`);
   return asArray(value).flatMap((row) => {
     const finding = asFinding(row);
@@ -161,6 +162,7 @@ const replays = (
 ): Promise<boolean> =>
   Promise.resolve().then(() => {
     closeDialogs(browser);
+    applyEnvStrict(browser, env, 'overview');
     const acc: StepAcc = execSteps(browserDriver(browser, env, places), candidate, emptyAcc);
     closeDialogs(browser);
     return acc.findings.length > 0;
@@ -187,6 +189,7 @@ const runOne = async (
 ): Promise<WalkResult> => {
   const seq = walkSequences(paths, seed, 1, walkDepth).at(0) ?? [];
   const ordered = walkSequences(paths, seed + index, 1, walkDepth).at(0) ?? seq;
+  applyEnvStrict(browser, env, 'overview');
   const acc = execSteps(browserDriver(browser, env, places), ordered, emptyAcc);
   const repro = await shrinkIfFailed(browser, env, places, ordered, acc.findings);
   closeDialogs(browser);
@@ -201,8 +204,13 @@ const runSeed = (
   seed: number,
   count: number,
 ): Promise<readonly WalkResult[]> =>
-  Promise.all(
-    Array.from({ length: count }, (_, index) => runOne(browser, env, places, paths, seed, index)),
+  // Последовательно: один браузер и одна вкладка, параллельные усадки сбивали бы состояние друг друга.
+  Array.from({ length: count }, (_, index) => index).reduce<Promise<readonly WalkResult[]>>(
+    async (done, index) => [
+      ...(await done),
+      await runOne(browser, env, places, paths, seed, index),
+    ],
+    Promise.resolve([]),
   );
 
 /** Все блуждания: по count на сид, глубина walkDepth, усадка падающих. */
@@ -219,8 +227,11 @@ export const runWalks = async (
     routeOf: new Map(seen.toReversed().map((item) => [item.path, item.route])),
     openers: new Map(Object.entries(openers)),
   };
-  const per = await Promise.all(
-    walkSeeds.map((seed) => runSeed(browser, env, places, pool, seed, 2)),
+  return await walkSeeds.reduce<Promise<readonly WalkResult[]>>(
+    async (done, seed) => [
+      ...(await done),
+      ...(await runSeed(browser, env, places, pool, seed, 2)),
+    ],
+    Promise.resolve([]),
   );
-  return per.flatMap((row) => row);
 };

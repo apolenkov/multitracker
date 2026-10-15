@@ -212,6 +212,7 @@ function numericError(field: Field, value: string, type: OperationType) {
     new Map([
       ['fx', 10000],
       ['quantity', 1e6],
+      ['price', 1e7],
       ['fee', 1e7],
     ]).get(field) ?? 1e9;
   if (validNumber(value, field === 'fee' || type === 'opening', max)) return undefined;

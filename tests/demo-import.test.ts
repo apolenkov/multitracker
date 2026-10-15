@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { initialImport, importError, mapImportField } from '../src/demo/import-model.ts';
+import {
+  initialImport,
+  importError,
+  importErrorKind,
+  mapImportField,
+} from '../src/demo/import-model.ts';
 
 await test('import requires a valid destination, file, mapping and safe row policies', () => {
   assert.match(importError(initialImport, 0, 'en'), /source/u);
@@ -27,4 +32,15 @@ await test('stable mapping updates preserve the original page draft across trans
   assert.notEqual(importError(dialog, 2, 'en'), '');
   assert.equal(dialog.mapping.date, 'skip');
   assert.equal(page.source, 'Binance');
+});
+
+await test('the single import error belongs to the first failing check only', () => {
+  const ready = { ...initialImport, source: 'Binance', fileSelected: true };
+  assert.equal(importErrorKind(initialImport, 3), 'source');
+  assert.equal(importErrorKind(mapImportField(ready, 'date', 'skip'), 3), 'mapping');
+  assert.equal(importErrorKind({ ...ready, skipDuplicates: false }, 3), 'rows');
+  assert.equal(
+    importErrorKind({ ...ready, skipUnknown: true, skipDuplicates: true }, 3),
+    undefined,
+  );
 });

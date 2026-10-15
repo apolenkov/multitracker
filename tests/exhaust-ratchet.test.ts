@@ -118,6 +118,7 @@ const good = {
   element: { missing: [], stale: [], sealed: true, ok: true },
   code: { missing: [], stale: [], sealed: true, ok: true },
   errors: [],
+  findings: [],
   skips: skipReport([], 0, { attempted: 0, skipped: 0 }),
 };
 
@@ -183,4 +184,17 @@ await test('skip gate: 0.4 boundary passes, one skip over fails', () => {
   );
   assert.equal(over.share, 0.5);
   assert.throws(() => reportChecks({ ...good, skips: over }), /skipped clicks/);
+});
+
+await test('reportChecks fails on critical/important findings and ignores minor ones', () => {
+  const found = (rule: string) => ({ rule, selector: 'x', expected: 'e', actual: 'a' });
+  assert.doesNotThrow(() => reportChecks({ ...good, findings: [found('radius-off-scale')] }));
+  assert.throws(
+    () => reportChecks({ ...good, findings: [found('console-error')] }),
+    /critical\/important findings: 1/,
+  );
+  assert.throws(
+    () => reportChecks({ ...good, findings: [found('overlap')] }),
+    /critical\/important findings/,
+  );
 });

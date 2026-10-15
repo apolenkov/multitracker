@@ -7,6 +7,7 @@ import { buildRegistry, coveragePercent, elementMarkdown, sectionCoverage } from
 import type { RegistryInput, SectionCoverage } from './registry.ts';
 import { checkLedger, parseLedger } from './ledger.ts';
 import type { LedgerCheck } from './ledger.ts';
+import { severity } from './design.ts';
 import { codeMarkdown } from './coverage.ts';
 import type { FileReport } from './coverage.ts';
 import type { ScriptCoverage } from './cdp.ts';
@@ -74,6 +75,7 @@ export type Checks = Readonly<{
   element: LedgerCheck;
   code: LedgerCheck;
   errors: readonly string[];
+  findings: readonly Finding[];
   skips: SkipReport;
 }>;
 
@@ -195,11 +197,15 @@ export const writeReports = (
   const summary = summaryOf(acc, sections, finalReports, checks);
   log.saveJson('summary.json', summary);
   console.log(JSON.stringify(summary, null, 2));
-  return { ...checks, errors: acc.errors };
+  return { ...checks, errors: acc.errors, findings: acc.findings };
 };
 
 export const reportChecks = (checks: Checks): void => {
   assert.equal(checks.errors.length, 0, `console errors: ${checks.errors.slice(0, 3).join(' | ')}`);
+  const blocking = checks.findings
+    .filter((finding) => severity(finding.rule) !== 'minor')
+    .map((finding) => `${finding.rule} ${finding.selector}`);
+  assert.deepEqual(blocking.slice(0, 5), [], `critical/important findings: ${blocking.length}`);
   assert.ok(checks.element.ok, `element ledger: ${JSON.stringify(checks.element)}`);
   assert.ok(checks.code.ok, `code ledger: ${JSON.stringify(checks.code)}`);
   assert.ok(

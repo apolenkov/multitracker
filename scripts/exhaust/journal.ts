@@ -21,8 +21,10 @@ const fallbackEnumerated = (hit: SweepHit | undefined, path: string): Enumerated
   };
 };
 
-const hitSkip = (hits: readonly SweepHit[], path: string): string =>
-  hits.find((hit) => hit.path === path)?.skipped ?? 'not-visited';
+const hitSkip = (hits: readonly SweepHit[], path: string): string => {
+  const own = hits.filter((hit) => hit.path === path);
+  return own.find((hit) => hit.skipped === '')?.skipped ?? own[0]?.skipped ?? 'not-visited';
+};
 
 /** Объединение перечисления и обхода по пути: одна запись на элемент раздела. */
 export const joinSeen = (

@@ -39,7 +39,7 @@ const fastInv = () => {
     const inside = r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
     if (!inside && active.checkVisibility()) push(v, 'focus-outside-viewport', 'document.activeElement', 'intersect viewport', JSON.stringify({ x: r.x, y: r.y }));
   }
-  const left = (window.__exh && window.__exh.errors) || [];
+  const left = window.__exh ? window.__exh.errors.splice(0) : [];
   left.forEach((e) => push(v, 'console-error', 'console', 'none', e));
   return v;
 };
@@ -97,14 +97,6 @@ export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastIn
     const body = document.body.innerText;
     const arrow = body.match(/[▲▼]/g);
     if (arrow) push(v, 'hidden-amount-arrow', 'body', 'no ▲▼', arrow.length + ' marks');
-  }
-  if (cfg.langStrings) {
-    const text = document.body.innerText;
-    cfg.langStrings.forEach((s) => { if (s.length >= 6 && text.includes(s)) push(v, 'i18n-leak', 'body', 'absent', JSON.stringify(s).slice(0, 80)); });
-  }
-  if (cfg.keys) {
-    const text = document.body.innerText;
-    cfg.keys.forEach((k) => { if (new RegExp('\\\\b' + k + '\\\\b').test(text)) push(v, 'i18n-key', 'body', 'translated', k); });
   }
   const active = document.activeElement;
   if (active && active !== document.body) {

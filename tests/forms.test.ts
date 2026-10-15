@@ -153,3 +153,14 @@ await test('deposit and withdrawal require an external sample source or destinat
     );
   }
 });
+
+await test('a price above 10 million reports range, not positive', () => {
+  const base = {
+    ...initialOperation(demoState, 'binance'),
+    type: 'buy' as const,
+    quantity: '1',
+  };
+  assert.equal(validateOperation({ ...base, price: '50000000' }, demoState).price, 'range');
+  assert.equal(validateOperation({ ...base, price: '0' }, demoState).price, 'positive');
+  assert.equal(validateOperation({ ...base, price: '10000000' }, demoState).price, undefined);
+});

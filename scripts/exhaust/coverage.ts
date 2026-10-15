@@ -1,6 +1,6 @@
 /** Кодовое покрытие: развёртка V8-отсчётов на src/ по картам, сведение снимков. */
 import { lineStartOffsets, mapPosition, offsetAt, parseMap } from './sourcemap.ts';
-import type { SourceMap } from './sourcemap.ts';
+import type { SourceMap, Span } from './sourcemap.ts';
 import type { FunctionCoverage, Range, ScriptCoverage } from './cdp.ts';
 
 export type ScriptSource = Readonly<{ url: string; js: string; map: string }>;
@@ -34,9 +34,17 @@ const isIdentChar = (char: string | undefined): boolean => char !== undefined &&
 
 type Bundle = Readonly<{ js: string; starts: readonly number[]; map: SourceMap }>;
 
+/** V8 ставит старт объявления на `function`/`class`, стрелки и методов — на параметры или тело. */
+const startsDeclaration = (js: string, at: number): boolean => {
+  const head = js.slice(at, at + 24).replace(/^async\s+/, '');
+  return head.startsWith('class') || (head.startsWith('function') && !isIdentChar(head.at(8)));
+};
+
 /**
- * Исходное имя функции вместо минифицированного: ближайший к старту сегмент с именем, чей токен
- * в бандле равен имени V8. Без такого сегмента остаётся имя бандла (ключ тогда зависит от сборки).
+ * Исходное имя функции вместо минифицированного: сегмент с именем, чей токен в бандле равен
+ * имени V8. У объявления имя справа от старта, у стрелки и метода — слева (строго: на самом
+ * старте стоит параметр); ближайший на своей стороне идёт первым, другая сторона — запасная.
+ * Без сегмента остаётся имя бандла (ключ тогда зависит от сборки).
  */
 const sourceName = (
   bundle: Bundle,
@@ -44,18 +52,22 @@ const sourceName = (
   min: string,
 ) => {
   const base = bundle.starts.at(pos.line) ?? 0;
-  const near = (bundle.map.lines.at(pos.line) ?? []).filter(
-    (span) =>
-      span.name >= 0 &&
-      Math.abs(span.column - pos.column) <= NAME_WINDOW &&
-      bundle.js.startsWith(min, base + span.column) &&
-      !isIdentChar(bundle.js.at(base + span.column + min.length)),
-  );
-  const best = near.toSorted(
-    (a, b) => Math.abs(a.column - pos.column) - Math.abs(b.column - pos.column),
-  );
-  const index = best.at(0)?.name;
-  return index === undefined ? min : (bundle.map.names.at(index) ?? min);
+  const forward = startsDeclaration(bundle.js, base + pos.column);
+  const rank = (span: Span): readonly [number, number] => {
+    const delta = span.column - pos.column;
+    return [(forward ? delta > 0 : delta < 0) ? 0 : 1, Math.abs(delta)];
+  };
+  const best = (bundle.map.lines.at(pos.line) ?? [])
+    .filter(
+      (span) =>
+        span.name >= 0 &&
+        Math.abs(span.column - pos.column) <= NAME_WINDOW &&
+        bundle.js.startsWith(min, base + span.column) &&
+        !isIdentChar(bundle.js.at(base + span.column + min.length)),
+    )
+    .toSorted((a, b) => rank(a)[0] - rank(b)[0] || rank(a)[1] - rank(b)[1])
+    .at(0);
+  return best === undefined ? min : (bundle.map.names.at(best.name) ?? min);
 };
 
 const hitOf = (bundle: Bundle, fn: FunctionCoverage): readonly Hit[] => {

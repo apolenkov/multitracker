@@ -157,7 +157,7 @@ export const runSteps = (browser: Browser, steps: readonly MatrixStep[], env: En
 
 /** Проверки ячейки: инварианты состояния и дизайн-скан; возвращает находки. */
 export const cellFindings = (browser: Browser, env: Env): readonly Finding[] => {
-  const cfg = JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
+  const cfg = JSON.stringify({ hideAmounts: env.hideAmounts });
   const rows = [
     ...asArray(evaluate(browser, `(${fullInvariantsSource})(${cfg})`)),
     ...asArray(

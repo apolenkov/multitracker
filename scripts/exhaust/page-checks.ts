@@ -98,14 +98,6 @@ export const fullInvariantsSource = `async (cfg) => { ${invariantBase}; ${fastIn
     const arrow = body.match(/[▲▼]/g);
     if (arrow) push(v, 'hidden-amount-arrow', 'body', 'no ▲▼', arrow.length + ' marks');
   }
-  if (cfg.langStrings) {
-    const text = document.body.innerText;
-    cfg.langStrings.forEach((s) => { if (s.length >= 6 && text.includes(s)) push(v, 'i18n-leak', 'body', 'absent', JSON.stringify(s).slice(0, 80)); });
-  }
-  if (cfg.keys) {
-    const text = document.body.innerText;
-    cfg.keys.forEach((k) => { if (new RegExp('\\\\b' + k + '\\\\b').test(text)) push(v, 'i18n-key', 'body', 'translated', k); });
-  }
   const active = document.activeElement;
   if (active && active !== document.body) {
     const r = active.getBoundingClientRect();

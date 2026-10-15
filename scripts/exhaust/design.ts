@@ -46,8 +46,6 @@ const important = [
   'hidden-amount-digit',
   'hidden-amount-tone',
   'hidden-amount-arrow',
-  'i18n-leak',
-  'i18n-key',
   'layout-shift',
 ];
 

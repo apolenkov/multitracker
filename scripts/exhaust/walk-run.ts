@@ -54,7 +54,7 @@ const obstructed = (browser: Browser, path: string): boolean =>
   evaluate(browser, obstructedProbe(path)) === true;
 
 const stepFindings = (browser: Browser, env: Env): readonly Finding[] => {
-  const cfg = JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
+  const cfg = JSON.stringify({ hideAmounts: env.hideAmounts });
   const value: unknown = evaluate(browser, `(${fullInvariantsSource})(${cfg})`);
   return asArray(value).flatMap((row) => {
     const finding = asFinding(row);

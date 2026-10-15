@@ -21,8 +21,7 @@ export type AxisDetail = Readonly<{
   settled: boolean;
 }>;
 
-const cfgOf = (env: Env) =>
-  JSON.stringify({ hideAmounts: env.hideAmounts, langStrings: [], keys: [] });
+const cfgOf = (env: Env) => JSON.stringify({ hideAmounts: env.hideAmounts });
 
 const pageFindings = (browser: Browser, env: Env, config: DesignConfig): readonly Finding[] => {
   const invariants: unknown = evaluate(browser, `(${fullInvariantsSource})(${cfgOf(env)})`);

@@ -13,8 +13,9 @@ export type FileReport = Readonly<{
   uncoveredFunctions: readonly string[];
 }>;
 
-type Hit = Readonly<{
+export type Hit = Readonly<{
   key: string;
+  column: number;
   file: string;
   name: string;
   covered: boolean;
@@ -40,6 +41,7 @@ const hitOf = (map: SourceMap, starts: readonly number[], fn: FunctionCoverage):
   return [
     {
       key: `${file}|${name}`,
+      column: hit.column,
       file,
       name,
       covered: fn.ranges.some((range) => range.count > 0),
@@ -77,8 +79,25 @@ const scriptHits = (script: ScriptCoverage, sources: readonly ScriptSource[]): r
   return script.functions.flatMap((fn) => hitOf(map, lineStartOffsets(source.js), fn));
 };
 
-const uniqueHits = (hits: readonly Hit[]): readonly Hit[] =>
-  hits.filter((hit, index) => hits.findIndex((other) => other.key === hit.key) === index);
+/**
+ * Одна запись на функцию: ключ `файл|имя@строка`. Разные функции одной строки (анонимные,
+ * с общим именем) различаются колонкой исходника: первая в порядке колонок сохраняет ключ
+ * (книга не меняется), остальные получают суффикс `#N`.
+ */
+export const uniqueHits = (hits: readonly Hit[]): readonly Hit[] => {
+  const spots = hits.filter(
+    (hit, index) =>
+      hits.findIndex((other) => other.key === hit.key && other.column === hit.column) === index,
+  );
+  return spots.map((hit) => {
+    const same = spots
+      .filter((other) => other.key === hit.key)
+      .map((other) => other.column)
+      .toSorted((a, b) => a - b);
+    const order = same.indexOf(hit.column);
+    return order > 0 ? { ...hit, key: `${hit.key}#${order}` } : hit;
+  });
+};
 
 /** Отчёт по файлам src/: функции и ветви из бандла, отнесённые к исходникам по карте. */
 export const fileReports = (

@@ -18,6 +18,7 @@ import { elementSignature, dialogOf } from '../scripts/exhaust/signature.ts';
 import { splitChunks, ddmin } from '../scripts/exhaust/shrink.ts';
 import { contrastRatio, luminance, over, parseColor } from '../scripts/exhaust/contrast.ts';
 import { decodeMappings, mapPosition, parseMap, positionOf } from '../scripts/exhaust/sourcemap.ts';
+import { uniqueHits, type Hit } from '../scripts/exhaust/coverage.ts';
 import { designScales, tokenNames, cssRadii } from '../scripts/exhaust/tokens.ts';
 import { asArray, asText, isRecord } from '../scripts/exhaust/guards.ts';
 import { formCases, primaryField, valueFor } from '../scripts/exhaust/form-cases.ts';
@@ -194,4 +195,21 @@ await test('part b covering array and axis table record every tuple', () => {
   const table = axisTable(rows);
   assert.ok(table.includes(`rows: ${rows.length}`));
   assert.equal(table.split('\n').filter((l) => /^\d+\. /.test(l)).length, rows.length);
+});
+
+await test('source column is decoded and separates same-line functions in uniqueHits', () => {
+  // Второй сегмент: сдвиг колонки генерации на 1 и исходной колонки на 1.
+  assert.equal(decodeMappings('AAAA,CAAC').at(0)?.at(1)?.srcColumn, 1);
+  const hit = (column: number): Hit => ({
+    key: 'src/a.tsx|(anon)@7',
+    column,
+    file: 'src/a.tsx',
+    name: '(anon)@7',
+    covered: false,
+    branches: 0,
+    branchesCovered: 0,
+  });
+  const keys = uniqueHits([hit(20), hit(4), hit(20)]).map((item) => item.key);
+  assert.deepEqual(keys.toSorted(), ['src/a.tsx|(anon)@7', 'src/a.tsx|(anon)@7#1']);
+  assert.equal(uniqueHits([hit(4), hit(4)]).length, 1);
 });

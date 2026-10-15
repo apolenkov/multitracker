@@ -10,7 +10,7 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/Dialog.tsx|we@6",
+      "signature": "src/Dialog.tsx|keepDialogFocus@6",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -18,7 +18,7 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/Navigation.tsx|n@90",
+      "signature": "src/Navigation.tsx|closeOnEscape@90",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -34,7 +34,7 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/Workspace.tsx|Su@145",
+      "signature": "src/Workspace.tsx|EmptyOverview@145",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -62,7 +62,7 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/demo/connection-sync.tsx|Tc@151",
+      "signature": "src/demo/connection-sync.tsx|ConnectionNotice@151",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -114,11 +114,11 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/demo/import-model.ts|Fc@80",
+      "signature": "src/demo/import-model.ts|safeImportRows@80",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/demo/settings-backup.tsx|Ml@51",
+      "signature": "src/demo/settings-backup.tsx|RestorePreview@51",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -182,11 +182,11 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/forms/EntityFields.tsx|onChange@61",
+      "signature": "src/forms/EntityFields.tsx|GroupFields@128",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/forms/EntityFields.tsx|qe@128",
+      "signature": "src/forms/EntityFields.tsx|onChange@61",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -194,11 +194,11 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/forms/operations.ts|ht@170",
+      "signature": "src/forms/operations.ts|targetError@170",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
-      "signature": "src/forms/operations.ts|vt@186",
+      "signature": "src/forms/operations.ts|textError@186",
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     },
     {
@@ -258,5 +258,5 @@
       "reason": "baseline: not exercised by the layers 1-3 sweep, may only shrink"
     }
   ],
-  "seal": "cf7fa4dbcd61bb95e136e98af618fa382cdd45d417cdd94406e0d306a4afddb1"
+  "seal": "a49f2297d6b676fe92cd65c135f2571086c53f3c37e87aee1dac19fdce09d45d"
 }

@@ -29,14 +29,44 @@ const sourcePath = (source: string): string =>
     .filter((part) => part !== '..' && part !== '.')
     .join('/');
 
-const hitOf = (map: SourceMap, starts: readonly number[], fn: FunctionCoverage): readonly Hit[] => {
+const NAME_WINDOW = 48;
+const isIdentChar = (char: string | undefined): boolean => char !== undefined && /[\w$]/.test(char);
+
+type Bundle = Readonly<{ js: string; starts: readonly number[]; map: SourceMap }>;
+
+/**
+ * Исходное имя функции вместо минифицированного: ближайший к старту сегмент с именем, чей токен
+ * в бандле равен имени V8. Без такого сегмента остаётся имя бандла (ключ тогда зависит от сборки).
+ */
+const sourceName = (
+  bundle: Bundle,
+  pos: Readonly<{ line: number; column: number }>,
+  min: string,
+) => {
+  const base = bundle.starts.at(pos.line) ?? 0;
+  const near = (bundle.map.lines.at(pos.line) ?? []).filter(
+    (span) =>
+      span.name >= 0 &&
+      Math.abs(span.column - pos.column) <= NAME_WINDOW &&
+      bundle.js.startsWith(min, base + span.column) &&
+      !isIdentChar(bundle.js.at(base + span.column + min.length)),
+  );
+  const best = near.toSorted(
+    (a, b) => Math.abs(a.column - pos.column) - Math.abs(b.column - pos.column),
+  );
+  const index = best.at(0)?.name;
+  return index === undefined ? min : (bundle.map.names.at(index) ?? min);
+};
+
+const hitOf = (bundle: Bundle, fn: FunctionCoverage): readonly Hit[] => {
   const first = fn.ranges.at(0);
   if (first === undefined) return [];
-  const pos = offsetAt(starts, first.startOffset);
-  const hit = mapPosition(map, pos.line, pos.column);
+  const pos = offsetAt(bundle.starts, first.startOffset);
+  const hit = mapPosition(bundle.map, pos.line, pos.column);
   if (hit === null) return [];
   const file = sourcePath(hit.source);
-  const name = `${fn.functionName === '' ? '(anon)' : fn.functionName}@${hit.line}`;
+  const label = fn.functionName === '' ? '(anon)' : sourceName(bundle, pos, fn.functionName);
+  const name = `${label}@${hit.line}`;
   const branches = fn.ranges.slice(1);
   return [
     {
@@ -76,7 +106,8 @@ const scriptHits = (script: ScriptCoverage, sources: readonly ScriptSource[]): r
   const source = sources.find((item) => script.url.endsWith(item.url));
   const map = source === undefined ? null : safeMap(source.map);
   if (source === undefined || map === null) return [];
-  return script.functions.flatMap((fn) => hitOf(map, lineStartOffsets(source.js), fn));
+  const bundle = { js: source.js, starts: lineStartOffsets(source.js), map };
+  return script.functions.flatMap((fn) => hitOf(bundle, fn));
 };
 
 /**

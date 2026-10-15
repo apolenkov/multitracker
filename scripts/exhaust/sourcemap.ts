@@ -32,9 +32,9 @@ type Fields = Readonly<{ at: number; values: readonly number[] }>;
 
 const decodeFields = (segment: string): Fields =>
   [0, 1, 2, 3, 4].reduce<Fields>(
-    (acc, index) => {
-      // Пятое поле (имя) есть только в длинных сегментах.
-      if (index === 4 && acc.at >= segment.length) return acc;
+    (acc) => {
+      // Не больше 5 полей; читаем, сколько есть: 1 (без источника), 4 или 5 (с именем).
+      if (acc.at >= segment.length) return acc;
       const decoded = vlq(segment, acc.at);
       return { at: acc.at + decoded.used, values: [...acc.values, vlqValue(decoded.value)] };
     },
